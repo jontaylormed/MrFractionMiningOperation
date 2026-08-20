@@ -1,0 +1,2531 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Mr Factor's Mining Operation</title>
+<meta name="description" content="A mine where factors are pulled out of what looks like solid rock. Play with the seams before you answer anything.">
+<style>
+/* =========================================================================
+   MR FACTOR'S MINING OPERATION
+   One file. No dependencies. No build step. Runs from file:// and Pages.
+
+   Palette note. Every number below was MEASURED in the browser on a settled
+   page, not estimated (VERIFICATION s1). The first draft of this comment
+   asserted 4.1 / 7.6 / 8.4 from memory; all three were wrong, which is the
+   exact failure s1 exists for.
+     --ink   #2A2119 on --paper #FDF8F0  = 14.93:1   any size
+     --ink-soft #5A4B3A on --paper       =  7.94:1   any size
+     --ore   #C96A1F on --paper          =  3.57:1   BORDERS AND FILLS ONLY
+     --ore-t #8F4712 on --paper          =  6.45:1   small text
+     --vein  #1F5C4F on --paper          =  7.35:1   small text
+     --solid #8C4A3F on --paper          =  6.27:1   small text
+     --loaded#1E5A86 on --paper          =  6.94:1   small text
+     --twin  #5B3E8C on --paper          =  7.90:1   small text
+   Small text NEVER uses --ore: at 3.57 it fails AA. That is what --ore-t is
+   for, and it is why .btn.primary is filled with --ore-t rather than --ore -
+   cream on --ore measured 3.55:1 and had to be changed.
+   ========================================================================= */
+:root{
+  --paper:#FDF8F0; --paper-2:#F5EDDF; --paper-3:#EDE1CD;
+  --ink:#2A2119; --ink-soft:#5A4B3A;
+  --tan:#C8B89A; --rule:#D9C9AC;
+  --ore:#C96A1F; --ore-t:#8F4712; --lamp:#E8A33D;
+  --rock:#3A3129; --rock-2:#4A3F34;
+  --vein:#1F5C4F; --vein-lite:#2E7D6B;
+  --twin:#5B3E8C; --solid:#8C4A3F; --loaded:#1E5A86;
+  --tile-sq:#CFE0EF; --tile-sq-ink:#1E4C74;
+  --tile-x:#F6DCB8;  --tile-x-ink:#8F4712;
+  --tile-k:#CFE6DC;  --tile-k-ink:#1F5C4F;
+  --void:#E6DCCB;
+  --shadow:0 2px 0 var(--rule);
+  --display:'Black Han Sans','Arial Black',Impact,system-ui,sans-serif;
+  --body:'Atkinson Hyperlegible',Verdana,Tahoma,system-ui,sans-serif;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{
+  margin:0; background:var(--paper); color:var(--ink);
+  font-family:var(--body); font-size:17px; line-height:1.55;
+}
+h1,h2,h3,h4{font-family:var(--display); font-weight:400; letter-spacing:.01em; margin:0}
+p{margin:0 0 .7em}
+a{color:var(--ore-t)}
+
+/* ---------- ambient: dust + lamplight. Non-informational, threshold of notice ---------- */
+#ambient{position:fixed; inset:0; pointer-events:none; z-index:0; overflow:hidden}
+#ambient .mote{
+  position:absolute; border-radius:50%; background:var(--tan); opacity:.10;
+  animation:drift linear infinite;
+}
+#ambient .lamp{
+  position:absolute; top:-160px; left:50%; width:640px; height:520px; margin-left:-320px;
+  background:radial-gradient(ellipse at 50% 0%, rgba(232,163,61,.13), rgba(232,163,61,0) 68%);
+  transform-origin:50% 0%; animation:sway 11s ease-in-out infinite;
+}
+@keyframes drift{
+  0%{transform:translate3d(0,0,0)}
+  100%{transform:translate3d(22px,-120vh,0)}
+}
+@keyframes sway{0%,100%{transform:rotate(-2.2deg)}50%{transform:rotate(2.2deg)}}
+@media (prefers-reduced-motion:reduce){
+  #ambient .mote,#ambient .lamp{animation:none !important}
+  *{animation-duration:.001s !important; transition-duration:.001s !important}
+}
+
+/* ---------- header ---------- */
+header.top{
+  position:relative; z-index:1;
+  background:linear-gradient(180deg,#4A3F34 0%, #3A3129 62%, #2E2620 100%);
+  color:#F7EEDD; border-bottom:5px solid var(--ore);
+}
+.top-in{max-width:1180px; margin:0 auto; padding:22px 20px 26px; display:flex; gap:20px; align-items:center; flex-wrap:wrap}
+.top h1{font-size:clamp(28px,4.4vw,48px); color:#FFF3DE; line-height:1.05}
+.top .sub{font-size:15px; color:#E4D5BB; max-width:60ch; margin-top:6px}
+.top .sub b{color:#FFD79A; font-family:var(--display); font-weight:400}
+.badge-nograde{
+  display:inline-block; margin-top:10px; font-size:13px; letter-spacing:.06em; text-transform:uppercase;
+  border:2px solid var(--lamp); color:var(--lamp); border-radius:999px; padding:4px 12px;
+}
+
+/* ---------- layout ---------- */
+.wrap{position:relative; z-index:1; max-width:1180px; margin:0 auto; padding:0 20px 80px;
+  display:grid; grid-template-columns:236px minmax(0,1fr); gap:34px; align-items:start}
+@media (max-width:900px){ .wrap{grid-template-columns:1fr; gap:0} }
+
+/* ---------- depth rail ---------- */
+.rail{position:sticky; top:14px; padding:18px 0 0}
+@media (max-width:900px){ .rail{position:static; padding:16px 0 0} }
+.rail h2{font-size:15px; letter-spacing:.09em; text-transform:uppercase; color:var(--ore-t); margin-bottom:4px}
+.rail .rail-note{font-size:13px; color:var(--ink-soft); margin-bottom:12px}
+.shaft{position:relative; padding-left:26px}
+.shaft:before{content:""; position:absolute; left:9px; top:8px; bottom:8px; width:4px;
+  background:repeating-linear-gradient(180deg,var(--tan) 0 8px, transparent 8px 14px)}
+.rail a.rung{
+  display:block; position:relative; padding:8px 10px 8px 12px; margin:0 0 4px -4px;
+  text-decoration:none; color:var(--ink); border:2px solid transparent; border-radius:8px;
+  font-size:14px; min-height:44px;
+}
+.rail a.rung:hover{background:var(--paper-2); border-color:var(--rule)}
+.rail a.rung .d{font-family:var(--display); font-size:12px; color:var(--ore-t); letter-spacing:.08em; display:block}
+.rail a.rung:before{content:""; position:absolute; left:-21px; top:16px; width:13px; height:13px; border-radius:50%;
+  background:var(--paper); border:3px solid var(--tan)}
+.rail a.rung.here{background:var(--paper-2); border-color:var(--ore)}
+.rail a.rung.here:before{background:var(--ore); border-color:var(--ore)}
+.rail a.rung.here .d:after{content:" - you are here"; color:var(--ink-soft); letter-spacing:0}
+
+/* ---------- depth sections ---------- */
+.depth{padding:34px 0 10px; border-top:3px solid var(--rule); margin-top:20px}
+.depth:first-of-type{border-top:0; margin-top:0}
+.depth-head{display:flex; gap:16px; align-items:flex-start}
+.depth-num{
+  flex:0 0 auto; width:62px; height:62px; border-radius:12px; background:var(--rock); color:var(--lamp);
+  font-family:var(--display); display:flex; flex-direction:column; align-items:center; justify-content:center;
+  line-height:1; box-shadow:var(--shadow)
+}
+.depth-num small{font-size:9px; letter-spacing:.14em; color:#C8B89A; display:block; margin-bottom:3px}
+.depth-num b{font-size:24px; font-weight:400}
+.depth h2{font-size:clamp(22px,3vw,32px)}
+.depth .seam-line{color:var(--vein); font-size:15px; margin-top:2px}
+.depth .lede{margin-top:10px; max-width:70ch; color:var(--ink-soft)}
+
+/* ---------- panels ---------- */
+.panel{background:var(--paper-2); border:2px solid var(--rule); border-radius:14px; padding:18px; margin-top:18px}
+.panel.play{background:#FFFCF6; border-color:var(--tan)}
+/* The default is the DARK tag. The earlier version styled only
+   ".panel.play" and ".panel.work" - and no element on this page ever carries
+   class "panel work", so every SEAM CALLED / SHIFT REPORT tag rendered with no
+   background at all. A rule that matches nothing looks exactly like a rule
+   that works (VERIFICATION s40). */
+.panel-tag{
+  display:inline-block; font-family:var(--display); font-size:12px; letter-spacing:.12em;
+  padding:3px 10px; border-radius:6px; margin-bottom:10px;
+  background:var(--rock); color:var(--lamp);
+}
+.panel.play .panel-tag{background:var(--lamp); color:#3A2A10}
+.panel h3{font-size:20px; margin-bottom:6px}
+.hint{font-size:14px; color:var(--ink-soft)}
+
+/* the work face opens on the student's say-so, never on performance */
+.work-toggle{
+  width:100%; text-align:left; display:flex; gap:12px; align-items:center; cursor:pointer;
+  background:var(--paper-3); border:2px dashed var(--tan); border-radius:12px; padding:14px 16px;
+  font-family:var(--body); font-size:16px; color:var(--ink); margin-top:18px; min-height:44px;
+}
+.work-toggle:hover{border-color:var(--ore); background:var(--paper-2)}
+.work-toggle .pick{font-size:22px}
+.work-body{display:none}
+.work-body.open{display:block}
+
+/* ---------- controls ---------- */
+.controls{display:flex; flex-wrap:wrap; gap:16px 26px; align-items:flex-end; margin:6px 0 14px}
+.ctl{min-width:180px}
+.ctl label{display:block; font-size:13px; letter-spacing:.05em; text-transform:uppercase; color:var(--ore-t); margin-bottom:2px}
+.ctl .val{font-family:var(--display); font-size:22px; color:var(--ink)}
+input[type=range]{width:100%; accent-color:var(--ore); height:44px}
+.seg{display:inline-flex; border:2px solid var(--tan); border-radius:9px; overflow:hidden}
+.seg button{
+  border:0; background:var(--paper); color:var(--ink-soft); font-family:var(--body); font-size:14px;
+  padding:9px 13px; cursor:pointer; min-height:44px; border-right:1px solid var(--rule)
+}
+.seg button:last-child{border-right:0}
+.seg button[aria-pressed=true]{background:var(--ore); color:#FFF7EA}
+.btn{
+  font-family:var(--body); font-size:15px; padding:11px 18px; min-height:44px; cursor:pointer;
+  border-radius:10px; border:2px solid var(--tan); background:var(--paper); color:var(--ink);
+}
+.btn:hover{border-color:var(--ore)}
+/* --ore-t, not --ore: cream on --ore measured 3.55:1 and fails AA at 15px. */
+.btn.primary{background:var(--ore-t); border-color:var(--ore-t); color:#FFF7EA; font-family:var(--display); letter-spacing:.04em}
+.btn.primary:hover{background:#6E360D; border-color:#6E360D}
+.btn[disabled]{opacity:.45; cursor:not-allowed}
+input[type=text],input[type=number]{
+  font-family:var(--body); font-size:17px; padding:10px 12px; min-height:44px;
+  border:2px solid var(--tan); border-radius:10px; background:#fff; color:var(--ink); max-width:100%;
+}
+input[type=text]:focus,input[type=number]:focus{outline:3px solid var(--lamp); outline-offset:1px; border-color:var(--ore)}
+
+/* ---------- equations ---------- */
+.eq{font-family:var(--display); font-size:clamp(20px,3vw,30px); letter-spacing:.02em; line-height:1.5; margin:10px 0}
+.eq.sm{font-size:clamp(17px,2.2vw,22px)}
+.eq .op{color:var(--ore-t); padding:0 .12em}
+.eq .hi{background:var(--tile-x); border-radius:5px; padding:0 .16em}
+.eq .hi2{background:var(--tile-k); border-radius:5px; padding:0 .16em}
+.eq .hi3{background:var(--tile-sq); border-radius:5px; padding:0 .16em}
+.eq .dim{color:var(--ink-soft); opacity:.7}
+sup{font-size:.62em}
+
+/* ---------- readouts ---------- */
+.readout{display:flex; flex-wrap:wrap; gap:10px; margin:12px 0}
+.card{background:#fff; border:2px solid var(--rule); border-radius:11px; padding:9px 13px; min-width:104px}
+.card .k{font-size:11px; letter-spacing:.09em; text-transform:uppercase; color:var(--ore-t)}
+.card .v{font-family:var(--display); font-size:22px}
+.card.on{border-color:var(--vein); background:#F1F8F5}
+
+/* seam meter */
+.meter{display:flex; align-items:center; gap:12px; margin:12px 0; padding:11px 14px;
+  border-radius:11px; border:2px solid var(--rule); background:#fff}
+.meter .lampdot{width:16px; height:16px; border-radius:50%; background:var(--tan); flex:0 0 auto}
+.meter.clean{border-color:var(--vein); background:#F1F8F5}
+.meter.clean .lampdot{background:var(--vein-lite); box-shadow:0 0 0 5px rgba(46,125,107,.16)}
+.meter.cloudy{border-color:var(--solid); background:#FBF1EF}
+.meter.cloudy .lampdot{background:var(--solid)}
+.meter b{font-family:var(--display); font-weight:400}
+.meter .m-txt{font-size:15px}
+
+/* ---------- svg holders ---------- */
+.stage{background:#fff; border:2px solid var(--rule); border-radius:12px; padding:10px; overflow-x:auto}
+.stage svg{display:block; width:100%; max-width:560px; height:auto; margin:0 auto}
+.model-cap{font-size:14px; color:var(--ink-soft); text-align:center; max-width:60ch; margin:6px auto 2px}
+.legend{display:flex; gap:14px; flex-wrap:wrap; font-size:13px; color:var(--ink-soft); margin-top:8px}
+.legend i{width:14px; height:14px; border-radius:3px; display:inline-block; vertical-align:-2px; margin-right:5px; border:1px solid rgba(0,0,0,.2)}
+
+/* ---------- choices ---------- */
+.choices{display:grid; gap:9px; margin:10px 0}
+.choice{
+  position:relative; text-align:left; padding:13px 15px 13px 46px; min-height:44px;
+  border:2px solid var(--tan); border-radius:11px; background:#fff; cursor:pointer;
+  font-family:var(--body); font-size:16px; color:var(--ink)
+}
+.choice:hover{border-color:var(--ore)}
+/* WCAG 1.4.1 - the glyph is the carrier, colour only reinforces it.
+   It hangs off ::before on the button itself so no builder has to remember
+   to emit a child element (VERIFICATION s40: the mechanism must exist). */
+.choice:before{
+  content:""; position:absolute; left:13px; top:50%; transform:translateY(-50%);
+  width:22px; height:22px; border-radius:50%; border:2px solid var(--tan);
+  font-family:var(--display); font-size:14px; line-height:19px; text-align:center;
+}
+.choice[data-result=yes]{border-color:var(--vein); background:#F1F8F5}
+.choice[data-result=yes]:before{content:"\2713"; background:var(--vein); border-color:var(--vein); color:#fff}
+.choice[data-result=no]{border-color:var(--solid); background:#FBF1EF}
+.choice[data-result=no]:before{content:"\21BA"; background:var(--solid); border-color:var(--solid); color:#fff}
+.choice .why{display:none}
+.choice[data-result] .why{display:block; font-size:14px; color:var(--ink-soft); margin-top:5px}
+
+/* ---------- notes / described feedback ---------- */
+.note{border-left:6px solid var(--tan); background:#fff; padding:12px 15px; border-radius:0 11px 11px 0; margin:12px 0; font-size:15px}
+.note.found{border-left-color:var(--vein); background:#F1F8F5}
+.note.again{border-left-color:var(--lamp); background:#FFF9EC}
+.note.trap{border-left-color:var(--solid); background:#FBF1EF}
+.note b{font-family:var(--display); font-weight:400}
+
+/* ---------- Mr Factor ---------- */
+.mf{display:flex; gap:14px; align-items:flex-start; margin:16px 0 0}
+.mf svg{flex:0 0 auto}
+.bubble{
+  position:relative; background:#fff; border:2px solid var(--tan); border-radius:14px; padding:12px 15px;
+  font-size:15px; max-width:64ch
+}
+.bubble:before{content:""; position:absolute; left:-11px; top:20px; width:0; height:0;
+  border:9px solid transparent; border-right-color:var(--tan)}
+.bubble b{font-family:var(--display); font-weight:400; color:var(--ore-t)}
+
+/* ---------- tables ---------- */
+table.scan{border-collapse:collapse; font-size:15px; margin-top:8px; min-width:280px}
+table.scan th{font-family:var(--display); font-weight:400; font-size:13px; letter-spacing:.06em;
+  text-transform:uppercase; color:var(--ore-t); text-align:left; padding:5px 14px 5px 0; border-bottom:2px solid var(--rule)}
+table.scan td{padding:5px 14px 5px 0; border-bottom:1px solid var(--rule); font-variant-numeric:tabular-nums}
+table.scan tr.hit td{background:#F1F8F5; color:var(--vein); font-weight:700}
+table.scan tr.hit td:first-child:before{content:"\25B8 "; color:var(--vein)}
+
+/* ---------- chips ---------- */
+.chips{display:flex; flex-wrap:wrap; gap:8px; margin:10px 0}
+.chip{border:2px solid var(--tan); background:#fff; border-radius:999px; padding:7px 14px; font-size:15px;
+  cursor:pointer; min-height:44px; font-family:var(--body); color:var(--ink)}
+.chip:hover{border-color:var(--ore)}
+.chip[aria-pressed=true]{background:var(--rock); color:var(--lamp); border-color:var(--rock)}
+.chip.sml{min-height:0; padding:4px 11px; font-size:14px; cursor:default}
+
+.seamkey{display:grid; gap:8px; grid-template-columns:repeat(auto-fit,minmax(212px,1fr)); margin:10px 0}
+.seamkey .sk{border:2px solid var(--rule); border-radius:11px; padding:10px 12px; background:#fff}
+.seamkey .sk .n{font-family:var(--display); font-size:15px}
+.seamkey .sk .f{font-size:13px; color:var(--ink-soft)}
+.sk[data-t=common]{border-left:8px solid var(--vein)}
+.sk[data-t=twin]{border-left:8px solid var(--twin)}
+.sk[data-t=simple]{border-left:8px solid var(--ore)}
+.sk[data-t=loaded]{border-left:8px solid var(--loaded)}
+.sk[data-t=solid]{border-left:8px solid var(--solid)}
+
+/* ---------- log ---------- */
+.log{margin-top:10px; font-size:14px; color:var(--ink-soft); padding-left:20px}
+.log li{margin:3px 0}
+
+footer.foot{border-top:3px solid var(--rule); margin-top:30px; padding:26px 20px 60px; background:var(--paper-2)}
+.foot-in{max-width:1180px; margin:0 auto; font-size:14px; color:var(--ink-soft)}
+.foot-in h3{font-size:17px; color:var(--ink); margin-bottom:6px}
+.foot-in b{color:var(--ink)}
+.sr{position:absolute; width:1px; height:1px; overflow:hidden; clip:rect(0 0 0 0); white-space:nowrap}
+.skip{position:absolute; left:-9999px; top:0; background:var(--ore); color:#fff; padding:10px 16px; z-index:9}
+.skip:focus{left:8px; top:8px}
+</style>
+</head>
+<body>
+<a class="skip" href="#d0">Skip to the first cut</a>
+<div id="ambient" aria-hidden="true"><div class="lamp"></div></div>
+
+<header class="top">
+  <div class="top-in">
+    <div id="mf-hero" aria-hidden="true"></div>
+    <div>
+      <h1>Mr Factor's Mining Operation</h1>
+      <div class="sub">Ore looks like rock. <b>x&sup2; &minus; 5x + 6</b> looks like a lump.
+        A vein <em>is</em> a factor &mdash; it was in the rock before you arrived. Mining is not guessing where to dig.
+        It is pulling out structure that was already there.</div>
+      <div class="badge-nograde">No score &middot; no percentage &middot; play before you answer</div>
+    </div>
+  </div>
+</header>
+
+<div class="wrap">
+  <nav class="rail" aria-label="Depths of the mine">
+    <h2>The Shaft</h2>
+    <div class="rail-note">Every depth is open from the first screen. Going deeper is walking, not winning &mdash; and you can come back up any time.</div>
+    <div class="shaft" id="rail"></div>
+  </nav>
+
+  <main>
+    <section class="depth" id="d0"></section>
+    <section class="depth" id="d1"></section>
+    <section class="depth" id="d2"></section>
+    <section class="depth" id="d3"></section>
+    <section class="depth" id="d4"></section>
+    <section class="depth" id="d5"></section>
+    <section class="depth" id="d6"></section>
+  </main>
+</div>
+
+<footer class="foot">
+  <div class="foot-in">
+    <h3>What this mine is doing</h3>
+    <p>Factoring 72 into 2&sup3;&middot;3&sup2; and factoring <b>x&sup2; &minus; 5x + 6</b> into <b>(x &minus; 2)(x &minus; 3)</b> are the same act.
+      Schools teach them years apart and rarely say they are one thing. Here they are one seam, worked deeper.</p>
+    <p>Nothing on this page is scored, timed or stored. Nothing is locked. The picture always shows what you were
+      <b>given</b>; the part you have to produce is left as the question, because that part is the point.</p>
+    <p class="hint">Type stack: Black Han Sans / Atkinson Hyperlegible where installed, with system fallbacks. No network requests, no build step, no storage.</p>
+  </div>
+</footer>
+
+<script>
+"use strict";
+/* =========================================================================
+   CORE. Plain ES5-flavoured JS, no modules, no dependencies.
+   ========================================================================= */
+var MF = {};
+window.MF = MF;
+
+/* ---------- tiny DOM helpers ---------- */
+function E(tag, cls, txt){ var n=document.createElement(tag); if(cls) n.className=cls; if(txt!=null) n.textContent=txt; return n; }
+function H(tag, cls, html){ var n=document.createElement(tag); if(cls) n.className=cls; if(html!=null) n.innerHTML=html; return n; }
+function S(tag, attrs){ var n=document.createElementNS('http://www.w3.org/2000/svg',tag); for(var k in attrs){ n.setAttribute(k, attrs[k]); } return n; }
+function q(sel,root){ return (root||document).querySelector(sel); }
+function on(node,ev,fn){ node.addEventListener(ev,fn); return node; }
+
+/* ---------- number formatting ----------
+   Sliders reach decimals, so every printed value goes through here.
+   0.1 + 0.2 must never reach a student as 0.30000000000000004. */
+function num(n){
+  if(n==null || !isFinite(n)) return '?';
+  var r = Math.round(n*1e6)/1e6;
+  if(Object.is(r,-0)) r = 0;
+  var s = r.toFixed(6).replace(/0+$/,'').replace(/\.$/,'');
+  return s.replace('-', '−');
+}
+function isInt(n){ return Math.abs(n-Math.round(n)) < 1e-9; }
+function signed(n){ var v=Math.round(n*1e6)/1e6; return (v<0? ' − ' : ' + ') + num(Math.abs(v)); }
+
+/* term helpers: readable algebra without a formatting library */
+function linear(m,k){                       /* contents of a bracket: mx + k */
+  var head = (m===1?'x' : m===-1?'−x' : num(m)+'x');
+  if(Math.round(k*1e6)/1e6 === 0) return head;
+  return head + signed(k);
+}
+/* Prints a quadratic OR a linear expression. The a===0 case is not academic:
+   the sorting line and the assay office both accept 5x + 15, which the earlier
+   version rendered as "0x² + 5x + 15" - a leading term that is not there. */
+function quad(a,b,c){
+  var bb=Math.round(b*1e6)/1e6, cc=Math.round(c*1e6)/1e6, s='';
+  if(a!==0) s = (a===1?'x<sup>2</sup>' : a===-1?'−x<sup>2</sup>' : num(a)+'x<sup>2</sup>');
+  if(bb!==0){
+    if(s==='') s = (bb===1?'x' : bb===-1?'−x' : num(bb)+'x');
+    else       s += (bb<0?' − ':' + ') + (Math.abs(bb)===1?'x':num(Math.abs(bb))+'x');
+  }
+  if(cc!==0){
+    if(s==='') s = num(cc);
+    else       s += signed(cc);
+  }
+  return s === '' ? '0' : s;
+}
+/* SVG <text> cannot carry markup, so anything drawn into a tile goes through
+   this rather than being hand-rolled. Two call sites used to build their own
+   string and printed "x² + 1x + 1" and "x² + 0x − 9" 60px below a heading
+   that read "x² + x + 1" and "x² − 9" (VERIFICATION s33: one fact, one place). */
+function quadText(a,b,c){
+  return quad(a,b,c).replace(/<sup>2<\/sup>/g,'²').replace(/<[^>]+>/g,'');
+}
+function sqTerm(a){ return a===1?'x²' : a===-1?'−x²' : num(a)+'x²'; }
+
+/* ---------- number theory ---------- */
+function gcd(a,b){ a=Math.abs(a); b=Math.abs(b); while(b){ var t=a%b; a=b; b=t; } return a; }
+function gcdAll(list){ return list.reduce(function(g,v){ return gcd(g,v); }, 0); }
+function divisors(n){
+  n=Math.abs(n); var out=[]; if(n===0) return out;
+  for(var i=1;i*i<=n;i++){ if(n%i===0){ out.push(i); if(i!==n/i) out.push(n/i); } }
+  return out.sort(function(a,b){return a-b;});
+}
+function factorPairs(n){                    /* positive pairs, ascending */
+  var out=[], a=Math.abs(n);
+  for(var i=1;i*i<=a;i++){ if(a%i===0) out.push([i, a/i]); }
+  return out;
+}
+function isPrime(n){
+  n=Math.abs(n); if(n<2) return false;
+  for(var i=2;i*i<=n;i++){ if(n%i===0) return false; }
+  return true;
+}
+function primeFactors(n){
+  var out=[], v=Math.abs(n);
+  if(v<2) return out;
+  for(var p=2; p*p<=v; p++){ while(v%p===0){ out.push(p); v/=p; } }
+  if(v>1) out.push(v);
+  return out;
+}
+function primePowerString(n){
+  var pf=primeFactors(n); if(!pf.length) return String(n);
+  var m={}; pf.forEach(function(p){ m[p]=(m[p]||0)+1; });
+  return Object.keys(m).map(Number).sort(function(a,b){return a-b;}).map(function(p){
+    return m[p]>1 ? p+'<sup>'+m[p]+'</sup>' : String(p);
+  }).join(' · ');
+}
+function isSquare(n){ if(n<0) return false; var r=Math.round(Math.sqrt(n)); return r*r===n; }
+
+/* =========================================================================
+   THE SEAM TYPES. One table, read by the sorting line, the recognition gate
+   and the assay office, so those three can never disagree (VERIFICATION s33).
+   ========================================================================= */
+MF.SEAMS = {
+  common: {name:'Common Vein',      short:'shared lump',        cls:'common',
+           tell:'Every term carries the same lump of ore. Pull it out in front.'},
+  twin:   {name:'Twin Seam',        short:'a² − b²', cls:'twin',
+           tell:'Two perfect squares, one taken away from the other, and no middle term at all.'},
+  simple: {name:'Simple Trinomial', short:'x² + bx + c',   cls:'simple',
+           tell:'One x² with nothing in front. Two numbers that multiply to c and add to b.'},
+  loaded: {name:'Loaded Trinomial', short:'ax² + bx + c',  cls:'loaded',
+           tell:'Something sits in front of the x². The pair you hunt now multiplies to a·c.'},
+  solid:  {name:'Solid Rock',       short:'no integer seam',    cls:'solid',
+           tell:'No seam runs through it on integer lines. That is a finding, not a failure.'}
+};
+
+/* =========================================================================
+   THE FACTOR ENGINE.
+   Every factorisation displayed anywhere on this site comes from here.
+   Nothing that shows a factorisation is allowed to compute one of its own.
+   ========================================================================= */
+function reduceFrac(n,d){ var s=(d<0?-1:1); n*=s; d*=s; var g=gcd(n,d)||1; if(g===0) g=1; return {n:n/g, d:d/g}; }
+
+MF.factorQuadratic = function(a,b,c){
+  var res = {a:a,b:b,c:c, kind:null, g:1, factors:null, note:null};
+  /* Depth 5 lets a student nudge c onto a half. Every routine below this line
+     assumes whole numbers - gcd on 0.5 returns 0.5 and would then report a
+     "Common Vein" that does not exist. So decimals are answered honestly and
+     early: no integer seam, and here is where the real one actually runs. */
+  if(!isInt(a) || !isInt(b) || !isInt(c)){
+    res.kind='solid'; res.nonInteger=true;
+    var d = b*b - 4*a*c;
+    res.disc = d;
+    if(a!==0 && d>0) res.realRoots = [(-b+Math.sqrt(d))/(2*a), (-b-Math.sqrt(d))/(2*a)];
+    return res;
+  }
+  if(a===0){                                   /* linear: 6x + 15 */
+    var gl = gcdAll([b,c]) || 1;
+    if(b<0) gl = -gl;
+    res.linear = true;
+    res.g = gl;
+    res.kind = (Math.abs(gl)>1) ? 'common' : 'solid';
+    res.factors = [[b/gl, c/gl]];
+    return res;
+  }
+  var g = gcdAll([a,b,c]) || 1;
+  if(a<0) g = -g;                              /* keep the leading coefficient positive */
+  var A=a/g, B=b/g, C=c/g;
+  res.g=g; res.A=A; res.B=B; res.C=C;
+  var disc = B*B - 4*A*C;
+  res.disc = disc;
+
+  if(isSquare(disc)){
+    var s = Math.round(Math.sqrt(disc));
+    var f1 = reduceFrac(-B + s, 2*A);          /* root 1 as a fraction */
+    var f2 = reduceFrac(-B - s, 2*A);          /* root 2 as a fraction */
+    res.factors = [[f1.d, -f1.n], [f2.d, -f2.n]];
+    res.roots = [f1, f2];
+    /* A twin seam is TWO SQUARES with a minus between them and no middle term.
+       It is NOT "A must be 1" - 4x^2 - 25 is (2x+5)(2x-5) and is a twin seam.
+       Getting this wrong would have taught a false tell on the sorting line. */
+    if(B===0 && C<0 && isSquare(A) && isSquare(-C))  res.kind='twin';
+    else if(A===1)                                    res.kind='simple';
+    else                                              res.kind='loaded';
+    /* A missing constant term means every term still carries an x.
+       x^2 + x is a COMMON VEIN before it is anything else, and so is 3x^2 + 12x. */
+    if(C===0) res.kind='common';
+    /* And so is 12x^2 - 75. The core of it IS a twin seam - but a miner's
+       first move is the shared lump, and the sorting line has to name the
+       move you make FIRST or it is teaching the wrong order.
+       (Caught by MF.validate(); the engine was classifying the core instead
+       of the piece in front of the student.) */
+    if(Math.abs(g)!==1){ res.hasCommon = true; res.coreKind = res.kind; res.kind = 'common'; }
+    if(A===1 && res.kind!=='common'){ res.p = -f1.n/f1.d; res.q = -f2.n/f2.d; }
+  } else {
+    res.kind = (Math.abs(g)!==1) ? 'common' : 'solid';
+    res.irreducibleCore = true;
+    if(disc>0){ res.realRoots = [(-B+Math.sqrt(disc))/(2*A), (-B-Math.sqrt(disc))/(2*A)]; }
+  }
+  return res;
+};
+
+/* readable factorisation string, straight off the engine result */
+MF.factorString = function(res){
+  if(!res || !res.factors) return null;
+  var lead = (res.g === -1) ? '−' : (res.g !== 1 ? num(res.g) : '');
+  /* a bare x factor is written as x, not as (x) - the brackets would be noise */
+  var parts = res.factors.map(function(f){
+    if(f[1] === 0) return (f[0]===1 ? 'x' : (f[0]===-1 ? '−x' : num(f[0])+'x'));
+    return '(' + linear(f[0], f[1]) + ')';
+  });
+  /* (x+p)(x+p) prints as (x+p)^2 - shorter and truer */
+  if(res.factors.length===2 && parts[0]===parts[1] && parts[0].charAt(0)==='('){
+    return lead + parts[0] + '<sup>2</sup>';
+  }
+  return lead + parts.join('');
+};
+
+/* expand a factor result back out - used by every "check by multiplying" surface */
+MF.expand = function(res){
+  if(!res.factors) return null;
+  if(res.linear){ return {a:0, b:res.g*res.factors[0][0], c:res.g*res.factors[0][1]}; }
+  var f1=res.factors[0], f2=res.factors[1];
+  return { a: res.g*f1[0]*f2[0], b: res.g*(f1[0]*f2[1] + f1[1]*f2[0]), c: res.g*f1[1]*f2[1] };
+};
+
+/* =========================================================================
+   MR FACTOR. Drawn, not photographed. Helmet lamp, beard, pick.
+   ========================================================================= */
+MF.art = function(size, opts){
+  opts = opts || {};
+  var s = S('svg', {viewBox:'0 0 100 122', width:size, height:Math.round(size*1.22),
+                    role:'img', 'aria-label':'Mr Factor, a miner with a helmet lamp and a pick'});
+  function p(d, fill, extra){ var n=S('path',{d:d, fill:fill}); if(extra){ for(var k in extra) n.setAttribute(k,extra[k]); } s.appendChild(n); return n; }
+  /* lamp glow */
+  if(!opts.flat){
+    var glow=S('ellipse',{cx:50, cy:20, rx:34, ry:17, fill:'#E8A33D', opacity:'0.20'});
+    s.appendChild(glow);
+  }
+  /* pick handle + head */
+  p('M74 40 L92 104 L85 107 L67 43 Z', '#8A6A45');
+  p('M62 34 q14 -9 28 -1 q-13 4 -14 12 q-6 -9 -14 -11 Z', '#7C838A');
+  /* boots */
+  p('M28 108 h16 v10 H24 q0 -10 4 -10 Z', '#3A3129');
+  p('M56 108 h16 q4 0 4 10 H56 Z', '#3A3129');
+  /* overalls */
+  p('M30 58 h40 q4 0 4 8 v44 H26 V66 q0 -8 4 -8 Z', '#2F5D82');
+  /* strap + buckle */
+  p('M36 58 h8 v-9 h-8 Z', '#2F5D82');
+  p('M56 58 h8 v-9 h-8 Z', '#2F5D82');
+  s.appendChild(S('rect',{x:'34', y:'72', width:'32', height:'20', rx:'3', fill:'#26506F'}));
+  /* arms */
+  p('M26 62 q-9 6 -8 20 l8 2 q0 -12 6 -16 Z', '#C96A1F');
+  p('M74 62 q9 4 10 14 l-8 3 q-1 -9 -6 -12 Z', '#C96A1F');
+  /* neck + head */
+  p('M42 40 h16 v12 H42 Z', '#E8B98F');
+  s.appendChild(S('circle',{cx:'50', cy:'32', r:'17', fill:'#F0C79E'}));
+  /* beard */
+  p('M34 33 q3 22 16 22 q13 0 16 -22 q-16 9 -32 0 Z', '#6B5442');
+  /* eyes */
+  s.appendChild(S('circle',{cx:'44', cy:'29', r:'2.4', fill:'#2A2119'}));
+  s.appendChild(S('circle',{cx:'57', cy:'29', r:'2.4', fill:'#2A2119'}));
+  /* helmet */
+  p('M31 26 q3 -20 19 -20 q16 0 19 20 Z', '#C96A1F');
+  s.appendChild(S('rect',{x:'27', y:'25', width:'46', height:'6', rx:'3', fill:'#A5520F'}));
+  /* lamp */
+  s.appendChild(S('circle',{cx:'50', cy:'12', r:'5.4', fill:'#FFE4A8', stroke:'#8F4712', 'stroke-width':'2'}));
+  return s;
+};
+/* Mr Factor with something to say. Never states an answer the student owes. */
+MF.says = function(html, size){
+  var w = E('div','mf');
+  w.appendChild(MF.art(size||58));
+  w.appendChild(H('div','bubble', html));
+  return w;
+};
+
+/* =========================================================================
+   AMBIENT. Dust at the threshold of notice. Carries no information.
+   ========================================================================= */
+MF.ambient = function(){
+  var host = q('#ambient');
+  if(window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches) return 0;
+  var n = 26;
+  for(var i=0;i<n;i++){
+    var d = E('div','mote');
+    var sz = 2 + (i%4);
+    d.style.width = sz+'px'; d.style.height = sz+'px';
+    d.style.left = ((i*37)%100) + '%';
+    d.style.top  = (100 + (i*7)%40) + '%';
+    d.style.animationDuration = (26 + (i%9)*4) + 's';
+    d.style.animationDelay = (-(i*3)) + 's';
+    d.style.opacity = (0.08 + (i%3)*0.012).toFixed(3);
+    host.appendChild(d);
+  }
+  return n;
+};
+
+/* =========================================================================
+   DESCRIBED PROGRESS. No score, no percentage, no level-up.
+   Each depth keeps a list of sentences about what the student DID.
+   ========================================================================= */
+MF.logs = {};
+MF.note = function(depthId, sentence){
+  if(!MF.logs[depthId]) MF.logs[depthId] = [];
+  MF.logs[depthId].push(sentence);
+  var ul = q('#log-'+depthId);
+  if(ul){
+    ul.parentNode.style.display='';
+    var li = E('li', null, sentence);
+    ul.appendChild(li);
+  }
+};
+
+/* deterministic option ordering.
+   The correct option landed first in every item of the sister site's first
+   build; a student could score full marks without reading. So the correct
+   slot is ASSIGNED from a hash of the item id, not drawn. */
+function hash(str){ var h=2166136261; for(var i=0;i<str.length;i++){ h^=str.charCodeAt(i); h=Math.imul(h,16777619); } return (h>>>0); }
+function balancedOrder(id, options){
+  var n = options.length;
+  var correct = options.filter(function(o){ return o.ok; });
+  var wrong   = options.filter(function(o){ return !o.ok; });
+  var slot = hash(id) % n;
+  var h = hash(id+'|w');
+  wrong = wrong.slice().sort(function(a,b){ return (hash(id+a.html)%997) - (hash(id+b.html)%997); });
+  var out = [], wi = 0;
+  for(var i=0;i<n;i++){
+    if(i===slot && correct.length) out.push(correct.shift());
+    else out.push(wrong[wi++]);
+  }
+  /* if more than one correct option existed, append leftovers rather than drop them */
+  while(correct.length) out.push(correct.shift());
+  return out.filter(Boolean);
+}
+
+/* A choice task. Feedback DESCRIBES what the chosen value would mean.
+   Retries are free and are not counted against anybody. */
+function taskChoice(host, spec){
+  var box = E('div','task');
+  box.appendChild(H('div','eq sm', spec.prompt));
+  if(spec.sub) box.appendChild(H('div','hint', spec.sub));
+  var wrap = E('div','choices');
+  var answered = false;
+  balancedOrder(spec.id, spec.options).forEach(function(o){
+    var b = H('button','choice', o.html + '<span class="why">' + (o.why||'') + '</span>');
+    b.type='button';
+    on(b,'click',function(){
+      b.setAttribute('data-result', o.ok ? 'yes' : 'no');
+      if(o.ok){
+        Array.prototype.forEach.call(wrap.children, function(c){ if(c!==b) c.removeAttribute('data-result'); });
+        if(!answered){
+          MF.note(spec.depth, answered===false && !box.dataset.retried
+            ? spec.doneFirst : spec.doneLater || spec.doneFirst);
+          answered = true;
+        }
+        if(spec.after) spec.after(box);
+      } else {
+        box.dataset.retried = '1';
+      }
+    });
+    wrap.appendChild(b);
+  });
+  box.appendChild(wrap);
+  host.appendChild(box);
+  return box;
+}
+
+/* =========================================================================
+   THE DEPTHS
+   ========================================================================= */
+MF.DEPTHS = [
+  {id:'d0', tag:'SURFACE', n:'0', title:'The Surface Cut',
+   seam:'One lump of ore, shared out',
+   lede:'Before anything comes apart, watch it go together. A rectangle of rock has a height and a width. Cut the width in two and you have not changed the rock — you have only described it twice. That is the whole distributive property, and every seam deeper down is this one move running backwards.',
+   playTitle:'Cut the rock and watch the area',
+   playHint:'Nothing to answer here. Drag anything you like. The picture updates as you move.',
+   workTitle:'Working face — sharing out and pulling back'},
+
+  {id:'d1', tag:'ASSAY', n:'1', title:'The Assay Bench',
+   seam:'A vein is a factor, and it was there before you arrived',
+   lede:'Pick any number. Its factor pairs are not invented by you — they were in the number already. Two miners starting at different faces, following the same rock, end at the same ore. That is why 72 always comes apart into 2·2·2·3·3, whichever split you cut first.',
+   playTitle:'Assay any number',
+   playHint:'Slide, type, or click a pair to open a shaft. No question is being asked.',
+   workTitle:'Working face — solid rock, and pairs that carry a sum'},
+
+  {id:'d2', tag:'SMELTER', n:'2', title:'The Smelter',
+   seam:'Two ingots melted into one lump',
+   lede:'Here two binomials go INTO the furnace and a trinomial comes out. Watch which parts of the answer come from where — because when you factor, you will be running this furnace backwards, and you cannot reverse a machine you have never seen forwards.',
+   playTitle:'Melt (x + p)(x + q) and watch the trinomial form',
+   playHint:'Move p and q. Switch the step to decimals and watch what happens to the seam.',
+   workTitle:'Working face — where did each part come from?'},
+
+  {id:'d3', tag:'SORTING', n:'3', title:'The Sorting Line',
+   seam:'Name the seam before you swing the pick',
+   lede:'Every lump that comes up the shaft is one of five kinds. Naming which one you are holding is not a formality — it decides the tool. This is the one place the mine asks you to commit before you calculate, because a commitment is the only thing you can later catch yourself out on.',
+   playTitle:'Run the conveyor and watch how each kind is told apart',
+   playHint:'Step through as many as you like. Nothing is being marked.',
+   workTitle:'Working face — call the seam'},
+
+  {id:'d4', tag:'SPLIT SEAM', n:'4', title:'The Split Seam',
+   seam:'x² + bx + c — find the pair that multiplies AND adds',
+   lede:'The furnace ran forwards at depth 2: p and q went in, p·q and p+q came out. Run it backwards. You are handed the product and the sum, and asked for the pair. The scanner will walk every pair for you until you want to stop watching and start calling them.',
+   playTitle:'Run the vein scanner',
+   playHint:'Watch it walk the pairs. Change c and b and see which pairs survive.',
+   workTitle:'Working face — call the pair, then check by multiplying back'},
+
+  {id:'d5', tag:'DEEP SEAM', n:'5', title:'The Deep Seam',
+   seam:'ax² + bx + c — the loaded cart',
+   lede:'Something now sits in front of the x², and the old trick misses. The pair you hunt no longer multiplies to c — it multiplies to a·c, and it is used to cut the middle vein in two so the rock comes apart in halves you can already handle.',
+   playTitle:'Load the cart and find the ac-pair',
+   playHint:'Shift a, b and c. The assay lamp tells you whether an integer seam exists at all.',
+   workTitle:'Working face — split the middle, then group'},
+
+  {id:'d6', tag:'ASSAY OFFICE', n:'6', title:'The Assay Office',
+   seam:'Bring in anything and have it assayed',
+   lede:'Type any number or any expression up to x². The office will name the seam, work it, draw it, and check it by multiplying back — every step from the same engine the rest of the mine runs on. This is the open face: bring your homework, bring a guess, bring something you think is unbreakable.',
+   playTitle:'Bring your own rock',
+   playHint:'Try 84, or x^2-5x+6, or 6x^2+7x-3, or x^2+4, or x^2-2.',
+   workTitle:'Working face — the mine’s own challenge pieces'}
+];
+
+MF.buildDepth = function(def){
+  var sec = q('#'+def.id);
+  sec.setAttribute('aria-labelledby', 'h-'+def.id);
+
+  var head = E('div','depth-head');
+  var badge = E('div','depth-num');
+  badge.appendChild(E('small',null,'DEPTH'));
+  badge.appendChild(E('b',null,def.n));
+  head.appendChild(badge);
+  var ht = E('div');
+  var h2 = E('h2',null,def.title); h2.id='h-'+def.id;
+  ht.appendChild(h2);
+  ht.appendChild(H('div','seam-line', '&#9679; ' + def.seam));
+  head.appendChild(ht);
+  sec.appendChild(head);
+  sec.appendChild(H('p','lede', def.lede));
+
+  /* ---- PLAY: always open, no questions, no gate ---- */
+  var play = E('section','panel play');
+  play.appendChild(E('div','panel-tag','PLAY FIRST'));
+  play.appendChild(E('h3',null,def.playTitle));
+  play.appendChild(H('p','hint', def.playHint));
+  var playHost = E('div','play-host'); playHost.id = 'play-'+def.id;
+  play.appendChild(playHost);
+  sec.appendChild(play);
+
+  /* ---- WORK: opens because the student says so, never because they earned it ---- */
+  var toggle = H('button','work-toggle',
+    '<span class="pick">&#9935;</span><span><b>' + def.workTitle + '</b><br>' +
+    '<span class="hint">Open it when you want to. Closing it again costs nothing, and nothing here is scored.</span></span>');
+  toggle.type='button';
+  toggle.setAttribute('aria-expanded','false');
+  var work = E('div','work-body');
+  work.id = 'work-'+def.id;
+  /* the relationship was DOM adjacency only - fine for a sighted mouse user,
+     nothing at all for a screen reader */
+  toggle.setAttribute('aria-controls', work.id);
+  var built = false;
+  on(toggle,'click',function(){
+    var open = work.classList.toggle('open');
+    toggle.setAttribute('aria-expanded', open?'true':'false');
+    if(open && !built){ built = true; MF.WORK[def.id](work); }
+  });
+  sec.appendChild(toggle);
+  sec.appendChild(work);
+
+  /* ---- described progress, hidden until there is something to describe ---- */
+  var logWrap = E('div','panel');
+  logWrap.style.display='none';
+  logWrap.appendChild(H('div','panel-tag','SHIFT REPORT'));
+  logWrap.appendChild(H('p','hint','What you did at this depth. No score, no percentage &mdash; this is a description of the work, and the order you did it in.'));
+  var ul = E('ul','log'); ul.id='log-'+def.id;
+  logWrap.appendChild(ul);
+  sec.appendChild(logWrap);
+
+  MF.PLAY[def.id](playHost);
+};
+
+MF.PLAY = {};
+MF.WORK = {};
+
+/* =========================================================================
+   THE AREA MODEL.
+   Shared by depths 0, 2, 4 and 5 so they cannot draw the same idea
+   differently (VERIFICATION s33 - one fact, one place).
+
+   THE RULE THAT MATTERS (philosophy s2.2): the model draws what the problem
+   GIVES. When sides are unknown, the tiles are drawn and the SIDES are left
+   blank - which asks the question rather than answering it. It must never
+   silently print a value the student is supposed to produce.
+   ========================================================================= */
+MF.areaModel = function(host, o){
+  /* o: {rows:[{label,val}], cols:[{label,val}], cells:[[html,..]], sideMode:'show'|'ask',
+        cellTint:[[...]], caption}
+
+     THIS FUNCTION APPENDS. IT DOES NOT OWN ITS HOST.
+     It used to open with host.innerHTML='' so the slider panels could redraw
+     cheaply. Two of its six call sites pass a container that already holds
+     authored content - the Step 3 "check it by melting it back" text, and the
+     whole SEAM CALLED verdict in the assay office - and both were being wiped
+     the instant a picture was drawn into them. Every DOM check still passed,
+     because what remained was plentiful and looked deliberate.
+     Callers that redraw now clear their OWN dedicated container. */
+  var stage = E('div','stage');
+  /* VH, not H. H is the global HTML-builder helper, and naming the height H
+     here shadowed it - so the moment this function called H() for the caption
+     it invoked a number, threw inside MF.buildDepth, and aborted the boot loop:
+     depths 1-6 rendered as empty rules. Three correct edits, one collision,
+     and it was visible only in a screenshot (VERIFICATION s13, s17). */
+  var W=430, VH=268, padL=74, padT=52, cw=(W-padL-14)/o.cols.length, ch=(VH-padT-16)/o.rows.length;
+  var svg = S('svg',{viewBox:'0 0 '+W+' '+VH, width:W, height:VH});
+  svg.setAttribute('role','img');
+  var tints = {sq:'var(--tile-sq)', x:'var(--tile-x)', k:'var(--tile-k)', void:'var(--void)'};
+  var inks  = {sq:'var(--tile-sq-ink)', x:'var(--tile-x-ink)', k:'var(--tile-k-ink)', void:'var(--ink-soft)'};
+
+  o.rows.forEach(function(r,ri){
+    o.cols.forEach(function(c,ci){
+      var cell = o.cells[ri][ci];
+      var x = padL + ci*cw, y = padT + ri*ch;
+      var kind = cell.kind || 'k';
+      var rect = S('rect',{x:x, y:y, width:cw-3, height:ch-3, rx:5,
+        fill:tints[kind], stroke:'rgba(0,0,0,.16)', 'stroke-width':1});
+      if(cell.negative){ rect.setAttribute('stroke-dasharray','6 4'); rect.setAttribute('fill', 'var(--void)'); }
+      svg.appendChild(rect);
+      var t = S('text',{x:x+(cw-3)/2, y:y+(ch-3)/2+7, 'text-anchor':'middle',
+        'font-family':"'Black Han Sans','Arial Black',Impact,sans-serif", 'font-size':21, fill:inks[kind]});
+      t.textContent = cell.text;
+      svg.appendChild(t);
+    });
+  });
+
+  /* side labels. 'ask' draws the slot and leaves it empty ON PURPOSE, with a
+     visible question mark, so the surface asks rather than looking broken. */
+  o.cols.forEach(function(c,ci){
+    var x = padL + ci*cw + (cw-3)/2;
+    var known = (o.sideMode==='show' || c.known);
+    var t = S('text',{x:x, y:padT-18, 'text-anchor':'middle',
+      'font-family':"'Black Han Sans','Arial Black',Impact,sans-serif", 'font-size':20,
+      fill: known ? 'var(--ink)' : 'var(--ore-t)'});
+    t.textContent = known ? c.label : '?';
+    svg.appendChild(t);
+    svg.appendChild(S('line',{x1:padL+ci*cw, y1:padT-10, x2:padL+ci*cw+cw-3, y2:padT-10,
+      stroke: known?'var(--tan)':'var(--ore)', 'stroke-width':3, 'stroke-dasharray': known?'':'5 4'}));
+  });
+  o.rows.forEach(function(r,ri){
+    var y = padT + ri*ch + (ch-3)/2 + 6;
+    var known = (o.sideMode==='show' || r.known);
+    var t = S('text',{x:padL-16, y:y, 'text-anchor':'end',
+      'font-family':"'Black Han Sans','Arial Black',Impact,sans-serif", 'font-size':20,
+      fill: known ? 'var(--ink)' : 'var(--ore-t)'});
+    t.textContent = known ? r.label : '?';
+    svg.appendChild(t);
+    svg.appendChild(S('line',{x1:padL-8, y1:padT+ri*ch, x2:padL-8, y2:padT+ri*ch+ch-3,
+      stroke: known?'var(--tan)':'var(--ore)', 'stroke-width':3, 'stroke-dasharray': known?'':'5 4'}));
+  });
+
+  /* The caption is HTML, not an SVG <text>. As SVG it was centred on a 430-wide
+     viewBox, so any sentence longer than the box was clipped at BOTH ENDS -
+     "The two sides are given" rendered as "he two sides are given". Nothing in
+     the DOM or the computed style showed this; it was only visible in pixels. */
+  svg.setAttribute('aria-label', o.a11y || o.caption || 'area model');
+  svg.setAttribute('width','100%');
+  svg.removeAttribute('height');
+  stage.appendChild(svg);
+  if(o.caption) stage.appendChild(H('div','model-cap', o.caption));
+  host.appendChild(stage);
+  return svg;
+};
+
+/* =========================================================================
+   DEPTH 0 - THE SURFACE CUT
+   ========================================================================= */
+MF.PLAY.d0 = function(host){
+  var st = {mode:'num', a:3, b:4, c:5};
+  var ctrls = E('div','controls');
+
+  var modeSeg = E('div','seg');
+  [['num','Plain numbers'],['x','With an x in it']].forEach(function(m){
+    var b=E('button',null,m[1]); b.type='button';
+    b.setAttribute('aria-pressed', st.mode===m[0]?'true':'false');
+    on(b,'click',function(){
+      st.mode=m[0];
+      Array.prototype.forEach.call(modeSeg.children,function(c){ c.setAttribute('aria-pressed','false'); });
+      b.setAttribute('aria-pressed','true'); draw();
+    });
+    modeSeg.appendChild(b);
+  });
+  var segWrap = E('div','ctl'); segWrap.appendChild(H('label',null,'What is in the rock'));
+  segWrap.appendChild(modeSeg); ctrls.appendChild(segWrap);
+
+  function slider(key, label, min, max, step){
+    var w=E('div','ctl');
+    var lab=E('label',null,label); w.appendChild(lab);
+    var v=E('div','val'); w.appendChild(v);
+    var r=document.createElement('input');
+    r.type='range'; r.min=min; r.max=max; r.step=step; r.value=st[key];
+    r.setAttribute('aria-label', label);
+    on(r,'input',function(){ st[key]=parseFloat(r.value); v.textContent=num(st[key]); draw(); });
+    v.textContent = num(st[key]);
+    w.appendChild(r); ctrls.appendChild(w);
+    return w;
+  }
+  slider('a','Height of the cut (a)',1,9,1);
+  var bw = slider('b','First piece (b)',1,9,1);
+  slider('c','Second piece (c)',1,9,1);
+  host.appendChild(ctrls);
+
+  var stageHost = E('div'); host.appendChild(stageHost);
+  var eq = E('div','eq'); host.appendChild(eq);
+  var readout = E('div','readout'); host.appendChild(readout);
+  host.appendChild(MF.says('<b>Mr Factor:</b> Cutting the width in two does not change how much rock there is. ' +
+    'It only lets you describe the same rock in two pieces. Everything deeper in this mine is that sentence, said backwards.'));
+
+  function draw(){
+    var a=st.a, b=st.b, c=st.c;
+    var isX = (st.mode==='x');
+    bw.style.display = isX ? 'none' : '';
+    var firstLabel = isX ? 'x' : num(b);
+    var cell1 = isX ? {kind:'x', text:num(a)+'x'} : {kind:'k', text:num(a*b)};
+    var cell2 = {kind:'k', text:num(a*c)};
+    stageHost.innerHTML='';                     /* this panel owns this container */
+    MF.areaModel(stageHost, {
+      rows:[{label:num(a)}],
+      cols:[{label:firstLabel},{label:num(c)}],
+      cells:[[cell1, cell2]],
+      sideMode:'show',
+      caption:'The two sides are given. The area of each piece follows from them.',
+      a11y:'A rectangle of height '+num(a)+' cut into a piece of width '+firstLabel+' and a piece of width '+num(c)+'.'
+    });
+    if(isX){
+      eq.innerHTML = '<span class="hi3">'+num(a)+'</span>( x + <span class="hi2">'+num(c)+'</span> )'
+        + ' <span class="op">=</span> <span class="hi">'+num(a)+'x</span> <span class="op">+</span> <span class="hi2">'+num(a*c)+'</span>';
+      readout.innerHTML = '';
+      [['one side', num(a)],['other side','x + '+num(c)],['piece 1', num(a)+'x'],['piece 2', num(a*c)]]
+        .forEach(function(r){ readout.appendChild(H('div','card','<div class="k">'+r[0]+'</div><div class="v">'+r[1]+'</div>')); });
+    } else {
+      eq.innerHTML = '<span class="hi3">'+num(a)+'</span>( <span class="hi">'+num(b)+'</span> + <span class="hi2">'+num(c)+'</span> )'
+        + ' <span class="op">=</span> <span class="hi">'+num(a*b)+'</span> <span class="op">+</span> <span class="hi2">'+num(a*c)+'</span>'
+        + ' <span class="op">=</span> ' + num(a*(b+c));
+      readout.innerHTML='';
+      [['whole width', num(b+c)],['whole area', num(a*(b+c))],['piece 1', num(a*b)],['piece 2', num(a*c)]]
+        .forEach(function(r){ readout.appendChild(H('div','card','<div class="k">'+r[0]+'</div><div class="v">'+r[1]+'</div>')); });
+    }
+  }
+  draw();
+};
+
+MF.WORK.d0 = function(host){
+  host.appendChild(H('p','hint','Four pieces. Choose, and the mine will tell you what your choice would have meant &mdash; then choose again if you want. Changing your mind is what the shift report calls "re-cut", and it is not held against you.'));
+
+  taskChoice(host, {depth:'d0', id:'d0-t1',
+    prompt:'Share this out: <b>4(x + 3)</b>',
+    options:[
+      {ok:true,  html:'4x + 12', why:'Both pieces got the 4. That is the whole cut.'},
+      {ok:false, html:'4x + 3',  why:'The 4 reached the x and stopped. The second piece is still sitting there un-multiplied &mdash; a cut that only went half way across the rock.'},
+      {ok:false, html:'7x',      why:'That adds 4 and 3. But 4 is a height and 3 is a width; they are not the same kind of thing, so they do not go together.'},
+      {ok:false, html:'4x + 34', why:'The 4 and the 3 were written next to each other rather than multiplied.'}
+    ],
+    doneFirst:'Depth 0: shared 4(x + 3) out across both pieces.',
+    doneLater:'Depth 0: re-cut 4(x + 3) and got both pieces the second time.'});
+
+  taskChoice(host, {depth:'d0', id:'d0-t2',
+    prompt:'Now backwards. Pull the shared lump out of <b>6x + 15</b>',
+    sub:'Both terms were made by multiplying by the same thing. What is the biggest thing they both carry?',
+    options:[
+      {ok:true,  html:'3(2x + 5)', why:'3 is the biggest lump both 6 and 15 carry, and 2x and 5 carry nothing more in common. The seam is worked out.'},
+      {ok:false, html:'3(2x + 15)', why:'The 6 was divided by 3 and the 15 was carried through untouched. Multiply it back: 3(2x + 15) is 6x + 45.'},
+      {ok:false, html:'6(x + 15)',  why:'The 6 came out of the first term only. Multiply back and the second piece becomes 90.'},
+      {ok:false, html:'2(3x + 7.5)', why:'This one is TRUE &mdash; multiply it back and you do get 6x + 15. But 2 is not a lump that 15 carries, so the bracket falls off the integers. The common vein is the biggest lump EVERY term shares.'}
+    ],
+    doneFirst:'Depth 0: pulled the shared lump out of 6x + 15.',
+    doneLater:'Depth 0: worked 6x + 15 more than once before the lump came out whole.'});
+
+  taskChoice(host, {depth:'d0', id:'d0-t3',
+    prompt:'What can be pulled out of <b>5x + 12</b>?',
+    options:[
+      {ok:true,  html:'Nothing. There is no lump both terms carry.', why:'5 is prime and 12 is not a multiple of it. No shared vein runs through this one &mdash; which is a finding, not a dead end.'},
+      {ok:false, html:'5', why:'5 does not divide 12. Pulling it out would leave 12/5 in the bracket, which is not a whole lump of ore.'},
+      {ok:false, html:'x', why:'The 12 has no x in it. A lump has to be in every term to come out in front.'},
+      {ok:false, html:'17', why:'17 is 5 + 12. Adding the two terms is not the same as finding what they share.'}
+    ],
+    doneFirst:'Depth 0: found a piece with no shared vein and said so.',
+    doneLater:'Depth 0: settled that 5x + 12 has no shared vein.'});
+
+  taskChoice(host, {depth:'d0', id:'d0-t4',
+    prompt:'Which rectangle has area <b>7x + 21</b>?',
+    sub:'Think of the area model at the top of this depth: the two sides multiply to give the area.',
+    options:[
+      {ok:true,  html:'Sides of 7 and (x + 3)', why:'7 &times; x is 7x, and 7 &times; 3 is 21. Both pieces check out.'},
+      {ok:false, html:'Sides of 7 and (x + 21)', why:'That rectangle has area 7x + 147. The 21 was left as it was instead of being divided by the side you pulled out.'},
+      {ok:false, html:'Sides of 3 and (x + 7)',  why:'That is 3x + 21. The first piece does not match &mdash; you have the right area on one tile and the wrong one on the other.'},
+      {ok:false, html:'Sides of x and (7 + 21)', why:'That is x &times; 28, which is 28x. There is no plain number left over at all, and 7x + 21 has one.'}
+    ],
+    doneFirst:'Depth 0: matched 7x + 21 to a rectangle with sides 7 and (x + 3).',
+    doneLater:'Depth 0: tried more than one rectangle for 7x + 21 before the sides matched.'});
+};
+
+/* =========================================================================
+   DEPTH 1 - THE ASSAY BENCH
+   ========================================================================= */
+MF.PLAY.d1 = function(host){
+  var st = {n:72, shaftA:null, shaftB:null};
+  var ctrls = E('div','controls');
+
+  var w = E('div','ctl');
+  w.appendChild(H('label',null,'The number on the bench'));
+  var val = E('div','val', String(st.n)); w.appendChild(val);
+  var r = document.createElement('input');
+  r.type='range'; r.min=2; r.max=144; r.step=1; r.value=st.n; r.setAttribute('aria-label','Number to assay');
+  w.appendChild(r);
+  ctrls.appendChild(w);
+
+  var w2 = E('div','ctl');
+  w2.appendChild(H('label',null,'or type one (2 to 9999)'));
+  var box = document.createElement('input');
+  box.type='number'; box.min=2; box.max=9999; box.value=st.n; box.setAttribute('aria-label','Type a number to assay');
+  w2.appendChild(box); ctrls.appendChild(w2);
+  host.appendChild(ctrls);
+
+  var out = E('div'); host.appendChild(out);
+
+  on(r,'input',function(){ setN(parseInt(r.value,10)); });
+  on(box,'input',function(){
+    var v = parseInt(box.value,10);
+    if(isFinite(v) && v>=2 && v<=9999) setN(v, true);
+  });
+  function setN(v, fromBox){
+    st.n=v; st.shaftA=null; st.shaftB=null;
+    val.textContent=String(v);
+    if(!fromBox) box.value=v;
+    if(v<=144) r.value=v;
+    draw();
+  }
+
+  function draw(){
+    out.innerHTML='';
+    var n = st.n;
+    var pairs = factorPairs(n);
+    var prime = isPrime(n);
+
+    /* the lamp row - what the number is, said plainly */
+    var meter = E('div','meter ' + (prime?'cloudy':'clean'));
+    meter.appendChild(E('div','lampdot'));
+    meter.appendChild(H('div','m-txt', prime
+      ? '<b>' + n + ' is solid rock.</b> Its only pair is 1 &times; ' + n + '. Nothing runs through it &mdash; that is what a prime is, and it is a property of the number, not a failure of your digging.'
+      : '<b>' + n + ' comes apart.</b> ' + pairs.length + ' pair' + (pairs.length===1?'':'s') +
+        ' of factors run through it, and every one of them was in the number before you looked.'));
+    out.appendChild(meter);
+
+    /* divisibility lamps - assay tests */
+    var tests = [[2,'ends in an even digit'],[3,'digits add to a multiple of 3'],[4,'last two digits divide by 4'],
+                 [5,'ends in 0 or 5'],[9,'digits add to a multiple of 9'],[10,'ends in 0']];
+    var chips = E('div','chips');
+    chips.appendChild(H('span','chip sml','<b>Assay tests:</b>'));
+    tests.forEach(function(t){
+      var ok = (n % t[0] === 0);
+      var c = H('span','chip sml', (ok?'✓ ':'✕ ') + 'by ' + t[0]);
+      c.style.borderColor = ok ? 'var(--vein)' : 'var(--rule)';
+      c.style.color = ok ? 'var(--vein)' : 'var(--ink-soft)';
+      c.title = t[1];
+      chips.appendChild(c);
+    });
+    out.appendChild(chips);
+
+    /* factor pair table - clicking one opens a shaft */
+    var grid = E('div'); grid.style.display='flex'; grid.style.gap='24px'; grid.style.flexWrap='wrap';
+    var left = E('div');
+    left.appendChild(H('div','hint','<b>Every pair in ' + n + '.</b> Click one to sink a shaft there.'));
+    var tbl = E('table','scan');
+    var thead = E('tr');
+    ['pair','product','sum'].forEach(function(h){ thead.appendChild(E('th',null,h)); });
+    tbl.appendChild(thead);
+    pairs.forEach(function(p){
+      var tr = E('tr');
+      var td0 = E('td', null, p[0] + ' × ' + p[1]);
+      var b = E('button','btn', 'sink shaft');
+      b.type='button';
+      /* no minHeight override here - .btn's 44px floor is a touch target, not decoration */
+      b.style.padding='6px 10px'; b.style.fontSize='13px'; b.style.marginLeft='8px';
+      if(p[0]===1){ b.disabled = true; b.textContent='1 is not a cut'; b.title='Every number has the 1 pair. It tells you nothing.'; }
+      on(b,'click',function(){
+        if(!st.shaftA) st.shaftA = p;
+        else if(!st.shaftB && (p[0]!==st.shaftA[0])) st.shaftB = p;
+        else { st.shaftA = p; st.shaftB = null; }
+        draw();
+      });
+      td0.appendChild(b);
+      tr.appendChild(td0);
+      tr.appendChild(E('td',null,String(n)));
+      tr.appendChild(E('td',null,String(p[0]+p[1])));
+      if((st.shaftA && st.shaftA[0]===p[0]) || (st.shaftB && st.shaftB[0]===p[0])) tr.className='hit';
+      tbl.appendChild(tr);
+    });
+    left.appendChild(tbl);
+    grid.appendChild(left);
+
+    var right = E('div'); right.style.flex='1 1 320px'; right.style.minWidth='300px';
+    right.appendChild(H('div','hint','<b>Two shafts, one seam.</b> Sink a shaft on two different pairs and watch where they both end up.'));
+    right.appendChild(shafts(n, st.shaftA, st.shaftB));
+    grid.appendChild(right);
+    out.appendChild(grid);
+
+    out.appendChild(H('div','eq sm', '<span class="dim">the seam under ' + n + ':</span> ' + primePowerString(n)));
+    out.appendChild(MF.says(prime
+      ? '<b>Mr Factor:</b> Solid rock is worth knowing. When you meet <b>x&sup2; + 4</b> further down, it will be this same answer wearing letters.'
+      : '<b>Mr Factor:</b> Sink two shafts from different faces. They meet. That is not luck &mdash; it is the reason a number has ONE seam under it, however you start cutting.', 52));
+  }
+
+  /* the two-shaft picture: two different first cuts, one prime seam */
+  function shafts(n, A, B){
+    var box = E('div','stage');
+    if(!A){
+      box.appendChild(H('div','hint','No shaft sunk yet. Pick a pair on the left &mdash; any pair, it does not matter which, and that is the point being made.'));
+      return box;
+    }
+    function tree(pair, title){
+      var d = E('div'); d.style.marginBottom='12px';
+      d.appendChild(H('div','hint','<b>'+title+'</b> &mdash; first cut at ' + pair[0] + ' × ' + pair[1]));
+      var chain = primeFactors(pair[0]).concat(primeFactors(pair[1])).sort(function(a,b){return a-b;});
+      var row = E('div','chips');
+      row.appendChild(H('span','chip sml', String(n)));
+      row.appendChild(H('span','chip sml','→'));
+      row.appendChild(H('span','chip sml', pair[0] + ' × ' + pair[1]));
+      row.appendChild(H('span','chip sml','→'));
+      chain.forEach(function(p,i){
+        var c = H('span','chip sml', String(p));
+        c.style.borderColor='var(--vein)'; c.style.color='var(--vein)';
+        row.appendChild(c);
+        if(i<chain.length-1) row.appendChild(H('span','chip sml','·'));
+      });
+      d.appendChild(row);
+      return {node:d, chain:chain};
+    }
+    var t1 = tree(A,'Shaft A');
+    box.appendChild(t1.node);
+    if(B){
+      var t2 = tree(B,'Shaft B');
+      box.appendChild(t2.node);
+      var same = t1.chain.join(',')===t2.chain.join(',');
+      var m = E('div','meter ' + (same?'clean':'cloudy'));
+      m.appendChild(E('div','lampdot'));
+      m.appendChild(H('div','m-txt', same
+        ? '<b>Same seam.</b> Two different first cuts, the same ore at the bottom. Nothing you choose at the top can change what is down there.'
+        : '<b>These do not match</b> &mdash; and if that ever happens, the arithmetic is wrong, because it cannot happen.'));
+      box.appendChild(m);
+    } else {
+      box.appendChild(H('div','hint','Now sink a second shaft on a <b>different</b> pair.'));
+    }
+    return box;
+  }
+  draw();
+};
+
+MF.WORK.d1 = function(host){
+  host.appendChild(H('p','hint','Two of these are about telling solid rock from ore. Two are the exact question depth 4 will ask you, in numbers you already trust.'));
+
+  taskChoice(host, {depth:'d1', id:'d1-t1',
+    prompt:'Which one of these is <b>solid rock</b> (prime)?',
+    sub:'Three of them come apart. One does not.',
+    options:[
+      {ok:true,  html:'97', why:'Nothing up to 9 divides it, and 10&sup2; is already past 97, so there is nowhere left for a factor to hide.'},
+      {ok:false, html:'51', why:'51 = 3 &times; 17. The digits add to 6, so the 3-test lights up.'},
+      {ok:false, html:'57', why:'57 = 3 &times; 19. Digits add to 12 &mdash; the 3-test again. Both of these look prime and are not.'},
+      {ok:false, html:'91', why:'91 = 7 &times; 13. No digit test catches this one, which is exactly why it fools people. You have to try 7.'}
+    ],
+    doneFirst:'Depth 1: picked out the prime from three lumps that look prime.',
+    doneLater:'Depth 1: tested more than one candidate before finding the prime.'});
+
+  taskChoice(host, {depth:'d1', id:'d1-t2',
+    prompt:'Two numbers multiply to <b>24</b> and add to <b>11</b>. Which pair?',
+    sub:'This is the depth 4 question with the letters taken off.',
+    options:[
+      {ok:true,  html:'3 and 8',  why:'3 &times; 8 = 24 and 3 + 8 = 11. Both conditions at once, which is what makes it the pair.'},
+      {ok:false, html:'4 and 6',  why:'4 &times; 6 = 24 &mdash; the product is right, but they add to 10, not 11. A pair has to satisfy both.'},
+      {ok:false, html:'2 and 12', why:'2 &times; 12 = 24, but they add to 14. Right seam, wrong depth along it.'},
+      {ok:false, html:'5 and 6',  why:'These add to 11, but multiply to 30. You matched the sum and lost the product.'}
+    ],
+    doneFirst:'Depth 1: found the pair with the right product AND the right sum.',
+    doneLater:'Depth 1: matched one condition before getting both at once.'});
+
+  taskChoice(host, {depth:'d1', id:'d1-t3',
+    prompt:'Two numbers multiply to <b>&minus;24</b> and add to <b>&minus;5</b>. Which pair?',
+    sub:'A negative product means the two numbers have different signs. That is decided before you look at any pair.',
+    options:[
+      {ok:true,  html:'3 and &minus;8', why:'3 &times; (&minus;8) = &minus;24 and 3 + (&minus;8) = &minus;5. The bigger of the two carries the minus, which is what makes the sum come out negative.'},
+      {ok:false, html:'&minus;3 and 8', why:'The product is right, but the sum is +5. Same pair, signs swapped &mdash; and the sum flips with them.'},
+      {ok:false, html:'&minus;4 and 6',  why:'That multiplies to &minus;24 but adds to 2. The right sign pattern, the wrong pair.'},
+      {ok:false, html:'&minus;3 and &minus;8', why:'Two negatives multiply to +24, not &minus;24. Once both signs match, the product cannot be negative.'}
+    ],
+    doneFirst:'Depth 1: handled a negative product and a negative sum together.',
+    doneLater:'Depth 1: worked through the signs more than once on the negative pair.'});
+
+  taskChoice(host, {depth:'d1', id:'d1-t4',
+    prompt:'72 = 8 &times; 9. Another miner cut it at 6 &times; 12. Who has the right seam?',
+    options:[
+      {ok:true,  html:'Both. They end at 2 &middot; 2 &middot; 2 &middot; 3 &middot; 3 either way.', why:'8 &times; 9 breaks to 2&middot;2&middot;2 and 3&middot;3. 6 &times; 12 breaks to 2&middot;3 and 2&middot;2&middot;3. Same five primes. The first cut is a choice; the seam is not.'},
+      {ok:false, html:'Only 8 &times; 9, because 8 and 9 are further apart from 1.', why:'There is no rule that prefers one first cut. Try both in the shaft picture above and watch them land in the same place.'},
+      {ok:false, html:'Only 6 &times; 12, because 6 and 12 are closer together.', why:'Closeness has nothing to do with it. Either cut reaches the same ore.'},
+      {ok:false, html:'Neither &mdash; 72 has too many factors to have one seam.', why:'72 has twelve divisors and exactly one prime seam. Many ways in, one thing at the bottom.'}
+    ],
+    doneFirst:'Depth 1: said that two different first cuts reach the same seam.',
+    doneLater:'Depth 1: came back to the two-shaft question and settled it.'});
+};
+
+/* =========================================================================
+   THE MELT BAR. A trinomial drawn as one lump made of three parts.
+   Shared by depths 2, 4 and 6.
+   ========================================================================= */
+MF.meltBar = function(host, o){
+  host.innerHTML='';
+  var bar = E('div');
+  bar.style.cssText='display:flex; gap:6px; align-items:stretch; flex-wrap:wrap; margin:8px 0';
+  var parts = [
+    {t:o.sq,  k:'sq', w:'34%'},
+    {t:o.mid, k:'x',  w:'40%'},
+    {t:o.k,   k:'k',  w:'22%'}
+  ];
+  var tint={sq:'var(--tile-sq)', x:'var(--tile-x)', k:'var(--tile-k)'};
+  var ink ={sq:'var(--tile-sq-ink)', x:'var(--tile-x-ink)', k:'var(--tile-k-ink)'};
+  parts.forEach(function(p,i){
+    if(p.t==null) return;
+    var d = H('div', null, p.t);
+    d.style.cssText='flex:1 1 '+p.w+'; min-width:92px; background:'+tint[p.k]+'; color:'+ink[p.k]+
+      '; border:2px solid rgba(0,0,0,.12); border-radius:10px; padding:14px 10px; text-align:center;'+
+      'font-family:var(--display); font-size:22px; transition:transform .35s ease, box-shadow .35s ease';
+    if(o.flash && i===1){ d.style.boxShadow='0 0 0 5px rgba(232,163,61,.45)'; }
+    bar.appendChild(d);
+  });
+  host.appendChild(bar);
+  if(o.caption) host.appendChild(H('div','hint', o.caption));
+};
+
+/* =========================================================================
+   THE TELL SHEET. What you can SEE about a lump before you touch it.
+   Read by the sorting line (depth 3) and the assay office (depth 6), so the
+   two can never teach different tells (VERIFICATION s33).
+   ========================================================================= */
+MF.tells = function(a,b,c){
+  var terms = [a,b,c].filter(function(v){ return v!==0; }).length;
+  var numeric = gcdAll([a,b,c].filter(function(v){ return v!==0; })) || 1;
+  var out = [];
+  out.push({on: numeric>1, label:'Every term shares a number',
+    yes:'All of them divide by ' + numeric + '. That lump comes out in front.',
+    no:'No number bigger than 1 goes into all of them.'});
+  out.push({on: c===0 && a!==0, label:'Every term still carries an x',
+    yes:'There is no plain number on the end, so an x can be pulled out too.',
+    no:'There is a plain number on the end, so no x comes out of all of them.'});
+  out.push({on: terms===2 && b===0 && c<0 && isSquare(a) && isSquare(-c), label:'Two squares, one taken from the other',
+    yes:'Both ends are perfect squares and there is a minus between them, with no middle term. That is the twin seam.',
+    no:'It is not two perfect squares subtracted with nothing in between.'});
+  out.push({on: a===1, label:'Nothing sits in front of the x²',
+    yes:'A plain x² means the pair you want multiplies to c and adds to b.',
+    no:(a===0 ? 'There is no x² at all - this is a straight line, not a lump.' : 'Something sits in front, so the pair multiplies to a·c instead.')});
+  var res = MF.factorQuadratic(a,b,c);
+  out.push({on: res.kind!=='solid', label:'An integer seam runs through it',
+    yes:'It comes apart on whole numbers.',
+    no:'No whole-number seam. It may still split on decimals, or not at all.'});
+  return {tells:out, res:res};
+};
+
+/* =========================================================================
+   DEPTH 2 - THE SMELTER  (the furnace running FORWARDS)
+   ========================================================================= */
+MF.PLAY.d2 = function(host){
+  var st = {p:2, q:3, m:1, n:1, step:1, loaded:false, xv:2};
+
+  var ctrls = E('div','controls');
+
+  /* step control - this is where integers and decimals get compared */
+  var stepWrap = E('div','ctl');
+  stepWrap.appendChild(H('label',null,'Size of each nudge'));
+  var stepSeg = E('div','seg');
+  [[1,'whole numbers'],[0.5,'halves'],[0.1,'tenths']].forEach(function(s){
+    var b=E('button',null,s[1]); b.type='button';
+    b.setAttribute('aria-pressed', st.step===s[0]?'true':'false');
+    on(b,'click',function(){
+      st.step=s[0];
+      Array.prototype.forEach.call(stepSeg.children,function(c){ c.setAttribute('aria-pressed','false'); });
+      b.setAttribute('aria-pressed','true');
+      pR.step = s[0]; qR.step = s[0];
+      draw();
+    });
+    stepSeg.appendChild(b);
+  });
+  stepWrap.appendChild(stepSeg); ctrls.appendChild(stepWrap);
+
+  function mkSlider(key,label,min,max,step){
+    var w=E('div','ctl');
+    w.appendChild(H('label',null,label));
+    var v=E('div','val', num(st[key])); w.appendChild(v);
+    var r=document.createElement('input');
+    r.type='range'; r.min=min; r.max=max; r.step=step; r.value=st[key];
+    r.setAttribute('aria-label',label);
+    on(r,'input',function(){ st[key]=Math.round(parseFloat(r.value)*1e6)/1e6; v.textContent=num(st[key]); draw(); });
+    w.appendChild(r); ctrls.appendChild(w);
+    r._val=v; r._wrap=w;
+    return r;
+  }
+  var pR = mkSlider('p','First ingot: x + p',-8,8,1);
+  var qR = mkSlider('q','Second ingot: x + q',-8,8,1);
+  var mR = mkSlider('m','Load on ingot 1 (m)',1,4,1);
+  var nR = mkSlider('n','Load on ingot 2 (n)',1,4,1);
+
+  var loadWrap = E('div','ctl');
+  loadWrap.appendChild(H('label',null,'Furnace setting'));
+  var loadSeg = E('div','seg');
+  [[false,'plain ingots'],[true,'loaded ingots']].forEach(function(s){
+    var b=E('button',null,s[1]); b.type='button';
+    b.setAttribute('aria-pressed', st.loaded===s[0]?'true':'false');
+    on(b,'click',function(){
+      st.loaded=s[0];
+      Array.prototype.forEach.call(loadSeg.children,function(c){ c.setAttribute('aria-pressed','false'); });
+      b.setAttribute('aria-pressed','true'); draw();
+    });
+    loadSeg.appendChild(b);
+  });
+  loadWrap.appendChild(loadSeg); ctrls.appendChild(loadWrap);
+  host.appendChild(ctrls);
+
+  var stageHost = E('div'); host.appendChild(stageHost);
+  var arrow = H('div','hint','&#9660; &nbsp;the two ingots melt together&nbsp; &#9660;');
+  arrow.style.textAlign='center'; arrow.style.margin='10px 0 2px';
+  host.appendChild(arrow);
+  var meltHost = E('div'); host.appendChild(meltHost);
+  var eq = E('div','eq'); host.appendChild(eq);
+  var meter = E('div'); host.appendChild(meter);
+
+  var meltBtn = E('button','btn primary','Melt the middle'); meltBtn.type='button';
+  var checkWrap = E('div'); checkWrap.style.marginTop='12px';
+  host.appendChild(meltBtn);
+  host.appendChild(checkWrap);
+  var flash=false;
+  on(meltBtn,'click',function(){ flash=true; draw(); setTimeout(function(){ flash=false; draw(); }, 1400); });
+
+  host.appendChild(MF.says('<b>Mr Factor:</b> The middle of a trinomial is the only part made from BOTH ingots. ' +
+    'The x&sup2; comes from the two x’s and the last number comes from the two numbers, but that middle ' +
+    'term is p and q meeting. That is why finding it again is the whole job further down.'));
+
+  function draw(){
+    var p=st.p, q=st.q, m = st.loaded?st.m:1, n = st.loaded?st.n:1;
+    mR._wrap.style.display = st.loaded ? '' : 'none';
+    nR._wrap.style.display = st.loaded ? '' : 'none';
+    if(st.loaded){ /* loaded mode stays on whole numbers so the ac-method holds */
+      if(!isInt(st.p)){ st.p=Math.round(st.p); pR.value=st.p; pR._val.textContent=num(st.p); }
+      if(!isInt(st.q)){ st.q=Math.round(st.q); qR.value=st.q; qR._val.textContent=num(st.q); }
+      p=st.p; q=st.q;
+    }
+    var A = m*n, B = m*q + n*p, C = p*q;
+
+    /* One model, not two. There used to be a single-cell model drawn here
+       first; it was wiped by the 2x2 below on the same host and no eye ever
+       saw it. Dead content raises no alarm (VERIFICATION s8). */
+    stageHost.innerHTML='';                     /* this panel owns this container */
+    MF.areaModel(stageHost, {
+      rows:[{label:(n===1?'x':num(n)+'x')},{label:num(q)}],
+      cols:[{label:(m===1?'x':num(m)+'x')},{label:num(p)}],
+      cells:[
+        [ {kind:'sq', text:(A===1?'x²':num(A)+'x²')}, {kind:'x', text:xt(n*p), negative:(n*p<0)} ],
+        [ {kind:'x', text:xt(m*q), negative:(m*q<0)}, {kind:'k', text:num(C), negative:(C<0)} ]
+      ],
+      sideMode:'show',
+      caption:'Both sides are given here, so every tile follows. At depth 4 the tiles are given and the sides are the question.',
+      a11y:'A square split into four tiles: x squared, two x tiles, and a number tile.'
+    });
+
+    MF.meltBar(meltHost, {
+      sq: (A===1?'x²':num(A)+'x²'),
+      mid: xt(B),
+      k: num(C),
+      flash: flash,
+      caption: 'The two x-tiles have run together into one middle term. Nothing was added or lost — they were always the same kind of thing.'
+    });
+
+    eq.innerHTML =
+      '( ' + linear(m,p) + ' )( ' + linear(n,q) + ' ) <span class="op">=</span> ' +
+      '<span class="hi3">' + (A===1?'x<sup>2</sup>':num(A)+'x<sup>2</sup>') + '</span>' +
+      ' <span class="op">+</span> <span class="hi">' + xt(B) + '</span>' +
+      ' <span class="op">+</span> <span class="hi2">' + num(C) + '</span>' +
+      '<br><span class="dim" style="font-size:.62em">middle = ' + num(m) + '·' + num(q) + ' + ' + num(n) + '·' + num(p) +
+      ' = ' + num(B) + ' &nbsp;·&nbsp; end = ' + num(p) + ' · ' + num(q) + ' = ' + num(C) + '</span>';
+
+    /* the seam meter - the whole point of the decimal steps */
+    var clean = isInt(p) && isInt(q);
+    meter.innerHTML='';
+    var mt = E('div','meter ' + (clean?'clean':'cloudy'));
+    mt.appendChild(E('div','lampdot'));
+    mt.appendChild(H('div','m-txt', clean
+      ? '<b>Clean seam.</b> p and q are both whole, so this trinomial comes apart on integer lines &mdash; the kind you will be asked to factor.'
+      : '<b>The seam runs between the integers.</b> The furnace works perfectly well with p = ' + num(p) + ' and q = ' + num(q) +
+        ' &mdash; multiplying never fails. But nothing here lands on whole numbers, so if you met <b>' + quad(A,B,C) +
+        '</b> cold and hunted for a whole-number pair, you would find none. It is not unbreakable. It just does not break where you were looking.'));
+    meter.appendChild(mt);
+
+    /* check by substituting a value - exact verification, not an estimate */
+    checkWrap.innerHTML='';
+    var cw = E('div','panel'); cw.style.margin='0';
+    cw.appendChild(H('div','hint','<b>Check it by putting a number in.</b> If the two forms are the same rock, every x you try must give the same answer on both sides.'));
+    var xr = document.createElement('input');
+    xr.type='range'; xr.min=-4; xr.max=6; xr.step=0.5; xr.value=st.xv;
+    xr.setAttribute('aria-label','Value to substitute for x');
+    var res = E('div','eq sm');
+    function upd(){
+      var x = parseFloat(xr.value); st.xv=x;
+      var lhs = (m*x+p)*(n*x+q), rhs = A*x*x + B*x + C;
+      res.innerHTML = 'x = ' + num(x) + ' &nbsp;&rarr;&nbsp; factored form gives <b>' + num(lhs) +
+        '</b> &nbsp;&middot;&nbsp; melted form gives <b>' + num(rhs) + '</b> ' +
+        (Math.abs(lhs-rhs) < 1e-9 ? '<span style="color:var(--vein)">&#10003; same rock</span>'
+                                  : '<span style="color:var(--solid)">&#8635; these disagree</span>');
+    }
+    on(xr,'input',upd);
+    cw.appendChild(xr); cw.appendChild(res); upd();
+    checkWrap.appendChild(cw);
+  }
+  function xt(k){ /* an x-term for a tile, allowing decimals */
+    var v = Math.round(k*1e6)/1e6;
+    if(v===0) return '0';
+    if(v===1) return 'x'; if(v===-1) return '−x';
+    return num(v)+'x';
+  }
+  draw();
+};
+
+MF.WORK.d2 = function(host){
+  host.appendChild(H('p','hint','The furnace runs forwards here. Every one of these is asking the same thing in a different place: <b>which part of the answer came from where?</b>'));
+
+  taskChoice(host, {depth:'d2', id:'d2-t1',
+    prompt:'In <b>(x + 3)(x + 5) = x&sup2; + 8x + 15</b>, where did the <b>15</b> come from?',
+    options:[
+      {ok:true,  html:'3 × 5', why:'The last number is always the two numbers multiplied. It is the one corner tile with no x in it.'},
+      {ok:false, html:'3 + 5', why:'That is 8, and 8 is the middle term. Product and sum both appear in the answer, but not in those places.'},
+      {ok:false, html:'x × 5 and x × 3 together', why:'Those two tiles are 5x and 3x. They carry an x, so they land in the middle, not on the end.'},
+      {ok:false, html:'x × x', why:'That is the x&sup2; tile. It never touches the numbers at all.'}
+    ],
+    doneFirst:'Depth 2: traced the last term back to p × q.',
+    doneLater:'Depth 2: worked out where the last term comes from.'});
+
+  taskChoice(host, {depth:'d2', id:'d2-t2',
+    prompt:'<b>(x + 3)(x + 5) = x&sup2; + ?x + 15</b>',
+    sub:'The middle is the only part made from both ingots.',
+    options:[
+      {ok:true,  html:'8', why:'5x and 3x are the same kind of tile, so they run together into 8x.'},
+      {ok:false, html:'15', why:'15 is the product. It is already sitting on the end of the expression.'},
+      {ok:false, html:'2',  why:'That is 5 − 3. Subtracting comes in only when one of the numbers is negative, and neither is here.'},
+      {ok:false, html:'53', why:'The 5 and the 3 were written side by side rather than added.'}
+    ],
+    doneFirst:'Depth 2: got the middle term from p + q.',
+    doneLater:'Depth 2: sorted out product from sum in the middle term.'});
+
+  taskChoice(host, {depth:'d2', id:'d2-t3',
+    prompt:'Melt <b>(x &minus; 4)(x + 6)</b>',
+    sub:'Watch the signs. One ingot carries a minus.',
+    options:[
+      {ok:true,  html:'x&sup2; + 2x &minus; 24', why:'(&minus;4) + 6 = 2 for the middle, and (&minus;4) × 6 = &minus;24 for the end. One negative in the pair makes the end negative.'},
+      {ok:false, html:'x&sup2; &minus; 2x &minus; 24', why:'The end is right, but the middle sign is not: &minus;4 + 6 is +2. The bigger number is the positive one, so the middle comes out positive.'},
+      {ok:false, html:'x&sup2; + 2x + 24', why:'The middle is right. But a positive times a negative cannot give +24 &mdash; the end must carry the minus.'},
+      {ok:false, html:'x&sup2; + 10x &minus; 24', why:'10 is 4 + 6 with the minus ignored. The sign travels with the number into both the sum and the product.'}
+    ],
+    doneFirst:'Depth 2: melted an ingot pair with a negative in it.',
+    doneLater:'Depth 2: worked the signs through the furnace more than once.'});
+
+  taskChoice(host, {depth:'d2', id:'d2-t4',
+    prompt:'Set p = <b>0.5</b> and q = <b>4</b>. What comes out of the furnace?',
+    sub:'Try it on the slider above first, on the "halves" setting. The furnace does not object to decimals.',
+    options:[
+      {ok:true,  html:'x&sup2; + 4.5x + 2', why:'0.5 + 4 = 4.5 and 0.5 × 4 = 2. The machine works exactly the same. What changed is that this trinomial no longer comes apart on whole numbers — so if you met it cold and hunted integer pairs for 2, you would find none.'},
+      {ok:false, html:'x&sup2; + 4.5x + 4.5', why:'The middle is right, but the end is the PRODUCT, and 0.5 × 4 is 2, not 4.5. The same two numbers do different jobs in the two places.'},
+      {ok:false, html:'x&sup2; + 2x + 4.5', why:'The product and the sum have swapped places. The sum lands in the middle, the product on the end.'},
+      {ok:false, html:'It will not melt — you cannot use decimals.', why:'It melts perfectly. Multiplying never fails. Whole numbers matter when you go the OTHER way, hunting for a pair.'}
+    ],
+    doneFirst:'Depth 2: ran the furnace on a decimal ingot and saw it work.',
+    doneLater:'Depth 2: settled what decimals do and do not change in the furnace.'});
+
+  host.appendChild(MF.says('<b>Mr Factor:</b> Notice what that last one did NOT say. Decimals do not break the furnace. ' +
+    'They break the <em>search</em> &mdash; because when you factor, you are hunting through whole-number pairs, and a seam ' +
+    'sitting at 0.5 is simply not on the list you are reading.', 52));
+};
+
+/* =========================================================================
+   DEPTH 3 - THE SORTING LINE  (the recognition gate)
+   ========================================================================= */
+MF.CONVEYOR = [
+  {a:3,  b:12, c:0,   note:'Three terms? No — two. And both carry an x as well as a 3.'},
+  {a:1,  b:0,  c:-9,  note:'Two squares with a minus between them.'},
+  {a:1,  b:-5, c:6,   note:'THE TRAP. It has a minus sign in it. It is not a twin seam.'},
+  {a:1,  b:0,  c:4,   note:'Two squares — but ADDED. Nothing comes apart.'},
+  {a:2,  b:7,  c:3,   note:'Something sits in front of the x².'},
+  {a:1,  b:6,  c:9,   note:'A trinomial whose two factors turn out to be the same.'},
+  {a:4,  b:0,  c:-25, note:'A twin seam with a load on it. Both ends are still squares.'},
+  {a:0,  b:5,  c:15,  note:'No x² at all. Just a shared lump.'},
+  {a:1,  b:0,  c:-2,  note:'Two terms, a minus — but 2 is not a perfect square.'},
+  {a:6,  b:7,  c:-3,  note:'Loaded, and the last term is negative.'}
+];
+
+MF.PLAY.d3 = function(host){
+  var i = 0;
+  var nav = E('div','chips');
+  var prev = E('button','btn','◀ previous piece'); prev.type='button';
+  var next = E('button','btn primary','next piece ▶'); next.type='button';
+  var pos  = H('span','chip sml','');
+  nav.appendChild(prev); nav.appendChild(pos); nav.appendChild(next);
+  host.appendChild(nav);
+
+  var body = E('div'); host.appendChild(body);
+  on(prev,'click',function(){ i=(i-1+MF.CONVEYOR.length)%MF.CONVEYOR.length; draw(); });
+  on(next,'click',function(){ i=(i+1)%MF.CONVEYOR.length; draw(); });
+
+  host.appendChild(MF.says('<b>Mr Factor:</b> Nobody is marking this. Walk the belt as many times as you like. ' +
+    'The only thing worth taking off it is <em>which tell told you</em> &mdash; because on the working face you will have the tells and no label.'));
+
+  function draw(){
+    var piece = MF.CONVEYOR[i];
+    pos.textContent = 'piece ' + (i+1) + ' of ' + MF.CONVEYOR.length;
+    body.innerHTML='';
+    body.appendChild(H('div','eq', quad(piece.a, piece.b, piece.c)));
+
+    var t = MF.tells(piece.a, piece.b, piece.c);
+    var seam = MF.SEAMS[t.res.kind];
+
+    var list = E('div');
+    t.tells.forEach(function(tl){
+      var row = E('div','meter ' + (tl.on?'clean':''));
+      row.style.margin='6px 0'; row.style.padding='8px 12px';
+      row.appendChild(E('div','lampdot'));
+      row.appendChild(H('div','m-txt', '<b>' + (tl.on?'✓ ':'✕ ') + tl.label + '</b> — ' + (tl.on ? tl.yes : tl.no)));
+      list.appendChild(row);
+    });
+    body.appendChild(list);
+
+    var verdict = E('div','panel'); verdict.style.margin='12px 0 0';
+    verdict.appendChild(H('div','panel-tag','SEAM CALLED'));
+    verdict.appendChild(H('div','eq sm', '<b style="color:'+ (seam.cls==='solid'?'var(--solid)':'var(--vein)') +'">' + seam.name + '</b> <span class="dim">(' + seam.short + ')</span>'));
+    verdict.appendChild(H('p','hint', seam.tell));
+    var fs = MF.factorString(t.res);
+    if(t.res.kind!=='solid' && fs){
+      verdict.appendChild(H('div','eq sm', quad(piece.a,piece.b,piece.c) + ' <span class="op">=</span> ' + fs));
+    } else if(t.res.realRoots){
+      verdict.appendChild(H('p','hint','No whole-number seam. It does split on decimals — near x = ' +
+        num(Math.round(t.res.realRoots[0]*1000)/1000) + ' and x = ' + num(Math.round(t.res.realRoots[1]*1000)/1000) +
+        ' — but those are not whole numbers, and this mine works integer seams.'));
+    } else {
+      verdict.appendChild(H('p','hint','No seam at all, on integers or decimals. This one really is solid.'));
+    }
+    verdict.appendChild(H('p','hint','<b>What made it that:</b> ' + piece.note));
+    body.appendChild(verdict);
+  }
+  draw();
+};
+
+MF.WORK.d3 = function(host){
+  host.appendChild(H('p','hint','Call the seam before you swing anything. You do not have to factor these &mdash; only say which kind of rock you are holding.'));
+
+  var key = E('div','seamkey');
+  ['common','twin','simple','loaded','solid'].forEach(function(k){
+    var s = MF.SEAMS[k];
+    var d = E('div','sk'); d.setAttribute('data-t', k);
+    d.appendChild(H('div','n', s.name));
+    d.appendChild(H('div','f', s.short + ' — ' + s.tell));
+    key.appendChild(d);
+  });
+  host.appendChild(key);
+
+  function seamTask(id, a, b, c, whys){
+    var kinds = ['common','twin','simple','loaded','solid'];
+    var right = MF.factorQuadratic(a,b,c).kind;
+    taskChoice(host, {depth:'d3', id:id,
+      prompt:'Call the seam: <b>' + quad(a,b,c) + '</b>',
+      options: kinds.map(function(k){
+        return {ok:(k===right), html: MF.SEAMS[k].name, why: whys[k] || MF.SEAMS[k].tell};
+      }),
+      doneFirst:'Depth 3: called ' + quad(a,b,c).replace(/<[^>]+>/g,'') + ' first time.',
+      doneLater:'Depth 3: changed the call on ' + quad(a,b,c).replace(/<[^>]+>/g,'') + ' before it settled.'});
+  }
+
+  /* DIFFERENT INSTANCES FROM THE CONVEYOR ABOVE, SAME CLASSES.
+     These were the conveyor's own ten pieces, which meant the working face
+     asked about expressions whose seam was named one panel higher. Copying is
+     not recognising. The classes are identical - trap, twin, solid, common,
+     loaded - so the lesson is unchanged and the answer is no longer on screen. */
+  seamTask('d3-t1', 1, -7, 12, {
+    simple:'Right. Three terms, a plain x², and a pair that multiplies to 12 and adds to −7.',
+    twin:'This is THE trap. It has a minus sign, but a twin seam needs exactly TWO terms and no middle one. This has a middle term, so the minus is telling you about signs, not about the seam type. Following "minus means difference of squares" here sends you looking for two squares that are not there.',
+    common:'12 and 7 share nothing but 1, and the last term has no x, so nothing comes out in front.',
+    loaded:'Nothing sits in front of the x² — the coefficient is 1.',
+    solid:'It does come apart: (x − 3)(x − 4).'
+  });
+
+  seamTask('d3-t2', 1, 0, -36, {
+    twin:'Right. x² and 36 are both squares, there is a minus between them, and there is no middle term at all.',
+    simple:'There are only two terms — a simple trinomial has three.',
+    solid:'It comes apart cleanly: (x + 6)(x − 6).',
+    common:'x² and 36 share no lump: 36 has no x in it.',
+    loaded:'Nothing sits in front of the x².'
+  });
+
+  seamTask('d3-t3', 1, 0, 25, {
+    solid:'Right. Both terms are squares, but they are ADDED. There is no pair of whole numbers multiplying to 25 and adding to 0 — and there is no pair of decimals either. This one is genuinely unbreakable.',
+    twin:'A twin seam needs a MINUS between the squares. With a plus, nothing comes apart — this is the mirror of the trap in the first question.',
+    simple:'There is no middle term, and no pair multiplies to 25 and adds to 0.',
+    common:'x² and 25 share nothing.',
+    loaded:'Nothing sits in front of the x².'
+  });
+
+  seamTask('d3-t4', 5, 20, 0, {
+    common:'Right, and both ways at once: every term divides by 5, and every term still carries an x. 5x comes out in front.',
+    simple:'There are two terms, not three, and something sits in front of the x².',
+    loaded:'Something does sit in front — but look first: there is no plain number on the end, so a lump comes out before you need any of that.',
+    twin:'20x is not a perfect square, and the sign between them is a plus.',
+    solid:'It comes apart very easily: 5x(x + 4).'
+  });
+
+  seamTask('d3-t5', 3, 5, -2, {
+    loaded:'Right. A 3 sits in front, so the pair you hunt multiplies to 3 × (−2) = −6 and adds to 5.',
+    simple:'A simple trinomial has a plain x². This one has 3 in front, which changes the pair you look for.',
+    common:'3, 5 and 2 share no common lump, and the last term has no x.',
+    twin:'Three terms, and 5x is in the way.',
+    solid:'It comes apart: (3x − 1)(x + 2).'
+  });
+
+  host.appendChild(MF.says('<b>Mr Factor:</b> The first and third of those are the same lesson pointing opposite ways. ' +
+    'A minus sign does not make a twin seam, and a plus sign does not stop something being solid. ' +
+    'The <em>sign</em> is a surface thing. The <em>shape</em> — how many terms, what sits in front, whether the ends are squares — is the seam.', 52));
+};
+
+/* =========================================================================
+   THE VEIN SCANNER. Walks factor pairs and shows product AND sum together.
+   Depth 4 uses it live; depth 5 uses it on a·c.
+   ========================================================================= */
+MF.scanTable = function(host, target, wanted, opts){
+  opts = opts || {};
+  host.innerHTML='';
+  var rows = [];
+  factorPairs(target).forEach(function(pr){
+    var f=pr[0], s=pr[1];
+    if(target >= 0){ rows.push([f,s]); rows.push([-f,-s]); }
+    else           { rows.push([-f,s]); rows.push([f,-s]); }
+  });
+  rows = rows.filter(function(r){ return r[0]*r[1] === target; });
+  var tbl = E('table','scan');
+  var hr = E('tr');
+  ['pair','multiply to','add to'].forEach(function(h){ hr.appendChild(E('th',null,h)); });
+  tbl.appendChild(hr);
+  var hitRow = null;
+  rows.forEach(function(r,idx){
+    var tr = E('tr');
+    tr.appendChild(E('td',null, num(r[0]) + '  and  ' + num(r[1])));
+    tr.appendChild(E('td',null, num(r[0]*r[1])));
+    tr.appendChild(E('td',null, num(r[0]+r[1])));
+    if(wanted!=null && r[0]+r[1] === wanted){ tr.className='hit'; hitRow=r; }
+    tr.dataset.i = idx;
+    tbl.appendChild(tr);
+  });
+  host.appendChild(tbl);
+  return {rows:rows, hit:hitRow, table:tbl};
+};
+
+/* =========================================================================
+   DEPTH 4 - THE SPLIT SEAM
+   ========================================================================= */
+MF.PLAY.d4 = function(host){
+  var st = {b:7, c:12, found:false};
+  var ctrls = E('div','controls');
+  function mk(key,label,min,max){
+    var w=E('div','ctl'); w.appendChild(H('label',null,label));
+    var v=E('div','val', num(st[key])); w.appendChild(v);
+    var r=document.createElement('input');
+    r.type='range'; r.min=min; r.max=max; r.step=1; r.value=st[key];
+    r.setAttribute('aria-label',label);
+    on(r,'input',function(){ st[key]=parseInt(r.value,10); v.textContent=num(st[key]); st.found=false; draw(); });
+    w.appendChild(r); ctrls.appendChild(w); return r;
+  }
+  mk('b','Middle term (b)',-14,14);
+  mk('c','Last term (c)',-36,36);
+  host.appendChild(ctrls);
+
+  var eq = E('div','eq'); host.appendChild(eq);
+  var modelHost = E('div'); host.appendChild(modelHost);
+  var scanWrap = E('div'); host.appendChild(scanWrap);
+  var verdict = E('div'); host.appendChild(verdict);
+
+  var runBtn = E('button','btn primary','Run the scanner down the seam'); runBtn.type='button';
+  host.appendChild(runBtn);
+  var timer=null;
+  on(runBtn,'click',function(){
+    if(timer){ clearInterval(timer); timer=null; runBtn.textContent='Run the scanner down the seam'; return; }
+    var trs = Array.prototype.slice.call(scanWrap.querySelectorAll('tr')).slice(1);
+    var i=0;
+    runBtn.textContent='Stop the scanner';
+    trs.forEach(function(t){ t.style.outline=''; });
+    timer = setInterval(function(){
+      trs.forEach(function(t){ t.style.outline=''; });
+      if(i>=trs.length){ clearInterval(timer); timer=null; runBtn.textContent='Run the scanner down the seam'; return; }
+      trs[i].style.outline='3px solid var(--lamp)';
+      i++;
+    }, 420);
+  });
+
+  host.appendChild(MF.says('<b>Mr Factor:</b> The scanner is not doing anything you could not do with a pencil. ' +
+    'It is only being patient. Watch which column it is really reading &mdash; the pairs all multiply to c, so the ' +
+    'thing that separates them is the <em>sum</em>.'));
+
+  function draw(){
+    if(timer){ clearInterval(timer); timer=null; runBtn.textContent='Run the scanner down the seam'; }
+    var b=st.b, c=st.c;
+    var res = MF.factorQuadratic(1,b,c);
+    var solved = (res.kind!=='solid' && res.p!=null);
+
+    eq.innerHTML = quad(1,b,c) + ' <span class="dim" style="font-size:.6em">— find two numbers that multiply to ' +
+      num(c) + ' and add to ' + num(b) + '</span>';
+
+    /* THE RULE (philosophy 2.2): the tiles are what you were GIVEN.
+       The sides are what you have to produce, so they stay as ? until the
+       scanner actually finds the pair. A ? asks; a blank would just look broken. */
+    modelHost.innerHTML='';                     /* this panel owns this container */
+    MF.areaModel(modelHost, {
+      rows:[{label:(solved? linear(1,res.q) : '?'), known:solved}],
+      cols:[{label:(solved? linear(1,res.p) : '?'), known:solved}],
+      /* quadText, not a hand-rolled string: this tile printed "x² + 0x − 9"
+         directly beneath a heading reading "x² − 9". */
+      cells:[[{kind:'sq', text: quadText(1,b,c)}]],
+      sideMode:'ask',
+      caption: solved
+        ? 'The tiles were given. The sides are what the scanner found: ' + MF.factorString(res) + '.'
+        : 'The area is given — that is the whole expression. The two SIDES are the question, and the mine will not fill them in for you.',
+      a11y:'A rectangle whose area is ' + quad(1,b,c).replace(/<[^>]+>/g,'') + ' and whose two sides are unknown.'
+    });
+
+    var sc = E('div');
+    sc.appendChild(H('div','hint','<b>Every pair that multiplies to ' + num(c) + '.</b> The scanner reads the third column.'));
+    scanWrap.innerHTML=''; scanWrap.appendChild(sc);
+    MF.scanTable(sc, c, b);
+
+    verdict.innerHTML='';
+    var m = E('div','meter ' + (solved?'clean':'cloudy'));
+    m.appendChild(E('div','lampdot'));
+    if(solved){
+      m.appendChild(H('div','m-txt','<b>Seam found.</b> ' + num(res.p) + ' and ' + num(res.q) +
+        ' multiply to ' + num(c) + ' and add to ' + num(b) + ', so ' + quad(1,b,c) + ' = ' + MF.factorString(res) + '.'));
+    } else if(res.realRoots){
+      m.appendChild(H('div','m-txt','<b>No whole-number pair exists here.</b> Not one row above adds to ' + num(b) +
+        '. The seam is real — it sits near ' + num(Math.round(res.realRoots[0]*100)/100) + ' and ' +
+        num(Math.round(res.realRoots[1]*100)/100) + ' — but those are decimals, and the scanner only reads whole pairs. ' +
+        'Nudge b or c by one and watch a row light up.'));
+    } else {
+      m.appendChild(H('div','m-txt','<b>Solid rock.</b> No pair adds to ' + num(b) + ', on whole numbers or on decimals. ' +
+        'This lump does not come apart at all.'));
+    }
+    verdict.appendChild(m);
+  }
+  draw();
+};
+
+/* =========================================================================
+   THE GATED TASK. The one place the mine refuses to move on.
+   Stage 1  call the seam        <- philosophy 2.4, cannot be skipped
+   Stage 2  produce the pair     <- typed, and empty input is refused
+   Stage 3  check by multiplying back
+   ========================================================================= */
+function readInt(inp){
+  var raw = (inp.value||'').trim().replace(/[−–—]/g,'-');
+  if(raw==='') return {err:'empty'};
+  if(!/^-?\d+$/.test(raw)) return {err:'notint', raw:raw};
+  return {v: parseInt(raw,10)};
+}
+
+MF.gatedTask = function(host, spec){
+  var a=spec.a, b=spec.b, c=spec.c;
+  var res = MF.factorQuadratic(a,b,c);
+  var box = E('div','panel'); box.style.background='#fff';
+  box.appendChild(H('div','eq', quad(a,b,c)));
+
+  /* ---- stage 1: the gate ---- */
+  var s1 = E('div');
+  s1.appendChild(H('div','hint','<b>Step 1 — call the seam.</b> Nothing else on this piece opens until you have named what kind of rock it is. That is on purpose: a call you made is the only thing you can later catch yourself out on.'));
+  var s2 = E('div'); s2.style.display='none';
+  var s3 = E('div'); s3.style.display='none';
+
+  var kinds = ['common','twin','simple','loaded','solid'];
+  var wrap = E('div','choices');
+  var passed=false, retried=false;
+  balancedOrder(spec.id+'|seam', kinds.map(function(k){
+    return {ok:(k===res.kind), html:MF.SEAMS[k].name, why:(spec.whys && spec.whys[k]) || MF.SEAMS[k].tell, k:k};
+  })).forEach(function(o){
+    var btn = H('button','choice', o.html + '<span class="why">' + o.why + '</span>');
+    btn.type='button';
+    on(btn,'click',function(){
+      btn.setAttribute('data-result', o.ok?'yes':'no');
+      if(o.ok){
+        Array.prototype.forEach.call(wrap.children,function(ch){ if(ch!==btn) ch.removeAttribute('data-result'); });
+        if(!passed){
+          passed=true;
+          s2.style.display='';
+          MF.note(spec.depth, 'Depth ' + spec.depth.slice(1) + ': called ' + quad(a,b,c).replace(/<[^>]+>/g,'') +
+            ' as a ' + MF.SEAMS[res.kind].name + (retried ? ', after changing the call once.' : ' before touching the numbers.'));
+        }
+      } else { retried = true; }
+    });
+    wrap.appendChild(btn);
+  });
+  s1.appendChild(wrap);
+  box.appendChild(s1);
+
+  /* ---- stage 2: produce the pair ---- */
+  var target = (a===1) ? c : a*c;
+  s2.appendChild(H('div','hint','<b>Step 2 — find the pair.</b> Two whole numbers that multiply to <b>' +
+    num(target) + '</b>' + (a===1?'':' (that is a·c, because something sits in front of the x²)') +
+    ' and add to <b>' + num(b) + '</b>.'));
+
+  /* The picture the philosophy asks for, on the surface that actually asks a
+     question (s2.2). The tiles are the area - that is what the problem GAVE
+     you. Both sides are drawn as dashed slots holding "?", because the sides
+     are the student's work. This used to exist only in the depth-4 play panel,
+     while SITE-STATE and the depth-6 caption both claimed it for the working
+     face - a protection asserted rather than built (VERIFICATION s40). */
+  var askHost = E('div');
+  s2.appendChild(askHost);
+  MF.areaModel(askHost, {
+    rows:[{label:'?', known:false}],
+    cols:[{label:'?', known:false}],
+    cells:[[{kind:'sq', text: quadText(a,b,c)}]],
+    sideMode:'ask',
+    caption:'The area is what you were handed. The two sides are what you are looking for, and the mine will not fill them in for you.',
+    a11y:'A rectangle whose area is ' + quadText(a,b,c) + ' and whose two sides are unknown.'
+  });
+
+  var row = E('div','controls');
+  function field(lbl){
+    var w=E('div','ctl'); w.style.minWidth='120px';
+    w.appendChild(H('label',null,lbl));
+    var inp=document.createElement('input'); inp.type='text'; inp.inputMode='numeric';
+    inp.style.width='110px'; inp.setAttribute('aria-label',lbl);
+    w.appendChild(inp); row.appendChild(w); return inp;
+  }
+  var fp = field('first number'), fq = field('second number');
+  var goWrap = E('div','ctl'); goWrap.style.minWidth='0';
+  var go = E('button','btn primary','Test this pair'); go.type='button';
+  goWrap.appendChild(go); row.appendChild(goWrap);
+  s2.appendChild(row);
+  var fb = E('div'); s2.appendChild(fb);
+  box.appendChild(s2);
+
+  /* A SOLID lump has no pair to find. Asking for one would be a dead end with
+     no exit - the student could type for ever and never be told why. So the
+     second step becomes the honest question instead: show that the list is
+     complete and that nothing on it works. Proving absence is a real answer. */
+  if(res.kind==='solid'){
+    s2.innerHTML='';
+    s2.appendChild(H('div','hint','<b>Step 2 — show there is nothing to find.</b> Every whole-number pair that multiplies to <b>' +
+      num(target) + '</b> is on this list. Read the sum column: not one of them adds to <b>' + num(b) + '</b>. ' +
+      'When that is true of the WHOLE list, the list is the answer.'));
+    var sw = E('div'); s2.appendChild(sw);
+    MF.scanTable(sw, target, b);
+    var rep = E('button','btn primary','Report it: no whole-number pair exists'); rep.type='button';
+    s2.appendChild(rep);
+    var rfb = E('div'); s2.appendChild(rfb);
+    on(rep,'click',function(){
+      rfb.innerHTML='';
+      rfb.appendChild(H('div','note found','<b>Correctly reported.</b> ' + quad(a,b,c) +
+        ' has no whole-number seam' +
+        (res.realRoots
+          ? ' — though it does have a real one, running near x = ' + num(Math.round(res.realRoots[0]*1000)/1000) +
+            ' and x = ' + num(Math.round(res.realRoots[1]*1000)/1000) + '. Those are decimals that never end, so no bracket ' +
+            'of whole numbers can ever land on them. The rock is not solid; your list was.'
+          : ' and no decimal one either. This lump genuinely does not come apart, and saying so is a finding rather than a surrender.') +
+        '<br><br>Every other piece on this site asks you to produce something. This one asked you to <em>rule everything out</em>, ' +
+        'which is a different and harder move — and it is the one that tells you when to stop digging.'));
+      MF.note(spec.depth, 'Depth ' + spec.depth.slice(1) + ': ruled out every pair on ' +
+        quad(a,b,c).replace(/<[^>]+>/g,'') + ' and reported it as solid.');
+    });
+  }
+
+  var tries = 0, solved=false;
+  on(go,'click',function(){
+    var A = readInt(fp), B = readInt(fq);
+    fb.innerHTML='';
+    if(A.err || B.err){
+      var msg = (A.err==='empty'||B.err==='empty')
+        ? 'Both boxes need a number in them. An empty box is not a pair — the mine cannot test nothing.'
+        : 'That needs to be a whole number, written in digits (a minus sign is fine). You typed “' + (A.raw||B.raw) + '”.';
+      fb.appendChild(H('div','note again', msg));
+      return;
+    }
+    tries++;
+    var p=A.v, q=B.v, prod=p*q, sum=p+q;
+    if(prod===target && sum===b){
+      solved = true;
+      fb.appendChild(H('div','note found','<b>Both conditions at once.</b> ' + num(p) + ' × ' + num(q) + ' = ' +
+        num(target) + ' and ' + num(p) + ' + ' + num(q) + ' = ' + num(b) + '.'));
+      s3.style.display='';
+      buildCheck(p,q);
+      /* Describes, does not tally. "after testing 4 pairs" is a score with the
+         numeral left in, and this depth is the only place that was counting. */
+      MF.note(spec.depth, 'Depth ' + spec.depth.slice(1) + ': found the pair for ' + quadText(a,b,c) +
+        (tries===1 ? ' — the first pair you tried was the one.' : ' — you worked along the list until both conditions held at once.'));
+    } else if(prod===target){
+      fb.appendChild(H('div','note again','<b>Product right, sum wrong.</b> ' + num(p) + ' × ' + num(q) + ' = ' + num(target) +
+        ' — that part is fine. But they add to ' + num(sum) + ' and you need ' + num(b) +
+        '. You are on the right seam, at the wrong depth along it.'));
+    } else if(sum===b){
+      fb.appendChild(H('div','note again','<b>Sum right, product wrong.</b> They do add to ' + num(b) +
+        ', but they multiply to ' + num(prod) + ' and you need ' + num(target) + '. A pair has to satisfy both at once.'));
+    } else {
+      fb.appendChild(H('div','note again','Those multiply to ' + num(prod) + ' and add to ' + num(sum) +
+        '. You are after ' + num(target) + ' and ' + num(b) + '. Try the scanner at the top of depth 4 if you want to see the pairs laid out.'));
+    }
+  });
+
+  /* ---- stage 3: check by multiplying back ---- */
+  function buildCheck(p,q){
+    s3.innerHTML='';
+    s3.appendChild(H('div','hint','<b>Step 3 — check it by melting it back.</b> This is the part that makes factoring self-checking: you never have to be told whether you were right.'));
+    var f = res.factors, g = res.g;
+    var fs = MF.factorString(res);
+    if(a===1){
+      s3.appendChild(H('div','eq sm',
+        '(x ' + (p<0?'− ':'+ ') + num(Math.abs(p)) + ')(x ' + (q<0?'− ':'+ ') + num(Math.abs(q)) + ')' +
+        ' <span class="op">=</span> ' + quad(1,b,c)));
+      MF.areaModel(s3, {
+        rows:[{label:'x', known:true},{label:num(q), known:true}],
+        cols:[{label:'x', known:true},{label:num(p), known:true}],
+        cells:[
+          [{kind:'sq', text:'x²'}, {kind:'x', text:(p===1?'x':(p===-1?'−x':num(p)+'x')), negative:p<0}],
+          [{kind:'x', text:(q===1?'x':(q===-1?'−x':num(q)+'x')), negative:q<0}, {kind:'k', text:num(c), negative:c<0}]
+        ],
+        sideMode:'show',
+        caption:'Now the sides are yours, so the mine will draw them.'
+      });
+    } else {
+      /* the ac-split, written out - the split values come from the ENGINE,
+         never recomputed here (VERIFICATION s33) */
+      var r1 = f[0][0]*f[1][1]*g, r2 = f[1][0]*f[0][1]*g;
+      s3.appendChild(H('div','eq sm', quad(a,b,c) + ' <span class="op">=</span> ' +
+        sqTerm(a) + ' ' + (r1<0?'− ':'+ ') + num(Math.abs(r1)) + 'x ' + (r2<0?'− ':'+ ') + num(Math.abs(r2)) + 'x ' +
+        (c<0?'− ':'+ ') + num(Math.abs(c)) +
+        '<br><span class="dim" style="font-size:.7em">the middle vein cut in two, using your pair</span>'));
+      s3.appendChild(H('div','eq sm', '<span class="op">=</span> ' + fs));
+    }
+    s3.appendChild(H('div','note found','<b>' + quad(a,b,c) + ' = ' + fs + '</b><br>' +
+      'Multiply it back and you land exactly where you started. Nobody had to mark this — the check IS the answer.'));
+  }
+  box.appendChild(s3);
+  host.appendChild(box);
+};
+
+MF.WORK.d4 = function(host){
+  host.appendChild(H('p','hint','Three pieces. Each one gates: call the seam, then find the pair, then watch it check itself. If you want the pairs laid out while you work, the scanner above stays open.'));
+  /* NOT b:7 c:12 - that is the scanner's default above, which prints
+     "3 and 4 multiply to 12 and add to 7" 357px up the same screen. The answer
+     to a gated question must not already be on the page (VERIFICATION s26). */
+  MF.gatedTask(host, {depth:'d4', id:'d4-p1', a:1, b:9, c:20, whys:{
+    simple:'Right — plain x², three terms, so the pair multiplies to 20 and adds to 9.',
+    twin:'Twin seams have two terms and no middle one. This has 9x sitting in the middle.',
+    common:'9 and 20 share no lump, and the last term carries no x.',
+    loaded:'Nothing sits in front of the x².',
+    solid:'It does come apart — there is a pair in the 20s that adds to 9.'
+  }});
+  MF.gatedTask(host, {depth:'d4', id:'d4-p2', a:1, b:-8, c:15, whys:{
+    simple:'Right. And note what you just did NOT do: there is a minus sign here, and you did not call it a twin seam.',
+    twin:'This is the trap from depth 3, wearing different numbers. A minus sign is not a twin seam — a twin seam needs exactly two terms, both squares. This has three terms.',
+    common:'8 and 15 share nothing, and there is no x on the end.',
+    loaded:'Nothing sits in front of the x².',
+    solid:'It comes apart: the pair is −3 and −5.'
+  }});
+  MF.gatedTask(host, {depth:'d4', id:'d4-p3', a:1, b:2, c:-24, whys:{
+    simple:'Right. A negative last term means the pair has one of each sign — decided before you look at a single pair.',
+    twin:'There is a middle term, so this is not two squares subtracted.',
+    common:'2 and 24 share a 2, but the x² does not, so nothing comes out in front.',
+    loaded:'Nothing sits in front of the x².',
+    solid:'It comes apart: −4 and 6.'
+  }});
+};
+
+/* =========================================================================
+   DEPTH 5 - THE DEEP SEAM  (a is not 1)
+   ========================================================================= */
+MF.PLAY.d5 = function(host){
+  var st = {a:2, b:7, c:3, cstep:1};
+  var ctrls = E('div','controls');
+  function mk(key,label,min,max,step){
+    var w=E('div','ctl'); w.appendChild(H('label',null,label));
+    var v=E('div','val', num(st[key])); w.appendChild(v);
+    var r=document.createElement('input');
+    r.type='range'; r.min=min; r.max=max; r.step=step; r.value=st[key];
+    r.setAttribute('aria-label',label);
+    on(r,'input',function(){ st[key]=Math.round(parseFloat(r.value)*1e6)/1e6; v.textContent=num(st[key]); draw(); });
+    w.appendChild(r); ctrls.appendChild(w); return r;
+  }
+  mk('a','Load on the cart (a)',1,6,1);
+  mk('b','Middle term (b)',-16,16,1);
+  var cR = mk('c','Last term (c)',-24,24,1);
+
+  var stepWrap = E('div','ctl');
+  stepWrap.appendChild(H('label',null,'Nudge c by'));
+  var seg = E('div','seg');
+  [[1,'whole'],[0.5,'halves']].forEach(function(s){
+    var btn=E('button',null,s[1]); btn.type='button';
+    btn.setAttribute('aria-pressed', st.cstep===s[0]?'true':'false');
+    on(btn,'click',function(){
+      st.cstep=s[0]; cR.step=s[0];
+      Array.prototype.forEach.call(seg.children,function(x){ x.setAttribute('aria-pressed','false'); });
+      btn.setAttribute('aria-pressed','true');
+    });
+    seg.appendChild(btn);
+  });
+  stepWrap.appendChild(seg); ctrls.appendChild(stepWrap);
+  host.appendChild(ctrls);
+
+  var eq = E('div','eq'); host.appendChild(eq);
+  var lamp = E('div'); host.appendChild(lamp);
+  var scan = E('div'); host.appendChild(scan);
+  var steps = E('div'); host.appendChild(steps);
+
+  host.appendChild(MF.says('<b>Mr Factor:</b> Put c on halves and nudge it. The lamp goes out and comes back on. ' +
+    'Nothing about the rock got harder &mdash; you simply walked off the whole numbers, and a seam at 1.5 is not on the list ' +
+    'the scanner reads. That is what "cannot be factored" almost always means: not on <em>these</em> lines.', 52));
+
+  function draw(){
+    var a=st.a, b=st.b, c=st.c;
+    var ac = a*c;
+    eq.innerHTML = quad(a,b,c) + ' <span class="dim" style="font-size:.55em">— the pair now multiplies to a·c = ' +
+      num(a) + ' × ' + num(c) + ' = ' + num(ac) + ', and still adds to ' + num(b) + '</span>';
+
+    var res = MF.factorQuadratic(a,b,c);
+    var clean = (res.kind!=='solid');
+    lamp.innerHTML='';
+    var m = E('div','meter ' + (clean?'clean':'cloudy'));
+    m.appendChild(E('div','lampdot'));
+    m.appendChild(H('div','m-txt', clean
+      ? '<b>Assay lamp on.</b> A whole-number pair exists for ' + num(ac) + ' and ' + num(b) + ', so this cart comes apart: ' +
+        quad(a,b,c) + ' = ' + MF.factorString(res)
+      : '<b>Assay lamp out.</b> No whole-number pair multiplies to ' + num(ac) + ' and adds to ' + num(b) + '.' +
+        (res.realRoots ? ' The seam is there — near x = ' + num(Math.round(res.realRoots[0]*100)/100) + ' and x = ' +
+          num(Math.round(res.realRoots[1]*100)/100) + ' — but it does not sit on whole numbers.'
+                       : ' And there is no seam on decimals either. Genuinely solid.')));
+    lamp.appendChild(m);
+
+    scan.innerHTML='';
+    if(isInt(ac) && isInt(b) && Math.abs(ac) < 400){
+      scan.appendChild(H('div','hint','<b>Pairs that multiply to a·c = ' + num(ac) + '.</b> The scanner is reading the sum column for ' + num(b) + '.'));
+      MF.scanTable(scan, ac, b);
+    } else {
+      scan.appendChild(H('div','hint','a·c is ' + num(ac) + ' — not a whole number, so there is no list of whole pairs to walk at all.'));
+    }
+
+    steps.innerHTML='';
+    if(clean && res.factors && res.factors.length===2){
+      var f=res.factors, g=res.g;
+      var r1 = g*f[0][0]*f[1][1], r2 = g*f[1][0]*f[0][1];
+      var box = E('div','panel'); box.style.background='#fff'; box.style.margin='12px 0 0';
+      box.appendChild(H('div','panel-tag','CUTTING THE MIDDLE VEIN'));
+      box.appendChild(H('div','eq sm', quad(a,b,c)));
+      box.appendChild(H('div','eq sm','<span class="op">=</span> ' + sqTerm(a) + ' ' +
+        (r1<0?'− ':'+ ') + num(Math.abs(r1)) + 'x ' + (r2<0?'− ':'+ ') + num(Math.abs(r2)) + 'x ' +
+        (c<0?'− ':'+ ') + num(Math.abs(c)) +
+        ' <span class="dim" style="font-size:.7em">the middle split into the pair</span>'));
+      box.appendChild(H('div','eq sm','<span class="op">=</span> ' + MF.factorString(res) +
+        ' <span class="dim" style="font-size:.7em">the two halves shared the same bracket</span>'));
+      steps.appendChild(box);
+      MF.meltBar(steps, {sq:sqTerm(a), mid:(b===1?'x':(b===-1?'−x':num(b)+'x')), k:num(c),
+        caption:'The same lump, before anyone cut it.'});
+    }
+  }
+  draw();
+};
+
+MF.WORK.d5 = function(host){
+  host.appendChild(H('p','hint','Same three steps as depth 4, but the pair now multiplies to <b>a·c</b>. The gate is still a gate.'));
+  /* NOT a:2 b:7 c:3 - the play panel above opens on exactly that and prints
+     its factorisation 526px up the same screen (VERIFICATION s26). */
+  MF.gatedTask(host, {depth:'d5', id:'d5-p1', a:3, b:7, c:2, whys:{
+    loaded:'Right. The 3 in front means the pair multiplies to 3 × 2 = 6, not to 2.',
+    simple:'A simple trinomial has a plain x². Calling this simple sends you hunting pairs of 2, and there are none that add to 7.',
+    common:'3, 7 and 2 share no lump.',
+    twin:'Three terms, and 7x in the middle.',
+    solid:'It comes apart: (3x + 1)(x + 2).'
+  }});
+  MF.gatedTask(host, {depth:'d5', id:'d5-p2', a:6, b:7, c:-3, whys:{
+    loaded:'Right. a·c = 6 × (−3) = −18, and you need a pair from −18 that adds to 7.',
+    simple:'6 sits in front, so the c-pair trick misses.',
+    common:'6, 7 and 3 share nothing.',
+    twin:'Three terms.',
+    solid:'It comes apart: (2x + 3)(3x − 1).'
+  }});
+  MF.gatedTask(host, {depth:'d5', id:'d5-p3', a:3, b:-10, c:8, whys:{
+    loaded:'Right. a·c = 24, and you want a pair of 24 that adds to −10 — so both are negative.',
+    simple:'3 sits in front of the x².',
+    common:'3, 10 and 8 share no lump.',
+    twin:'Three terms, and 8 is not being subtracted.',
+    solid:'It comes apart: (3x − 4)(x − 2).'
+  }});
+};
+
+/* =========================================================================
+   DEPTH 6 - THE ASSAY OFFICE.  Bring in anything.
+   ========================================================================= */
+MF.parse = function(raw){
+  var s = String(raw||'').toLowerCase()
+    .replace(/[−–—]/g,'-').replace(/\s+/g,'')
+    .replace(/²/g,'^2').replace(/\*/g,'').replace(/x\^2/g,'X').replace(/xx/g,'X');
+  if(s==='') return {err:'Type something first — a number like 84, or an expression like x^2-5x+6.'};
+  if(s.indexOf('=')>=0) return {err:'Leave the equals sign off. The office assays a lump, it does not solve an equation.'};
+  if(/[a-wyz]/.test(s.replace(/X/g,''))) return {err:'This office only works in x. Letters other than x are a different mine.'};
+  if(/\^/.test(s)) return {err:'The office handles powers up to x² only. Write x^2, not x^3 or higher.'};
+
+  var terms = s.match(/[+-]?[^+-]+/g);
+  if(!terms) return {err:'That did not read as a number or an expression.'};
+  var a=0,b=0,c=0, seen=false;
+  for(var i=0;i<terms.length;i++){
+    var t = terms[i], m;
+    if((m = t.match(/^([+-]?\d*)X$/))){ a += coef(m[1]); seen=true; }
+    else if((m = t.match(/^([+-]?\d*)x$/))){ b += coef(m[1]); seen=true; }
+    else if((m = t.match(/^([+-]?\d+)$/))){ c += parseInt(m[1],10); seen=true; }
+    else return {err:'“' + t.replace(/X/g,'x^2') + '” did not read as a term. Terms look like 3x^2, -5x or 6.'};
+  }
+  if(!seen) return {err:'Nothing readable in there.'};
+  function coef(g){ if(g===''||g==='+') return 1; if(g==='-') return -1; return parseInt(g,10); }
+  if(a===0 && b===0) return {kind:'number', n:c};
+  return {kind:'poly', a:a, b:b, c:c};
+};
+
+MF.assay = function(host, parsed){
+  host.innerHTML='';
+  if(parsed.err){ host.appendChild(H('div','note again', parsed.err)); return; }
+
+  if(parsed.kind==='number'){
+    var n = parsed.n;
+    if(Math.abs(n) < 2){
+      host.appendChild(H('div','note again','0, 1 and −1 have no seam to find — they are the ground the whole system stands on rather than ore in it. Try a number from 2 upwards.'));
+      return;
+    }
+    var prime = isPrime(n);
+    var m = E('div','meter ' + (prime?'cloudy':'clean'));
+    m.appendChild(E('div','lampdot'));
+    m.appendChild(H('div','m-txt', prime
+      ? '<b>' + num(n) + ' is solid rock — a prime.</b> Nothing but 1 and itself runs through it.'
+      : '<b>' + num(n) + ' comes apart.</b> Its seam is <b>' + primePowerString(n) + '</b>, and that seam is the same whichever pair you cut first.'));
+    host.appendChild(m);
+    if(!prime){
+      host.appendChild(H('div','hint','<b>Every pair in ' + num(n) + ':</b>'));
+      var chips = E('div','chips');
+      factorPairs(n).forEach(function(p){ chips.appendChild(H('span','chip sml', p[0] + ' × ' + p[1])); });
+      host.appendChild(chips);
+      host.appendChild(H('div','hint','Divisors: ' + divisors(n).join(', ')));
+    }
+    host.appendChild(MF.says('<b>Mr Factor:</b> That was a number, and the office did exactly what it does to an expression: ' +
+      'named the seam and reported it. <b>' + num(n) + '</b> and <b>x² − 5x + 6</b> are not two different jobs. They are the same job at two depths.', 52));
+    return;
+  }
+
+  var a=parsed.a, b=parsed.b, c=parsed.c;
+  var t = MF.tells(a,b,c);
+  var res = t.res;
+  var seam = MF.SEAMS[res.kind];
+
+  host.appendChild(H('div','eq', quad(a,b,c)));
+
+  var tl = E('div');
+  t.tells.forEach(function(x){
+    var row = E('div','meter ' + (x.on?'clean':''));
+    row.style.margin='6px 0'; row.style.padding='8px 12px';
+    row.appendChild(E('div','lampdot'));
+    row.appendChild(H('div','m-txt','<b>' + (x.on?'✓ ':'✕ ') + x.label + '</b> — ' + (x.on?x.yes:x.no)));
+    tl.appendChild(row);
+  });
+  host.appendChild(tl);
+
+  var v = E('div','panel'); v.style.background='#fff';
+  v.appendChild(H('div','panel-tag','SEAM CALLED'));
+  v.appendChild(H('div','eq sm','<b>' + seam.name + '</b> <span class="dim">(' + seam.short + ')</span>'));
+  v.appendChild(H('p','hint', seam.tell));
+
+  var fs = MF.factorString(res);
+  if(res.kind!=='solid' && fs){
+    v.appendChild(H('div','eq', quad(a,b,c) + ' <span class="op">=</span> ' + fs));
+    var back = MF.expand(res);
+    var ok = (back.a===a && back.b===b && back.c===c);
+    v.appendChild(H('div','note ' + (ok?'found':'trap'),
+      '<b>Checked by melting it back:</b> ' + fs + ' multiplies out to <b>' + quad(back.a,back.b,back.c) + '</b>' +
+      (ok ? ' — the same lump it started as.' : ' — which does NOT match, and that is a fault in this office, not in you.')));
+    if(!parsed.hideModel && a!==0 && res.factors && res.factors.length===2){
+      var f=res.factors, g=res.g;
+      MF.areaModel(v, {
+        rows:[{label:(f[1][0]===1?'x':num(f[1][0])+'x'), known:true},{label:num(f[1][1]), known:true}],
+        cols:[{label:(f[0][0]===1?'x':num(f[0][0])+'x'), known:true},{label:num(f[0][1]), known:true}],
+        cells:[
+          [{kind:'sq', text:num(g*f[0][0]*f[1][0])==='1'?'x²':num(g*f[0][0]*f[1][0])+'x²'},
+           {kind:'x', text:xterm(g*f[0][1]*f[1][0]), negative:(g*f[0][1]*f[1][0])<0}],
+          [{kind:'x', text:xterm(g*f[0][0]*f[1][1]), negative:(g*f[0][0]*f[1][1])<0},
+           {kind:'k', text:num(g*f[0][1]*f[1][1]), negative:(g*f[0][1]*f[1][1])<0}]
+        ],
+        sideMode:'show',
+        caption:'You asked the office, so the office draws the sides. At a working face they stay as question marks until you produce them.'
+      });
+    }
+  } else if(res.realRoots){
+    v.appendChild(H('div','note trap','<b>No whole-number seam.</b> Nothing multiplies to ' +
+      num(a===1?c:a*c) + ' and adds to ' + num(b) + ' on the integers. The seam is real — it runs near x = ' +
+      num(Math.round(res.realRoots[0]*1000)/1000) + ' and x = ' + num(Math.round(res.realRoots[1]*1000)/1000) +
+      ' — but those are decimals that never end, so no bracket of whole numbers will ever land on it. ' +
+      '“Cannot be factored” nearly always means <em>not on these lines</em>, and this is what that looks like.'));
+  } else {
+    v.appendChild(H('div','note trap','<b>Solid rock, all the way down.</b> There is no seam here on whole numbers ' +
+      'and none on decimals either. Nothing was missed — some lumps genuinely do not come apart, and finding that out is a result.'));
+  }
+  host.appendChild(v);
+  function xterm(k){ if(k===1) return 'x'; if(k===-1) return '−x'; return num(k)+'x'; }
+};
+
+MF.PLAY.d6 = function(host){
+  var row = E('div','controls');
+  var w = E('div','ctl'); w.style.flex='1 1 320px';
+  w.appendChild(H('label',null,'Put it on the counter'));
+  var inp = document.createElement('input');
+  inp.type='text'; inp.value='x^2-5x+6'; inp.style.width='100%';
+  inp.setAttribute('aria-label','A number or expression to assay');
+  w.appendChild(inp); row.appendChild(w);
+  var bw = E('div','ctl'); bw.style.minWidth='0';
+  var go = E('button','btn primary','Assay it'); go.type='button';
+  bw.appendChild(go); row.appendChild(bw);
+  host.appendChild(row);
+
+  var ex = E('div','chips');
+  ex.appendChild(H('span','chip sml','<b>try:</b>'));
+  ['84','x^2-5x+6','x^2-9','x^2+4','6x^2+7x-3','2x^2+8x','x^2-2','97','x^2+6x+9','12x^2-75']
+    .forEach(function(s){
+      var c = E('button','chip', s); c.type='button';
+      on(c,'click',function(){ inp.value=s; run(); });
+      ex.appendChild(c);
+    });
+  host.appendChild(ex);
+
+  var out = E('div'); host.appendChild(out);
+  function run(){ MF.assay(out, MF.parse(inp.value)); }
+  on(go,'click',run);
+  on(inp,'keydown',function(e){ if(e.key==='Enter') run(); });
+  run();
+
+  host.appendChild(MF.says('<b>Mr Factor:</b> Bring me something you think is unbreakable. ' +
+    '<b>x² + 4</b> is. <b>x² − 2</b> is not — it has a seam, it just does not run on whole numbers. ' +
+    'Those two look almost identical and they are completely different rocks, which is the last thing this mine has to teach you.'));
+};
+
+MF.WORK.d6 = function(host){
+  host.appendChild(H('p','hint','Four pieces, mixed on purpose, and nobody tells you which kind is coming. That is the only difference between this and depth 4 — and it is the whole difference.'));
+  MF.gatedTask(host, {depth:'d6', id:'d6-p1', a:1, b:0, c:-16, whys:{
+    twin:'Right. Two terms, both perfect squares, minus between them, no middle term.',
+    simple:'A simple trinomial has three terms. This has two.',
+    solid:'It comes apart cleanly — both ends are squares.',
+    common:'x² and 16 share nothing.',
+    loaded:'Nothing sits in front of the x².'
+  }});
+  MF.gatedTask(host, {depth:'d6', id:'d6-p2', a:1, b:1, c:-12, whys:{
+    simple:'Right. Plain x², three terms, so hunt pairs of −12 that add to 1.',
+    twin:'There is a middle term, so it is not two squares subtracted.',
+    solid:'It comes apart: −3 and 4.',
+    common:'1, 1 and 12 share no lump.',
+    loaded:'Nothing sits in front of the x².'
+  }});
+  MF.gatedTask(host, {depth:'d6', id:'d6-p3', a:2, b:-7, c:3, whys:{
+    loaded:'Right. a·c = 6, and you want a pair of 6 that adds to −7 — so both negative.',
+    simple:'The 2 in front changes what the pair multiplies to.',
+    twin:'Three terms.',
+    common:'2, 7 and 3 share nothing.',
+    solid:'It comes apart: (2x − 1)(x − 3).'
+  }});
+  MF.gatedTask(host, {depth:'d6', id:'d6-p4', a:1, b:0, c:9, whys:{
+    solid:'Right, and this is the hardest call on the site. Both terms are squares — but they are ADDED, and no pair of numbers multiplies to 9 and adds to 0. Saying "this does not come apart" is a real answer, not a surrender.',
+    twin:'A twin seam needs a MINUS. With a plus, the squares do not help you at all.',
+    simple:'Three terms are needed, and no pair multiplies to 9 and adds to 0 anyway.',
+    common:'x² and 9 share nothing.',
+    loaded:'Nothing sits in front of the x².'
+  }});
+  host.appendChild(MF.says('<b>Mr Factor:</b> That is the mine. You went in able to multiply brackets out, ' +
+    'and you are coming out able to look at a lump of rock and say what is inside it before you swing. ' +
+    'Everything below the surface was the same move: <em>the structure was already there.</em>', 58));
+};
+
+/* =========================================================================
+   BOOT
+   ========================================================================= */
+MF.boot = function(){
+  var motes = MF.ambient();
+
+  var rail = q('#rail');
+  MF.DEPTHS.forEach(function(d){
+    var a = document.createElement('a');
+    a.className='rung'; a.href='#'+d.id;
+    a.appendChild(H('span','d','DEPTH ' + d.n + ' · ' + d.tag));
+    a.appendChild(document.createTextNode(d.title));
+    rail.appendChild(a);
+  });
+
+  /* One depth must never be able to take the others down with it. A single
+     throw inside a mount used to abort this loop and leave every LATER depth
+     as an empty rule - which reads as "not built yet" rather than as a fault,
+     so nothing raised an alarm (VERIFICATION s8: dead content raises none). */
+  var failed = [];
+  MF.DEPTHS.forEach(function(d){
+    try { MF.buildDepth(d); }
+    catch(err){
+      failed.push(d.id);
+      console.error('[mine] depth ' + d.id + ' failed to build:', err);
+      var sec = q('#'+d.id);
+      if(sec) sec.appendChild(H('div','note trap','<b>This depth did not build.</b> That is a fault in the mine, not in you — the rest of the shaft still works. (' + String(err.message||err) + ')'));
+    }
+  });
+  MF.failedDepths = failed;
+
+  q('#mf-hero').appendChild(MF.art(96));
+
+  /* you-are-here, purely navigational */
+  if(window.IntersectionObserver){
+    var links = {};
+    Array.prototype.forEach.call(rail.querySelectorAll('a.rung'), function(a){
+      links[a.getAttribute('href').slice(1)] = a;
+    });
+    var io = new IntersectionObserver(function(entries){
+      entries.forEach(function(en){
+        if(en.isIntersecting){
+          Array.prototype.forEach.call(rail.querySelectorAll('a.rung'),function(a){ a.classList.remove('here'); });
+          if(links[en.target.id]) links[en.target.id].classList.add('here');
+        }
+      });
+    }, {rootMargin:'-20% 0px -70% 0px'});
+    MF.DEPTHS.forEach(function(d){ io.observe(q('#'+d.id)); });
+  }
+
+  console.log('[mine] booted: ' + MF.DEPTHS.length + ' depths, ' + motes + ' dust motes');
+  return {depths: MF.DEPTHS.length, motes: motes};
+};
+
+/* =========================================================================
+   MF.validate()  - run it in the console. It reports its DENOMINATOR and it
+   carries a control that must fail (VERIFICATION s41).
+   ========================================================================= */
+MF.validate = function(){
+  var errs = [], checked = 0;
+
+  /* 1. every factorisation the engine produces must multiply back exactly */
+  for(var a=1; a<=6; a++){
+    for(var b=-12; b<=12; b++){
+      for(var c=-12; c<=12; c++){
+        var r = MF.factorQuadratic(a,b,c);
+        if(!r.factors) continue;
+        var back = MF.expand(r);
+        checked++;
+        if(back.a!==a || back.b!==b || back.c!==c){
+          errs.push('expand mismatch on ' + a + ',' + b + ',' + c + ' -> ' + back.a + ',' + back.b + ',' + back.c);
+        }
+      }
+    }
+  }
+
+  /* 2. seam classification on cases chosen because they are easy to get wrong */
+  var cls = [
+    [1,0,-9,'twin'], [4,0,-25,'twin'], [1,-5,6,'simple'], [1,0,4,'solid'],
+    [1,0,-2,'solid'], [2,7,3,'loaded'], [3,12,0,'common'], [1,1,0,'common'],
+    [6,7,-3,'loaded'], [1,6,9,'simple'], [0,5,15,'common'], [12,0,-75,'common']
+  ];
+  cls.forEach(function(t){
+    checked++;
+    var got = MF.factorQuadratic(t[0],t[1],t[2]).kind;
+    if(got!==t[3]) errs.push('seam call: ' + t[0]+','+t[1]+','+t[2] + ' expected ' + t[3] + ' got ' + got);
+  });
+
+  /* 3. no printed value may leak a float artefact */
+  var floats = [0.1+0.2, 1/3, 4.5, -0.5, 2.0000000001];
+  floats.forEach(function(f){
+    checked++;
+    var s = num(f);
+    if(s.length > 9) errs.push('num() printed a long float: ' + s + ' for ' + f);
+  });
+
+  /* 4. the parser must refuse the lazy inputs, not accept them */
+  var lazy = ['', 'x', 'hello', 'x^3', 'y^2+1', '2x=4'];
+  lazy.forEach(function(s){
+    checked++;
+    var p = MF.parse(s);
+    if(s==='x'){ if(p.err) errs.push('parser rejected the legitimate input "x"'); return; }
+    if(!p.err) errs.push('parser accepted lazy input: "' + s + '"');
+  });
+
+  /* 5. every depth actually BUILT. The check that was missing when a name
+        collision blanked six depths and no instrument on the page noticed. */
+  MF.DEPTHS.forEach(function(d){
+    checked++;
+    var sec = document.getElementById(d.id);
+    if(!sec){ errs.push('depth ' + d.id + ' section missing'); return; }
+    var txt = (sec.innerText||sec.textContent||'').trim();
+    if(txt.length < 300) errs.push('depth ' + d.id + ' rendered only ' + txt.length + ' characters - it did not build');
+    if(!sec.querySelector('.play-host') || !sec.querySelector('.play-host').children.length)
+      errs.push('depth ' + d.id + ' has an empty play panel');
+  });
+  if(MF.failedDepths && MF.failedDepths.length) errs.push('depths that threw while building: ' + MF.failedDepths.join(','));
+
+  /* 6. CONTAINER INTEGRITY. MF.areaModel must draw into a host WITHOUT
+        destroying what is already there. It used to open with
+        host.innerHTML='', which silently deleted the Step 3 heading from 5 of
+        9 gated tasks and the ENTIRE seam verdict from 6 of 10 assay examples -
+        while validate() and sweep() both reported clean, because what was left
+        behind was plentiful and looked deliberate. These three checks are the
+        eyes those instruments did not have. */
+  var probe = document.createElement('div');
+  probe.appendChild(H('div','probe-marker','KEEP ME'));
+  MF.areaModel(probe, {rows:[{label:'x'}], cols:[{label:'x'}],
+    cells:[[{kind:'sq', text:'x²'}]], sideMode:'show', caption:'probe'});
+  checked++;
+  if(!probe.querySelector('.probe-marker')) errs.push('MF.areaModel destroyed authored content in its host');
+  if(!probe.querySelector('.stage'))        errs.push('MF.areaModel drew nothing');
+
+  /* the assay office must show a VERDICT, not only a picture */
+  var ah = document.createElement('div');
+  MF.assay(ah, MF.parse('x^2-5x+6'));
+  checked++;
+  if(ah.textContent.indexOf('SEAM CALLED') < 0)
+    errs.push('assay office rendered no seam verdict for x^2-5x+6');
+  if(ah.textContent.indexOf('Checked by melting it back') < 0)
+    errs.push('assay office rendered no check-by-multiplying-back line');
+
+  /* a gated task driven end to end must still be holding its Step 3 text */
+  var gh = document.createElement('div');
+  MF.gatedTask(gh, {depth:'d4', id:'probe-gate', a:1, b:9, c:20, whys:{}});
+  Array.prototype.forEach.call(gh.querySelectorAll('.choice'), function(ch){ ch.click(); });
+  var ins = gh.querySelectorAll('input[type=text]');
+  var tb  = Array.prototype.filter.call(gh.querySelectorAll('button'), function(b){ return /Test this pair/.test(b.textContent); })[0];
+  checked++;
+  if(ins.length === 2 && tb){
+    ins[0].value = '4'; ins[1].value = '5'; tb.click();
+    if(gh.textContent.indexOf('check it by melting it back') < 0)
+      errs.push('gated stage 3 lost its heading - something wiped its container');
+    if(gh.textContent.indexOf('(x + 4)(x + 5)') < 0)
+      errs.push('gated stage 3 did not print the factorisation');
+  } else { errs.push('gated task did not open a pair input after the seam was called'); }
+  MF.logs['d4'] = (MF.logs['d4']||[]).filter(function(s){ return s.indexOf('x² + 9x + 20') < 0; });
+
+  /* 7. CONTROL - this must fail, or the checks above are not looking at anything */
+  var control = MF.factorQuadratic(1,-5,6);
+  var controlFailed = !(control.kind === 'twin');   /* it is 'simple'; asserting twin must be false */
+  if(!controlFailed) errs.push('CONTROL DID NOT FAIL - the instrument is not measuring');
+
+  var out = {checked: checked, errors: errs.length, control: controlFailed ? 'failed as required' : 'DID NOT FAIL',
+             detail: errs.slice(0,20)};
+  console.log('[mine] validate: ' + checked + ' checks, ' + errs.length + ' errors, control ' + out.control);
+  if(errs.length) console.warn(errs.slice(0,20));
+  return out;
+};
+
+/* MF.sweep() - opens every working face and inspects the RENDERED screens
+   rather than the source that produced them (VERIFICATION s13). */
+MF.sweep = function(){
+  Array.prototype.forEach.call(document.querySelectorAll('.work-toggle'), function(t){
+    if(t.getAttribute('aria-expanded')!=='true') t.click();
+  });
+  var tasks = document.querySelectorAll('.task, .panel .choices');
+  var choiceGroups = document.querySelectorAll('.choices');
+  /* NO "positions" FIELD HERE. It used to be declared and never written, so it
+     returned {} on every run while SITE-STATE cited it as the source of the
+     correct-option distribution. Measuring that requires CLICKING every option,
+     which mutates the page - so it lives in MF.positionAudit() below, which
+     says so in its name and its return value. */
+  var report = {choiceGroups: choiceGroups.length, options:0, groupsWithNoWhy:0, gates:0};
+  Array.prototype.forEach.call(choiceGroups, function(g){
+    var opts = g.querySelectorAll('.choice');
+    report.options += opts.length;
+    var missing = 0;
+    Array.prototype.forEach.call(opts, function(o){
+      var why = o.querySelector('.why');
+      if(!why || !why.textContent.trim()) missing++;
+    });
+    if(missing) report.groupsWithNoWhy++;
+  });
+  report.gates = document.querySelectorAll('.panel .choices').length;
+  report.workPanels = document.querySelectorAll('.work-body.open').length;
+  report.playHosts = document.querySelectorAll('.play-host').length;
+  report.svgs = document.querySelectorAll('.stage svg').length;
+  console.log('[mine] sweep:', report);
+  return report;
+};
+
+/* MF.positionAudit() - DESTRUCTIVE. Clicks every option in every group to find
+   where the correct one sits, then reports the distribution. Reload afterwards.
+   The failure it exists to catch: the sister site shipped every correct option
+   FIRST, so a student could score full marks without reading a word. */
+MF.positionAudit = function(){
+  Array.prototype.forEach.call(document.querySelectorAll('.work-toggle'), function(t){
+    if(t.getAttribute('aria-expanded')!=='true') t.click();
+  });
+  var pos={}, none=0, multi=0, groups=document.querySelectorAll('.choices');
+  Array.prototype.forEach.call(groups, function(g){
+    var hits=[];
+    Array.prototype.forEach.call(g.querySelectorAll('.choice'), function(o,i){
+      o.click(); if(o.getAttribute('data-result')==='yes') hits.push(i);
+    });
+    if(!hits.length) none++; else if(hits.length>1) multi++; else pos[hits[0]]=(pos[hits[0]]||0)+1;
+  });
+  var best = Object.keys(pos).reduce(function(m,k){ return Math.max(m,pos[k]); },0);
+  var out = {destructive:true, groups:groups.length, correctAtIndex:pos,
+             groupsWithNoCorrectOption:none, groupsWithMultipleCorrect:multi,
+             bestSinglePositionStrategy: groups.length? Math.round(best/groups.length*100)+'%' : 'n/a'};
+  console.log('[mine] positionAudit (page is now dirty - reload):', out);
+  return out;
+};
+
+if(document.readyState==='loading') document.addEventListener('DOMContentLoaded', MF.boot);
+else MF.boot();
+</script>
+</body>
+</html>
