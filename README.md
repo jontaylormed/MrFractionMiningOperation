@@ -1,69 +1,80 @@
 # Mr Factor's Mining Operation
 
-A single-file, zero-dependency site for learning to factor binomials and trinomials — by treating factoring and prime factorisation as **the same act at two depths**.
+A single-file, zero-dependency site for learning to factor — built on one idea: **a prime and an irreducible polynomial are the same object.** Factoring 72 and factoring `x² − 5x + 6` are not two topics taught years apart. They are the same act, and down here they use the same three tools.
 
-**Ore looks like rock. `x² − 5x + 6` looks like a lump.** A vein *is* a factor: it was in the rock before the miner arrived. Mining here is not guessing where to dig — it is pulling out structure that was already there.
+**Ore looks like rock.** `x² − 5x + 6` looks like a lump.
 
 ## Run it
 
-Open `index.html`. That is the whole instruction. No build step, no server, no dependencies, no network requests, no storage.
+Open `index.html`. That is the whole instruction — no build step, no server, no dependencies, no network requests, no storage. Verified: **0 external references, 0 network calls, 0 storage APIs, 78 KB.**
 
-## Publish it on GitHub Pages
+## The metaphor, and it is load-bearing
 
-1. Push this folder to a repository.
-2. **Settings → Pages → Build and deployment → Deploy from a branch**, select your branch and `/ (root)`.
-3. Open the published URL and confirm the page loads, the shaft lists seven depths, and the console reports `[mine] booted: 7 depths`.
+| | |
+|---|---|
+| **ore** | any expression — a number, a monomial, a binomial, a trinomial |
+| **smelting** | **factoring.** Ore goes in and separates into what was always in it |
+| **an ingot** | an **irreducible** — a prime, or a polynomial no whole-number seam runs through. *The same thing.* |
+| **the mold** | **distributing.** Metals go in, one formed object comes out |
+| **the pour** | the check — and the only correctness signal in the build |
 
-Step 3 is not optional. A site that works locally says nothing about the copy anyone else is looking at — on the sister project this exact step was skipped and the site went live completely broken while every local check passed.
+An ingot is not a failure. It is not a lump that refused to break. **It is already pure** — the most refined thing in the mine. That reframing is the whole point: `x² + 4` is an element, exactly as 97 is.
 
-## The seven depths
+## The loop
 
-| | | |
-|---|---|---|
-| **0** | The Surface Cut | the distributive property, in both directions |
-| **1** | The Assay Bench | factor pairs, primes, and two shafts reaching one seam |
-| **2** | The Smelter | `(x + p)(x + q)` melting into a trinomial — the furnace **forwards** |
-| **3** | The Sorting Line | naming which of five seams you are holding |
-| **4** | The Split Seam | `x² + bx + c` — the pair that multiplies *and* adds |
-| **5** | The Deep Seam | `ax² + bx + c` by the `a·c` split |
-| **6** | The Assay Office | bring anything: any integer, or any expression up to `x²` |
+**ASSAY** → **SMELT** → **POUR**. Three verbs, everywhere, at every layer.
 
-Every depth opens with a **play panel** — sliders, scanners and animations with nothing to answer — and then a working face **the student opens themselves**. No depth is locked, and none unlocks by performance.
+- **Assay** is a gate. Name what kind of rock you are holding; nothing else on the bench opens until you have called it. A call you made is the only thing you can later catch yourself out on.
+- **Smelt** is where you say what metals are in there. **Nothing here tells you whether you are right.**
+- **Pour** is where you find out. The mold forms around whatever you poured — you never choose the shape, because distribution's result is determined — and the casting comes out **clean, or visibly deformed**, naming which term disagrees.
 
-## What it does differently
+Correctness lives in the physics of the world, not in a mark.
 
-- **Nothing is scored.** No percentages, no timers, no level-ups. Each depth keeps a "shift report" describing what you did, including changing your mind.
-- **The picture shows what you were given.** At the working face the area tiles are drawn and the *sides are left as `?`* — because the sides are the question.
-- **You commit before you compute.** Naming the seam type is a gate; the factoring UI does not exist until you have called it.
-- **It breaks a surface cue on purpose.** *"It has a minus sign, so it's a difference of squares"* fails on `x² − 5x + 6`, and *"it has a plus sign, so it factors"* fails on `x² + 4`.
-- **Integers versus decimals is taught, not assumed.** Push the smelter onto halves and tenths: multiplying never fails, but the seam stops landing on whole numbers. "Cannot be factored" nearly always means *not on these lines* — and `x² − 2` (a real seam, irrational) versus `x² + 4` (no seam at all) is the difference.
+## Digging is decoupled from smelting
+
+You can descend as deep as you like and fill your cart **without processing anything**. Depth is where you chose to go, never what you earned. There is no performance gate anywhere in the shaft.
+
+Five layers, by ore richness: plain numbers → shared metal → two-term ore and pure ingots → `x² + bx + c` → `ax² + bx + c`. Four further shafts are cut but not yet timbered, and are named on screen so you know the mine keeps going.
+
+## Scoring, not grading
+
+The yard counts what you own and only ever grows. Gear appears because you went somewhere, never because you scored. There are **no percentages, no accuracy rates, no X-out-of-Y, no ranks, and nothing that goes down** — enforced mechanically by a check in `MF.validate()`, with a control that must fail.
+
+The line between a score and a grade is drawn in `docs/MR-FRACTION-PHILOSOPHY.md` §2.5a.
 
 ## Checking it
 
-Two instruments, both in the page, both reporting their denominator:
-
 ```bash
 # open index.html, then in the browser console:
-MF.validate()   # 612 checks, 0 errors, and a control that MUST fail
-MF.sweep()      # opens every working face and inspects the rendered screens
+MF.validate()
 ```
 
-`MF.validate()` carries a deliberately false assertion that has to come back false. A check that only ever passes is worthless.
+**2,007 checks across seven groups, 0 errors, and two controls that must fail — and do.** It sweeps the factor engine, the seam classification, **800 generated lumps across the five layers** (the ore is generated, not authored, so nobody has ever seen most of it), the printer, the pour, and the no-grades rule.
+
+`MF.playthrough(layer)` drives a whole lump end to end — dig, assay, smelt, pour — and reports what it did.
+
+## Publishing to GitHub Pages
+
+1. Create a repository and push this folder.
+2. **Settings → Pages → Deploy from a branch**, pick your branch and `/ (root)`.
+3. **Open the published URL and check it.** Console should read `[mine] booted: 5 layers`, and `MF.validate()` should report 0 errors *there*, not just here.
+
+Step 3 is not optional. A site that works locally says nothing about the copy anyone else opens — on the sister project that step was skipped and the live site was completely broken while every local check passed.
 
 ## Layout
 
 ```
-index.html              the entire site
-README.md               this file
-docs/SITE-STATE.md      the only document that states what exists
-docs/VERIFICATION.md    42 rules, each written after a real failure
-docs/MR-FRACTION-PHILOSOPHY.md   what makes something a Mr Fraction site
-.claude/agents/         five review agents with deliberately disjoint ownership
-tools/                  serve.ps1, zz-drive.js (test scaffolding, never shipped)
+index.html                       the entire site
+docs/MINE-SPEC.md                what v1 is, and what is deliberately out
+docs/MR-FRACTION-PHILOSOPHY.md   what makes it a Mr Fraction site (incl. §2.5a)
+docs/SITE-STATE.md               the only document that states what exists
+docs/VERIFICATION.md             42 rules, each written after a real failure
+.claude/agents/                  five review charters, deliberately disjoint
+tools/                           serve.ps1, zz-drive.js — scaffolding, never shipped
 ```
 
-## Credits
+## Status
 
-Type stack is Black Han Sans and Atkinson Hyperlegible where installed, with system fallbacks — no font is fetched over the network. Mr Factor is drawn in inline SVG.
+v1 is **the Ore Cart**: dig, assay, smelt, pour, keep the metals. The guided route and the fully open face are v2 and v3 — modes on the same bench rather than rebuilds — and the challenge shafts open one at a time, grouping first.
 
 **No student has used this yet.** That is the missing check, and nothing in the process above substitutes for it.

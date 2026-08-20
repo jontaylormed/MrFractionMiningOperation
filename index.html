@@ -74,6 +74,11 @@ header.top{position:relative; z-index:2; background:linear-gradient(180deg,var(-
 .navbtn:hover{border-color:var(--lamp); color:#FFF3DE}
 .navbtn[aria-current=page]{background:var(--lamp); border-color:var(--lamp); color:#3A2A10}
 .wrap{position:relative; z-index:1; max-width:1240px; margin:0 auto; padding:22px 18px 90px}
+/* #screen is focused after every navigation so a screen reader announces the
+   new view. That drew the browser's default ring around the ENTIRE page.
+   :focus-visible keeps the ring for real keyboard focus and drops it for the
+   programmatic call - removing it outright would cost keyboard users. */
+#screen:focus:not(:focus-visible){outline:none}
 
 /* ---------- generic ---------- */
 .panel{background:var(--paper-2); border:2px solid var(--rule); border-radius:14px; padding:18px; margin:16px 0}
