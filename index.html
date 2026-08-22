@@ -830,7 +830,7 @@ MF.surfaceScene = function(){
   var wrap = E('div','scene');
   var W=900, VH=420;
   var svg = S('svg',{viewBox:'0 0 '+W+' '+VH, role:'img',
-    'aria-label':'A mining operation on the surface: a headframe, a smelter shed with a chimney, an assay office, an ore cart on rails, and the mine entrance.'});
+    'aria-label':'A mining operation on the surface: a winding house with a turning wheel, the smelting house, the casting shed, the forge with its furnace lit, an ore cart on rails, and the mine entrance.'});
 
   function P(d,f,extra){ var n=S('path',{d:d,fill:f}); if(extra) for(var k in extra) n.setAttribute(k,extra[k]); svg.appendChild(n); return n; }
   function R(x,y,w,h,f,extra){ var n=S('rect',{x:x,y:y,width:w,height:h,fill:f}); if(extra) for(var k in extra) n.setAttribute(k,extra[k]); svg.appendChild(n); return n; }
@@ -892,30 +892,68 @@ MF.surfaceScene = function(){
   wheelMount.appendChild(wheel);
   hf.appendChild(wheelMount);
   hf.appendChild(S('line',{x1:'51',y1:'27',x2:'51',y2:'150',stroke:'#2E2620','stroke-width':'2'}));
+  /* named, because an unexplained spinning wheel is just a spinning wheel -
+     and this is the winding house the Shifter's order is placed for */
+  /* above the wheel, not at the base: at ground level the ore cart runs over
+     it on its way down the rails and eats half the words */
+  var hfLabel = S('text',{x:'51',y:'-22','text-anchor':'middle',class:'hotlabel'});
+  hfLabel.setAttribute('opacity','.85');
+  hfLabel.textContent = 'the winding house';
+  hf.appendChild(hfLabel);
   svg.appendChild(hf);
 
-  /* ---- smelter shed with chimney and smoke ---- */
-  var sm = S('g',{transform:'translate(430,214)'});
-  sm.appendChild(S('rect',{x:'0',y:'34',width:'128',height:'86',rx:'4',fill:'#7A5B3A'}));
-  sm.appendChild(S('path',{d:'M-8 36 L64 4 L136 36 Z',fill:'#8C4A3F'}));
-  sm.appendChild(S('rect',{x:'92',y:'-40',width:'22',height:'52',fill:'#6B4A32'}));
-  sm.appendChild(S('rect',{x:'88',y:'-46',width:'30',height:'9',rx:'2',fill:'#4A3F34'}));
+  /* ---- THE SMELTING HOUSE -> the ore workshop.
+         The chimney building is where ore is taken APART, so it opens the
+         workshop about smelting numbers into primes. It used to open the MOLD
+         workshop, which is the opposite operation: the labels were on the
+         wrong doors. ---- */
+  var sm = S('g',{transform:'translate(238,224)'});
+  sm.appendChild(S('rect',{x:'0',y:'34',width:'120',height:'80',rx:'4',fill:'#7A5B3A'}));
+  sm.appendChild(S('path',{d:'M-8 36 L60 4 L128 36 Z',fill:'#8C4A3F'}));
+  sm.appendChild(S('rect',{x:'86',y:'-40',width:'22',height:'52',fill:'#6B4A32'}));
+  sm.appendChild(S('rect',{x:'82',y:'-46',width:'30',height:'9',rx:'2',fill:'#4A3F34'}));
   [0,1,2].forEach(function(k){
-    var puff = S('circle',{cx:'103',cy:'-50',r:String(8+k*2),fill:'#D8CFC0',class:'sc-smoke'});
+    var puff = S('circle',{cx:'97',cy:'-50',r:String(8+k*2),fill:'#D8CFC0',class:'sc-smoke'});
     puff.style.animationDelay = (k*1.5)+'s';
     sm.appendChild(puff);
   });
-  sm.appendChild(S('rect',{x:'18',y:'62',width:'34',height:'34',rx:'3',fill:'#E2600F',opacity:'.9',class:'sc-lamp'}));
-  sm.appendChild(S('rect',{x:'74',y:'70',width:'26',height:'26',rx:'3',fill:'#3A2A1C'}));
+  sm.appendChild(S('rect',{x:'16',y:'58',width:'34',height:'34',rx:'3',fill:'#E2600F',opacity:'.9',class:'sc-lamp'}));
+  sm.appendChild(S('rect',{x:'70',y:'66',width:'26',height:'26',rx:'3',fill:'#3A2A1C'}));
   svg.appendChild(sm);
 
-  /* ---- assay office ---- */
-  var ao = S('g',{transform:'translate(636,250)'});
-  ao.appendChild(S('rect',{x:'0',y:'26',width:'96',height:'66',rx:'4',fill:'#6E7B87'}));
-  ao.appendChild(S('path',{d:'M-6 28 L48 2 L102 28 Z',fill:'#4A5560'}));
-  ao.appendChild(S('rect',{x:'14',y:'46',width:'22',height:'22',rx:'2',fill:'#FFE9A8',class:'sc-lamp'}));
-  ao.appendChild(S('rect',{x:'58',y:'46',width:'22',height:'22',rx:'2',fill:'#FFE9A8'}));
-  svg.appendChild(ao);
+  /* ---- THE CASTING SHED -> the mold workshop. Ingots stacked outside. ---- */
+  var cs = S('g',{transform:'translate(398,246)'});
+  cs.appendChild(S('rect',{x:'0',y:'26',width:'104',height:'66',rx:'4',fill:'#6E7B87'}));
+  cs.appendChild(S('path',{d:'M-6 28 L52 2 L110 28 Z',fill:'#4A5560'}));
+  cs.appendChild(S('rect',{x:'14',y:'46',width:'22',height:'22',rx:'2',fill:'#FFE9A8',class:'sc-lamp'}));
+  cs.appendChild(S('rect',{x:'62',y:'46',width:'26',height:'26',rx:'3',fill:'#2E3840'}));
+  /* a stack of finished ingots by the door */
+  [[0,0],[13,0],[6,-9]].forEach(function(p){
+    cs.appendChild(S('rect',{x:String(108+p[0]),y:String(80+p[1]),width:'15',height:'8',rx:'2',
+      fill:'#C8A24B',stroke:'#8A6A2A','stroke-width':'1'}));
+  });
+  svg.appendChild(cs);
+
+  /* ---- THE FORGE. It had no building at all: a whole screen with no door in
+         a world whose whole principle is that the buildings ARE the doors. ---- */
+  var fg = S('g',{transform:'translate(546,238)'});
+  fg.appendChild(S('rect',{x:'0',y:'30',width:'116',height:'78',rx:'4',fill:'#5E4636'}));
+  fg.appendChild(S('path',{d:'M-8 32 L58 2 L124 32 Z',fill:'#6B3F32'}));
+  /* squat stone chimney, and the furnace mouth burning inside */
+  fg.appendChild(S('rect',{x:'6',y:'-24',width:'26',height:'56',rx:'2',fill:'#6E6055'}));
+  fg.appendChild(S('rect',{x:'2',y:'-30',width:'34',height:'9',rx:'2',fill:'#4A4038'}));
+  [0,1].forEach(function(k){
+    var puff = S('circle',{cx:'19',cy:'-34',r:String(7+k*3),fill:'#C7BCAE',class:'sc-smoke'});
+    puff.style.animationDelay = (k*2.1)+'s';
+    fg.appendChild(puff);
+  });
+  var mouth = S('path',{d:'M40 96 q0 -30 24 -30 q24 0 24 30 Z',fill:'#E2600F',class:'sc-lamp'});
+  fg.appendChild(mouth);
+  fg.appendChild(S('path',{d:'M46 96 q0 -21 18 -21 q18 0 18 21 Z',fill:'#FFB347',opacity:'.85'}));
+  /* the anvil out front, which is what makes it read as a forge at a glance */
+  fg.appendChild(S('path',{d:'M-24 104 h30 l-4 8 h-22 Z',fill:'#4A5158'}));
+  fg.appendChild(S('path',{d:'M-30 96 q10 -7 24 -5 q10 1 14 5 l-4 8 h-30 Z',fill:'#5A626A'}));
+  svg.appendChild(fg);
 
   /* ---- rails and ore cart ---- */
   svg.appendChild(S('rect',{x:'150',y:'368',width:'560',height:'4',fill:'#4A3F34'}));
@@ -951,7 +989,9 @@ MF.surfaceScene = function(){
 
   /* ---- hotspots: the buildings ARE the navigation ---- */
   function hot(x,y,w,h,label,screen){
-    var g = S('g',{class:'hot',tabindex:'0',role:'button','aria-label':label});
+    /* data-screen so a check can read where a door LEADS, not just count that
+       one exists - a door count would pass with every door wired to nowhere */
+    var g = S('g',{class:'hot',tabindex:'0',role:'button','aria-label':label,'data-screen':screen});
     g.appendChild(S('rect',{x:x,y:y,width:w,height:h,fill:'transparent'}));
     var ring = S('g',{class:'hotring'});
     ring.appendChild(S('rect',{x:x,y:y,width:w,height:h,rx:'10',fill:'rgba(232,163,61,.16)',
@@ -964,8 +1004,9 @@ MF.surfaceScene = function(){
     on(g,'keydown',function(e){ if(e.key==='Enter'||e.key===' '){ e.preventDefault(); MF.go(screen); } });
     svg.appendChild(g);
   }
-  hot(422,168,144,152,'The Smelter','workshop-mold');
-  hot(630,246,108,100,'Assay Office','workshop-ore');
+  hot(228,178,140,164,'The Smelting House','workshop-ore');
+  hot(390,242,124,104,'The Casting Shed','workshop-mold');
+  hot(538,204,132,146,'The Forge','forge');
   hot(712,300,152,100,'Into the Mine','mine');
 
   /* Mr Factor, standing on the surface */
@@ -2496,6 +2537,33 @@ MF.validate = function(){
   chk('forge');
   var matched = MF.forgeJudge(MF.TOOLS.drill, [{m:1,k:5},{m:1,k:-5}], ingotProduct([{m:1,k:5},{m:1,k:-5}]));
   if(!matched.ok) errs.push('forge: (x+5)(x-5) was rejected as a matched pair for the Drill');
+
+  /* 5e. EVERY PLACE MUST HAVE A DOOR IN THE WORLD.
+         The forge shipped as a whole screen with no building on the surface,
+         in a design whose stated principle is that the buildings ARE the
+         navigation. Fixing the instance is not enough - this asserts the
+         class, so the next screen added cannot be doorless either. */
+  var sceneProbe = MF.surfaceScene();
+  var doors = {};
+  Array.prototype.forEach.call(sceneProbe.querySelectorAll('.hot'), function(g){
+    doors[g.getAttribute('data-screen')] = (g.getAttribute('aria-label')||'').trim();
+  });
+  /* every place that is not the surface itself needs a way in from the world */
+  ['workshop-mold','workshop-ore','mine','forge'].forEach(function(scr){
+    chk('doors');
+    if(!doors[scr]) errs.push('doors: "' + scr + '" is a place with no building on the surface');
+  });
+  /* and no door may lead somewhere that does not exist */
+  Object.keys(doors).forEach(function(scr){
+    chk('doors');
+    if(!MF.SCREENS[scr]) errs.push('doors: the building labelled "' + doors[scr] + '" opens "' + scr + '", which is not a screen');
+  });
+  /* the smelting house must open the workshop about SMELTING, not the mold -
+     these were wired to each other's screens */
+  chk('doors');
+  if(!/Smelt/i.test(doors['workshop-ore']||'')) errs.push('doors: the ore workshop is behind "' + doors['workshop-ore'] + '", which does not read as smelting');
+  chk('doors');
+  if(!/Cast|Mold/i.test(doors['workshop-mold']||'')) errs.push('doors: the mold workshop is behind "' + doors['workshop-mold'] + '", which does not read as casting');
 
   /* 5d. THE SEAM. Ore must be spread along its whole length, not bunched at
          one end where a student who scans would find nothing. */
