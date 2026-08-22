@@ -55,11 +55,21 @@ MF.validate()
 
 ## Publishing to GitHub Pages
 
-1. Create a repository and push this folder.
-2. **Settings → Pages → Deploy from a branch**, pick your branch and `/ (root)`.
-3. **Open the published URL and check it.** Console should read `[mine] booted: 5 layers`, and `MF.validate()` should report 0 errors *there*, not just here.
+Everything is committed and self-contained; publishing is three steps.
 
-Step 3 is not optional. A site that works locally says nothing about the copy anyone else opens — on the sister project that step was skipped and the live site was completely broken while every local check passed.
+1. Create an empty repository on GitHub, then from this folder:
+
+```bash
+git remote add origin https://github.com/YOUR-USERNAME/YOUR-REPO.git && git push -u origin HEAD
+```
+
+2. **Settings → Pages → Deploy from a branch**, pick your branch and `/ (root)`.
+
+3. **Open the published URL, open the browser console, and paste in the whole of `tools/verify-published.js`.**
+
+Step 3 is not optional, and it is the only check that examines what a student actually opens. It re-runs the site's own 2,000+ checks *on the published copy*, confirms nothing is fetched over the network, builds all five screens, and re-asserts the no-grades rule — reporting a denominator for each and carrying two controls that must fail.
+
+On the sister project this step was skipped: 67 asset paths had been verified twice, both passes sound, and the site still went live completely broken because two directories had never been committed. Nothing pointed at a local machine could have caught it.
 
 ## Layout
 
