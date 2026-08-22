@@ -138,7 +138,11 @@ input[type=range]{width:100%; accent-color:var(--ore); height:44px}
 
 /* ---------- mine layout ---------- */
 .minegrid{display:grid; grid-template-columns:230px minmax(0,1fr) 240px; gap:18px; align-items:start}
-@media (max-width:1080px){ .minegrid{grid-template-columns:1fr} }
+/* minmax(0,1fr), NOT 1fr: a bare 1fr column has min-width:auto and grows to
+   fit its widest child, so the 2280px seam stretched the whole page sideways
+   in the single-column layout instead of scrolling inside its viewport. */
+@media (max-width:1080px){ .minegrid{grid-template-columns:minmax(0,1fr)} }
+.minegrid > *{min-width:0}
 
 /* the shaft / layers */
 .shaft{position:sticky; top:12px}
@@ -273,6 +277,15 @@ input[type=range]{width:100%; accent-color:var(--ore); height:44px}
 /* ---- the rock face ---- */
 .face{position:relative; border:3px solid var(--rock-3); border-radius:16px; overflow:hidden}
 .face svg{display:block; width:100%; height:auto}
+/* the seam viewport: the rock inside is several screens wide and is scanned
+   along by scrolling, dragging or the scan buttons */
+.seamview{overflow-x:auto; overflow-y:hidden; cursor:grab; scroll-behavior:smooth;
+  scrollbar-color:var(--lamp) #241D18}
+.seamview:active{cursor:grabbing}
+.seamview svg{width:auto; max-width:none; height:250px}
+.seamview::-webkit-scrollbar{height:10px}
+.seamview::-webkit-scrollbar-track{background:#241D18}
+.seamview::-webkit-scrollbar-thumb{background:var(--lamp); border-radius:999px}
 .rock{cursor:pointer}
 .rock .body{transition:transform .16s ease, filter .16s ease}
 .rock:hover .body,.rock:focus-visible .body{transform:translateY(-2px); filter:brightness(1.22)}
@@ -1512,18 +1525,39 @@ MF.LAYER_LOOK = [
 ];
 
 /* the rocks currently exposed on the face - you look before you break */
+/* THE SEAM. The face is not a wall you stand in front of - it is a length of
+   rock you SCAN ALONG. It is several screens wide, it scrolls, and the ore is
+   spread down its length, so looking for something worth breaking is real
+   movement rather than reading a grid of seven.
+   SEAM_W is the drawn width; the viewport shows roughly a third of it. */
+MF.SEAM_W = 2280;
+MF.SEAM_H = 250;
+MF.SEAM_COUNT = 15;
+
 MF.stockFace = function(){
   var L = MF.state.layer;
-  if(MF.state.faceLayer !== L){ MF.state.face = []; MF.state.faceLayer = L; MF.state.inspecting = null; }
-  while(MF.state.face.length < 7){
+  if(MF.state.faceLayer !== L){
+    MF.state.face = []; MF.state.faceLayer = L; MF.state.inspecting = null; MF.state.scan = 0;
+  }
+  var guard = 0;
+  while(MF.state.face.length < MF.SEAM_COUNT && guard++ < 60){
     var o = MF.digOre(L, MF.state.rng);
     if(!o) break;
-    o.px = 66 + ((MF.state.face.length * 109) % 600);
-    o.py = 58 + ((MF.state.face.length * 71) % 132);
-    o.sz = 32 + ((MF.state.face.length * 13) % 18);
+    o.slot = MF.nextSeamSlot();
+    o.px = 92 + o.slot * ((MF.SEAM_W - 180) / (MF.SEAM_COUNT - 1));
+    o.px += ((o.slot * 37) % 44) - 22;              /* nudge off the grid */
+    o.py = 62 + ((o.slot * 71) % 126);
+    o.sz = 32 + ((o.slot * 13) % 18);
     MF.state.face.push(o);
   }
   return MF.state.face;
+};
+/* the emptiest position along the seam, so ore refills where it was taken */
+MF.nextSeamSlot = function(){
+  var used = {};
+  MF.state.face.forEach(function(o){ used[o.slot] = true; });
+  for(var i=0;i<MF.SEAM_COUNT;i++){ if(!used[i]) return i; }
+  return MF.state.face.length % MF.SEAM_COUNT;
 };
 
 /* ---------- the face: look, choose, break ---------- */
@@ -1538,9 +1572,14 @@ MF.paintFace = function(){
   wall.appendChild(H('h3',null,'Layer ' + L.n + ' &mdash; ' + L.name));
   wall.appendChild(H('div','depthline', 'The ore here is ' + L.what + '. Look one over before you swing &mdash; nothing breaks until you say so.'));
 
-  var faceBox = E('div','face');
-  var W=760, VH=250;
-  var svg = S('svg',{viewBox:'0 0 '+W+' '+VH,role:'group','aria-label':'The rock face at layer '+L.n});
+  /* the viewport scrolls; the seam inside it is far wider than the screen */
+  var faceBox = E('div','face seamview');
+  var W=MF.SEAM_W, VH=MF.SEAM_H;
+  var svg = S('svg',{viewBox:'0 0 '+W+' '+VH,role:'group',
+    'aria-label':'A seam of rock at layer '+L.n+', wider than the screen. Scroll or use the scan buttons to move along it.'});
+  svg.setAttribute('width', W);
+  svg.style.width = W + 'px';
+  svg.style.maxWidth = 'none';
 
   var defs = S('defs',{});
   var g1 = S('linearGradient',{id:'wallg'+L.n,x1:'0',y1:'0',x2:'0',y2:'1'});
@@ -1549,14 +1588,19 @@ MF.paintFace = function(){
   defs.appendChild(g1); svg.appendChild(defs);
   svg.appendChild(S('rect',{x:0,y:0,width:W,height:VH,fill:'url(#wallg'+L.n+')'}));
 
-  /* strata - the rock itself changes with depth */
-  for(var s=0;s<7;s++){
-    var yy = 18 + s*34 + ((s*11)%9);
-    svg.appendChild(S('path',{d:'M0 '+yy+' q120 '+(s%2?8:-9)+' 250 2 q160 9 260 -6 q140 -8 250 4',
-      fill:'none',stroke:look.strata,'stroke-width':(s%3===0?3:1.6),opacity:'.5'}));
+  /* strata - the rock itself changes with depth, and runs the seam's length */
+  for(var s=0;s<9;s++){
+    var yy = 14 + s*27 + ((s*11)%9);
+    /* strata repeat along the whole length so the seam never looks like it ends */
+    var d = 'M0 '+yy;
+    for(var seg=0; seg<W; seg+=260){
+      d += ' q130 '+((seg/260)%2 ? 9 : -9)+' 260 '+((seg/260)%3===0 ? 3 : -2);
+    }
+    svg.appendChild(S('path',{d:d, fill:'none', stroke:look.strata,
+      'stroke-width':(s%3===0?3:1.6), opacity:'.5'}));
   }
-  for(var gq=0;gq<46;gq++){
-    svg.appendChild(S('circle',{cx:(gq*97)%W, cy:(gq*53)%VH, r:1+((gq*7)%3), fill:look.grit, opacity:'.45'}));
+  for(var gq=0;gq<220;gq++){
+    svg.appendChild(S('circle',{cx:(gq*173)%W, cy:(gq*53)%VH, r:1+((gq*7)%3), fill:look.grit, opacity:'.45'}));
   }
 
   /* the rocks */
@@ -1588,8 +1632,13 @@ MF.paintFace = function(){
     svg.appendChild(g);
   });
 
-  /* the pick, parked at the right, swung on break */
-  var pick = S('g',{transform:'translate('+(W-104)+','+(VH-96)+')'});
+  /* The pick stands beside whichever lump is being looked at, not parked at a
+     fixed spot - on a seam this wide a fixed pick would usually be off-screen
+     when the swing happened, so the student would never see it land. */
+  var target = (MF.state.inspecting!=null && rocks[MF.state.inspecting]) ? rocks[MF.state.inspecting] : null;
+  var pickX = target ? Math.min(W-110, Math.max(10, target.px + target.sz + 16)) : (W-104);
+  var pickY = target ? Math.min(VH-100, Math.max(4, target.py - 40)) : (VH-96);
+  var pick = S('g',{transform:'translate('+pickX+','+pickY+')'});
   var arm = S('g',{class:'pickarmhost'});
   /* handle, then a proper double-ended pick head: two tapered points curving
      down from a thick centre. The first attempt drew a grey fan. */
@@ -1604,7 +1653,65 @@ MF.paintFace = function(){
 
   faceBox.appendChild(svg);
   wall.appendChild(faceBox);
+
+  /* ---- scanning along the seam ---- */
+  var scanRow = E('div','row'); scanRow.style.marginTop='10px'; scanRow.style.alignItems='center';
+  function scanBtn(label, dir){
+    var b = E('button','btn', label); b.type='button';
+    b.style.background='#241D18'; b.style.color='#E4D5BB'; b.style.borderColor='#6B5B48';
+    on(b,'click',function(){ faceBox.scrollBy({left: dir * Math.round(faceBox.clientWidth*0.8), behavior:'smooth'}); });
+    return b;
+  }
+  scanRow.appendChild(scanBtn('◀ scan back', -1));
+  scanRow.appendChild(scanBtn('scan along ▶', 1));
+  var posWrap = E('div'); posWrap.style.flex='1 1 160px'; posWrap.style.minWidth='140px';
+  posWrap.appendChild(H('div','hint','Where you are along the seam'));
+  var track = E('div');
+  track.style.cssText='height:10px;border-radius:999px;background:#241D18;border:2px solid #6B5B48;position:relative;overflow:hidden';
+  var marker = E('div');
+  marker.style.cssText='position:absolute;top:0;bottom:0;width:26%;background:var(--lamp);border-radius:999px;transition:left .12s linear';
+  track.appendChild(marker); posWrap.appendChild(track);
+  scanRow.appendChild(posWrap);
+  wall.appendChild(scanRow);
+
+  /* keep the position marker honest as the student scrolls or drags */
+  function syncMarker(){
+    var max = Math.max(1, faceBox.scrollWidth - faceBox.clientWidth);
+    var frac = faceBox.scrollLeft / max;
+    var vis = faceBox.clientWidth / Math.max(1, faceBox.scrollWidth);
+    marker.style.width = Math.max(8, vis*100).toFixed(1) + '%';
+    marker.style.left = (frac * (100 - Math.max(8, vis*100))).toFixed(1) + '%';
+    MF.state.scan = faceBox.scrollLeft;
+  }
+  on(faceBox,'scroll',syncMarker);
+
+  /* drag to scan. A rock click still works because a drag under a few pixels
+     is not treated as a drag at all. */
+  var dragging=false, startX=0, startLeft=0, moved=0;
+  on(faceBox,'pointerdown',function(e){
+    dragging=true; moved=0; startX=e.clientX; startLeft=faceBox.scrollLeft;
+    faceBox.style.scrollBehavior='auto';
+  });
+  on(faceBox,'pointermove',function(e){
+    if(!dragging) return;
+    var dx = e.clientX - startX;
+    moved = Math.max(moved, Math.abs(dx));
+    if(moved > 4){ faceBox.scrollLeft = startLeft - dx; }
+  });
+  ['pointerup','pointercancel','pointerleave'].forEach(function(ev){
+    on(faceBox,ev,function(){ dragging=false; faceBox.style.scrollBehavior='smooth'; });
+  });
+  on(faceBox,'click',function(e){ if(moved>4){ e.stopPropagation(); e.preventDefault(); moved=0; } }, true);
   host.appendChild(wall);
+  /* restore where they were, and centre the lump they are looking at */
+  if(target){
+    var wantLeft = (target.px / W) * faceBox.scrollWidth - faceBox.clientWidth/2;
+    faceBox.scrollLeft = Math.max(0, wantLeft);
+  } else {
+    faceBox.scrollLeft = MF.state.scan || 0;
+  }
+  syncMarker();
+  MF._seamView = faceBox;
 
   /* ---- inspect, then break ---- */
   var insp = E('div','inspect');
@@ -2389,6 +2496,25 @@ MF.validate = function(){
   chk('forge');
   var matched = MF.forgeJudge(MF.TOOLS.drill, [{m:1,k:5},{m:1,k:-5}], ingotProduct([{m:1,k:5},{m:1,k:-5}]));
   if(!matched.ok) errs.push('forge: (x+5)(x-5) was rejected as a matched pair for the Drill');
+
+  /* 5d. THE SEAM. Ore must be spread along its whole length, not bunched at
+         one end where a student who scans would find nothing. */
+  var savedFace = MF.state.face, savedFaceLayer = MF.state.faceLayer, savedScan = MF.state.scan;
+  for(var sl=1; sl<=MF.LAYERS.length; sl++){
+    chk('seam');
+    MF.state.layer = sl; MF.state.face = []; MF.state.faceLayer = null;
+    var seam = MF.stockFace();
+    if(seam.length < MF.SEAM_COUNT){ errs.push('seam: layer '+sl+' only stocked '+seam.length+' of the seam'); continue; }
+    /* split the seam into thirds and assert every third holds ore */
+    var thirds = [0,0,0];
+    seam.forEach(function(o){ thirds[Math.min(2, Math.floor((o.px / MF.SEAM_W) * 3))]++; });
+    thirds.forEach(function(n, i){
+      if(n === 0) errs.push('seam: layer '+sl+' has no ore in third '+(i+1)+' - scanning there finds bare rock');
+    });
+    var offEnd = seam.filter(function(o){ return o.px < 0 || o.px > MF.SEAM_W; }).length;
+    if(offEnd) errs.push('seam: layer '+sl+' put '+offEnd+' lumps outside the drawn rock');
+  }
+  MF.state.face = savedFace; MF.state.faceLayer = savedFaceLayer; MF.state.scan = savedScan;
 
   /* 5c. A TOOL MUST NEVER GATE DESCENT. With nothing forged and an empty yard,
          every layer must still be reachable and still hand out ore. */
