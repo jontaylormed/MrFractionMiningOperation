@@ -1,5 +1,5 @@
 # The Mine — specification
-### Round 3 of the `ideate` process. **Status: awaiting sign-off. Nothing here is built.**
+### **Status: v1 built. Amended 2026-08-22 — see §10.**
 
 **Written 2026-08-19** after three rounds of idea development. The existing `index.html` is a **prototype to harvest, not a foundation** — see §9.
 
@@ -124,3 +124,43 @@ The other three appear on the map as **unopened shafts**, so they read as *comin
 **Harvest:** the factor engine and its 615-check validator with a working control; the smelter's decimal seam meter (slide onto halves and watch the integer seam vanish — the best interactive in the build); the area model that draws the area and leaves both sides as dashed `?`; the assay/recognition gate; the free-text parser; Mr Factor's artwork; `MF.positionAudit()`.
 
 **Throw away:** the seven-depth shaft-and-rail journey — that was the Word Problem Express's furniture inherited rather than chosen, and §4.3 is explicit about what that costs. The "Solid Rock" naming. Every `SITE-STATE.md` claim tied to the old structure.
+
+---
+
+## 10. Amendment, 2026-08-22 — the Forge, the instruments, and the scanning seam
+
+Two user decisions changed what v1 is. Recorded here rather than applied silently.
+
+### 10a. Gear is **forged**, not granted — and every tool is a mathematical instrument
+
+The original §8 listed "gear that appears (decimal dial, assay lamp, deeper pick)". That is now wrong in both halves.
+
+> **The user's words:** *"The tools need more scaffolding of mathematical concepts… you get enough ore in the first level to forge a lantern that helps you distribute on the second level, and then a shifter that helps with exponent rules, and then a drill that helps you find patterns. The tools need to be useful, not just descriptive."*
+
+**Why this matters more than a feature.** The v1 loop had **no sink**: `addToYard` wrote metals and only `paintYard` ever read them. An accumulating pile that nothing consumes is a trophy shelf, which is precisely what §2.5a says turns a score into a grade. The forge spends metals, so needing a factor you have not got is what sends a student back down.
+
+**Each tool is forged by demonstrating the move it then assists with.** The forging *is* the lesson:
+
+| tool | cast from | forging it is | what it does |
+|---|---|---|---|
+| **Lantern** | three primes | distribution over plain numbers | lights the mold — a live area model of what you hold |
+| **Shifter** | two x-ingots | watching `x·x` become `x²` | the exponent rail: the four products, traced |
+| **Drill** | a matched pair `(x+k)(x−k)` | casting a twin seam on purpose | reads structure across the yard |
+| **Deep Pick** | two x-ingots and a plain metal | — | three lumps a swing |
+| **Decimal Dial** | any four metals | — | nudges a lump off the whole numbers |
+
+**The casting preview is no longer free.** It let a student nudge numbers until it matched, which made the pour ceremonial and broke §6's one rule. It is now the Lantern's power: before you forge one you pour and the casting teaches you; after, you can see what you are building.
+
+> **THE BINDING CONSTRAINT: a tool ASSISTS, it never GATES.** Free descent (§4) is untouched. A student who has forged nothing can still reach and work the deepest layer. `MF.validate`'s **`nogate`** group walks every layer with an empty yard and no tools and asserts ore still comes up.
+
+**And requirements are drawn, never counted.** An order shows **slots, filled or empty** — never "2 of 3 metals", which is an X-out-of-Y and which the `nogrades` check would fail the build over. That is the check doing its job.
+
+### 10b. The face scans
+
+The rock face is a **seam 2280px long** — several screens wide — scanned along by dragging, scrolling or the scan buttons, with a position indicator. Fifteen lumps are spread down its length and refill where they were taken. The **`seam`** check asserts every layer stocks fully, that ore appears in all three thirds of the length, and that nothing is drawn outside the rock.
+
+### 10c. What v1 now contains
+
+Everything in §8's original in-list, **plus** the forge screen, the five forgeable instruments, and the scanning seam. Still out: the guided route, the fully open face, and all four challenge shafts.
+
+`MF.validate()` now runs **2027 checks across ten groups** — engine, classify, ore, print, pour, **forge**, **seam**, **nogate**, nogrades, control — with two controls that must fail, and do.
