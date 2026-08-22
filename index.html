@@ -236,6 +236,89 @@ input[type=range]{width:100%; accent-color:var(--ore); height:44px}
 .gear .ds{font-size:12px; color:var(--ink-soft)}
 .gear.new{border-color:var(--lamp); background:#FFF9EC}
 
+/* =========================================================================
+   THE WORLD. Everything below exists to make the page feel like a PLACE.
+   Rules it follows: motion carries weight (a pick swings and lands, it does
+   not fade); nothing that moves reports a quantity; every layer is its own
+   stone; and all of it stops dead under prefers-reduced-motion.
+   ========================================================================= */
+
+/* ---- the surface scene ---- */
+.scene{position:relative; border:3px solid var(--rock-3); border-radius:16px; overflow:hidden;
+  background:#8FB8D6; box-shadow:inset 0 -30px 60px rgba(58,49,41,.35)}
+.scene svg{display:block; width:100%; height:auto}
+.scene .hot{cursor:pointer}
+.scene .hot .hotring{opacity:0; transition:opacity .18s ease}
+.scene .hot:hover .hotring,.scene .hot:focus-visible .hotring{opacity:1}
+.scene .hot:focus-visible{outline:none}
+.scene .hotlabel{font-family:var(--display); font-size:13px; fill:#FFF3DE; paint-order:stroke;
+  stroke:#2E2620; stroke-width:4px; stroke-linejoin:round}
+@keyframes wheelspin{to{transform:rotate(360deg)}}
+@keyframes cartroll{0%{transform:translateX(0)}45%{transform:translateX(150px)}55%{transform:translateX(150px)}100%{transform:translateX(0)}}
+@keyframes smokepuff{0%{transform:translate(0,0) scale(.6); opacity:.55}100%{transform:translate(16px,-58px) scale(1.7); opacity:0}}
+@keyframes clouddrift{from{transform:translateX(-70px)}to{transform:translateX(660px)}}
+@keyframes lampflicker{0%,100%{opacity:.85}45%{opacity:1}70%{opacity:.7}}
+@keyframes birdbob{0%,100%{transform:translateY(0)}50%{transform:translateY(-6px)}}
+.sc-wheel{transform-origin:center; animation:wheelspin 9s linear infinite}
+.sc-wheel.slow{animation-duration:14s}
+.sc-cart{animation:cartroll 11s ease-in-out infinite}
+.sc-smoke{animation:smokepuff 4.5s ease-out infinite}
+.sc-cloud{animation:clouddrift 46s linear infinite}
+.sc-lamp{animation:lampflicker 3.2s ease-in-out infinite}
+.sc-bird{animation:birdbob 3s ease-in-out infinite}
+
+/* ---- the rock face ---- */
+.face{position:relative; border:3px solid var(--rock-3); border-radius:16px; overflow:hidden}
+.face svg{display:block; width:100%; height:auto}
+.rock{cursor:pointer}
+.rock .body{transition:transform .16s ease, filter .16s ease}
+.rock:hover .body,.rock:focus-visible .body{transform:translateY(-2px); filter:brightness(1.22)}
+.rock:focus-visible{outline:none}
+.rock .sel{opacity:0}
+.rock[data-sel=on] .sel{opacity:1}
+.rock[data-sel=on] .body{filter:brightness(1.3)}
+@keyframes glintpulse{0%,100%{opacity:.25}50%{opacity:.9}}
+.rock .glint{animation:glintpulse 2.6s ease-in-out infinite}
+@keyframes pickswing{
+  0%{transform:rotate(-58deg) translate(0,0)}
+  55%{transform:rotate(16deg) translate(0,0)}
+  62%{transform:rotate(12deg) translate(-3px,2px)}
+  100%{transform:rotate(-58deg) translate(0,0)}
+}
+.pickarm{transform-origin:86% 88%; animation:pickswing 720ms cubic-bezier(.5,.05,.3,1) 1}
+@keyframes shardfly{
+  0%{opacity:1; transform:translate(0,0) rotate(0deg)}
+  100%{opacity:0; transform:translate(var(--dx),var(--dy)) rotate(var(--rot))}
+}
+.shard{animation:shardfly 620ms ease-out forwards}
+@keyframes impactring{0%{opacity:.85; transform:scale(.2)}100%{opacity:0; transform:scale(2.4)}}
+.impact{transform-origin:center; animation:impactring 520ms ease-out forwards}
+@keyframes shudder{0%,100%{transform:translate(0,0)}20%{transform:translate(-3px,2px)}40%{transform:translate(3px,-1px)}60%{transform:translate(-2px,-2px)}80%{transform:translate(2px,1px)}}
+.shudder{animation:shudder 320ms ease-in-out 1}
+
+/* ---- inspecting a rock before you break it ---- */
+.inspect{background:#241D18; border:2px solid #6B5B48; border-radius:12px; padding:14px; color:#F0E2C8; margin-top:12px}
+.inspect .label{font-size:11px; letter-spacing:.1em; text-transform:uppercase; color:var(--lamp)}
+.inspect .expr{font-family:var(--display); font-size:clamp(22px,3.4vw,34px); color:#FFF3DE; margin:2px 0 6px}
+.inspect .obs{font-size:14px; color:#D9C39C}
+.inspect .obs li{margin:2px 0}
+
+/* ---- the crucible pour ---- */
+@keyframes moltenfall{0%{transform:scaleY(0); opacity:0}18%{opacity:1}100%{transform:scaleY(1); opacity:1}}
+@keyframes castrise{from{opacity:0; transform:translateY(14px) scale(.94)}to{opacity:1; transform:translateY(0) scale(1)}}
+@keyframes gleam{0%{transform:translateX(-120%)}100%{transform:translateX(220%)}}
+.moltenstream{transform-origin:top center; animation:moltenfall 620ms ease-in 1}
+.castingwrap{animation:castrise 420ms cubic-bezier(.2,.8,.3,1) 1; position:relative; overflow:hidden}
+.castingwrap.clean:after{content:""; position:absolute; inset:0; pointer-events:none;
+  background:linear-gradient(105deg,transparent 35%,rgba(255,255,255,.55) 50%,transparent 65%);
+  animation:gleam 1100ms ease-out 1}
+@keyframes cracktwitch{0%,100%{transform:translate(0,0) rotate(0)}30%{transform:translate(-2px,1px) rotate(-.6deg)}70%{transform:translate(2px,-1px) rotate(.6deg)}}
+.castingwrap.deformed{animation:castrise 420ms ease-out 1, cracktwitch 300ms ease-in-out 1 420ms}
+
+/* ---- a lump arriving in the cart ---- */
+@keyframes lumpdrop{from{opacity:0; transform:translateY(-16px) scale(.9)}to{opacity:1; transform:translateY(0) scale(1)}}
+.lump.fresh{animation:lumpdrop 380ms cubic-bezier(.2,.8,.3,1) 1}
+
 table.scan{border-collapse:collapse; font-size:15px; margin-top:8px}
 table.scan th{font-family:var(--display); font-weight:400; font-size:12px; letter-spacing:.06em; text-transform:uppercase;
   color:var(--ore-t); text-align:left; padding:5px 14px 5px 0; border-bottom:2px solid var(--rule)}
@@ -351,7 +434,10 @@ function ingotHtml(g){
   return linear(g.m,g.k);
 }
 function ingotText(g){ return ingotHtml(g).replace(/<[^>]+>/g,''); }
-function ingotKey(g){ return g.m+'|'+g.k; }
+/* An irreducible POLYNOMIAL is stored with m=0,k=0 and a label, so keying on
+   m|k alone collapsed x²+4, x²+7 and every other pure polynomial into one
+   yard chip that then counted upward as if it were the same metal. */
+function ingotKey(g){ return g.label ? ('poly|'+g.label) : (g.m+'|'+g.k); }
 /* product of a list of ingots -> {a,b,c}. Degree above 2 returns null. */
 function ingotProduct(list){
   var poly = [1];                          /* coefficients, ascending powers */
@@ -661,8 +747,168 @@ MF.loadScreen = function(){
   return true;
 };
 
+/* =========================================================================
+   THE SURFACE SCENE. The home screen is a PLACE you click into, not a menu.
+   Everything that moves here is scenery: the wheel, the cart, the smoke and
+   the clouds carry no information and never report a quantity.
+   ========================================================================= */
+MF.surfaceScene = function(){
+  var wrap = E('div','scene');
+  var W=900, VH=420;
+  var svg = S('svg',{viewBox:'0 0 '+W+' '+VH, role:'img',
+    'aria-label':'A mining operation on the surface: a headframe, a smelter shed with a chimney, an assay office, an ore cart on rails, and the mine entrance.'});
+
+  function P(d,f,extra){ var n=S('path',{d:d,fill:f}); if(extra) for(var k in extra) n.setAttribute(k,extra[k]); svg.appendChild(n); return n; }
+  function R(x,y,w,h,f,extra){ var n=S('rect',{x:x,y:y,width:w,height:h,fill:f}); if(extra) for(var k in extra) n.setAttribute(k,extra[k]); svg.appendChild(n); return n; }
+
+  /* sky */
+  var defs = S('defs',{});
+  var sky = S('linearGradient',{id:'sky',x1:'0',y1:'0',x2:'0',y2:'1'});
+  [['0%','#9FC6E0'],['58%','#CFE0EA'],['100%','#E8DCC4']].forEach(function(st){
+    sky.appendChild(S('stop',{offset:st[0],'stop-color':st[1]}));
+  });
+  defs.appendChild(sky);
+  var grd = S('linearGradient',{id:'grd',x1:'0',y1:'0',x2:'0',y2:'1'});
+  [['0%','#9C7F55'],['100%','#6B5539']].forEach(function(st){ grd.appendChild(S('stop',{offset:st[0],'stop-color':st[1]})); });
+  defs.appendChild(grd);
+  svg.appendChild(defs);
+  R(0,0,W,VH,'url(#sky)');
+  svg.appendChild(S('circle',{cx:762,cy:74,r:30,fill:'#FFE9A8',opacity:'.85'}));
+
+  /* clouds */
+  [[0,58,1],[0,112,.75],[0,40,.6]].forEach(function(c,i){
+    var g = S('g',{class:'sc-cloud',opacity:String(.55+i*.12)});
+    g.style.animationDuration = (52 + i*18) + 's';
+    g.style.animationDelay = (-i*17) + 's';
+    var cl = S('g',{transform:'translate(-120,'+c[1]+') scale('+c[2]+')'});
+    [[0,0,26],[30,-10,20],[58,2,17],[26,10,20]].forEach(function(b){
+      cl.appendChild(S('ellipse',{cx:b[0],cy:b[1],rx:b[2],ry:b[2]*0.66,fill:'#FFFFFF'}));
+    });
+    g.appendChild(cl); svg.appendChild(g);
+  });
+
+  /* far hills */
+  P('M0 250 q120 -66 240 -20 q120 46 250 -14 q140 -64 410 6 V420 H0 Z','#A8B79B',{opacity:'.75'});
+  P('M0 276 q160 -50 300 -6 q130 40 260 -20 q120 -54 340 14 V420 H0 Z','#8E9E82',{opacity:'.85'});
+  /* ground */
+  P('M0 300 q150 -34 320 -8 q170 26 300 -12 q140 -40 280 8 V420 H0 Z','url(#grd)');
+  R(0,352,W,68,'#5E4A32');
+  for(var i=0;i<40;i++){
+    svg.appendChild(S('circle',{cx:(i*23+11)%W, cy:362+((i*13)%42), r:1.6+((i*7)%3), fill:'#7A6244', opacity:'.6'}));
+  }
+
+  /* ---- the headframe (pit head) ---- */
+  var hf = S('g',{transform:'translate(120,150)'});
+  hf.appendChild(S('path',{d:'M14 190 L44 24 L60 24 L84 190 Z',fill:'#4A3F34'}));
+  hf.appendChild(S('path',{d:'M0 190 L34 34 L44 34 L20 190 Z',fill:'#5A4B3C'}));
+  [58,96,134].forEach(function(y){ hf.appendChild(S('rect',{x:'12',y:String(y),width:'70',height:'7',fill:'#6B5A47'})); });
+  hf.appendChild(S('rect',{x:'34',y:'12',width:'34',height:'10',rx:'3',fill:'#3A3129'}));
+  /* The positioning lives on an OUTER group and the animation on an inner one.
+     A CSS transform animation REPLACES the SVG transform attribute rather than
+     composing with it, so animating a positioned group makes it drift off its
+     mount - the ore cart ended up in the sky. */
+  var wheelMount = S('g',{transform:'translate(51,6)'});
+  var wheel = S('g',{class:'sc-wheel'});
+  wheel.appendChild(S('circle',{cx:'0',cy:'0',r:'21',fill:'none',stroke:'#3A3129','stroke-width':'6'}));
+  wheel.appendChild(S('circle',{cx:'0',cy:'0',r:'5',fill:'#C96A1F'}));
+  for(var a=0;a<6;a++){
+    wheel.appendChild(S('line',{x1:'0',y1:'0',x2:String(21*Math.cos(a*Math.PI/3)),y2:String(21*Math.sin(a*Math.PI/3)),
+      stroke:'#4A3F34','stroke-width':'3'}));
+  }
+  wheelMount.appendChild(wheel);
+  hf.appendChild(wheelMount);
+  hf.appendChild(S('line',{x1:'51',y1:'27',x2:'51',y2:'150',stroke:'#2E2620','stroke-width':'2'}));
+  svg.appendChild(hf);
+
+  /* ---- smelter shed with chimney and smoke ---- */
+  var sm = S('g',{transform:'translate(430,214)'});
+  sm.appendChild(S('rect',{x:'0',y:'34',width:'128',height:'86',rx:'4',fill:'#7A5B3A'}));
+  sm.appendChild(S('path',{d:'M-8 36 L64 4 L136 36 Z',fill:'#8C4A3F'}));
+  sm.appendChild(S('rect',{x:'92',y:'-40',width:'22',height:'52',fill:'#6B4A32'}));
+  sm.appendChild(S('rect',{x:'88',y:'-46',width:'30',height:'9',rx:'2',fill:'#4A3F34'}));
+  [0,1,2].forEach(function(k){
+    var puff = S('circle',{cx:'103',cy:'-50',r:String(8+k*2),fill:'#D8CFC0',class:'sc-smoke'});
+    puff.style.animationDelay = (k*1.5)+'s';
+    sm.appendChild(puff);
+  });
+  sm.appendChild(S('rect',{x:'18',y:'62',width:'34',height:'34',rx:'3',fill:'#E2600F',opacity:'.9',class:'sc-lamp'}));
+  sm.appendChild(S('rect',{x:'74',y:'70',width:'26',height:'26',rx:'3',fill:'#3A2A1C'}));
+  svg.appendChild(sm);
+
+  /* ---- assay office ---- */
+  var ao = S('g',{transform:'translate(636,250)'});
+  ao.appendChild(S('rect',{x:'0',y:'26',width:'96',height:'66',rx:'4',fill:'#6E7B87'}));
+  ao.appendChild(S('path',{d:'M-6 28 L48 2 L102 28 Z',fill:'#4A5560'}));
+  ao.appendChild(S('rect',{x:'14',y:'46',width:'22',height:'22',rx:'2',fill:'#FFE9A8',class:'sc-lamp'}));
+  ao.appendChild(S('rect',{x:'58',y:'46',width:'22',height:'22',rx:'2',fill:'#FFE9A8'}));
+  svg.appendChild(ao);
+
+  /* ---- rails and ore cart ---- */
+  svg.appendChild(S('rect',{x:'150',y:'368',width:'560',height:'4',fill:'#4A3F34'}));
+  for(var t=0;t<22;t++) svg.appendChild(S('rect',{x:String(155+t*26),y:'372',width:'16',height:'5',rx:'1',fill:'#5A4B3C'}));
+  var cartMount = S('g',{transform:'translate(190,332)'});
+  var cart = S('g',{class:'sc-cart'});
+  cart.appendChild(S('path',{d:'M0 8 L54 8 L48 36 L6 36 Z',fill:'#5A6570'}));
+  cart.appendChild(S('rect',{x:'2',y:'2',width:'50',height:'8',rx:'2',fill:'#77828D'}));
+  [[6,-2],[20,-5],[34,-1],[44,-4]].forEach(function(o){
+    cart.appendChild(S('circle',{cx:String(10+o[0]),cy:String(4+o[1]),r:'5',fill:'#8C6A2A'}));
+  });
+  cart.appendChild(S('circle',{cx:'14',cy:'38',r:'6',fill:'#3A3129'}));
+  cart.appendChild(S('circle',{cx:'42',cy:'38',r:'6',fill:'#3A3129'}));
+  cartMount.appendChild(cart);
+  svg.appendChild(cartMount);
+
+  /* ---- the mine entrance, cut into a bluff ---- */
+  var en = S('g',{transform:'translate(742,236)'});
+  en.appendChild(S('path',{d:'M-30 160 q10 -120 76 -128 q70 -8 84 128 Z',fill:'#7A6650'}));
+  en.appendChild(S('path',{d:'M6 158 q0 -66 40 -66 q40 0 40 66 Z',fill:'#1B1511'}));
+  en.appendChild(S('rect',{x:'0',y:'86',width:'92',height:'11',rx:'2',fill:'#6B4A32'}));
+  en.appendChild(S('rect',{x:'0',y:'92',width:'11',height:'68',fill:'#6B4A32'}));
+  en.appendChild(S('rect',{x:'81',y:'92',width:'11',height:'68',fill:'#6B4A32'}));
+  en.appendChild(S('circle',{cx:'46',cy:'104',r:'7',fill:'#E8A33D',opacity:'.9',class:'sc-lamp'}));
+  svg.appendChild(en);
+
+  /* birds */
+  [[300,96],[338,84],[318,110]].forEach(function(b,i){
+    var g = S('g',{class:'sc-bird'}); g.style.animationDelay=(i*.7)+'s';
+    g.appendChild(S('path',{d:'M'+b[0]+' '+b[1]+' q6 -6 12 0 q6 -6 12 0',fill:'none',stroke:'#5A4B3C','stroke-width':'2'}));
+    svg.appendChild(g);
+  });
+
+  /* ---- hotspots: the buildings ARE the navigation ---- */
+  function hot(x,y,w,h,label,screen){
+    var g = S('g',{class:'hot',tabindex:'0',role:'button','aria-label':label});
+    g.appendChild(S('rect',{x:x,y:y,width:w,height:h,fill:'transparent'}));
+    var ring = S('g',{class:'hotring'});
+    ring.appendChild(S('rect',{x:x,y:y,width:w,height:h,rx:'10',fill:'rgba(232,163,61,.16)',
+      stroke:'#E8A33D','stroke-width':'3','stroke-dasharray':'7 5'}));
+    g.appendChild(ring);
+    var t = S('text',{x:String(x+w/2),y:String(y-8),'text-anchor':'middle',class:'hotlabel'});
+    t.textContent = label;
+    g.appendChild(t);
+    on(g,'click',function(){ MF.go(screen); });
+    on(g,'keydown',function(e){ if(e.key==='Enter'||e.key===' '){ e.preventDefault(); MF.go(screen); } });
+    svg.appendChild(g);
+  }
+  hot(422,168,144,152,'The Smelter','workshop-mold');
+  hot(630,246,108,100,'Assay Office','workshop-ore');
+  hot(712,300,152,100,'Into the Mine','mine');
+
+  /* Mr Factor, standing on the surface */
+  var mf = MF.art(74);
+  mf.setAttribute('x','322'); mf.setAttribute('y','290');
+  mf.removeAttribute('width'); mf.removeAttribute('height');
+  mf.setAttribute('width','74'); mf.setAttribute('height','90');
+  svg.appendChild(mf);
+
+  wrap.appendChild(svg);
+  return wrap;
+};
+
 /* ---------- HOME ---------- */
 MF.SCREENS.home = function(host){
+  host.appendChild(MF.surfaceScene());
+  host.appendChild(H('p','hint','The buildings are the doors &mdash; click one. Or use the buttons below if you would rather.'));
   var hero = E('div','hero');
   hero.appendChild(MF.art(104));
   var ht = E('div'); ht.style.flex='1 1 320px';
@@ -943,6 +1189,7 @@ MF.SCREENS.mine = function(host){
 MF.paintMine = function(){
   if(!MF._mine) return;
   MF.paintShaft(); MF.paintFace(); MF.paintYard();
+  MF.drainFlashes();          /* after the repaint, so a message survives it */
 };
 
 /* ---------- the shaft: descend freely, no gate anywhere ---------- */
@@ -975,36 +1222,141 @@ MF.paintShaft = function(){
   host.appendChild(box);
 };
 
-/* ---------- the face: dig, and the cart ---------- */
+/* =========================================================================
+   EACH LAYER IS ITS OWN STONE. Palette, strata and glint change with depth,
+   so descending LOOKS like descending rather than reading like a new label.
+   ========================================================================= */
+MF.LAYER_LOOK = [
+  {sky:'#8A7458', rock:'#6E5A40', rock2:'#4A3B28', ore:'#C9A24B', glint:'#FFE9A8', strata:'#7E6A4E', grit:'#8C7554'},
+  {sky:'#6E6152', rock:'#5C5140', rock2:'#3C3428', ore:'#C96A1F', glint:'#F6C98A', strata:'#6B5F4C', grit:'#7A6C56'},
+  {sky:'#4E5A63', rock:'#44525C', rock2:'#2B343B', ore:'#7FB6C9', glint:'#D8F0F7', strata:'#54626C', grit:'#5E6E78'},
+  {sky:'#5A3F3A', rock:'#4E3630', rock2:'#31201C', ore:'#C4543F', glint:'#F7C0A8', strata:'#5C443D', grit:'#6A4A42'},
+  {sky:'#33302E', rock:'#2E2A28', rock2:'#191716', ore:'#E2600F', glint:'#FFB347', strata:'#3A3532', grit:'#443E3A'}
+];
+
+/* the rocks currently exposed on the face - you look before you break */
+MF.stockFace = function(){
+  var L = MF.state.layer;
+  if(MF.state.faceLayer !== L){ MF.state.face = []; MF.state.faceLayer = L; MF.state.inspecting = null; }
+  while(MF.state.face.length < 7){
+    var o = MF.digOre(L, MF.state.rng);
+    if(!o) break;
+    o.px = 66 + ((MF.state.face.length * 109) % 600);
+    o.py = 58 + ((MF.state.face.length * 71) % 132);
+    o.sz = 32 + ((MF.state.face.length * 13) % 18);
+    MF.state.face.push(o);
+  }
+  return MF.state.face;
+};
+
+/* ---------- the face: look, choose, break ---------- */
 MF.paintFace = function(){
   var host = clear(MF._mine.mid);
   var L = MF.LAYERS[MF.state.layer-1];
+  var look = MF.LAYER_LOOK[MF.state.layer-1];
+  var rocks = MF.stockFace();
 
   var wall = E('div','wall');
+  wall.style.background = 'linear-gradient(180deg,'+look.rock+','+look.rock2+')';
   wall.appendChild(H('h3',null,'Layer ' + L.n + ' &mdash; ' + L.name));
-  wall.appendChild(H('div','depthline', 'The ore here is ' + L.what + '.'));
-  var face = E('div','facegrid');
-  for(var i=0;i<12;i++){
-    var bit = E('div','rockbit' + (i===7?' glint':''));
-    face.appendChild(bit);
+  wall.appendChild(H('div','depthline', 'The ore here is ' + L.what + '. Look one over before you swing &mdash; nothing breaks until you say so.'));
+
+  var faceBox = E('div','face');
+  var W=760, VH=250;
+  var svg = S('svg',{viewBox:'0 0 '+W+' '+VH,role:'group','aria-label':'The rock face at layer '+L.n});
+
+  var defs = S('defs',{});
+  var g1 = S('linearGradient',{id:'wallg'+L.n,x1:'0',y1:'0',x2:'0',y2:'1'});
+  g1.appendChild(S('stop',{offset:'0%','stop-color':look.rock}));
+  g1.appendChild(S('stop',{offset:'100%','stop-color':look.rock2}));
+  defs.appendChild(g1); svg.appendChild(defs);
+  svg.appendChild(S('rect',{x:0,y:0,width:W,height:VH,fill:'url(#wallg'+L.n+')'}));
+
+  /* strata - the rock itself changes with depth */
+  for(var s=0;s<7;s++){
+    var yy = 18 + s*34 + ((s*11)%9);
+    svg.appendChild(S('path',{d:'M0 '+yy+' q120 '+(s%2?8:-9)+' 250 2 q160 9 260 -6 q140 -8 250 4',
+      fill:'none',stroke:look.strata,'stroke-width':(s%3===0?3:1.6),opacity:'.5'}));
   }
-  wall.appendChild(face);
-  var digRow = E('div','row');
-  var dig = E('button','btn primary big', MF.state.gear.pick ? 'Swing the deep pick' : 'Swing the pick'); dig.type='button';
-  on(dig,'click',function(){
-    var howMany = MF.state.gear.pick ? 3 : 1;
-    var got = [];
-    for(var k=0;k<howMany;k++){
-      var o = MF.digOre(MF.state.layer, MF.state.rng);
-      if(o){ MF.state.cart.push(o); got.push(o); }
+  for(var gq=0;gq<46;gq++){
+    svg.appendChild(S('circle',{cx:(gq*97)%W, cy:(gq*53)%VH, r:1+((gq*7)%3), fill:look.grit, opacity:'.45'}));
+  }
+
+  /* the rocks */
+  rocks.forEach(function(o, idx){
+    var g = S('g',{class:'rock',tabindex:'0',role:'button',
+      'aria-label':'A lump of ore: ' + MF.oreText(o) + '. Look at it, then break it.'});
+    if(MF.state.inspecting===idx) g.setAttribute('data-sel','on');
+    var x=o.px, y=o.py, r=o.sz;
+    var sel = S('circle',{class:'sel',cx:x,cy:y,r:r+9,fill:'none',stroke:'#E8A33D','stroke-width':'3','stroke-dasharray':'6 5'});
+    g.appendChild(sel);
+    var body = S('g',{class:'body'});
+    var pts = [];
+    for(var k=0;k<8;k++){
+      var ang = k*Math.PI/4 + ((idx*7+k*3)%5)*0.06;
+      var rad = r * (0.78 + ((idx*5+k*11)%7)/22);
+      pts.push((x+rad*Math.cos(ang)).toFixed(1)+','+(y+rad*Math.sin(ang)).toFixed(1));
     }
-    if(got.length && !MF.state.selected) MF.state.selected = got[0];
-    MF.paintMine();
+    body.appendChild(S('polygon',{points:pts.join(' '),fill:look.rock,stroke:look.rock2,'stroke-width':'3'}));
+    /* ore veins inside: one streak per term, so a rock LOOKS like what it is */
+    var terms = (o.kind==='number') ? 1 : [o.a,o.b,o.c].filter(function(v){ return v!==0; }).length;
+    for(var t=0;t<terms;t++){
+      body.appendChild(S('path',{d:'M'+(x-r*0.6)+' '+(y-r*0.3+t*7)+' q'+(r*0.5)+' '+(t%2?6:-6)+' '+(r*1.2)+' '+(t%2?-3:3),
+        fill:'none',stroke:look.ore,'stroke-width':'3','stroke-linecap':'round',opacity:'.92'}));
+    }
+    body.appendChild(S('circle',{class:'glint',cx:x-r*0.34,cy:y-r*0.38,r:'3.4',fill:look.glint}));
+    g.appendChild(body);
+    on(g,'click',function(){ MF.state.inspecting=idx; MF.paintMine(); });
+    on(g,'keydown',function(e){ if(e.key==='Enter'||e.key===' '){ e.preventDefault(); MF.state.inspecting=idx; MF.paintMine(); } });
+    svg.appendChild(g);
   });
-  digRow.appendChild(dig);
-  digRow.appendChild(H('div','hint','Digging costs nothing and is never blocked.'));
-  wall.appendChild(digRow);
+
+  /* the pick, parked at the right, swung on break */
+  var pick = S('g',{transform:'translate('+(W-104)+','+(VH-96)+')'});
+  var arm = S('g',{class:'pickarmhost'});
+  /* handle, then a proper double-ended pick head: two tapered points curving
+     down from a thick centre. The first attempt drew a grey fan. */
+  arm.appendChild(S('rect',{x:'40',y:'10',width:'9',height:'92',rx:'3',fill:'#8A6A45'}));
+  arm.appendChild(S('rect',{x:'38',y:'44',width:'13',height:'7',rx:'2',fill:'#6B5335'}));
+  arm.appendChild(S('path',{d:'M2 26 q20 -20 42 -16 q22 -4 42 16 q-6 4 -12 3 q-16 -11 -30 -9 q-14 -2 -30 9 q-6 1 -12 -3 Z',
+    fill:'#9AA3AB',stroke:'#4A5158','stroke-width':'2','stroke-linejoin':'round'}));
+  arm.appendChild(S('rect',{x:'36',y:'6',width:'17',height:'10',rx:'3',fill:'#5A626A'}));
+  pick.appendChild(arm);
+  svg.appendChild(pick);
+  MF._pickArm = arm;
+
+  faceBox.appendChild(svg);
+  wall.appendChild(faceBox);
   host.appendChild(wall);
+
+  /* ---- inspect, then break ---- */
+  var insp = E('div','inspect');
+  if(MF.state.inspecting==null || !rocks[MF.state.inspecting]){
+    insp.appendChild(H('div','label','THE FACE'));
+    insp.appendChild(H('div','obs','Nothing picked out yet. Click a lump in the wall and have a proper look at it first — you can turn over as many as you like without breaking any.'));
+  } else {
+    var o = rocks[MF.state.inspecting];
+    insp.appendChild(H('div','label','YOU ARE LOOKING AT'));
+    insp.appendChild(H('div','expr', MF.oreLabel(o)));
+    var obs = E('ul','obs');
+    var terms = (o.kind==='number') ? 1 : [o.a,o.b,o.c].filter(function(v){ return v!==0; }).length;
+    obs.appendChild(H('li',null, terms===1 ? 'One vein runs through it.' : terms + ' veins run through it.'));
+    obs.appendChild(H('li',null, o.kind==='number' ? 'A plain lump of gravel — no x anywhere in it.' :
+      (o.a===0 ? 'No x² in it — it is a flat seam.' : (o.a===1 ? 'One x², with nothing sitting in front.' : num(o.a) + ' sitting in front of the x².'))));
+    obs.appendChild(H('li',null,'Came out of layer ' + o.layer + ', ' + MF.LAYERS[o.layer-1].name + '.'));
+    obs.appendChild(H('li',null,'<em>What kind of seam runs through it is not something you can see from here. That is what the assay is for.</em>'));
+    insp.appendChild(obs);
+    var brow = E('div','row'); brow.style.marginTop='10px';
+    var br = E('button','btn primary big', MF.state.gear.pick ? 'Swing the deep pick' : 'Swing the pick'); br.type='button';
+    on(br,'click',function(){ MF.breakRock(MF.state.inspecting); });
+    brow.appendChild(br);
+    var skip = E('button','btn','Leave it and look at another'); skip.type='button';
+    skip.style.background='#241D18'; skip.style.color='#E4D5BB'; skip.style.borderColor='#6B5B48';
+    on(skip,'click',function(){ MF.state.inspecting=null; MF.paintMine(); });
+    brow.appendChild(skip);
+    insp.appendChild(brow);
+  }
+  wall.appendChild(insp);
 
   /* the cart */
   var cartPanel = E('div','panel');
@@ -1015,7 +1367,7 @@ MF.paintFace = function(){
     cartPanel.appendChild(H('p','hint','Raw ore you are carrying. Pick one up to put it on the bench.'));
     var cart = E('div','cart');
     MF.state.cart.forEach(function(o){
-      var b = E('button','lump'); b.type='button';
+      var b = E('button','lump' + (o.fresh?' fresh':'')); b.type='button';
       b.appendChild(E('span','glyph'));
       b.appendChild(H('span','txt', MF.oreLabel(o)));
       b.appendChild(H('span','lay','LAYER ' + o.layer));
@@ -1033,6 +1385,58 @@ MF.paintFace = function(){
 
   if(MF.state.selected) MF.paintBench(host);
   else if(MF.state.cart.length) host.appendChild(MF.says('<b>Mr Factor:</b> Pick a lump out of the cart and set it on the bench when you are ready. No hurry — the cart does not empty itself.'));
+};
+
+/* =========================================================================
+   BREAKING A ROCK. The swing has weight: the pick arcs down, the rock takes
+   the hit, shards fly, the face shudders, and only then does the lump land in
+   the cart. Under prefers-reduced-motion every duration collapses and the
+   lump simply arrives - the sequence still completes, it just does not perform.
+   ========================================================================= */
+MF.breakRock = function(idx){
+  var rocks = MF.state.face, o = rocks[idx];
+  if(!o || MF.state.breaking) return;
+  MF.state.breaking = true;
+
+  var reduced = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var svg = MF._mine.mid.querySelector('.face svg');
+  var arm = MF._pickArm;
+  var landMs = reduced ? 10 : 400;
+  var doneMs = reduced ? 30 : 900;
+
+  if(arm && !reduced){ arm.classList.remove('pickarm'); void arm.getBoundingClientRect(); arm.classList.add('pickarm'); }
+
+  setTimeout(function(){
+    if(svg){
+      var look = MF.LAYER_LOOK[MF.state.layer-1];
+      var ring = S('circle',{class:'impact',cx:o.px,cy:o.py,r:o.sz,fill:'none',stroke:look.glint,'stroke-width':'4'});
+      svg.appendChild(ring);
+      for(var i=0;i<9;i++){
+        var ang = (i/9)*Math.PI*2, dist = 34 + (i%4)*13;
+        var sh = S('polygon',{class:'shard',
+          points:(o.px)+','+(o.py-5)+' '+(o.px+7)+','+(o.py+4)+' '+(o.px-6)+','+(o.py+6),
+          fill: i%3===0 ? look.ore : look.rock, stroke:look.rock2,'stroke-width':'1'});
+        sh.style.setProperty('--dx', (Math.cos(ang)*dist).toFixed(1)+'px');
+        sh.style.setProperty('--dy', (Math.sin(ang)*dist - 10).toFixed(1)+'px');
+        sh.style.setProperty('--rot', ((i*47)%360)+'deg');
+        svg.appendChild(sh);
+      }
+      var faceBox = MF._mine.mid.querySelector('.face');
+      if(faceBox && !reduced){ faceBox.classList.add('shudder');
+        setTimeout(function(){ faceBox.classList.remove('shudder'); }, 340); }
+    }
+  }, landMs);
+
+  setTimeout(function(){
+    MF.state.face.splice(idx,1);
+    MF.state.inspecting = null;
+    o.fresh = true;
+    MF.state.cart.push(o);
+    if(!MF.state.selected) MF.state.selected = o;
+    MF.state.breaking = false;
+    MF.paintMine();
+    setTimeout(function(){ o.fresh = false; }, 500);
+  }, doneMs);
 };
 
 /* ---------- the bench: ASSAY -> SMELT -> POUR ---------- */
@@ -1173,14 +1577,19 @@ MF.paintSmelt = function(host, B){
     sl.appendChild(H('label',null,'ingot ' + (idx+1)));
     var inner = E('div','row'); inner.style.gap='4px';
     inner.appendChild(H('span','paren','('));
-    var mi = document.createElement('input'); mi.type='text'; mi.inputMode='numeric'; mi.value=String(g.m);
+    /* g.raw* holds what the student TYPED. Writing a computed value back into
+       the box put the literal string "NaN" in front of them the moment they
+       typed a letter, and the warning vanished on the next repaint. */
+    var mi = document.createElement('input'); mi.type='text'; mi.inputMode='numeric';
+    mi.value = (g.rawM!=null) ? g.rawM : String(g.m);
     mi.setAttribute('aria-label','ingot '+(idx+1)+' x coefficient');
-    on(mi,'input',function(){ g.m = MF.readInt(mi.value); MF.previewCasting(B); });
+    on(mi,'input',function(){ g.rawM = mi.value; g.m = MF.readInt(mi.value); MF.previewCasting(B); });
     inner.appendChild(mi);
     inner.appendChild(H('span','paren','x +'));
-    var ki = document.createElement('input'); ki.type='text'; ki.inputMode='numeric'; ki.value=String(g.k);
+    var ki = document.createElement('input'); ki.type='text'; ki.inputMode='numeric';
+    ki.value = (g.rawK!=null) ? g.rawK : String(g.k);
     ki.setAttribute('aria-label','ingot '+(idx+1)+' constant');
-    on(ki,'input',function(){ g.k = MF.readInt(ki.value); MF.previewCasting(B); });
+    on(ki,'input',function(){ g.rawK = ki.value; g.k = MF.readInt(ki.value); MF.previewCasting(B); });
     inner.appendChild(ki);
     inner.appendChild(H('span','paren',')'));
     sl.appendChild(inner);
@@ -1209,20 +1618,24 @@ MF.paintSmelt = function(host, B){
     var sc = E('div','panel'); sc.style.background='#fff'; sc.style.margin='12px 0 0';
     sc.appendChild(H('div','hint','<b>Pair scanner.</b> Every pair that multiplies to <b>' + num(target) + '</b>' +
       (ore.a===1?'':' (that is a·c)') + '. You are looking for the one that also adds to <b>' + num(ore.b) + '</b>.'));
-    MF.scanTable(sc, target, ore.b);
+    /* NO highlight. The scanner lists every pair; picking the one that also
+       adds to b is the student's job, and marking the winning row was the
+       answer printed above the pour - which is meant to be the only judge. */
+    MF.scanTable(sc, target, null);
     host.appendChild(sc);
   }
 
   if(MF.state.gear.dial && ore.kind==='poly') MF.paintDial(host, B);
 
   var prev = E('div'); prev.id='casting-preview'; host.appendChild(prev);
+  B._preview = prev;
   var pourRow = E('div','row'); pourRow.style.marginTop='12px';
   var pour = E('button','btn primary big','Pour it into the mold'); pour.type='button';
   on(pour,'click',function(){ B.step='pour'; MF.paintMine(); });
   pourRow.appendChild(pour);
   pourRow.appendChild(H('div','hint','The mold forms around whatever you poured. You will see the casting.'));
   host.appendChild(pourRow);
-  MF.previewCasting(B);
+  MF.previewCasting(B, prev);
 };
 MF.readInt = function(raw){
   var s = String(raw||'').trim().replace(/[−–—]/g,'-');
@@ -1230,8 +1643,13 @@ MF.readInt = function(raw){
   if(!/^-?\d+$/.test(s)) return NaN;
   return parseInt(s,10);
 };
-MF.previewCasting = function(B){
-  var host = q('#casting-preview'); if(!host) return;
+/* The preview element is passed in, NOT looked up by id. paintSmelt runs
+   while the bench is still detached, so q('#casting-preview') searched the
+   document, found nothing, and returned silently - the live preview was blank
+   on every single entry to the crucible and nothing errored. */
+MF.previewCasting = function(B, host){
+  host = host || B._preview; if(!host) return;
+  B._preview = host;
   clear(host);
   var bad = B.slots.some(function(g){ return !isFinite(g.m) || !isFinite(g.k); });
   if(bad){ host.appendChild(H('div','note warn','One of those boxes is not a whole number. The crucible only holds whole metals.')); return; }
@@ -1304,8 +1722,11 @@ MF.paintDial = function(host, B){
     var clean = (res.kind!=='pure');
     readout.appendChild(H('div','eq sm', quad(ore.a, ore.b, c2)));
     var m = E('div','note ' + (clean?'good':'warn'));
+    /* The dial says WHETHER a whole-number seam exists. It must never say what
+       it is: printing the factorisation here put the finished answer directly
+       above the pour button, which is supposed to be the only judge. */
     m.innerHTML = clean
-      ? '<b>A whole-number seam runs through this.</b> ' + quad(ore.a,ore.b,c2) + ' = ' + MF.smeltString(res)
+      ? '<b>A whole-number seam runs through this one.</b> Whole ingots will land on it — though the dial is not going to tell you which.'
       : '<b>No whole-number seam.</b> ' + (res.realRoots
           ? 'The seam is real — near ' + num(Math.round(res.realRoots[0]*100)/100) + ' and ' + num(Math.round(res.realRoots[1]*100)/100) +
             ' — but those are not whole numbers, and whole ingots will never land on them.'
@@ -1344,7 +1765,36 @@ MF.paintPour = function(host, B){
   var want = (ore.kind==='number') ? {a:0,b:0,c:ore.n} : {a:ore.a,b:ore.b,c:ore.c};
   var clean = !prod.overflow && prod.a===want.a && prod.b===want.b && prod.c===want.c;
 
-  var cast = E('div','casting ' + (clean?'clean':'deformed'));
+  /* the pour itself, drawn: molten metal falls from the crucible into the mold
+     and the casting comes out of it. The spectacle rewards the work; it never
+     reports a quantity and there is nothing to score. */
+  var pourArt = E('div','stage'); pourArt.style.background = 'linear-gradient(180deg,#3A3129,#241D18)';
+  pourArt.style.borderColor = '#6B5B48';
+  var PW=420, PH=190;
+  var psvg = S('svg',{viewBox:'0 0 '+PW+' '+PH, role:'img',
+    'aria-label': clean ? 'Molten metal pours into the mold and a clean casting forms.'
+                        : 'Molten metal pours into the mold and the casting comes out misshapen.'});
+  psvg.appendChild(S('path',{d:'M120 26 q46 -14 92 0 l-12 42 q-34 -10 -68 0 Z',fill:'#7C838A',stroke:'#4A5158','stroke-width':'2'}));
+  psvg.appendChild(S('path',{d:'M132 34 q34 -9 68 0 l-5 17 q-29 -8 -58 0 Z',fill:'#E2600F'}));
+  var stream = S('rect',{class:'moltenstream',x:'160',y:'66',width:'11',height:'56',rx:'5',fill:'#FFB347'});
+  psvg.appendChild(stream);
+  psvg.appendChild(S('path',{d:'M96 122 h140 l-14 46 h-112 Z',fill:'#4A3F34',stroke:'#2E2620','stroke-width':'3'}));
+  if(clean){
+    psvg.appendChild(S('rect',{x:'250',y:'104',width:'116',height:'40',rx:'6',fill:'#F2DCA4',stroke:'#8A6A2A','stroke-width':'3'}));
+    psvg.appendChild(S('rect',{x:'258',y:'110',width:'100',height:'10',rx:'4',fill:'#FFF3DE',opacity:'.75'}));
+  } else {
+    psvg.appendChild(S('path',{d:'M250 140 q16 -34 40 -18 q10 -30 34 -8 q28 -14 34 26 q-16 14 -54 8 q-34 8 -54 -8 Z',
+      fill:'#8C6A4B',stroke:'#5A4230','stroke-width':'3'}));
+    psvg.appendChild(S('path',{d:'M276 132 l12 -14 l6 16 l14 -12',fill:'none',stroke:'#3A2A1C','stroke-width':'3'}));
+  }
+  var lbl = S('text',{x:'308',y:'168','text-anchor':'middle','font-size':'13',
+    'font-family':'Verdana,system-ui,sans-serif',fill:'#D9C39C'});
+  lbl.textContent = clean ? 'it holds its shape' : 'it will not hold its shape';
+  psvg.appendChild(lbl);
+  pourArt.appendChild(psvg);
+  host.appendChild(pourArt);
+
+  var cast = E('div','casting castingwrap ' + (clean?'clean':'deformed'));
   cast.appendChild(H('h4',null, clean ? 'A clean casting.' : 'The casting came out deformed.'));
 
   var poured = B.slots.map(function(g){
@@ -1397,11 +1847,27 @@ MF.finishLump = function(B, ok, why){
   MF.paintMine();
   MF.flash(why || 'Done.');
 };
+/* Flashes are QUEUED, not written straight into the column. Two of the three
+   gear announcements never reached a student: grantGear flashed, and the very
+   next line repainted the mine and wiped the message it had just inserted. */
+MF.flashQueue = [];
+/* Enqueue only - do NOT drain here. Every caller of flash() is followed by a
+   repaint that clears the column, so draining immediately wrote the message
+   into a panel that was about to be destroyed: two of the three gear
+   announcements never reached the screen. paintMine drains at the END of a
+   paint, and the timeout catches any flash with no repaint behind it. */
 MF.flash = function(msg){
-  var host = MF._mine && MF._mine.mid; if(!host) return;
-  var n = H('div','note good', msg);
-  host.insertBefore(n, host.firstChild);
-  setTimeout(function(){ if(n.parentNode) n.parentNode.removeChild(n); }, 4200);
+  MF.flashQueue.push(msg);
+  setTimeout(MF.drainFlashes, 0);
+};
+MF.drainFlashes = function(){
+  var host = MF._mine && MF._mine.mid;
+  if(!host || !MF.flashQueue.length) return;
+  MF.flashQueue.splice(0).forEach(function(msg){
+    var n = H('div','note good', msg);
+    host.insertBefore(n, host.firstChild);
+    setTimeout(function(){ if(n.parentNode) n.parentNode.removeChild(n); }, 5200);
+  });
 };
 
 /* ---------- the yard and the gear rack ---------- */
