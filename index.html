@@ -2965,6 +2965,20 @@ MF.validate = function(){
   var errs = [], checked = 0, counts = {};
   function chk(group){ counts[group] = (counts[group]||0)+1; checked++; }
 
+  /* THE INSTRUMENT MUST NOT DAMAGE THE SUBJECT (VERIFICATION s35).
+     This function mounts every screen into detached probes, and MF.SCREENS.mine
+     sets MF._mine as a side effect. Without this save/restore, running
+     MF.validate() left MF._mine pointing at a probe that had been thrown away -
+     so afterwards paintMine() drew the bench into a dead DOM and every click a
+     student made did nothing, with no console error and no words on screen.
+
+     A review agent hit exactly this, ran the documented instrument first as the
+     docs tell you to, and reported "I could not assay a pure ingot". The gate
+     was fine. The instrument had broken the page it was measuring, and the
+     wreckage was indistinguishable from the defect it was hunting. */
+  var _liveMine = MF._mine;
+  var _liveScreen = MF.state.screen;
+
   /* 1. the engine: every factorisation must multiply back exactly */
   for(var a=0;a<=6;a++) for(var b=-12;b<=12;b++) for(var c=-12;c<=12;c++){
     if(a===0 && b===0) continue;
@@ -3304,6 +3318,15 @@ MF.validate = function(){
   var bannedControl = banned.test('you scored 7 out of 10');      /* must be caught */
   if(!controlFailed)  errs.push('CONTROL: seam control did not fail - the instrument is not measuring');
   if(!bannedControl)  errs.push('CONTROL: the no-grades regex does not catch "7 out of 10"');
+
+  /* hand the page back exactly as it was found */
+  MF._mine = _liveMine;
+  chk('selfharm');
+  if(MF._mine && MF._mine.mid && !MF._mine.mid.isConnected)
+    errs.push('selfharm: validate() left the live mine columns detached - the bench would render into a dead DOM and every click would silently do nothing');
+  chk('selfharm');
+  if(MF.state.screen !== _liveScreen)
+    errs.push('selfharm: validate() changed which screen the student is on (' + _liveScreen + ' -> ' + MF.state.screen + ')');
 
   var out = {checked:checked, byGroup:counts, errors:errs.length,
              control: (controlFailed && bannedControl) ? 'both controls failed as required' : 'A CONTROL DID NOT FAIL',
