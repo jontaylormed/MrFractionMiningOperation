@@ -183,7 +183,34 @@ input[type=range]{width:100%; accent-color:var(--ore); height:44px}
 .lump .txt{font-family:var(--display); font-size:17px}
 .lump .lay{font-size:11px; color:var(--ink-soft); margin-left:auto; letter-spacing:.06em}
 
-.bench{background:#fff; border:2px solid var(--rule); border-radius:14px; padding:16px}
+/* THE BENCH IS A PLACE, not a card: sawn timber with the grain running along
+   it, iron banding at the edge, and a rack on the wall above holding whatever
+   the student has actually forged. */
+.bench{
+  position:relative; border:3px solid #4A3524; border-radius:14px; padding:16px 16px 18px;
+  background:
+    repeating-linear-gradient(90deg, rgba(74,53,36,.10) 0 2px, transparent 2px 7px),
+    repeating-linear-gradient(180deg, rgba(74,53,36,.16) 0 1px, transparent 1px 26px),
+    linear-gradient(180deg,#DDB88A,#C79A66);
+  background-color:#D3A877;
+  box-shadow:inset 0 3px 0 rgba(255,255,255,.18), inset 0 -8px 18px rgba(58,40,26,.34);
+}
+.bench > *{position:relative; z-index:1}
+.bench:before{content:""; position:absolute; left:0; right:0; top:0; height:9px;
+  background:linear-gradient(180deg,#6E5B49,#4A3524); border-radius:11px 11px 0 0}
+/* timber is a mid-tone, so body text on it has to go darker than --ink-soft:
+   the default measured 3.95:1 on the darker end of the grain */
+.bench .eq{color:#2E2013}
+.bench .hint{color:#3A2A18}
+.bench .stepstrip .st{background:#E8D6BE; border-color:#8A6A4A}
+.toolrack{display:flex; gap:8px; flex-wrap:wrap; align-items:center;
+  background:linear-gradient(180deg,#5A4432,#42301F); border:2px solid #332416;
+  border-radius:10px; padding:8px 10px; margin:2px 0 12px}
+.toolrack .rk{font-size:11px; letter-spacing:.1em; text-transform:uppercase; color:#FFCB7A; margin-right:2px}
+.toolrack .tl{display:inline-flex; align-items:center; gap:6px; background:#2E2620; border:2px solid #6B5B48;
+  border-radius:8px; padding:5px 10px; color:#F0E2C8; font-size:13px}
+.toolrack .tl .ic{font-size:15px}
+.toolrack .empty{color:#C0AC90; font-size:13px; font-style:italic}
 .stepstrip{display:flex; gap:8px; margin-bottom:12px; flex-wrap:wrap}
 .stepstrip .st{flex:1 1 100px; border:2px solid var(--rule); border-radius:10px; padding:7px 9px; background:var(--paper-2); min-width:96px}
 .stepstrip .st b{font-family:var(--display); font-weight:400; font-size:13px; letter-spacing:.08em; display:block; color:var(--ink-soft)}
@@ -232,8 +259,20 @@ input[type=range]{width:100%; accent-color:var(--ore); height:44px}
 @media (max-width:1080px){ .yard{position:static} }
 .yard h3,.gearbox h3{font-size:14px; letter-spacing:.09em; text-transform:uppercase; color:var(--ore-t); margin-bottom:6px}
 .metalrow{display:flex; flex-wrap:wrap; gap:6px}
-.metal{background:linear-gradient(160deg,var(--ingot-lite),var(--ingot)); color:#16202A; border:1px solid #55606B;
-  border-radius:5px; padding:4px 9px; font-family:var(--display); font-size:14px}
+/* the yard is a RACK of bars, not a list of chips: each metal is a cast bar
+   with a lit top edge and a shadow under it, stacked on timber shelving */
+.metalrack{background:linear-gradient(180deg,#5A4432,#42301F); border:2px solid #332416;
+  border-radius:11px; padding:10px; max-height:260px; overflow-y:auto}
+/* .hint is a dark-on-cream colour; inside the dark rack it measured 1.08:1 */
+.metalrack .hint{color:#E4D5BB}
+.metalrack .shelf{border-bottom:3px solid #6E5B49; padding-bottom:8px; margin-bottom:8px}
+.metalrack .shelf:last-child{border-bottom:0; margin-bottom:0; padding-bottom:0}
+/* the bars are LIGHT metal: dark text on the old mid-grey measured 2.27:1,
+   which had been true since the chips existed and had never been measured */
+.metal{position:relative; background:linear-gradient(170deg,#E6ECF2 0%,#BFC9D3 62%,#9DA9B5 100%);
+  color:#141B22; border:1px solid #6E7A86; border-radius:3px 3px 6px 6px; padding:6px 11px 7px;
+  font-family:var(--display); font-size:14px;
+  box-shadow:inset 0 2px 0 rgba(255,255,255,.45), 0 2px 0 rgba(0,0,0,.35)}
 .metal .ct{font-family:var(--body); font-size:11px; opacity:.85}
 .metal.pure{background:linear-gradient(160deg,#F2DCA4,#C8A24B); border-color:#8A6A2A; color:#2E2208}
 .gear{display:flex; gap:9px; align-items:flex-start; background:#fff; border:2px solid var(--rule);
@@ -330,6 +369,15 @@ input[type=range]{width:100%; accent-color:var(--ore); height:44px}
   animation:gleam 1100ms ease-out 1}
 @keyframes cracktwitch{0%,100%{transform:translate(0,0) rotate(0)}30%{transform:translate(-2px,1px) rotate(-.6deg)}70%{transform:translate(2px,-1px) rotate(.6deg)}}
 .castingwrap.deformed{animation:castrise 420ms ease-out 1, cracktwitch 300ms ease-in-out 1 420ms}
+
+/* ---- moving between places. A short wipe, so going somewhere feels like
+       going somewhere rather than the page swapping its contents. ---- */
+@keyframes placewipe{
+  0%{opacity:0; transform:translateY(10px)}
+  100%{opacity:1; transform:translateY(0)}
+}
+#screen.arriving{animation:placewipe 260ms cubic-bezier(.2,.8,.3,1) 1}
+@media (prefers-reduced-motion:reduce){ #screen.arriving{animation:none} }
 
 /* ---- a lump arriving in the cart ---- */
 @keyframes lumpdrop{from{opacity:0; transform:translateY(-16px) scale(.9)}to{opacity:1; transform:translateY(0) scale(1)}}
@@ -786,6 +834,9 @@ MF.go = function(name){
   MF.paintNav();
   host.focus();
   window.scrollTo(0,0);
+  host.classList.remove('arriving');
+  void host.offsetWidth;                 /* restart the wipe on every arrival */
+  host.classList.add('arriving');
 };
 MF.paintNav = function(){
   var nav = q('#nav'); clear(nav);
@@ -1878,6 +1929,20 @@ MF.paintBench = function(host){
 
   var bench = E('div','bench');
   bench.appendChild(H('div','panel-tag','THE BENCH'));
+
+  /* the rack on the wall: the instruments are objects lying on the bench,
+     not a list in a sidebar. Empty racks say what they are for. */
+  var rack = E('div','toolrack');
+  rack.appendChild(H('span','rk','on the bench'));
+  var anyTool = false;
+  Object.keys(MF.TOOLS).forEach(function(k){
+    if(!MF.hasTool(k)) return;
+    anyTool = true;
+    rack.appendChild(H('span','tl','<span class="ic">'+MF.TOOLS[k].ic+'</span>'+MF.TOOLS[k].nm));
+  });
+  if(!anyTool) rack.appendChild(H('span','empty','bare — the forge is where tools come from'));
+  bench.appendChild(rack);
+
   bench.appendChild(H('div','eq', MF.oreLabel(ore)));
 
   var strip = E('div','stepstrip');
@@ -2387,15 +2452,25 @@ MF.paintYard = function(){
     box.appendChild(H('div','hint','No metals yet. Everything you smelt cleanly ends up here.'));
   } else {
     box.appendChild(H('div','hint','Metals you have pulled out of the rock.'));
-    var row = E('div','metalrow');
-    keys.sort().forEach(function(k){
-      var e = MF.state.yard[k];
-      var pure = (e.ingot.m===0);
-      var label = e.ingot.label || ingotText(e.ingot);
-      var chip = H('div','metal' + (pure?' pure':''), label + (e.count>1 ? ' <span class="ct">×'+e.count+'</span>' : ''));
-      row.appendChild(chip);
+    /* plain metals on one shelf, x-carrying ones on another - a yard is sorted */
+    var rack = E('div','metalrack');
+    [['plain metal', function(g){ return g.m===0; }],
+     ['metal with an x in it', function(g){ return g.m!==0; }]].forEach(function(grp){
+      var these = keys.filter(function(k){ return grp[1](MF.state.yard[k].ingot); });
+      if(!these.length) return;
+      var shelf = E('div','shelf');
+      shelf.appendChild(H('div','hint', grp[0]));
+      var row = E('div','metalrow');
+      these.sort().forEach(function(k){
+        var e = MF.state.yard[k];
+        var label = e.ingot.label || ingotText(e.ingot);
+        row.appendChild(H('div','metal' + (e.ingot.m===0?' pure':''),
+          label + (e.count>1 ? ' <span class="ct">×'+e.count+'</span>' : '')));
+      });
+      shelf.appendChild(row);
+      rack.appendChild(shelf);
     });
-    box.appendChild(row);
+    box.appendChild(rack);
   }
 
   var gear = E('div','gearbox'); gear.style.marginTop='18px';
@@ -2594,6 +2669,100 @@ MF.validate = function(){
     if(!got) errs.push('nogate: layer '+L+' produced no ore for a student with no tools');
   }
   MF.state.yard = savedYard; MF.state.tools = savedTools; MF.state.forge = savedForge;
+
+  /* 5f. CONTRAST, MEASURED RATHER THAN REMEMBERED.
+         The yard's metal bars measured 2.27:1 for as long as they existed and
+         nobody noticed, because the sweep only ever ran by hand and the yard
+         was usually empty when it did. This runs on every validate, against a
+         POPULATED state, and resolves gradient backdrops properly - the naive
+         walker climbs past a gradient to the body colour and reports false
+         failures on every dark surface in this build. */
+  var stage = document.createElement('div');
+  stage.setAttribute('aria-hidden','true');
+  /* off-screen, NOT display:none - a hidden subtree has no layout and no
+     resolved colours, so it would measure nothing and report clean (s2) */
+  stage.style.cssText = 'position:absolute; left:-12000px; top:0; width:1100px';
+  document.body.appendChild(stage);
+
+  function _rgb(v){ var m=(v||'').match(/rgba?\((\d+),\s*(\d+),\s*(\d+)/); return m?[+m[1],+m[2],+m[3]]:null; }
+  function _lum(c){ var a=c.map(function(x){ x/=255; return x<=0.03928?x/12.92:Math.pow((x+0.055)/1.055,2.4); });
+    return 0.2126*a[0]+0.7152*a[1]+0.0722*a[2]; }
+  function _ratio(f,b){ var L1=_lum(f),L2=_lum(b); return (Math.max(L1,L2)+0.05)/(Math.min(L1,L2)+0.05); }
+  function _backdrops(el, root){
+    var n=el;
+    while(n && n!==root.parentNode){
+      var cs=getComputedStyle(n), bg=_rgb(cs.backgroundColor);
+      if(bg && cs.backgroundColor.indexOf('rgba(0, 0, 0, 0)')<0) return [bg];
+      var img=cs.backgroundImage||'';
+      if(img.indexOf('gradient')>=0){
+        var st=(img.match(/rgba?\([^)]+\)/g)||[]).map(_rgb).filter(Boolean);
+        if(st.length) return st;
+      }
+      n=n.parentElement;
+    }
+    return [[253,248,240]];
+  }
+  MF._measureContrast = function(root){
+    var out = [];
+    root.querySelectorAll('*').forEach(function(el){
+      var direct = Array.prototype.some.call(el.childNodes, function(n){ return n.nodeType===3 && n.textContent.trim().length>1; });
+      if(!direct) return;
+      var cs = getComputedStyle(el);
+      if(cs.display==='none' || cs.visibility==='hidden' || parseFloat(cs.opacity)===0) return;
+      var f=_rgb(cs.color); if(!f) return;
+      var px=parseFloat(cs.fontSize), bold=parseInt(cs.fontWeight,10)>=700;
+      var need = (px>=24 || (px>=18.66 && bold)) ? 3 : 4.5;
+      var r = Math.min.apply(null, _backdrops(el, root).map(function(b){ return _ratio(f,b); }));
+      out.push({el:el, ratio:Math.round(r*100)/100, need:need,
+                text:(el.textContent||'').trim().slice(0,30), cls:(el.className||'').toString().slice(0,24)});
+    });
+    return out;
+  };
+
+  /* populate hard: tools forged, a stocked yard, a lump mid-smelt - the states
+     where the new surfaces actually have text on them */
+  var cSaved = {yard:MF.state.yard, tools:MF.state.tools, cart:MF.state.cart, sel:MF.state.selected,
+                bench:MF.state.bench, mine:MF._mine, layer:MF.state.layer, face:MF.state.face, fl:MF.state.faceLayer};
+  MF.state.yard={}; MF.state.tools={lantern:{forged:true},shifter:{forged:true},drill:{forged:true}};
+  var cRng = makeRng(5150);
+  for(var ci=0; ci<10; ci++){
+    var cl = MF.digOre(1+(ci%5), cRng); if(!cl) continue;
+    if(cl.kind==='number') primeFactors(cl.n).forEach(function(p){ MF.addToYard({m:0,k:p}); });
+    else { var cr = MF.smeltPoly(cl.a,cl.b,cl.c); if(cr.ingots) cr.ingots.forEach(function(g){ if(!(g.m===0&&g.k===0)) MF.addToYard({m:g.m,k:g.k}); }); }
+  }
+  var contrastFails = [];
+  ['home','workshop-mold','workshop-ore','forge','mine'].forEach(function(scr){
+    stage.innerHTML='';
+    var probe = document.createElement('div');
+    stage.appendChild(probe);
+    try {
+      if(scr==='mine'){
+        MF._mine = null;
+        MF.SCREENS.mine(probe);
+        MF.state.layer=4; MF.state.face=[]; MF.state.faceLayer=null;
+        var lump = MF.digOre(4, cRng);
+        if(lump){ MF.state.cart=[lump]; MF.state.selected=lump; MF.state.bench=MF.benchInit(lump); MF.state.bench.step='smelt'; }
+        MF.paintMine();
+      } else { MF.SCREENS[scr](probe); }
+    } catch(e){ errs.push('contrast: screen '+scr+' threw: '+e.message); return; }
+    MF._measureContrast(probe).forEach(function(m){
+      chk('contrast');
+      if(m.ratio < m.need) contrastFails.push(scr+': "'+m.text+'" ('+m.cls+') at '+m.ratio+':1, needs '+m.need);
+    });
+  });
+  contrastFails.slice(0,8).forEach(function(f){ errs.push('contrast: '+f); });
+  if(contrastFails.length > 8) errs.push('contrast: and '+(contrastFails.length-8)+' more');
+
+  /* CONTROL: unreadable text must be caught, or the sweep is measuring nothing */
+  chk('contrast');
+  stage.innerHTML = '<div style="background:#FDF8F0"><p style="color:#FBF6EE;font-size:14px">invisible</p></div>';
+  var ctrlHits = MF._measureContrast(stage).filter(function(m){ return m.ratio < m.need; });
+  if(!ctrlHits.length) errs.push('CONTROL: the contrast sweep did not catch cream text on cream');
+
+  document.body.removeChild(stage);
+  MF.state.yard=cSaved.yard; MF.state.tools=cSaved.tools; MF.state.cart=cSaved.cart;
+  MF.state.selected=cSaved.sel; MF.state.bench=cSaved.bench; MF._mine=cSaved.mine;
+  MF.state.layer=cSaved.layer; MF.state.face=cSaved.face; MF.state.faceLayer=cSaved.fl;
 
   /* 6. NOTHING ON SCREEN MAY HAVE A CEILING, A PERCENTAGE, OR A COMPARISON.
         This is a stated requirement, so it is checked mechanically rather

@@ -6,7 +6,7 @@ A single-file, zero-dependency site for learning to factor — built on one idea
 
 ## Run it
 
-Open `index.html`. That is the whole instruction — no build step, no server, no dependencies, no network requests, no storage. Verified: **0 external references, 0 network calls, 0 storage APIs, 78 KB.**
+Open `index.html`. That is the whole instruction — no build step, no server, no dependencies, no network requests, no storage. Verified: **0 external references, 0 network calls, 0 storage APIs, 136 KB.**
 
 ## The metaphor, and it is load-bearing
 
@@ -36,9 +36,19 @@ You can descend as deep as you like and fill your cart **without processing anyt
 
 Five layers, by ore richness: plain numbers → shared metal → two-term ore and pure ingots → `x² + bx + c` → `ax² + bx + c`. Four further shafts are cut but not yet timbered, and are named on screen so you know the mine keeps going.
 
+## The forge, and tools that are instruments
+
+The yard has a **sink**: metals are spent at the forge, so needing a factor you have not got is what sends you back down the shaft.
+
+**Forging is distributing, and every tool is forged by demonstrating the move it then assists with.** Three primes cast the **Lantern**, which lights the mold — a live area model of what you are holding. Two x-ingots cast the **Shifter**, the exponent rail, and you watch `x·x` become `x²` while making it. A matched pair casts the **Drill** — you forge it *by making a twin seam on purpose*.
+
+The casting preview is not free: it is the Lantern's power. Before you forge one, you pour and the casting teaches you.
+
+> **Tools assist; they never gate.** A student who has forged nothing can still reach and work the deepest layer.
+
 ## Scoring, not grading
 
-The yard counts what you own and only ever grows. Gear appears because you went somewhere, never because you scored. There are **no percentages, no accuracy rates, no X-out-of-Y, no ranks, and nothing that goes down** — enforced mechanically by a check in `MF.validate()`, with a control that must fail.
+The yard counts what you own, and unlike a mark you can **spend** it. There are **no percentages, no accuracy rates, no X-out-of-Y, no ranks, and nothing that goes down** — enforced mechanically, with a control that must fail. Order requirements are drawn as **slots, filled or empty**, never counted.
 
 The line between a score and a grade is drawn in `docs/MR-FRACTION-PHILOSOPHY.md` §2.5a.
 
@@ -49,7 +59,7 @@ The line between a score and a grade is drawn in `docs/MR-FRACTION-PHILOSOPHY.md
 MF.validate()
 ```
 
-**2,007 checks across seven groups, 0 errors, and two controls that must fail — and do.** It sweeps the factor engine, the seam classification, **800 generated lumps across the five layers** (the ore is generated, not authored, so nobody has ever seen most of it), the printer, the pour, and the no-grades rule.
+**2,037 checks across eleven groups, 0 errors, and two controls that must fail — and do.** It sweeps the factor engine, seam classification, **800 generated lumps across the five layers** (the ore is generated, not authored, so nobody has ever seen most of it), the printer, the pour, the forge, the seam's whole length, the doors on the surface, the no-gate rule, and the no-grades rule.
 
 `MF.playthrough(layer)` drives a whole lump end to end — dig, assay, smelt, pour — and reports what it did.
 
@@ -80,11 +90,12 @@ docs/MR-FRACTION-PHILOSOPHY.md   what makes it a Mr Fraction site (incl. §2.5a)
 docs/SITE-STATE.md               the only document that states what exists
 docs/VERIFICATION.md             42 rules, each written after a real failure
 .claude/agents/                  five review charters, deliberately disjoint
+tools/verify-published.js        run this ON THE LIVE URL — see above
 tools/                           serve.ps1, zz-drive.js — scaffolding, never shipped
 ```
 
 ## Status
 
-v1 is **the Ore Cart**: dig, assay, smelt, pour, keep the metals. The guided route and the fully open face are v2 and v3 — modes on the same bench rather than rebuilds — and the challenge shafts open one at a time, grouping first.
+v1 is **the Ore Cart**: scan the seam, look a lump over, break it, assay, smelt, pour, then spend the metals at the forge. The guided route and the fully open face are v2 and v3 — modes on the same bench rather than rebuilds — and the challenge shafts open one at a time, grouping first.
 
-**No student has used this yet.** That is the missing check, and nothing in the process above substitutes for it.
+**No student has used this yet**, and neither has any independent reviewer: the lived-experience and generated-ore review passes have been dispatched repeatedly and killed by session limits every time. Everything here has been checked by the person who wrote it, which `docs/VERIFICATION.md` §16 names as the weakest kind of check there is.
