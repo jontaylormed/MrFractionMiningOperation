@@ -373,7 +373,7 @@ input[type=range]{width:100%; accent-color:var(--ore); height:44px}
 .scene .hotlabel{font-family:var(--display); font-size:13px; fill:#FFF3DE; paint-order:stroke;
   stroke:#2E2620; stroke-width:4px; stroke-linejoin:round}
 /* burnt into the plank: dark on light wood, no outline needed */
-.scene .signtext{font-family:var(--display); font-size:13px; fill:#3A2A18; color:#3A2A18}
+.scene .signtext{font-family:var(--display); font-size:11px; fill:#3A2A18; color:#3A2A18}
 /* TRANSFORM-BOX IS NOT OPTIONAL ON SVG.
    `transform-origin` on an SVG element resolves against the VIEWBOX by
    default, not the element - so "center" meant the centre of a 900x420 scene,
@@ -986,6 +986,26 @@ MF.loadScreen = function(){
    Everything that moves here is scenery: the wheel, the cart, the smoke and
    the clouds carry no information and never report a quantity.
    ========================================================================= */
+/* A nameplate BOLTED TO A FACADE. Module scope, not inside a scene: it was
+   first written inside roomScene by accident - both scene builders have an
+   identically shaped P() helper - so surfaceScene could not see it and every
+   building threw "nameplate is not defined". */
+function nameplate(parent, cx, cy, label){
+  var w = Math.max(74, label.length*6.9 + 16), h = 21;
+  parent.appendChild(S('rect',{x:String(cx-w/2-3),y:String(cy-3),width:String(w+6),height:String(h+6),
+    rx:'3',fill:'#6B4A32'}));
+  parent.appendChild(S('rect',{x:String(cx-w/2),y:String(cy),width:String(w),height:String(h),rx:'2',
+    fill:'#C79A66'}));
+  parent.appendChild(S('rect',{x:String(cx-w/2+4),y:String(cy+4),width:String(w-8),height:'3',rx:'1',
+    fill:'#DDB88A',opacity:'.7'}));
+  [[cx-w/2+5, cy+h/2],[cx+w/2-5, cy+h/2]].forEach(function(bolt){
+    parent.appendChild(S('circle',{cx:String(bolt[0]),cy:String(bolt[1]),r:'1.8',fill:'#6B4A32'}));
+  });
+  var t = S('text',{x:String(cx),y:String(cy+14),'text-anchor':'middle',class:'signtext'});
+  t.textContent = label;
+  parent.appendChild(t);
+}
+
 MF.surfaceScene = function(){
   var wrap = E('div','scene');
   var W=900, VH=420;
@@ -1040,7 +1060,8 @@ MF.surfaceScene = function(){
     wm.appendChild(S('rect',{x:String(15+ (y-96)*0.06),y:String(y),width:String(78 - (y-96)*0.12),height:'6',fill:'#6E6053',opacity:'.75'}));
   });
   wm.appendChild(S('path',{d:'M44 208 l0 -34 q10 -10 20 0 l0 34 Z',fill:'#4A3524'}));
-  [ [40,104],[64,104],[46,150],[62,150] ].forEach(function(w){
+  /* windows moved clear of y=122, where the nameplate is now bolted */
+  [ [40,92],[64,92],[44,160],[62,160] ].forEach(function(w){
     wm.appendChild(S('rect',{x:String(w[0]),y:String(w[1]),width:'12',height:'14',rx:'2',fill:'#3A3129'}));
     wm.appendChild(S('rect',{x:String(w[0]+2),y:String(w[1]+2),width:'8',height:'10',rx:'1',fill:'#FFE9A8',opacity:'.55'}));
   });
@@ -1067,16 +1088,9 @@ MF.surfaceScene = function(){
   sailMount.appendChild(sails);
   wm.appendChild(sailMount);
 
-  /* the windmill gets a board too, so it is not the one thing on site still
-     labelled with floating text */
-  wm.appendChild(S('rect',{x:'20',y:'-40',width:'4',height:'11',fill:'#4A3F34'}));
-  wm.appendChild(S('rect',{x:'84',y:'-40',width:'4',height:'11',fill:'#4A3F34'}));
-  /* 112 wide, not 84: "The Windmill" ran off both ends of the plank */
-  wm.appendChild(S('rect',{x:'-2',y:'-62',width:'112',height:'22',rx:'4',fill:'#C79A66',stroke:'#6B4A32','stroke-width':'3'}));
-  wm.appendChild(S('rect',{x:'2',y:'-58',width:'104',height:'3',rx:'1',fill:'#DDB88A',opacity:'.7'}));
-  var wmLabel = S('text',{x:'54',y:'-47','text-anchor':'middle',class:'signtext'});
-  wmLabel.textContent = 'The Windmill';
-  wm.appendChild(wmLabel);
+  /* bolted to the tower, below the sail sweep - a board above the sails would
+     be a board in the sky, and the blades would swing straight through it */
+  nameplate(wm, 54, 122, 'Windmill');
   svg.appendChild(wm);
 
   /* ---- THE SMELTING HOUSE -> the ore workshop.
@@ -1084,66 +1098,72 @@ MF.surfaceScene = function(){
          workshop about smelting numbers into primes. It used to open the MOLD
          workshop, which is the opposite operation: the labels were on the
          wrong doors. ---- */
-  var sm = S('g',{transform:'translate(238,224)'});
-  sm.appendChild(S('rect',{x:'0',y:'34',width:'120',height:'80',rx:'4',fill:'#7A5B3A'}));
-  sm.appendChild(S('path',{d:'M-8 36 L60 4 L128 36 Z',fill:'#8C4A3F'}));
-  /* the chimney has to REACH the roof. The roof slopes from (60,4) to (128,36),
-     so at x=86 it sits at y≈16 - the stack used to stop at y=12 and float. */
-  /* lowered again: the stack ran to y=-40 and towered over its own roof */
-  sm.appendChild(S('rect',{x:'86',y:'-14',width:'22',height:'34',fill:'#6B4A32'}));
-  sm.appendChild(S('rect',{x:'84',y:'8',width:'26',height:'7',rx:'2',fill:'#5A3F2A'}));
-  sm.appendChild(S('rect',{x:'82',y:'-20',width:'30',height:'9',rx:'2',fill:'#4A3F34'}));
+  var sm = S('g',{transform:'translate(232,214)'});
+  sm.appendChild(S('rect',{x:'0',y:'44',width:'132',height:'92',rx:'4',fill:'#7A5B3A'}));
+  sm.appendChild(S('path',{d:'M-10 44 L66 6 L142 44 Z',fill:'#8C4A3F'}));
+  sm.appendChild(S('rect',{x:'-12',y:'40',width:'156',height:'7',rx:'2',fill:'#6B3F32'}));
+  /* the stack runs from its cap all the way DOWN INTO THE BODY at y=48, so it
+     passes through the roofline (y≈17 at this x) instead of resting near it */
+  sm.appendChild(S('rect',{x:'92',y:'-24',width:'24',height:'72',fill:'#6B4A32'}));
+  sm.appendChild(S('rect',{x:'88',y:'-30',width:'32',height:'9',rx:'2',fill:'#4A3F34'}));
   [0,1,2].forEach(function(k){
-    var puff = S('circle',{cx:'97',cy:'-24',r:String(8+k*2),fill:'#D8CFC0',class:'sc-smoke'});
+    var puff = S('circle',{cx:'104',cy:'-34',r:String(7+k*2),fill:'#D8CFC0',class:'sc-smoke'});
     puff.style.animationDelay = (k*1.5)+'s';
     sm.appendChild(puff);
   });
-  sm.appendChild(S('rect',{x:'16',y:'58',width:'34',height:'34',rx:'3',fill:'#E2600F',opacity:'.9',class:'sc-lamp'}));
-  sm.appendChild(S('rect',{x:'70',y:'66',width:'26',height:'26',rx:'3',fill:'#3A2A1C'}));
+  nameplate(sm, 66, 54, 'Smelting House');
+  sm.appendChild(S('rect',{x:'14',y:'92',width:'32',height:'32',rx:'3',fill:'#E2600F',opacity:'.9',class:'sc-lamp'}));
+  sm.appendChild(S('rect',{x:'56',y:'96',width:'24',height:'24',rx:'3',fill:'#3A2A1C'}));
+  sm.appendChild(S('rect',{x:'92',y:'98',width:'26',height:'38',rx:'2',fill:'#4A3524'}));
   svg.appendChild(sm);
 
   /* ---- THE CASTING SHED -> the mold workshop. Ingots stacked outside. ---- */
-  var cs = S('g',{transform:'translate(398,246)'});
-  cs.appendChild(S('rect',{x:'0',y:'26',width:'104',height:'66',rx:'4',fill:'#6E7B87'}));
-  cs.appendChild(S('path',{d:'M-6 28 L52 2 L110 28 Z',fill:'#4A5560'}));
-  cs.appendChild(S('rect',{x:'14',y:'46',width:'22',height:'22',rx:'2',fill:'#FFE9A8',class:'sc-lamp'}));
-  cs.appendChild(S('rect',{x:'62',y:'46',width:'26',height:'26',rx:'3',fill:'#2E3840'}));
+  var cs = S('g',{transform:'translate(400,236)'});
+  cs.appendChild(S('rect',{x:'0',y:'34',width:'118',height:'82',rx:'4',fill:'#6E7B87'}));
+  cs.appendChild(S('path',{d:'M-8 34 L59 4 L126 34 Z',fill:'#4A5560'}));
+  cs.appendChild(S('rect',{x:'-10',y:'30',width:'138',height:'7',rx:'2',fill:'#3E4750'}));
+  nameplate(cs, 59, 44, 'Casting Shed');
+  cs.appendChild(S('rect',{x:'12',y:'80',width:'24',height:'24',rx:'2',fill:'#FFE9A8',class:'sc-lamp'}));
+  cs.appendChild(S('rect',{x:'46',y:'80',width:'24',height:'24',rx:'3',fill:'#2E3840'}));
+  cs.appendChild(S('rect',{x:'84',y:'78',width:'26',height:'38',rx:'2',fill:'#3E4750'}));
   /* a stack of finished ingots by the door */
   [[0,0],[13,0],[6,-9]].forEach(function(p){
-    cs.appendChild(S('rect',{x:String(108+p[0]),y:String(80+p[1]),width:'15',height:'8',rx:'2',
+    cs.appendChild(S('rect',{x:String(122+p[0]),y:String(104+p[1]),width:'15',height:'8',rx:'2',
       fill:'#C8A24B',stroke:'#8A6A2A','stroke-width':'1'}));
   });
   svg.appendChild(cs);
 
   /* ---- THE FORGE. It had no building at all: a whole screen with no door in
          a world whose whole principle is that the buildings ARE the doors. ---- */
-  var fg = S('g',{transform:'translate(546,238)'});
-  fg.appendChild(S('rect',{x:'0',y:'30',width:'116',height:'78',rx:'4',fill:'#5E4636'}));
-  fg.appendChild(S('path',{d:'M-8 32 L58 2 L124 32 Z',fill:'#6B3F32'}));
+  var fg = S('g',{transform:'translate(560,230)'});
+  fg.appendChild(S('rect',{x:'0',y:'38',width:'118',height:'84',rx:'4',fill:'#5E4636'}));
+  fg.appendChild(S('path',{d:'M-8 38 L59 6 L126 38 Z',fill:'#6B3F32'}));
+  fg.appendChild(S('rect',{x:'-10',y:'34',width:'138',height:'7',rx:'2',fill:'#5A3428'}));
+  nameplate(fg, 59, 47, 'The Forge');
   /* squat stone chimney, and the furnace mouth burning inside */
-  fg.appendChild(S('rect',{x:'6',y:'-24',width:'26',height:'56',rx:'2',fill:'#6E6055'}));
-  fg.appendChild(S('rect',{x:'2',y:'-30',width:'34',height:'9',rx:'2',fill:'#4A4038'}));
+  fg.appendChild(S('rect',{x:'6',y:'-18',width:'26',height:'60',rx:'2',fill:'#6E6055'}));
+  fg.appendChild(S('rect',{x:'2',y:'-24',width:'34',height:'9',rx:'2',fill:'#4A4038'}));
   [0,1].forEach(function(k){
-    var puff = S('circle',{cx:'19',cy:'-34',r:String(7+k*3),fill:'#C7BCAE',class:'sc-smoke'});
+    var puff = S('circle',{cx:'19',cy:'-28',r:String(7+k*3),fill:'#C7BCAE',class:'sc-smoke'});
     puff.style.animationDelay = (k*2.1)+'s';
     fg.appendChild(puff);
   });
-  var mouth = S('path',{d:'M40 96 q0 -30 24 -30 q24 0 24 30 Z',fill:'#E2600F',class:'sc-lamp'});
+  var mouth = S('path',{d:'M34 112 q0 -30 24 -30 q24 0 24 30 Z',fill:'#E2600F',class:'sc-lamp'});
   fg.appendChild(mouth);
-  fg.appendChild(S('path',{d:'M46 96 q0 -21 18 -21 q18 0 18 21 Z',fill:'#FFB347',opacity:'.85'}));
+  fg.appendChild(S('path',{d:'M40 112 q0 -21 18 -21 q18 0 18 21 Z',fill:'#FFB347',opacity:'.85'}));
   /* a door, so the building can be walked into rather than only looked at */
-  fg.appendChild(S('rect',{x:'88',y:'62',width:'24',height:'46',rx:'2',fill:'#3A2A1C'}));
-  fg.appendChild(S('rect',{x:'90',y:'64',width:'20',height:'42',rx:'2',fill:'#6B4A32'}));
-  fg.appendChild(S('rect',{x:'90',y:'80',width:'20',height:'4',fill:'#4A3524'}));
-  fg.appendChild(S('circle',{cx:'106',cy:'86',r:'2.4',fill:'#C8A24B'}));
+  fg.appendChild(S('rect',{x:'94',y:'76',width:'24',height:'46',rx:'2',fill:'#3A2A1C'}));
+  fg.appendChild(S('rect',{x:'96',y:'78',width:'20',height:'42',rx:'2',fill:'#6B4A32'}));
+  fg.appendChild(S('rect',{x:'96',y:'94',width:'20',height:'4',fill:'#4A3524'}));
+  fg.appendChild(S('circle',{cx:'112',cy:'100',r:'2.4',fill:'#C8A24B'}));
   /* the anvil out front, which is what makes it read as a forge at a glance */
-  fg.appendChild(S('path',{d:'M-24 104 h30 l-4 8 h-22 Z',fill:'#4A5158'}));
-  fg.appendChild(S('path',{d:'M-30 96 q10 -7 24 -5 q10 1 14 5 l-4 8 h-30 Z',fill:'#5A626A'}));
+  fg.appendChild(S('path',{d:'M-24 118 h30 l-4 8 h-22 Z',fill:'#4A5158'}));
+  fg.appendChild(S('path',{d:'M-30 110 q10 -7 24 -5 q10 1 14 5 l-4 8 h-30 Z',fill:'#5A626A'}));
   /* a hammer left on the anvil, and a water butt against the wall */
-  fg.appendChild(S('rect',{x:'-22',y:'88',width:'20',height:'4',rx:'2',fill:'#7A5B3A'}));
-  fg.appendChild(S('rect',{x:'-6',y:'84',width:'9',height:'11',rx:'2',fill:'#5A626A'}));
-  fg.appendChild(S('rect',{x:'120',y:'78',width:'20',height:'30',rx:'4',fill:'#6B4A32'}));
-  fg.appendChild(S('rect',{x:'120',y:'86',width:'20',height:'4',fill:'#4A3524'}));
+  fg.appendChild(S('rect',{x:'-22',y:'102',width:'20',height:'4',rx:'2',fill:'#7A5B3A'}));
+  fg.appendChild(S('rect',{x:'-6',y:'98',width:'9',height:'11',rx:'2',fill:'#5A626A'}));
+  fg.appendChild(S('rect',{x:'130',y:'92',width:'20',height:'30',rx:'4',fill:'#6B4A32'}));
+  fg.appendChild(S('rect',{x:'130',y:'100',width:'20',height:'4',fill:'#4A3524'}));
   svg.appendChild(fg);
 
   /* ---- rails and ore cart ---- */
@@ -1169,16 +1189,9 @@ MF.surfaceScene = function(){
   en.appendChild(S('rect',{x:'0',y:'92',width:'11',height:'68',fill:'#6B4A32'}));
   en.appendChild(S('rect',{x:'81',y:'92',width:'11',height:'68',fill:'#6B4A32'}));
   en.appendChild(S('circle',{cx:'46',cy:'104',r:'7',fill:'#E8A33D',opacity:'.9',class:'sc-lamp'}));
-  /* grass growing over the bluff. Nothing has been dug here in a while and the
-     hillside has taken it back - the mound read as bare fresh spoil. */
-  [[-16,120],[-6,92],[6,70],[20,52],[38,40],[58,40],[76,52],[90,74],[100,98],[110,126],
-   [-22,146],[112,150]].forEach(function(t){
-    en.appendChild(S('path',{d:'M'+t[0]+' '+t[1]+' l3 -10 l3 10 M'+(t[0]+6)+' '+t[1]+' l3 -8 l3 8',
-      fill:'none',stroke:'#5E7A4E','stroke-width':'2.4','stroke-linecap':'round'}));
-  });
-  [[10,96],[68,66],[96,116]].forEach(function(b){
-    en.appendChild(S('path',{d:'M'+b[0]+' '+b[1]+' q7 -9 15 -1 q-6 8 -15 1 Z',fill:'#6B8A5A',opacity:'.85'}));
-  });
+  /* the nameplate sits DIRECTLY ABOVE THE OPENING, on the timber over the
+     portal - that is where a mine actually carries its name */
+  nameplate(en, 46, 56, 'The Mine');
   svg.appendChild(en);
 
   /* ---- the small stuff that makes a site look worked rather than drawn ---- */
@@ -1212,16 +1225,18 @@ MF.surfaceScene = function(){
     svg.appendChild(S('line',{x1:String(c[0]),y1:String(c[1]+10),x2:String(c[0]+22),y2:String(c[1]+10),stroke:'#5A4230','stroke-width':'2'}));
   });
   /* a lamp post over the yard */
-  svg.appendChild(S('rect',{x:'506',y:'300',width:'5',height:'62',fill:'#4A3F34'}));
-  P('M498 300 l20 0 l-4 -12 l-12 0 Z','#3A3129');
-  svg.appendChild(S('circle',{cx:'508',cy:'296',r:'6',fill:'#FFE9A8',class:'sc-lamp'}));
+  /* clear of the Casting Shed, which now reaches x=526 */
+  svg.appendChild(S('rect',{x:'538',y:'300',width:'5',height:'62',fill:'#4A3F34'}));
+  P('M530 300 l20 0 l-4 -12 l-12 0 Z','#3A3129');
+  svg.appendChild(S('circle',{cx:'540',cy:'296',r:'6',fill:'#FFE9A8',class:'sc-lamp'}));
   /* a fence running along the back of the yard */
   for(var fx=250; fx<=470; fx+=26){
     svg.appendChild(S('rect',{x:String(fx),y:'316',width:'4',height:'26',fill:'#6B5A47'}));
   }
   svg.appendChild(S('rect',{x:'250',y:'322',width:'224',height:'4',fill:'#6B5A47'}));
   /* a second cart parked on a spur, already loaded */
-  var spur = S('g',{transform:'translate(596,344)'});
+  /* moved off the forge: at x=596 it parked squarely over the furnace mouth */
+  var spur = S('g',{transform:'translate(700,344)'});
   spur.appendChild(S('path',{d:'M0 8 L44 8 L39 30 L5 30 Z',fill:'#5A6570'}));
   spur.appendChild(S('rect',{x:'2',y:'3',width:'40',height:'7',rx:'2',fill:'#77828D'}));
   [[8,-1],[20,-4],[32,0]].forEach(function(o){
@@ -1280,35 +1295,18 @@ MF.surfaceScene = function(){
     ring.appendChild(S('rect',{x:x,y:y,width:w,height:h,rx:'10',fill:'rgba(232,163,61,.16)',
       stroke:'#E8A33D','stroke-width':'3','stroke-dasharray':'7 5'}));
     g.appendChild(ring);
-    /* A SIGN BOARD, not floating text: a hung plank on two irons, which is how
-       a building on a worksite actually tells you what it is. */
-    var cx = x + w/2, plankW = Math.max(84, label.length*8.4 + 22), plankH = 22;
-    var sx = cx - plankW/2;
-    var legs = 13;
-    var sy = (attachY != null) ? (attachY - plankH - legs) : (y - 30);
-    var legBottom = (attachY != null) ? attachY + 3 : sy + plankH + 12;
-    var sign = S('g',{});
-    sign.appendChild(S('rect',{x:String(sx+8),y:String(sy+plankH-2),width:'4',
-      height:String(legBottom-(sy+plankH-2)),fill:'#4A3F34'}));
-    sign.appendChild(S('rect',{x:String(sx+plankW-12),y:String(sy+plankH-2),width:'4',
-      height:String(legBottom-(sy+plankH-2)),fill:'#4A3F34'}));
-    sign.appendChild(S('rect',{x:String(sx),y:String(sy),width:String(plankW),height:String(plankH),rx:'4',
-      fill:'#C79A66',stroke:'#6B4A32','stroke-width':'3'}));
-    sign.appendChild(S('rect',{x:String(sx+4),y:String(sy+4),width:String(plankW-8),height:'3',rx:'1',
-      fill:'#DDB88A',opacity:'.7'}));
-    var t = S('text',{x:String(cx),y:String(sy+15),'text-anchor':'middle',class:'signtext'});
-    t.textContent = label;
-    sign.appendChild(t);
-    g.appendChild(sign);
+    /* No sign is drawn here any more. Each building carries its own nameplate
+       BOLTED TO ITS FACADE - a board on irons above a roof is still a board
+       floating in the sky. The hotspot is now only the target and the ring. */
     on(g,'click',function(){ MF.go(screen); });
     on(g,'keydown',function(e){ if(e.key==='Enter'||e.key===' '){ e.preventDefault(); MF.go(screen); } });
     svg.appendChild(g);
   }
-  /* the last argument is where each building's roof actually is */
-  hot(228,178,140,164,'The Smelting House','workshop-ore', 228);   /* roof apex 224+4 */
-  hot(390,242,124,104,'The Casting Shed','workshop-mold', 248);    /* roof apex 246+2 */
-  hot(538,204,132,146,'The Forge','forge', 240);                   /* roof apex 238+2 */
-  hot(712,300,152,100,'Into the Mine','mine', 270);                /* crown of the bluff */
+  /* targets only - each building carries its own nameplate now */
+  hot(222,220,152,132,'The Smelting House','workshop-ore');
+  hot(392,240,134,116,'The Casting Shed','workshop-mold');
+  hot(552,236,134,120,'The Forge','forge');
+  hot(712,300,152,100,'Into the Mine','mine');
 
   /* Mr Factor, standing on the surface */
   var mf = MF.art(74);
@@ -1333,6 +1331,7 @@ MF.roomScene = function(kind){
     if(extra) for(var k in extra) n.setAttribute(k,extra[k]); svg.appendChild(n); return n; }
   function P(d,f,extra){ var n=S('path',{d:d,fill:f}); if(extra) for(var k in extra) n.setAttribute(k,extra[k]);
     svg.appendChild(n); return n; }
+
 
   var pal = {
     foundry:{wall:'#6E5C49', wall2:'#4E4033', floor:'#3E3328', beam:'#5A4938'},
