@@ -18,11 +18,13 @@
 
 | | |
 |---|---|
-| **File** | **one** — `index.html`, ~2500 lines, fully self-contained |
+| **File** | **one** — `index.html`, ~3,600 lines, fully self-contained |
 | **Screens** | **five** — surface, two workshops, the mine, the forge |
 | **Layers** | **five**, all reachable from the first screen, none gated on anything |
 | **Instruments** | **five**, all forged, none granted |
-| **Validation** | `MF.validate()` → **2027 checks / 10 groups / 0 errors**, two controls that must fail, and do |
+| **Validation** | `MF.validate()` → **5,610 checks / 16 groups / 0 errors**, two controls that must fail, and do |
+
+> **A check is only as wide as the space it sweeps.** The `truthy` group reported 0 errors across 642 checks while **1,970 Decimal Dial states printed a falsehood**, because it tested each lump's original integer coefficients and never nudged `c` — the one thing the dial exists to do. It now sweeps every slider position the control can reach (3,287 checks). Ask of any green result: *what did it not look at?*
 | **Runtime** | Zero dependencies, no build step, no network requests, no storage, runs from `file://` |
 
 ## The metaphor, and it is load-bearing

@@ -671,8 +671,29 @@ MF.smeltPoly = function(a,b,c){
   var res = {a:a,b:b,c:c, kind:null, g:1, ingots:null};
   if(!isInt(a)||!isInt(b)||!isInt(c)){
     res.kind='pure'; res.nonInteger=true;
+    /* THIS BRANCH IS THE DIAL'S ENTIRE WORKING RANGE - every half-step lands
+       here - and it used to hand back roots only when a!==0 AND disc>0. So a
+       linear lump denied its own root at every dial position (492 lumps x 4
+       positions = 1,968 false denials), and a perfect square with a
+       non-integer c was denied its repeated root. The earlier fix added roots
+       to the INTEGER linear path, which this early return never reaches:
+       35% of the falsehood removed, 65% left. */
     var dd=b*b-4*a*c; res.disc=dd;
-    if(a!==0 && dd>0) res.realRoots=[(-b+Math.sqrt(dd))/(2*a),(-b-Math.sqrt(dd))/(2*a)];
+    if(a===0){
+      if(b!==0) res.realRoots=[-c/b];
+      else res.constantOre=true;
+    } else if(dd>0){
+      res.realRoots=[(-b+Math.sqrt(dd))/(2*a),(-b-Math.sqrt(dd))/(2*a)];
+    } else if(dd===0){
+      res.realRoots=[-b/(2*a)];               /* repeated, but still a root */
+    }
+    return res;
+  }
+  /* a constant is not ore: gcdAll([0,c]) is c, so smeltPoly(0,0,7) reported a
+     Common Vein and the dial claimed a whole-number seam through a prime */
+  if(a===0 && b===0){
+    res.constantOre = true;
+    res.kind = (Math.abs(c)>1 && !isPrime(c)) ? 'shared' : 'pure';
     return res;
   }
   if(a===0){
@@ -2043,7 +2064,10 @@ MF.SCREENS.mine = function(host){
   MF.paintMine();
 };
 MF.paintMine = function(){
-  if(!MF._mine) return;
+  /* isConnected, same guard drainFlashes carries: MF._mine outlives a
+     navigation away from the mine, and painting into a detached column is the
+     silent-failure class that already cost a review cycle (s35) */
+  if(!MF._mine || !MF._mine.mid || !MF._mine.mid.isConnected) return;
   MF.paintShaft(); MF.paintFace(); MF.paintYard();
   MF.drainFlashes();          /* after the repaint, so a message survives it */
 };
@@ -2309,8 +2333,12 @@ MF.paintFace = function(){
     }
     body.appendChild(S('circle',{class:'glint',cx:x-r*0.34,cy:y-r*0.38,r:'3.4',fill:look.glint}));
     g.appendChild(body);
-    on(g,'click',function(){ MF.state.inspecting=idx; MF.paintMine(); });
-    on(g,'keydown',function(e){ if(e.key==='Enter'||e.key===' '){ e.preventDefault(); MF.state.inspecting=idx; MF.paintMine(); } });
+    /* not while a swing is in the air: rebuilding the face mid-break orphaned
+       the shatter, threw the pick across the seam, and wiped the selection the
+       student was reading. breaking guarded breakRock but not inspection. */
+    function look(){ if(MF.state.breaking) return; MF.state.inspecting=idx; MF.paintMine(); }
+    on(g,'click',look);
+    on(g,'keydown',function(e){ if(e.key==='Enter'||e.key===' '){ e.preventDefault(); look(); } });
     svg.appendChild(g);
   });
 
@@ -2584,9 +2612,11 @@ MF.paintBench = function(host){
   });
   bench.appendChild(strip);
 
-  if(B.step==='assay')      MF.paintAssay(bench, B);
-  else if(B.step==='smelt') MF.paintSmelt(bench, B);
-  else                      MF.paintPour(bench, B);
+  /* the call is always drawn - interactive at the assay step, settled after -
+     so the reason a student gave stays with the lump instead of vanishing */
+  MF.paintAssay(bench, B);
+  if(B.step==='smelt')     MF.paintSmelt(bench, B);
+  else if(B.step==='pour') MF.paintPour(bench, B);
 
   host.appendChild(bench);
 };
@@ -2598,6 +2628,24 @@ MF.stepDone = function(B, step){
 MF.paintAssay = function(host, B){
   var ore = B.ore;
   var right = MF.assayOf(ore);
+
+  /* THE CALL, ONCE MADE, STAYS ON SCREEN WITH ITS REASON.
+     This used to reveal the explanation by setting data-result on the button
+     and then schedule paintMine 260ms later - which destroyed the button. So
+     a correct answer showed its reasoning for a QUARTER OF A SECOND while a
+     wrong answer kept it indefinitely: the build explained itself only to
+     students who got it wrong, and the longest copy in it (the two-true-
+     readings note) was the least readable. Now a settled call renders as a
+     panel that persists for as long as the lump is on the bench. */
+  if(B.step !== 'assay'){
+    var called = B.calledAs || right;
+    var settled = E('div','note good');
+    settled.innerHTML = '<b>You called it: ' + MF.ASSAY[called].name + '.</b> ' +
+      (B.calledWhy || MF.ASSAY[called].tell);
+    host.appendChild(settled);
+    return;
+  }
+
   host.appendChild(H('p','hint','<b>Assay it first.</b> What kind of rock are you holding? Nothing else on the bench opens until you have called it — because a call you made is the only thing you can later catch yourself out on.'));
 
   /* the Drill reads structure - this is its power, and it is the only thing
@@ -2637,11 +2685,16 @@ MF.paintAssay = function(host, B){
     on(btn,'click',function(){
       if(accepted.indexOf(k) >= 0){
         btn.setAttribute('data-result','yes');
+        /* remember WHAT they called it and WHY that is true, so the settled
+           panel can carry both. Repaint immediately - no timer, so the screen
+           and the state can never disagree (they used to, for 260ms, during
+           which a passed gate still took clicks). */
+        B.calledAs = k;
+        B.calledWhy = why;
         B.step = 'smelt';
-        setTimeout(function(){ MF.paintMine(); }, 260);
+        MF.paintMine();
       } else {
         btn.setAttribute('data-result','no');
-        B.assayTried = true;
       }
     });
     wrap.appendChild(btn);
@@ -2688,9 +2741,14 @@ MF.paintSmelt = function(host, B){
         : 'This is the same kind of object as a prime. A number like 97 and a lump like this are one idea wearing different clothes, and that is the whole reason this mine exists.')));
     if(ore.kind==='poly'){
       var r = MF.smeltPoly(ore.a,ore.b,ore.c);
+      /* a single-root list printed "runs at -1.417 and ?" - realRoots has
+         length 1 for a linear lump and for a repeated root */
       host.appendChild(H('div','note','<b>Why nothing came out.</b> ' + (r.realRoots
-        ? 'There is a seam in there, but it runs at ' + num(Math.round(r.realRoots[0]*1000)/1000) + ' and ' +
-          num(Math.round(r.realRoots[1]*1000)/1000) + ' — not on whole numbers, so no bracket of whole numbers will ever land on it.'
+        ? (r.realRoots.length > 1
+            ? 'There is a seam in there, but it runs at ' + num(Math.round(r.realRoots[0]*1000)/1000) + ' and ' +
+              num(Math.round(r.realRoots[1]*1000)/1000) + ' — not on whole numbers, so no bracket of whole numbers will ever land on it.'
+            : 'There is a seam in there, but it runs at ' + num(Math.round(r.realRoots[0]*1000)/1000) +
+              ' — not a whole number, so no bracket of whole numbers will ever land on it.')
         : 'No seam at all, on whole numbers or on decimals. This one genuinely does not come apart.')));
     }
     var b = E('button','btn primary','Set it in the yard'); b.type='button';
@@ -3364,6 +3422,32 @@ MF.validate = function(){
     if(hasRealRoot && sres.kind==='pure' && !sres.realRoots)
       errs.push('truthy: ' + quadText(slump.a,slump.b,slump.c) + ' has a real root but the dial would report none');
   }
+  /* THE DIAL'S OWN RANGE, NOT JUST THE LUMP AS DUG.
+     The check above tests each lump's ORIGINAL integer coefficients and never
+     nudges c - which is the one thing the Decimal Dial exists to do. It
+     therefore reported 0 errors while 1,970 dial states printed a falsehood.
+     This sweeps every slider position the control can actually reach. */
+  var dialRng = makeRng(8675309);
+  for(var dw=0; dw<160; dw++){
+    var dlump = MF.digOre(1 + (dw % 5), dialRng);
+    if(!dlump || dlump.kind!=='poly') continue;
+    for(var off=-2; off<=2; off+=0.5){
+      chk('truthy');
+      var dres = MF.smeltPoly(dlump.a, dlump.b, dlump.c + off);
+      var A=dlump.a, Bc=dlump.b, C=dlump.c+off;
+      /* does a real root actually exist at this dial position? */
+      var trueRoot = (A===0) ? (Bc!==0) : (Bc*Bc - 4*A*C >= 0);
+      var saysNone = (dres.kind==='pure' && !dres.realRoots);
+      if(trueRoot && saysNone)
+        errs.push('truthy: dial at ' + quadText(A,Bc,C) + ' denies a real root that exists');
+      if(dres.realRoots) dres.realRoots.forEach(function(r){
+        chk('truthy');
+        var resid = A*r*r + Bc*r + C;
+        if(Math.abs(resid) > 1e-6 * (Math.abs(A*r*r)+Math.abs(Bc*r)+Math.abs(C)+1))
+          errs.push('truthy: dial at ' + quadText(A,Bc,C) + ' printed a root of ' + r + ' that is not a root');
+      });
+    }
+  }
   /* CONTROLS: both must fail */
   chk('truthy');
   if(MF.assayAccepts({kind:'poly',a:4,b:0,c:-4}).indexOf('twin') < 0)
@@ -3372,6 +3456,43 @@ MF.validate = function(){
   var linProbe = MF.smeltPoly(0,12,17);
   if(!linProbe.realRoots || Math.abs(linProbe.realRoots[0] + 17/12) > 1e-9)
     errs.push('CONTROL: 12x+17 does not report its real root of −17/12');
+
+  /* 5i. AN EXPLANATION MUST SURVIVE THE ANSWER THAT REVEALS IT.
+         Nobody owned display DURATION - not one agent brief contains the word,
+         and art-director's instrument is defined to pause animations before it
+         measures, so it can never see a 240ms window. That gap shipped a build
+         which showed its reasoning for a quarter second on a correct answer and
+         indefinitely on a wrong one: it explained itself only to students who
+         got it wrong. This asserts the invariant directly. */
+  var expStage = document.createElement('div');
+  expStage.style.cssText = 'position:absolute; left:-12000px; top:0; width:1000px';
+  document.body.appendChild(expStage);
+  [[1,-5,6],[4,0,-4],[1,0,4]].forEach(function(t){
+    chk('explain');
+    var probe = {kind:'poly', a:t[0], b:t[1], c:t[2], layer:4, id:'exp-'+t[1]+'-'+t[2]};
+    var B = MF.benchInit(probe);
+    var host = document.createElement('div');
+    /* the state a student is in one instant after a correct call */
+    B.step = 'smelt';
+    B.calledAs = MF.assayOf(probe);
+    B.calledWhy = MF.ASSAY[B.calledAs].tell;
+    MF.paintAssay(host, B);
+    expStage.appendChild(host);
+    var txt = (host.textContent||'').replace(/\s+/g,' ').trim();
+    if(txt.indexOf(MF.ASSAY[B.calledAs].name) < 0)
+      errs.push('explain: after calling ' + quadText(t[0],t[1],t[2]) + ' the call itself is no longer on screen');
+    if(txt.length < 40)
+      errs.push('explain: the reason for ' + quadText(t[0],t[1],t[2]) + ' survives the answer as only ' + txt.length + ' characters');
+    expStage.removeChild(host);
+  });
+  /* CONTROL: an assay panel that drops its explanation must be caught */
+  chk('explain');
+  var blankHost = document.createElement('div');
+  expStage.appendChild(blankHost);
+  var blankTxt = (blankHost.textContent||'').trim();
+  if(blankTxt.length >= 40)
+    errs.push('CONTROL: the explanation check cannot tell an empty panel from a full one');
+  document.body.removeChild(expStage);
 
   /* 5g. NO ANIMATED ELEMENT MAY CARRY AN SVG transform ATTRIBUTE.
          A CSS transform animation REPLACES the transform attribute rather than
