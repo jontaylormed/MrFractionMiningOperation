@@ -289,6 +289,23 @@ input[type=range]{width:100%; accent-color:var(--ore); height:44px}
    stone; and all of it stops dead under prefers-reduced-motion.
    ========================================================================= */
 
+/* ---- interiors. Rooms are DECORATIVE ONLY and carry no text: SVG <text>
+       inherits the CSS `color` property while painting with `fill`, which
+       makes it read as a false failure to any contrast sweep. Every word on
+       these screens stays in HTML underneath. ---- */
+.room{border:3px solid var(--rock-3); border-radius:16px; overflow:hidden; margin:0 0 14px; background:#2E2620}
+.room svg{display:block; width:100%; height:auto}
+@keyframes bellowspush{0%,100%{transform:scaleY(1)}45%{transform:scaleY(.72)}}
+@keyframes firelick{0%,100%{transform:scaleY(1) translateY(0); opacity:.92}50%{transform:scaleY(1.18) translateY(-3px); opacity:1}}
+@keyframes quenchsteam{0%{transform:translateY(0) scale(.5); opacity:.5}100%{transform:translateY(-42px) scale(1.5); opacity:0}}
+@keyframes ladletip{0%,100%{transform:rotate(0deg)}50%{transform:rotate(-16deg)}}
+@keyframes scalesway{0%,100%{transform:rotate(-3deg)}50%{transform:rotate(3deg)}}
+.rm-fire{transform-origin:50% 100%; animation:firelick 1.6s ease-in-out infinite}
+.rm-bellows{transform-origin:0% 50%; animation:bellowspush 3.4s ease-in-out infinite}
+.rm-steam{animation:quenchsteam 3.2s ease-out infinite}
+.rm-ladle{transform-origin:74% 30%; animation:ladletip 6s ease-in-out infinite}
+.rm-scale{transform-origin:50% 6%; animation:scalesway 5s ease-in-out infinite}
+
 /* ---- the surface scene ---- */
 .scene{position:relative; border:3px solid var(--rock-3); border-radius:16px; overflow:hidden;
   background:#8FB8D6; box-shadow:inset 0 -30px 60px rgba(58,49,41,.35)}
@@ -840,7 +857,9 @@ MF.go = function(name){
 };
 MF.paintNav = function(){
   var nav = q('#nav'); clear(nav);
-  [['home','Surface'],['workshop-mold','Workshop: the Mold'],['workshop-ore','Workshop: Ore'],['mine','The Mine'],['forge','The Forge']]
+  /* the same names the buildings carry on the surface - a door, its room and
+     its nav entry disagreeing is how a place stops feeling like one place */
+  [['home','Surface'],['workshop-ore','Smelting House'],['workshop-mold','Casting Shed'],['mine','The Mine'],['forge','The Forge']]
   .forEach(function(item){
     var b = E('button','navbtn', item[1]); b.type='button';
     if(MF.state.screen===item[0]) b.setAttribute('aria-current','page');
@@ -1071,6 +1090,137 @@ MF.surfaceScene = function(){
   return wrap;
 };
 
+/* =========================================================================
+   THE INTERIORS. One room per place, so arriving somewhere means arriving
+   somewhere. Decorative: no text, no information, nothing a student needs.
+   ========================================================================= */
+MF.roomScene = function(kind){
+  var wrap = E('div','room');
+  var W=900, VH=210;
+  var svg = S('svg',{viewBox:'0 0 '+W+' '+VH,'aria-hidden':'true'});
+  function R(x,y,w,h,f,extra){ var n=S('rect',{x:x,y:y,width:w,height:h,fill:f});
+    if(extra) for(var k in extra) n.setAttribute(k,extra[k]); svg.appendChild(n); return n; }
+  function P(d,f,extra){ var n=S('path',{d:d,fill:f}); if(extra) for(var k in extra) n.setAttribute(k,extra[k]);
+    svg.appendChild(n); return n; }
+
+  var pal = {
+    foundry:{wall:'#6E5C49', wall2:'#4E4033', floor:'#3E3328', beam:'#5A4938'},
+    assay:  {wall:'#54606B', wall2:'#3A434C', floor:'#2E353C', beam:'#46505A'},
+    /* the forge floor was #241C15, which sat against a near-black wall foot and
+       read as one dead band across the bottom of the room */
+    forge:  {wall:'#4A3A2E', wall2:'#2E241C', floor:'#3E3226', beam:'#5A4638'}
+  }[kind];
+
+  /* wall, floor, and the beams every one of these buildings is framed with */
+  var g = S('linearGradient',{id:'rm'+kind,x1:'0',y1:'0',x2:'0',y2:'1'});
+  g.appendChild(S('stop',{offset:'0%','stop-color':pal.wall}));
+  g.appendChild(S('stop',{offset:'100%','stop-color':pal.wall2}));
+  var defs = S('defs',{}); defs.appendChild(g); svg.appendChild(defs);
+  R(0,0,W,VH,'url(#rm'+kind+')');
+  R(0,164,W,46,pal.floor);
+  [70,300,600,830].forEach(function(x){ R(x,0,16,168,pal.beam,{opacity:'.85'}); });
+  R(0,158,W,8,pal.beam);
+
+  if(kind==='foundry'){
+    /* daylight through a window, molds on a rack, a ladle tipping */
+    R(120,28,110,74,'#CFE0EA',{rx:'4',opacity:'.9'});
+    R(120,28,110,74,'none',{stroke:pal.beam,'stroke-width':'6',rx:'4'});
+    P('M120 102 L230 102 L268 164 L82 164 Z','#CFE0EA',{opacity:'.14'});
+    /* mold rack */
+    R(330,96,240,10,pal.beam);
+    [340,410,480].forEach(function(x,i){
+      P('M'+x+' 96 l52 0 l-9 -34 l-34 0 Z','#3A3129');
+      P('M'+(x+8)+' 92 l36 0 l-6 -24 l-24 0 Z','#5A4B3C');
+    });
+    /* the ladle, tipping a thread of molten metal into a waiting mold */
+    var lad = S('g',{class:'rm-ladle'});
+    lad.appendChild(S('rect',{x:'610',y:'52',width:'86',height:'8',rx:'3',fill:'#6B5B48'}));
+    lad.appendChild(S('path',{d:'M660 58 q34 -4 60 0 l-8 34 q-22 6 -44 0 Z',fill:'#7C838A',stroke:'#4A5158','stroke-width':'2'}));
+    lad.appendChild(S('path',{d:'M668 62 q26 -3 44 0 l-5 20 q-17 5 -34 0 Z',fill:'#E2600F'}));
+    svg.appendChild(lad);
+    R(676,100,10,52,'#FFB347',{rx:'5',opacity:'.95'});
+    P('M640 152 l84 0 l-12 26 l-60 0 Z','#4A3F34');
+    /* castings cooling on the floor */
+    [[760,150],[812,156]].forEach(function(c,i){
+      R(c[0],c[1],44,14,'#C8A24B',{rx:'3',stroke:'#8A6A2A','stroke-width':'2'});
+      var s = S('circle',{cx:String(c[0]+22),cy:String(c[1]),r:'8',fill:'#E4D5BB',class:'rm-steam',opacity:'.5'});
+      s.style.animationDelay=(i*1.4)+'s'; svg.appendChild(s);
+    });
+  }
+
+  if(kind==='assay'){
+    /* shelves of samples, a balance, a lamp over the bench */
+    [46,92].forEach(function(y){
+      R(110,y,260,8,pal.beam);
+      for(var i=0;i<6;i++){
+        var x = 120+i*42;
+        R(x,y-24,26,24,i%2?'#8A9AA6':'#6E7B87',{rx:'3'});
+        S('circle',{});
+        svg.appendChild(S('circle',{cx:String(x+13),cy:String(y-30),r:'6',fill:'#C8A24B',opacity:'.85'}));
+      }
+    });
+    /* the balance, swaying. Positioning on an OUTER mount, animation on the
+       inner group - see MF.ANIM_TRANSFORM_CLASSES. */
+    var scMount = S('g',{transform:'translate(560,40)'});
+    var sc = S('g',{class:'rm-scale'});
+    sc.appendChild(S('rect',{x:'-2',y:'0',width:'6',height:'96',fill:'#6E7B87'}));
+    sc.appendChild(S('rect',{x:'-64',y:'0',width:'132',height:'6',rx:'3',fill:'#8A9AA6'}));
+    [-58,50].forEach(function(x){
+      sc.appendChild(S('line',{x1:String(x+4),y1:'6',x2:String(x+4),y2:'30',stroke:'#6E7B87','stroke-width':'2'}));
+      sc.appendChild(S('path',{d:'M'+x+' 30 l18 0 l-3 14 l-12 0 Z',fill:'#AEBAC6'}));
+    });
+    scMount.appendChild(sc); svg.appendChild(scMount);
+    R(520,136,180,28,pal.beam,{rx:'3'});
+    /* drawers */
+    R(740,96,120,68,'#46505A',{rx:'4'});
+    [0,1,2].forEach(function(i){
+      R(748,104+i*21,104,16,'#5E6A76',{rx:'2'});
+      svg.appendChild(S('circle',{cx:'800',cy:String(112+i*21),r:'3',fill:'#C8A24B'}));
+    });
+    svg.appendChild(S('circle',{cx:'440',cy:'34',r:'13',fill:'#FFE9A8',class:'sc-lamp'}));
+    P('M432 22 l16 0 l6 -14 l-28 0 Z','#3A434C');
+  }
+
+  if(kind==='forge'){
+    /* the hearth, burning; anvil; bellows; quench barrel; tools on the wall */
+    P('M96 164 q0 -104 84 -104 q84 0 84 104 Z','#241C15');
+    P('M120 164 q0 -80 60 -80 q60 0 60 80 Z','#7A4A22');
+    var fire = S('g',{class:'rm-fire'});
+    fire.appendChild(S('path',{d:'M140 164 q6 -50 40 -64 q34 14 40 64 Z',fill:'#E2600F'}));
+    fire.appendChild(S('path',{d:'M154 164 q6 -34 26 -44 q20 10 26 44 Z',fill:'#FFB347'}));
+    svg.appendChild(fire);
+    /* bellows on the left, breathing, standing on the floor with its nozzle
+       into the hearth - it used to float unmoored at the top of the wall */
+    R(22,150,58,14,'#4A3524',{rx:'3'});
+    var belMount = S('g',{transform:'translate(16,116)'});
+    var bel = S('g',{class:'rm-bellows'});
+    bel.appendChild(S('path',{d:'M0 16 q34 -22 70 -2 q-34 22 -70 2 Z',fill:'#6B4A32',stroke:'#3A2A1C','stroke-width':'2'}));
+    bel.appendChild(S('path',{d:'M6 16 q28 -14 56 -2 q-28 14 -56 2 Z',fill:'#8A6A45',opacity:'.6'}));
+    belMount.appendChild(bel); svg.appendChild(belMount);
+    R(78,128,30,8,'#4A3524',{rx:'3'});
+    /* anvil on its stump */
+    R(392,140,54,24,'#5A4938');
+    P('M356 118 q22 -10 46 -8 q18 1 24 8 l-6 16 h-58 Z','#5A626A');
+    P('M362 134 h48 l-6 8 h-36 Z','#4A5158');
+    /* quench barrel, steaming */
+    R(500,112,64,52,'#5A4938',{rx:'4'});
+    R(500,112,64,10,'#6E5B49',{rx:'4'});
+    [0,1].forEach(function(i){
+      var s = S('circle',{cx:String(520+i*18),cy:'110',r:String(7+i*2),fill:'#D8CFC0',class:'rm-steam',opacity:'.45'});
+      s.style.animationDelay=(i*1.6)+'s'; svg.appendChild(s);
+    });
+    /* tool rack on the wall */
+    R(640,40,210,8,pal.beam);
+    [660,700,740,780,818].forEach(function(x,i){
+      svg.appendChild(S('rect',{x:String(x),y:'48',width:'6',height:String(40+(i%3)*14),fill:'#6E7A86'}));
+      svg.appendChild(S('rect',{x:String(x-9),y:String(84+(i%3)*14),width:'24',height:'10',rx:'3',fill:'#8A9AA6'}));
+    });
+  }
+
+  wrap.appendChild(svg);
+  return wrap;
+};
+
 /* ---------- HOME ---------- */
 MF.SCREENS.home = function(host){
   host.appendChild(MF.surfaceScene());
@@ -1095,11 +1245,11 @@ MF.SCREENS.home = function(host){
 
   var cards = E('div','cards');
 
-  cards.appendChild(MF.card('Workshop &mdash; the Mold', 'PLAY, NO QUESTIONS',
+  cards.appendChild(MF.card('The Casting Shed', 'PLAY, NO QUESTIONS',
     'Pour metals into a mold and watch one formed object come out. This is the distributive property, and it is the move you will use to check every single smelt.',
     'Open the mold', function(){ MF.go('workshop-mold'); }));
 
-  cards.appendChild(MF.card('Workshop &mdash; Ore and Ingots', 'PLAY, NO QUESTIONS',
+  cards.appendChild(MF.card('The Smelting House', 'PLAY, NO QUESTIONS',
     'Take any number apart. See why two miners cutting at different places reach the same metals, and what it means for a lump to be already pure.',
     'Open the bench', function(){ MF.go('workshop-ore'); }));
 
@@ -1179,7 +1329,8 @@ MF.areaModel = function(host, o){
    ========================================================================= */
 MF.SCREENS['workshop-mold'] = function(host){
   var st = {a:3, b:4, c:5, mode:'num'};
-  host.appendChild(H('h2',null,'Workshop &mdash; the Mold'));
+  host.appendChild(MF.roomScene('foundry'));
+  host.appendChild(H('h2',null,'The Casting Shed'));
   host.appendChild(H('p','lede','Molten metal goes into a mold and <b>one formed object</b> comes out. ' +
     'The shape is decided by what you poured — you never choose it. Cutting the mold in two does not change how much metal is in there; ' +
     'it only lets you describe the same object twice. That is the whole distributive property, and every check you make in the mine is this move.'));
@@ -1257,7 +1408,8 @@ MF.jump = function(label, screen){
    ========================================================================= */
 MF.SCREENS['workshop-ore'] = function(host){
   var st = {n:72, cutA:null, cutB:null};
-  host.appendChild(H('h2',null,'Workshop &mdash; Ore and Ingots'));
+  host.appendChild(MF.roomScene('assay'));
+  host.appendChild(H('h2',null,'The Smelting House'));
   host.appendChild(H('p','lede','Smelting <b>separates</b>. Ore goes into the crucible and comes out as the metals that were always in it. ' +
     'Some lumps come out unchanged — nothing separates, because they are already an element. Those are <b>ingots</b>. ' +
     'In numbers we call them primes; further down the mine you will meet polynomial ones, and they are the same thing.'));
@@ -1374,6 +1526,7 @@ MF.toolReady = function(key){
 
 MF.SCREENS.forge = function(host){
   var st = MF.state.forge;
+  host.appendChild(MF.roomScene('forge'));
   host.appendChild(H('h2',null,'The Forge'));
   host.appendChild(H('p','lede','Metals go into the mold and come out as something the operation needs. ' +
     'You are not being asked to factor anything here — you are running the furnace the other way, which is <b>distributing</b>. ' +
@@ -2669,6 +2822,40 @@ MF.validate = function(){
     if(!got) errs.push('nogate: layer '+L+' produced no ore for a student with no tools');
   }
   MF.state.yard = savedYard; MF.state.tools = savedTools; MF.state.forge = savedForge;
+
+  /* 5g. NO ANIMATED ELEMENT MAY CARRY AN SVG transform ATTRIBUTE.
+         A CSS transform animation REPLACES the transform attribute rather than
+         composing with it, so a positioned group that also animates drifts off
+         its mount. This has now happened three times - the ore cart ended up in
+         the sky, the headframe wheel left its tower, and the assay balance
+         vanished from its room entirely. Twice it was fixed as an instance.
+         This asserts the class: position on an outer mount, animate the inner. */
+  MF.ANIM_TRANSFORM_CLASSES = ['sc-wheel','sc-cart','sc-smoke','sc-cloud','sc-bird',
+                               'rm-fire','rm-bellows','rm-steam','rm-ladle','rm-scale','pickarm'];
+  var animStage = document.createElement('div');
+  animStage.style.cssText = 'position:absolute; left:-12000px; top:0; width:1100px';
+  document.body.appendChild(animStage);
+  var animSubjects = [MF.surfaceScene(), MF.roomScene('foundry'), MF.roomScene('assay'), MF.roomScene('forge')];
+  animSubjects.forEach(function(node){ animStage.appendChild(node); });
+  MF.ANIM_TRANSFORM_CLASSES.forEach(function(cls){
+    chk('animmount');
+    var offenders = [];
+    animStage.querySelectorAll('.' + cls).forEach(function(el){
+      if(el.hasAttribute('transform')) offenders.push(el.getAttribute('transform'));
+    });
+    if(offenders.length) errs.push('animmount: .' + cls + ' carries a transform attribute (' +
+      offenders[0] + ') - the animation will replace it and the piece will drift off its mount');
+  });
+  /* CONTROL: plant the defect and confirm the check sees it */
+  chk('animmount');
+  var planted = document.createElementNS('http://www.w3.org/2000/svg','g');
+  planted.setAttribute('class','rm-fire');
+  planted.setAttribute('transform','translate(10,10)');
+  animStage.appendChild(planted);
+  var caught = false;
+  animStage.querySelectorAll('.rm-fire').forEach(function(el){ if(el.hasAttribute('transform')) caught = true; });
+  if(!caught) errs.push('CONTROL: the animated-transform check did not catch a planted offender');
+  document.body.removeChild(animStage);
 
   /* 5f. CONTRAST, MEASURED RATHER THAN REMEMBERED.
          The yard's metal bars measured 2.27:1 for as long as they existed and
