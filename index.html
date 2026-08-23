@@ -422,6 +422,15 @@ input[type=range]{width:100%; accent-color:var(--ore); height:44px}
 .sc-sails{transform-origin:center; animation:sailspin 13s linear infinite}
 @keyframes wheelspin{to{transform:rotate(360deg)}}
 @keyframes cartroll{0%{transform:translateX(0)}45%{transform:translateX(150px)}55%{transform:translateX(150px)}100%{transform:translateX(0)}}
+/* out of the portal, down the track, and away - it waits inside a moment
+   first, so it reads as coming from somewhere rather than starting on screen */
+@keyframes cartout{
+  0%{transform:translateX(52px)}
+  10%{transform:translateX(52px)}
+  70%{transform:translateX(-176px)}
+  100%{transform:translateX(-176px)}
+}
+.sc-cartout{animation:cartout 14s ease-in-out infinite}
 @keyframes smokepuff{0%{transform:translate(0,0) scale(.6); opacity:.55}100%{transform:translate(16px,-58px) scale(1.7); opacity:0}}
 @keyframes clouddrift{from{transform:translateX(-70px)}to{transform:translateX(660px)}}
 @keyframes lampflicker{0%,100%{opacity:.85}45%{opacity:1}70%{opacity:.7}}
@@ -1165,9 +1174,16 @@ MF.surfaceScene = function(){
      passes through the roofline (y≈17 at this x) instead of resting near it */
   sm.appendChild(S('rect',{x:'92',y:'-24',width:'24',height:'72',fill:'#6B4A32'}));
   sm.appendChild(S('rect',{x:'88',y:'-30',width:'32',height:'9',rx:'2',fill:'#4A3F34'}));
+  /* NEGATIVE delays, and opacity 0 at rest. With a positive delay each puff
+     sat above the chimney as a solid grey disc until its turn came round -
+     three frozen circles stacked over the roof on every first load. A negative
+     delay starts them already mid-rise, and the zero opacity means that if an
+     animation never runs at all (reduced motion) nothing shows rather than a
+     stack of discs. */
   [0,1,2].forEach(function(k){
-    var puff = S('circle',{cx:'104',cy:'-34',r:String(7+k*2),fill:'#D8CFC0',class:'sc-smoke'});
-    puff.style.animationDelay = (k*1.5)+'s';
+    var puff = S('circle',{cx:'104',cy:'-34',r:String(7+k*2),fill:'#D8CFC0',
+      opacity:'0',class:'sc-smoke'});
+    puff.style.animationDelay = (-(k*1.5))+'s';
     sm.appendChild(puff);
   });
   nameplate(sm, 66, 54, 'Smelting House');
@@ -1203,8 +1219,9 @@ MF.surfaceScene = function(){
   fg.appendChild(S('rect',{x:'6',y:'-18',width:'26',height:'60',rx:'2',fill:'#6E6055'}));
   fg.appendChild(S('rect',{x:'2',y:'-24',width:'34',height:'9',rx:'2',fill:'#4A4038'}));
   [0,1].forEach(function(k){
-    var puff = S('circle',{cx:'19',cy:'-28',r:String(7+k*3),fill:'#C7BCAE',class:'sc-smoke'});
-    puff.style.animationDelay = (k*2.1)+'s';
+    var puff = S('circle',{cx:'19',cy:'-28',r:String(7+k*3),fill:'#C7BCAE',
+      opacity:'0',class:'sc-smoke'});
+    puff.style.animationDelay = (-(k*2.1))+'s';
     fg.appendChild(puff);
   });
   var mouth = S('path',{d:'M34 112 q0 -30 24 -30 q24 0 24 30 Z',fill:'#E2600F',class:'sc-lamp'});
@@ -1225,9 +1242,13 @@ MF.surfaceScene = function(){
   fg.appendChild(S('rect',{x:'130',y:'100',width:'20',height:'4',fill:'#4A3524'}));
   svg.appendChild(fg);
 
-  /* ---- rails and ore cart ---- */
-  svg.appendChild(S('rect',{x:'150',y:'368',width:'560',height:'4',fill:'#4A3F34'}));
-  for(var t=0;t<22;t++) svg.appendChild(S('rect',{x:String(155+t*26),y:'372',width:'16',height:'5',rx:'1',fill:'#5A4B3C'}));
+  /* ---- rails and ore cart ----
+     The track RUNS INTO THE PORTAL. It used to stop at x=710 while the mine
+     mouth sat at 748-828, so the rails went nowhere and the cart appeared to
+     run on a line unconnected to the mine. The entrance was also raised so its
+     floor meets the rail line instead of sitting 22 units below it. */
+  svg.appendChild(S('rect',{x:'150',y:'368',width:'652',height:'4',fill:'#4A3F34'}));
+  for(var t=0;t<25;t++) svg.appendChild(S('rect',{x:String(155+t*26),y:'372',width:'16',height:'5',rx:'1',fill:'#5A4B3C'}));
   var cartMount = S('g',{transform:'translate(190,332)'});
   var cart = S('g',{class:'sc-cart'});
   cart.appendChild(S('path',{d:'M0 8 L54 8 L48 36 L6 36 Z',fill:'#5A6570'}));
@@ -1240,8 +1261,23 @@ MF.surfaceScene = function(){
   cartMount.appendChild(cart);
   svg.appendChild(cartMount);
 
+  /* ---- a cart coming OUT of the mine ----
+     Drawn BEFORE the bluff, so the rock hides it until it clears the portal:
+     it emerges rather than simply appearing. */
+  var outMount = S('g',{transform:'translate(756,330)'});
+  var outCart = S('g',{class:'sc-cartout'});
+  outCart.appendChild(S('path',{d:'M0 8 L54 8 L48 36 L6 36 Z',fill:'#4E5862'}));
+  outCart.appendChild(S('rect',{x:'2',y:'2',width:'50',height:'8',rx:'2',fill:'#6E7A86'}));
+  [[8,-2],[22,-5],[36,-1]].forEach(function(o){
+    outCart.appendChild(S('circle',{cx:String(10+o[0]),cy:String(4+o[1]),r:'5',fill:'#8A7358'}));
+  });
+  outCart.appendChild(S('circle',{cx:'14',cy:'38',r:'6',fill:'#3A3129'}));
+  outCart.appendChild(S('circle',{cx:'42',cy:'38',r:'6',fill:'#3A3129'}));
+  outMount.appendChild(outCart);
+  svg.appendChild(outMount);
+
   /* ---- the mine entrance, cut into a bluff ---- */
-  var en = S('g',{transform:'translate(742,236)'});
+  var en = S('g',{transform:'translate(742,214)'});
   en.appendChild(S('path',{d:'M-30 160 q10 -120 76 -128 q70 -8 84 128 Z',fill:'#7A6650'}));
   en.appendChild(S('path',{d:'M6 158 q0 -66 40 -66 q40 0 40 66 Z',fill:'#1B1511'}));
   en.appendChild(S('rect',{x:'0',y:'86',width:'92',height:'11',rx:'2',fill:'#6B4A32'}));
@@ -1426,8 +1462,9 @@ MF.roomScene = function(kind){
     /* castings cooling on the floor */
     [[760,150],[812,156]].forEach(function(c,i){
       R(c[0],c[1],44,14,'#C8A24B',{rx:'3',stroke:'#8A6A2A','stroke-width':'2'});
-      var s = S('circle',{cx:String(c[0]+22),cy:String(c[1]),r:'8',fill:'#E4D5BB',class:'rm-steam',opacity:'.5'});
-      s.style.animationDelay=(i*1.4)+'s'; svg.appendChild(s);
+      /* negative delay + opacity 0 at rest, same reason as the chimney smoke */
+      var s = S('circle',{cx:String(c[0]+22),cy:String(c[1]),r:'8',fill:'#E4D5BB',class:'rm-steam',opacity:'0'});
+      s.style.animationDelay=(-(i*1.4))+'s'; svg.appendChild(s);
     });
   }
 
@@ -1489,8 +1526,8 @@ MF.roomScene = function(kind){
     R(500,112,64,52,'#5A4938',{rx:'4'});
     R(500,112,64,10,'#6E5B49',{rx:'4'});
     [0,1].forEach(function(i){
-      var s = S('circle',{cx:String(520+i*18),cy:'110',r:String(7+i*2),fill:'#D8CFC0',class:'rm-steam',opacity:'.45'});
-      s.style.animationDelay=(i*1.6)+'s'; svg.appendChild(s);
+      var s = S('circle',{cx:String(520+i*18),cy:'110',r:String(7+i*2),fill:'#D8CFC0',class:'rm-steam',opacity:'0'});
+      s.style.animationDelay=(-(i*1.6))+'s'; svg.appendChild(s);
     });
     /* tool rack on the wall */
     R(640,40,210,8,pal.beam);
@@ -3345,7 +3382,7 @@ MF.validate = function(){
          This asserts the class: position on an outer mount, animate the inner. */
   MF.ANIM_TRANSFORM_CLASSES = ['sc-wheel','sc-sails','sc-cart','sc-smoke','sc-cloud','sc-bird',
                                'rm-fire','rm-bellows','rm-steam','rm-ladle','rm-scale','pickarm',
-                               'ct-cart','ct-jolt','ct-wheel'];
+                               'ct-cart','ct-jolt','ct-wheel','sc-cartout'];
   var animStage = document.createElement('div');
   animStage.style.cssText = 'position:absolute; left:-12000px; top:0; width:1100px';
   document.body.appendChild(animStage);
