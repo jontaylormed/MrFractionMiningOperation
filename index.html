@@ -169,22 +169,60 @@ input[type=range]{width:100%; accent-color:var(--ore); height:44px}
     linear-gradient(90deg,#7A5B3A 0 4px, transparent 4px 18px, #7A5B3A 18px 22px)}
 /* the cable and the cage that rides it */
 .shaftway .cable{position:absolute; top:0; left:33px; width:3px; background:#C8B89A; opacity:.55}
+/* the cage RIDES. 1.5s, easing in off the rest and settling out at the far
+   end, because a winding engine takes up the slack before it moves a load and
+   eases it in again at the level - a snap between floors reads as a menu. */
 .shaftway .cage{position:absolute; left:12px; width:34px; height:40px; border-radius:3px;
   background:linear-gradient(180deg,#8A9AA6,#5E6A76); border:2px solid #3E474F;
   box-shadow:0 3px 0 rgba(0,0,0,.4);
-  transition:top .55s cubic-bezier(.3,.7,.3,1)}
+  transition:top 1.5s cubic-bezier(.45,.02,.35,1)}
+.shaftway .cable{transition:height 1.5s cubic-bezier(.45,.02,.35,1)}
 .shaftway .cage:before{content:""; position:absolute; inset:5px 4px; border-radius:2px;
   background:repeating-linear-gradient(90deg,#46505A 0 3px,transparent 3px 7px)}
 .shaftway .cage:after{content:""; position:absolute; left:13px; top:-9px; width:8px; height:9px; background:#3E474F}
 @media (prefers-reduced-motion:reduce){ .shaftway .cage{transition:none} }
-.shaft h3{font-size:14px; letter-spacing:.09em; text-transform:uppercase; color:var(--ore-t); margin-bottom:6px}
-.layer{display:block; width:100%; text-align:left; border:2px solid transparent; border-radius:10px; padding:9px 11px;
-  background:transparent; cursor:pointer; font-family:var(--body); font-size:14px; color:var(--ink); min-height:44px; margin-bottom:3px}
-.layer:hover{background:var(--paper-2); border-color:var(--rule)}
-.layer[aria-current=true]{background:var(--paper-2); border-color:var(--ore)}
-.layer .n{font-family:var(--display); font-size:11px; letter-spacing:.08em; color:var(--ore-t); display:block}
-.layer.shut{opacity:.55; cursor:not-allowed}
-.layer.shut .n{color:var(--ink-soft)}
+/* THE WHOLE SHAFT IS UNDERGROUND. The layer list is not a menu beside the
+   mine - it is the mine, seen in section, and each level is a gallery cut
+   into the rock with its own timber and its own lamp. */
+.shaft{background:linear-gradient(180deg,#3A3129 0%,#241C15 100%);
+  border:3px solid #1B1511; border-radius:14px; padding:14px 12px 16px;
+  box-shadow:inset 0 8px 22px rgba(0,0,0,.55)}
+.shaft h3{font-size:14px; letter-spacing:.09em; text-transform:uppercase; color:var(--lamp); margin-bottom:6px}
+.shaft .rail-note, .shaft > .hint{color:#D9C39C}
+.shaft h3, .shaft > .hint{padding:0 2px}
+/* a gallery cut into the rock: timber on the left, rock behind, a lamp that
+   only burns on the level you are actually working */
+/* The timber is a separate strip, NOT a stop in the button's own gradient.
+   As a gradient stop it was the palest colour on the element, so every
+   contrast reading measured the text against wood it does not sit on and
+   four labels failed at 2.9-4.0. The rock behind the words is now flat. */
+.layer{position:relative; display:block; width:100%; text-align:left; cursor:pointer;
+  border:0; border-radius:0 8px 8px 0; padding:10px 12px 11px 26px; margin:0 0 6px;
+  font-family:var(--body); font-size:14px; color:#F0E2C8; min-height:44px;
+  background:linear-gradient(180deg,#3A3129,#332B24);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.06), 0 2px 0 rgba(0,0,0,.35)}
+.layer:after{content:""; position:absolute; left:0; top:0; bottom:0; width:11px;
+  background:linear-gradient(90deg,#6B5335 0 7px,#4A3B2C 7px 11px)}
+.layer:before{content:""; position:absolute; left:15px; top:13px; width:7px; height:7px; border-radius:50%;
+  background:#5A4B3C; z-index:1; transition:background .3s ease, box-shadow .3s ease}
+.layer:hover{background:linear-gradient(180deg,#46392E,#3C3227)}
+.layer[aria-current=true]{color:#FFF3DE; background:linear-gradient(180deg,#55432F,#4A3A28)}
+.layer[aria-current=true]:after{background:linear-gradient(90deg,#8A6A45 0 7px,#5A4432 7px 11px)}
+.layer[aria-current=true]:before{background:var(--lamp); box-shadow:0 0 9px 3px rgba(232,163,61,.55)}
+/* brighter than --lamp and than the old grey: the gallery gradient includes a
+   pale timber stop, and both measured under 4.5 against it (3.34 and 3.63) */
+.layer .n{font-family:var(--display); font-size:11px; letter-spacing:.08em; color:#FFD79A; display:block}
+.layer .hint{color:#E8DCC4; font-size:12px}
+.layer[aria-current=true] .hint{color:#E4D5BB}
+/* boarded up: not yet timbered, so the gallery is planked over */
+/* boarded up, but still readable: these name where the mine goes next, and at
+   2.92:1 they were decoration rather than information */
+.layer.shut{cursor:not-allowed; color:#C7B6A0;
+  background:repeating-linear-gradient(115deg,#3A2E24 0 9px,#332821 9px 18px)}
+.layer.shut:after{background:linear-gradient(90deg,#4A3B2C 0 7px,#3A2E24 7px 11px)}
+.layer.shut:before{background:#3A3129; box-shadow:none}
+.layer.shut .n{color:#B9A489}
+.layer.shut .hint{color:#B5A88F}
 
 /* the wall */
 .wall{background:linear-gradient(180deg,#5A4B3C,#3A3129); border:3px solid var(--rock-3); border-radius:14px;
@@ -1051,6 +1089,16 @@ MF.surfaceScene = function(){
     svg.appendChild(S('circle',{cx:(i*23+11)%W, cy:362+((i*13)%42), r:1.6+((i*7)%3), fill:'#7A6244', opacity:'.6'}));
   }
 
+  /* pines on the ridges, drawn BEFORE anything is built on the site */
+  [[42,246,1],[86,252,.8],[208,244,.75],[538,240,.8],[700,236,.85],[878,244,1]].forEach(function(t){
+    var g2 = S('g',{transform:'translate('+t[0]+','+t[1]+') scale('+t[2]+')'});
+    g2.appendChild(S('rect',{x:'-3',y:'-6',width:'6',height:'22',fill:'#5A4632'}));
+    g2.appendChild(S('path',{d:'M0 -34 L15 -2 L-15 -2 Z',fill:'#4E6B4A'}));
+    g2.appendChild(S('path',{d:'M0 -48 L12 -18 L-12 -18 Z',fill:'#5A7A54'}));
+    g2.appendChild(S('path',{d:'M0 -58 L9 -34 L-9 -34 Z',fill:'#6B8A62'}));
+    svg.appendChild(g2);
+  });
+
   /* ---- the windmill. It drives the winding gear the Shifter is made for. ---- */
   var wm = S('g',{transform:'translate(112,132)'});
   /* stone tower, tapered, with banding and a door */
@@ -1195,17 +1243,7 @@ MF.surfaceScene = function(){
   svg.appendChild(en);
 
   /* ---- the small stuff that makes a site look worked rather than drawn ---- */
-  /* pines on the ridges */
-  [[42,246,1],[86,252,.8],[352,238,.9],[392,244,.7],[690,232,.8],[726,238,1]].forEach(function(t){
-    var g2 = S('g',{transform:'translate('+t[0]+','+t[1]+') scale('+t[2]+')'});
-    /* foliage overlaps the trunk top - it used to stop 8 units short and the
-       tree read as a triangle hovering over a stick */
-    g2.appendChild(S('rect',{x:'-3',y:'-6',width:'6',height:'22',fill:'#5A4632'}));
-    g2.appendChild(S('path',{d:'M0 -34 L15 -2 L-15 -2 Z',fill:'#4E6B4A'}));
-    g2.appendChild(S('path',{d:'M0 -48 L12 -18 L-12 -18 Z',fill:'#5A7A54'}));
-    g2.appendChild(S('path',{d:'M0 -58 L9 -34 L-9 -34 Z',fill:'#6B8A62'}));
-    svg.appendChild(g2);
-  });
+  /* (the pines moved up, ahead of the buildings - see the landscape block) */
   /* spoil heap BESIDE the mine mouth, not across it - it was drawn over the
      entrance arch and read as rubble blocking the doorway */
   /* low, and CLEAR of the entrance. Lowering it alone dropped it into the mouth
@@ -1267,6 +1305,10 @@ MF.surfaceScene = function(){
   /* grass tufts along the ground line */
   for(var gt=0; gt<16; gt++){
     var gx = 40 + gt*54 + ((gt*13)%17);
+    /* nothing grows across the mouth of a working mine - the ground there is
+       walked flat every day, and tufts across the portal looked like weeds
+       in a doorway */
+    if(gx > 686 && gx < 872) continue;
     svg.appendChild(S('path',{d:'M'+gx+' 356 l3 -9 l3 9 M'+(gx+6)+' 356 l3 -7 l3 7',
       fill:'none',stroke:'#6B7A52','stroke-width':'2'}));
   }
@@ -2004,6 +2046,10 @@ MF.paintShaft = function(){
   /* ride the cage to whichever layer is being worked. Measured from the real
      button positions rather than assumed, so it stays right when the layer
      list changes length. */
+  /* paintMine rebuilds the shaft on every click, so the cage is a NEW element
+     each time and a CSS transition on it would have nothing to move from.
+     It is planted at the last known position first, then sent to the new one
+     on the next frame - which is what makes the ride visible. */
   requestAnimationFrame(function(){
     var btns = rungs.querySelectorAll('.layer:not(.shut)');
     var here = btns[MF.state.layer-1];
@@ -2011,8 +2057,20 @@ MF.paintShaft = function(){
     var wayTop = way.getBoundingClientRect().top;
     var mid = here.getBoundingClientRect().top + here.getBoundingClientRect().height/2 - wayTop;
     var top = Math.max(4, Math.min(way.clientHeight - 44, mid - 20));
-    cage.style.top = top + 'px';
-    cable.style.height = (top + 6) + 'px';
+
+    var from = (MF.state.cageTop == null) ? top : MF.state.cageTop;
+    cage.style.transition = 'none';
+    cage.style.top = from + 'px';
+    cable.style.transition = 'none';
+    cable.style.height = (from + 6) + 'px';
+    void cage.offsetHeight;                       /* commit the start position */
+    requestAnimationFrame(function(){
+      cage.style.transition = '';
+      cable.style.transition = '';
+      cage.style.top = top + 'px';
+      cable.style.height = (top + 6) + 'px';
+      MF.state.cageTop = top;
+    });
   });
 };
 
@@ -2047,11 +2105,23 @@ MF.stockFace = function(){
   while(MF.state.face.length < MF.SEAM_COUNT && guard++ < 60){
     var o = MF.digOre(L, MF.state.rng);
     if(!o) break;
+    /* GENUINELY RANDOM, not modulo arithmetic on the slot index. The old
+       formulas were deterministic in the slot, so every layer laid its rocks
+       out in the same repeating rhythm at the same repeating sizes and the
+       seam looked stamped rather than dug. The slot still sets the coarse
+       spacing, which is what keeps ore spread along the whole length. */
+    var rng = MF.state.rng;
+    var span = (MF.SEAM_W - 200) / (MF.SEAM_COUNT - 1);
     o.slot = MF.nextSeamSlot();
-    o.px = 92 + o.slot * ((MF.SEAM_W - 180) / (MF.SEAM_COUNT - 1));
-    o.px += ((o.slot * 37) % 44) - 22;              /* nudge off the grid */
-    o.py = 62 + ((o.slot * 71) % 126);
-    o.sz = 32 + ((o.slot * 13) % 18);
+    o.px = 100 + o.slot * span + (rng() - 0.5) * span * 0.6;
+    o.py = 50 + rng() * 142;
+    o.sz = 26 + rng() * 24;
+    o.rot = rng() * Math.PI * 2;
+    /* its own silhouette: a different number of faces, each pulled in or out
+       by a different amount, so no two lumps are the same rock twice */
+    o.faces = [];
+    var nf = 7 + Math.floor(rng() * 4);
+    for(var f=0; f<nf; f++) o.faces.push(0.68 + rng() * 0.5);
     MF.state.face.push(o);
   }
   return MF.state.face;
@@ -2117,9 +2187,10 @@ MF.paintFace = function(){
     g.appendChild(sel);
     var body = S('g',{class:'body'});
     var pts = [];
-    for(var k=0;k<8;k++){
-      var ang = k*Math.PI/4 + ((idx*7+k*3)%5)*0.06;
-      var rad = r * (0.78 + ((idx*5+k*11)%7)/22);
+    var faces = o.faces || [0.9,0.8,1,0.85,0.95,0.8,0.9];
+    for(var k=0;k<faces.length;k++){
+      var ang = (o.rot||0) + k*(Math.PI*2/faces.length);
+      var rad = r * faces[k];
       pts.push((x+rad*Math.cos(ang)).toFixed(1)+','+(y+rad*Math.sin(ang)).toFixed(1));
     }
     body.appendChild(S('polygon',{points:pts.join(' '),fill:look.rock,stroke:look.rock2,'stroke-width':'3'}));
@@ -2142,7 +2213,11 @@ MF.paintFace = function(){
   var target = (MF.state.inspecting!=null && rocks[MF.state.inspecting]) ? rocks[MF.state.inspecting] : null;
   var pickX = target ? Math.min(W-110, Math.max(10, target.px + target.sz + 16)) : (W-104);
   var pickY = target ? Math.min(VH-100, Math.max(4, target.py - 40)) : (VH-96);
-  var pick = S('g',{transform:'translate('+pickX+','+pickY+')'});
+  /* style.transform, not the attribute, so it can be eased as the pick follows
+     the cursor along the face */
+  var pick = S('g',{});
+  pick.style.transform = 'translate('+pickX+'px,'+pickY+'px)';
+  pick.style.transition = 'transform .16s ease-out';
   var arm = S('g',{class:'pickarmhost'});
   /* handle, then a proper double-ended pick head: two tapered points curving
      down from a thick centre. The first attempt drew a grey fan. */
@@ -2154,6 +2229,25 @@ MF.paintFace = function(){
   pick.appendChild(arm);
   svg.appendChild(pick);
   MF._pickArm = arm;
+
+  /* THE PICK FOLLOWS THE CURSOR while it is over the face - you are holding it
+     while you look the seam over, and it goes back to standing beside the lump
+     you picked out when the pointer leaves. */
+  function pickHome(){
+    pick.style.transform = 'translate('+pickX+'px,'+pickY+'px)';
+  }
+  on(faceBox,'pointermove',function(e){
+    if(MF.state.breaking) return;
+    var r = svg.getBoundingClientRect();
+    if(!r.width) return;
+    var scale = W / r.width;
+    var ux = (e.clientX - r.left) * scale;
+    var uy = (e.clientY - r.top) * scale;
+    var nx = Math.max(6, Math.min(W-108, ux - 46));
+    var ny = Math.max(2, Math.min(VH-104, uy - 62));
+    pick.style.transform = 'translate('+nx+'px,'+ny+'px)';
+  });
+  on(faceBox,'pointerleave',function(){ if(!MF.state.breaking) pickHome(); });
 
   faceBox.appendChild(svg);
   wall.appendChild(faceBox);
