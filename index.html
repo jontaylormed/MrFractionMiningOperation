@@ -422,15 +422,17 @@ input[type=range]{width:100%; accent-color:var(--ore); height:44px}
 .sc-sails{transform-origin:center; animation:sailspin 13s linear infinite}
 @keyframes wheelspin{to{transform:rotate(360deg)}}
 @keyframes cartroll{0%{transform:translateX(0)}45%{transform:translateX(150px)}55%{transform:translateX(150px)}100%{transform:translateX(0)}}
-/* out of the portal, down the track, and away - it waits inside a moment
-   first, so it reads as coming from somewhere rather than starting on screen */
+/* out of the portal, along the track in front of the mine, and back in again -
+   a shuttle, which is what a haulage cart actually does all day */
 @keyframes cartout{
-  0%{transform:translateX(52px)}
-  10%{transform:translateX(52px)}
-  70%{transform:translateX(-176px)}
-  100%{transform:translateX(-176px)}
+  0%  {transform:translateX(44px)}
+  14% {transform:translateX(44px)}
+  44% {transform:translateX(-168px)}
+  58% {transform:translateX(-168px)}
+  88% {transform:translateX(44px)}
+  100%{transform:translateX(44px)}
 }
-.sc-cartout{animation:cartout 14s ease-in-out infinite}
+.sc-cartout{animation:cartout 16s ease-in-out infinite}
 @keyframes smokepuff{0%{transform:translate(0,0) scale(.6); opacity:.55}100%{transform:translate(16px,-58px) scale(1.7); opacity:0}}
 @keyframes clouddrift{from{transform:translateX(-70px)}to{transform:translateX(660px)}}
 @keyframes lampflicker{0%,100%{opacity:.85}45%{opacity:1}70%{opacity:.7}}
@@ -1341,16 +1343,8 @@ MF.surfaceScene = function(){
   }
   svg.appendChild(S('rect',{x:'250',y:'322',width:'224',height:'4',fill:'#6B5A47'}));
   /* a second cart parked on a spur, already loaded */
-  /* moved off the forge: at x=596 it parked squarely over the furnace mouth */
-  var spur = S('g',{transform:'translate(700,344)'});
-  spur.appendChild(S('path',{d:'M0 8 L44 8 L39 30 L5 30 Z',fill:'#5A6570'}));
-  spur.appendChild(S('rect',{x:'2',y:'3',width:'40',height:'7',rx:'2',fill:'#77828D'}));
-  [[8,-1],[20,-4],[32,0]].forEach(function(o){
-    spur.appendChild(S('circle',{cx:String(4+o[0]),cy:String(4+o[1]),r:'4',fill:'#8C6A2A'}));
-  });
-  spur.appendChild(S('circle',{cx:'12',cy:'32',r:'5',fill:'#3A3129'}));
-  spur.appendChild(S('circle',{cx:'34',cy:'32',r:'5',fill:'#3A3129'}));
-  svg.appendChild(spur);
+  /* the parked spur cart is gone: two carts on one stretch of track, one of
+     them permanently motionless, read as a dropped prop rather than scenery */
 
   /* a wheelbarrow, sacks, stacked timber and a trough - the clutter of a
      place that is worked rather than drawn */
@@ -3647,7 +3641,11 @@ MF.validate = function(){
   /* hand the page back exactly as it was found */
   MF._mine = _liveMine;
   chk('selfharm');
-  if(MF._mine && MF._mine.mid && !MF._mine.mid.isConnected)
+  /* only meaningful ON the mine: elsewhere MF._mine legitimately refers to a
+     screen that has been replaced, and paintMine guards for that. Asserting it
+     unconditionally made the check fire on a perfectly normal state, which is
+     how a check teaches you to ignore it. */
+  if(_liveScreen === 'mine' && MF._mine && MF._mine.mid && !MF._mine.mid.isConnected)
     errs.push('selfharm: validate() left the live mine columns detached - the bench would render into a dead DOM and every click would silently do nothing');
   chk('selfharm');
   if(MF.state.screen !== _liveScreen)
