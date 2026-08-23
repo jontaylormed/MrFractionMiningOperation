@@ -620,6 +620,12 @@ MF.smeltPoly = function(a,b,c){
   if(a===0){
     var gl = gcdAll([b,c])||1; if(b<0) gl=-gl;
     res.linearOre = true; res.g = gl;
+    /* A LINEAR LUMP HAS A ROOT, and the Decimal Dial was denying it.
+       realRoots was only ever populated for a !== 0, so the dial told a student
+       that 12x + 17 has no seam "on decimals either" - false: it runs at
+       -17/12. That is a mathematical falsehood printed by the one instrument
+       whose whole job is the difference between whole numbers and decimals. */
+    if(b !== 0) res.realRoots = [-c/b];
     res.kind = (Math.abs(gl)>1) ? 'shared' : 'pure';
     res.ingots = [{m:0,k:gl},{m:b/gl,k:c/gl}];
     if(Math.abs(gl)===1) res.ingots=[{m:b,k:c}];
@@ -675,6 +681,24 @@ MF.oreText  = function(o){ return o.kind==='number' ? num(o.n) : quadText(o.a,o.
 MF.assayOf = function(o){
   if(o.kind==='number') return isPrime(o.n) ? 'pure' : 'composite';
   return MF.smeltPoly(o.a,o.b,o.c).kind;
+};
+
+/* EVERY READING THAT IS TRUE OF THE ROCK.
+   4x² − 4 carries a shared 4, so the engine calls it a Common Vein - but it is
+   ALSO, literally, two perfect squares with a minus between them and no middle
+   term, which is the verbatim tell this site prints for a Twin Seam. The Assay
+   Lamp even tells the student to check for exactly that. Grading only the
+   engine's answer locked a correct student out of the bench.
+
+   A gate exists to make a student commit to a reading, not to guess which
+   reading the author preferred. Both are accepted; the follow-up says which
+   move comes first and why. */
+MF.assayAccepts = function(o){
+  var out = [MF.assayOf(o)];
+  if(o.kind==='poly' && o.a!==0 && o.b===0 && o.c<0 && isSquare(o.a) && isSquare(-o.c)){
+    if(out.indexOf('twin') < 0) out.push('twin');
+  }
+  return out;
 };
 
 MF.ASSAY = {
@@ -1065,11 +1089,12 @@ MF.surfaceScene = function(){
   sm.appendChild(S('path',{d:'M-8 36 L60 4 L128 36 Z',fill:'#8C4A3F'}));
   /* the chimney has to REACH the roof. The roof slopes from (60,4) to (128,36),
      so at x=86 it sits at y≈16 - the stack used to stop at y=12 and float. */
-  sm.appendChild(S('rect',{x:'86',y:'-40',width:'22',height:'60',fill:'#6B4A32'}));
+  /* lowered again: the stack ran to y=-40 and towered over its own roof */
+  sm.appendChild(S('rect',{x:'86',y:'-14',width:'22',height:'34',fill:'#6B4A32'}));
   sm.appendChild(S('rect',{x:'84',y:'8',width:'26',height:'7',rx:'2',fill:'#5A3F2A'}));
-  sm.appendChild(S('rect',{x:'82',y:'-46',width:'30',height:'9',rx:'2',fill:'#4A3F34'}));
+  sm.appendChild(S('rect',{x:'82',y:'-20',width:'30',height:'9',rx:'2',fill:'#4A3F34'}));
   [0,1,2].forEach(function(k){
-    var puff = S('circle',{cx:'97',cy:'-50',r:String(8+k*2),fill:'#D8CFC0',class:'sc-smoke'});
+    var puff = S('circle',{cx:'97',cy:'-24',r:String(8+k*2),fill:'#D8CFC0',class:'sc-smoke'});
     puff.style.animationDelay = (k*1.5)+'s';
     sm.appendChild(puff);
   });
@@ -1144,6 +1169,16 @@ MF.surfaceScene = function(){
   en.appendChild(S('rect',{x:'0',y:'92',width:'11',height:'68',fill:'#6B4A32'}));
   en.appendChild(S('rect',{x:'81',y:'92',width:'11',height:'68',fill:'#6B4A32'}));
   en.appendChild(S('circle',{cx:'46',cy:'104',r:'7',fill:'#E8A33D',opacity:'.9',class:'sc-lamp'}));
+  /* grass growing over the bluff. Nothing has been dug here in a while and the
+     hillside has taken it back - the mound read as bare fresh spoil. */
+  [[-16,120],[-6,92],[6,70],[20,52],[38,40],[58,40],[76,52],[90,74],[100,98],[110,126],
+   [-22,146],[112,150]].forEach(function(t){
+    en.appendChild(S('path',{d:'M'+t[0]+' '+t[1]+' l3 -10 l3 10 M'+(t[0]+6)+' '+t[1]+' l3 -8 l3 8',
+      fill:'none',stroke:'#5E7A4E','stroke-width':'2.4','stroke-linecap':'round'}));
+  });
+  [[10,96],[68,66],[96,116]].forEach(function(b){
+    en.appendChild(S('path',{d:'M'+b[0]+' '+b[1]+' q7 -9 15 -1 q-6 8 -15 1 Z',fill:'#6B8A5A',opacity:'.85'}));
+  });
   svg.appendChild(en);
 
   /* ---- the small stuff that makes a site look worked rather than drawn ---- */
@@ -1234,7 +1269,9 @@ MF.surfaceScene = function(){
   });
 
   /* ---- hotspots: the buildings ARE the navigation ---- */
-  function hot(x,y,w,h,label,screen){
+  /* attachY is the y of the building's own top. The sign hangs from irons that
+     REACH it, instead of floating in the sky above the hotspot rectangle. */
+  function hot(x,y,w,h,label,screen,attachY){
     /* data-screen so a check can read where a door LEADS, not just count that
        one exists - a door count would pass with every door wired to nowhere */
     var g = S('g',{class:'hot',tabindex:'0',role:'button','aria-label':label,'data-screen':screen});
@@ -1246,10 +1283,15 @@ MF.surfaceScene = function(){
     /* A SIGN BOARD, not floating text: a hung plank on two irons, which is how
        a building on a worksite actually tells you what it is. */
     var cx = x + w/2, plankW = Math.max(84, label.length*8.4 + 22), plankH = 22;
-    var sx = cx - plankW/2, sy = y - 30;
+    var sx = cx - plankW/2;
+    var legs = 13;
+    var sy = (attachY != null) ? (attachY - plankH - legs) : (y - 30);
+    var legBottom = (attachY != null) ? attachY + 3 : sy + plankH + 12;
     var sign = S('g',{});
-    sign.appendChild(S('rect',{x:String(sx+8),y:String(sy+plankH-2),width:'4',height:'12',fill:'#4A3F34'}));
-    sign.appendChild(S('rect',{x:String(sx+plankW-12),y:String(sy+plankH-2),width:'4',height:'12',fill:'#4A3F34'}));
+    sign.appendChild(S('rect',{x:String(sx+8),y:String(sy+plankH-2),width:'4',
+      height:String(legBottom-(sy+plankH-2)),fill:'#4A3F34'}));
+    sign.appendChild(S('rect',{x:String(sx+plankW-12),y:String(sy+plankH-2),width:'4',
+      height:String(legBottom-(sy+plankH-2)),fill:'#4A3F34'}));
     sign.appendChild(S('rect',{x:String(sx),y:String(sy),width:String(plankW),height:String(plankH),rx:'4',
       fill:'#C79A66',stroke:'#6B4A32','stroke-width':'3'}));
     sign.appendChild(S('rect',{x:String(sx+4),y:String(sy+4),width:String(plankW-8),height:'3',rx:'1',
@@ -1262,10 +1304,11 @@ MF.surfaceScene = function(){
     on(g,'keydown',function(e){ if(e.key==='Enter'||e.key===' '){ e.preventDefault(); MF.go(screen); } });
     svg.appendChild(g);
   }
-  hot(228,178,140,164,'The Smelting House','workshop-ore');
-  hot(390,242,124,104,'The Casting Shed','workshop-mold');
-  hot(538,204,132,146,'The Forge','forge');
-  hot(712,300,152,100,'Into the Mine','mine');
+  /* the last argument is where each building's roof actually is */
+  hot(228,178,140,164,'The Smelting House','workshop-ore', 228);   /* roof apex 224+4 */
+  hot(390,242,124,104,'The Casting Shed','workshop-mold', 248);    /* roof apex 246+2 */
+  hot(538,204,132,146,'The Forge','forge', 240);                   /* roof apex 238+2 */
+  hot(712,300,152,100,'Into the Mine','mine', 270);                /* crown of the bluff */
 
   /* Mr Factor, standing on the surface */
   var mf = MF.art(74);
@@ -2249,6 +2292,7 @@ MF.breakRock = function(idx){
   var rocks = MF.state.face, o = rocks[idx];
   if(!o || MF.state.breaking) return;
   MF.state.breaking = true;
+  var startLayer = MF.state.faceLayer;
 
   var reduced = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   var svg = MF._mine.mid.querySelector('.face svg');
@@ -2280,7 +2324,16 @@ MF.breakRock = function(idx){
   }, landMs);
 
   setTimeout(function(){
-    MF.state.face.splice(idx,1);
+    /* SPLICE BY IDENTITY, NOT BY INDEX, and only if we are still on the layer
+       the swing started on. A student who changed layer during the 900ms
+       landing got a fresh face of fifteen rocks, and this timer then deleted
+       whichever NEW rock happened to sit at the old index - a lump they never
+       touched, which never reached the cart, on a face that refills to fifteen
+       so nothing on screen said a word. */
+    if(MF.state.faceLayer !== startLayer){ MF.state.breaking = false; return; }
+    var at = MF.state.face.indexOf(o);
+    if(at < 0){ MF.state.breaking = false; MF.paintMine(); return; }
+    MF.state.face.splice(at,1);
     MF.state.inspecting = null;
     o.fresh = true;
     MF.state.cart.push(o);
@@ -2367,13 +2420,21 @@ MF.paintAssay = function(host, B){
     host.appendChild(tell);
   }
 
+  var accepted = MF.assayAccepts(ore);
   var opts = (ore.kind==='number') ? ['pure','composite'] : ['pure','shared','twin','plain','loaded'];
   var wrap = E('div','choices');
   MF.balanced(ore.id+'|assay', opts).forEach(function(k){
-    var btn = H('button','choice', MF.ASSAY[k].name + '<span class="why">' + MF.ASSAY[k].tell + '</span>');
+    var why = MF.ASSAY[k].tell;
+    /* a second true reading gets its own words, not the generic tell */
+    if(accepted.indexOf(k) >= 0 && k !== right){
+      why = 'Also true — this really is two squares with a minus between them. ' +
+            'Both readings are right; the shared lump usually comes out first, because once it does ' +
+            'the twin seam underneath is easier to see.';
+    }
+    var btn = H('button','choice', MF.ASSAY[k].name + '<span class="why">' + why + '</span>');
     btn.type='button';
     on(btn,'click',function(){
-      if(k===right){
+      if(accepted.indexOf(k) >= 0){
         btn.setAttribute('data-result','yes');
         B.step = 'smelt';
         setTimeout(function(){ MF.paintMine(); }, 260);
@@ -2404,13 +2465,26 @@ MF.paintSmelt = function(host, B){
   var ore = B.ore, kind = MF.assayOf(ore);
 
   if(kind==='pure'){
-    host.appendChild(H('p','hint','<b>Nothing to separate.</b> You called it an ingot, and the crucible agrees — it comes out exactly as it went in.'));
+    /* Being RIGHT about an ingot used to shrink the bench by a third and take
+       every input away with it - the reward for reading the one object this
+       mine exists to teach was a smaller panel. It is a result now, and it is
+       given the room a result deserves. */
+    host.appendChild(H('p','hint','<b>Nothing to separate — and that is the answer, not the absence of one.</b> ' +
+      'You called it an ingot and the crucible agrees. It goes in and comes out the same thing.'));
     var cru = E('div','crucible');
     cru.appendChild(H('h4',null,'The crucible'));
     var rowp = E('div','ingotrow');
-    rowp.appendChild(H('div','ingot pure', MF.oreText(ore)));
+    var big = H('div','ingot pure', MF.oreText(ore));
+    big.style.fontSize='26px'; big.style.padding='16px 26px'; big.style.minWidth='150px';
+    big.style.boxShadow='0 0 0 4px rgba(232,163,61,.28), inset 0 3px 0 rgba(255,255,255,.5)';
+    rowp.appendChild(big);
     cru.appendChild(rowp);
+    cru.appendChild(H('div','hint','The furnace did not fail. There is simply nothing in there but the thing itself.'));
     host.appendChild(cru);
+    host.appendChild(H('div','note good','<b>' + (ore.kind==='number' ? 'A prime.' : 'An irreducible.') +
+      '</b> ' + (ore.kind==='number'
+        ? 'Further down the mine you will meet polynomial ones — <b>x² + 4</b> is the same kind of object as this, and the smelter treats them identically.'
+        : 'This is the same kind of object as a prime. A number like 97 and a lump like this are one idea wearing different clothes, and that is the whole reason this mine exists.')));
     if(ore.kind==='poly'){
       var r = MF.smeltPoly(ore.a,ore.b,ore.c);
       host.appendChild(H('div','note','<b>Why nothing came out.</b> ' + (r.realRoots
@@ -2676,8 +2750,11 @@ MF.paintDial = function(host, B){
     m.innerHTML = clean
       ? '<b>A whole-number seam runs through this one.</b> Whole ingots will land on it — though the dial is not going to tell you which.'
       : '<b>No whole-number seam.</b> ' + (res.realRoots
-          ? 'The seam is real — near ' + num(Math.round(res.realRoots[0]*100)/100) + ' and ' + num(Math.round(res.realRoots[1]*100)/100) +
-            ' — but those are not whole numbers, and whole ingots will never land on them.'
+          ? (res.realRoots.length > 1
+              ? 'The seam is real — near ' + num(Math.round(res.realRoots[0]*100)/100) + ' and ' + num(Math.round(res.realRoots[1]*100)/100) +
+                ' — but those are not whole numbers, and whole ingots will never land on them.'
+              : 'The seam is real — it runs at ' + num(Math.round(res.realRoots[0]*1000)/1000) +
+                ' — but that is not a whole number, and whole ingots will never land on it.')
           : 'And none on decimals either.');
     readout.appendChild(m);
   }
@@ -2809,7 +2886,11 @@ MF.flash = function(msg){
 };
 MF.drainFlashes = function(){
   var host = MF._mine && MF._mine.mid;
-  if(!host || !MF.flashQueue.length) return;
+  /* isConnected: MF._mine survives navigation away from the mine, so a flash
+     raised off-mine drained into a detached node and emptied the queue with
+     nothing reaching the page. Nothing triggers it today - flash has one call
+     site, on the mine - but it is the same class as the gear announcements. */
+  if(!host || !host.isConnected || !MF.flashQueue.length) return;
   MF.flashQueue.splice(0).forEach(function(msg){
     var n = H('div','note good', msg);
     host.insertBefore(n, host.firstChild);
@@ -3045,6 +3126,37 @@ MF.validate = function(){
     if(!got) errs.push('nogate: layer '+L+' produced no ore for a student with no tools');
   }
   MF.state.yard = savedYard; MF.state.tools = savedTools; MF.state.forge = savedForge;
+
+  /* 5h. NO DISTRACTOR MAY BE TRUE, AND NO ROOT MAY BE DENIED.
+         Both of these shipped and both were student-facing falsehoods:
+         4x²−4 was graded Common Vein only while literally being two squares
+         with a minus and no middle term, and the Decimal Dial told every
+         linear lump it had no decimal seam when it always has exactly one. */
+  var seamRng = makeRng(24601);
+  for(var sw=0; sw<400; sw++){
+    var slump = MF.digOre(1 + (sw % 5), seamRng);
+    if(!slump || slump.kind!=='poly') continue;
+    chk('truthy');
+    var acc = MF.assayAccepts(slump);
+    /* if it LOOKS like a twin seam by the tell this site prints, that call must be accepted */
+    var looksTwin = (slump.a!==0 && slump.b===0 && slump.c<0 && isSquare(slump.a) && isSquare(-slump.c));
+    if(looksTwin && acc.indexOf('twin') < 0)
+      errs.push('truthy: ' + quadText(slump.a,slump.b,slump.c) + ' is two squares minus two squares, but "Twin Seam" is graded wrong');
+    /* a lump with a real root must never be told it has none */
+    chk('truthy');
+    var sres = MF.smeltPoly(slump.a, slump.b, slump.c);
+    var hasRealRoot = (slump.a===0) ? (slump.b!==0) : (slump.b*slump.b - 4*slump.a*slump.c > 0);
+    if(hasRealRoot && sres.kind==='pure' && !sres.realRoots)
+      errs.push('truthy: ' + quadText(slump.a,slump.b,slump.c) + ' has a real root but the dial would report none');
+  }
+  /* CONTROLS: both must fail */
+  chk('truthy');
+  if(MF.assayAccepts({kind:'poly',a:4,b:0,c:-4}).indexOf('twin') < 0)
+    errs.push('CONTROL: 4x²−4 still rejects the Twin Seam reading');
+  chk('truthy');
+  var linProbe = MF.smeltPoly(0,12,17);
+  if(!linProbe.realRoots || Math.abs(linProbe.realRoots[0] + 17/12) > 1e-9)
+    errs.push('CONTROL: 12x+17 does not report its real root of −17/12');
 
   /* 5g. NO ANIMATED ELEMENT MAY CARRY AN SVG transform ATTRIBUTE.
          A CSS transform animation REPLACES the transform attribute rather than
