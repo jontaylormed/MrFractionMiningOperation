@@ -147,6 +147,36 @@ input[type=range]{width:100%; accent-color:var(--ore); height:44px}
 /* the shaft / layers */
 .shaft{position:sticky; top:12px}
 @media (max-width:1080px){ .shaft{position:static} }
+/* THE SHAFT IS A SHAFT: rock walls, timber sets, a ladder running the whole
+   drop, and a cage on a cable that rides to whichever layer you are working. */
+.shaftbody{display:flex; gap:10px; align-items:stretch}
+.shaftway{position:relative; flex:0 0 58px; border-radius:8px; overflow:hidden;
+  background:
+    repeating-linear-gradient(180deg, rgba(0,0,0,.16) 0 2px, transparent 2px 15px),
+    linear-gradient(90deg,#2E2620 0 8px,#4A3B2C 8px 50px,#2E2620 50px 58px);
+  box-shadow:inset 0 0 18px rgba(0,0,0,.55)}
+/* timber sets: uprights down both sides, crossbeams every so often */
+.shaftway:before{content:""; position:absolute; top:0; bottom:0; left:7px; width:7px;
+  background:linear-gradient(90deg,#6B5335,#4A3524)}
+.shaftway:after{content:""; position:absolute; top:0; bottom:0; right:7px; width:7px;
+  background:linear-gradient(90deg,#4A3524,#6B5335)}
+.shaftway .sets{position:absolute; inset:0;
+  background:repeating-linear-gradient(180deg, transparent 0 62px, #5A4432 62px 69px)}
+/* the ladder */
+.shaftway .ladder{position:absolute; top:0; bottom:0; left:23px; width:22px;
+  background:
+    repeating-linear-gradient(180deg, transparent 0 9px, #8A6A45 9px 13px),
+    linear-gradient(90deg,#7A5B3A 0 4px, transparent 4px 18px, #7A5B3A 18px 22px)}
+/* the cable and the cage that rides it */
+.shaftway .cable{position:absolute; top:0; left:33px; width:3px; background:#C8B89A; opacity:.55}
+.shaftway .cage{position:absolute; left:12px; width:34px; height:40px; border-radius:3px;
+  background:linear-gradient(180deg,#8A9AA6,#5E6A76); border:2px solid #3E474F;
+  box-shadow:0 3px 0 rgba(0,0,0,.4);
+  transition:top .55s cubic-bezier(.3,.7,.3,1)}
+.shaftway .cage:before{content:""; position:absolute; inset:5px 4px; border-radius:2px;
+  background:repeating-linear-gradient(90deg,#46505A 0 3px,transparent 3px 7px)}
+.shaftway .cage:after{content:""; position:absolute; left:13px; top:-9px; width:8px; height:9px; background:#3E474F}
+@media (prefers-reduced-motion:reduce){ .shaftway .cage{transition:none} }
 .shaft h3{font-size:14px; letter-spacing:.09em; text-transform:uppercase; color:var(--ore-t); margin-bottom:6px}
 .layer{display:block; width:100%; text-align:left; border:2px solid transparent; border-radius:10px; padding:9px 11px;
   background:transparent; cursor:pointer; font-family:var(--body); font-size:14px; color:var(--ink); min-height:44px; margin-bottom:3px}
@@ -179,7 +209,20 @@ input[type=range]{width:100%; accent-color:var(--ore); height:44px}
   font-family:var(--body); font-size:16px; color:var(--ink)}
 .lump:hover{border-color:var(--ore)}
 .lump[aria-current=true]{border-color:var(--ore); background:#FFF6EA}
-.lump .glyph{width:26px; height:26px; flex:0 0 auto; border-radius:6px; background:linear-gradient(150deg,#7A6650,#4A3F34)}
+/* an ore chunk, not a rounded square: clipped to an irregular lump */
+.lump .glyph{width:26px; height:26px; flex:0 0 auto; background:linear-gradient(150deg,#8A7358,#4A3F34);
+  clip-path:polygon(22% 4%, 74% 0%, 100% 38%, 88% 86%, 44% 100%, 6% 74%, 0% 30%);
+  box-shadow:inset -3px -3px 6px rgba(0,0,0,.4)}
+/* the cart the lumps are sitting in */
+.cartbody{position:relative; background:linear-gradient(180deg,#5E6A76,#3E474F);
+  border:3px solid #2A3138; border-radius:4px 4px 14px 14px; padding:12px 12px 16px; margin-top:6px}
+.cartbody:before{content:""; position:absolute; left:0; right:0; top:-3px; height:8px;
+  background:linear-gradient(180deg,#8A9AA6,#66727E); border-radius:3px 3px 0 0}
+.cartwheels{display:flex; justify-content:space-around; margin:-6px 10px 0}
+.cartwheels i{display:block; width:22px; height:22px; border-radius:50%;
+  background:radial-gradient(circle at 40% 38%, #6E7A86 0 26%, #2E353C 28%); border:2px solid #1E242A}
+.cartrail{height:6px; margin:2px 0 0; border-radius:3px;
+  background:repeating-linear-gradient(90deg,#5A4B3C 0 12px, #3A3129 12px 18px)}
 .lump .txt{font-family:var(--display); font-size:17px}
 .lump .lay{font-size:11px; color:var(--ink-soft); margin-left:auto; letter-spacing:.06em}
 
@@ -269,10 +312,23 @@ input[type=range]{width:100%; accent-color:var(--ore); height:44px}
 .metalrack .shelf:last-child{border-bottom:0; margin-bottom:0; padding-bottom:0}
 /* the bars are LIGHT metal: dark text on the old mid-grey measured 2.27:1,
    which had been true since the chips existed and had never been measured */
-.metal{position:relative; background:linear-gradient(170deg,#E6ECF2 0%,#BFC9D3 62%,#9DA9B5 100%);
-  color:#141B22; border:1px solid #6E7A86; border-radius:3px 3px 6px 6px; padding:6px 11px 7px;
-  font-family:var(--display); font-size:14px;
-  box-shadow:inset 0 2px 0 rgba(255,255,255,.45), 0 2px 0 rgba(0,0,0,.35)}
+/* ORE, not boxes. Each metal is a lump with knocked-off corners sitting in a
+   heap, with a chunk of raw rock alongside it - the yard is a place ore is
+   collected, and it was reading as a filing cabinet. */
+.metal{position:relative; display:inline-flex; align-items:center; gap:7px;
+  background:linear-gradient(170deg,#E6ECF2 0%,#BFC9D3 58%,#9DA9B5 100%);
+  color:#141B22; border:0; padding:7px 12px 8px 10px;
+  clip-path:polygon(10% 0%, 92% 3%, 100% 42%, 94% 92%, 40% 100%, 4% 88%, 0% 34%);
+  font-family:var(--display); font-size:14px; margin:2px;
+  filter:drop-shadow(0 2px 1px rgba(0,0,0,.45))}
+.metal:before{content:""; width:11px; height:11px; flex:0 0 auto;
+  background:linear-gradient(150deg,#8A7358,#4A3F34);
+  clip-path:polygon(20% 6%, 78% 0%, 100% 40%, 86% 88%, 40% 100%, 4% 70%, 0% 28%)}
+.metal.pure:before{background:linear-gradient(150deg,#F2DCA4,#A5811F)}
+/* the bin the heap sits in */
+.orebin{background:linear-gradient(180deg,#4A3B2C,#2E2620); border:3px solid #241C15;
+  border-radius:4px 4px 12px 12px; padding:10px 10px 12px; box-shadow:inset 0 6px 14px rgba(0,0,0,.5)}
+.orebin .heap{display:flex; flex-wrap:wrap; align-items:flex-end}
 .metal .ct{font-family:var(--body); font-size:11px; opacity:.85}
 .metal.pure{background:linear-gradient(160deg,#F2DCA4,#C8A24B); border-color:#8A6A2A; color:#2E2208}
 .gear{display:flex; gap:9px; align-items:flex-start; background:#fff; border:2px solid var(--rule);
@@ -316,6 +372,14 @@ input[type=range]{width:100%; accent-color:var(--ore); height:44px}
 .scene .hot:focus-visible{outline:none}
 .scene .hotlabel{font-family:var(--display); font-size:13px; fill:#FFF3DE; paint-order:stroke;
   stroke:#2E2620; stroke-width:4px; stroke-linejoin:round}
+/* TRANSFORM-BOX IS NOT OPTIONAL ON SVG.
+   `transform-origin` on an SVG element resolves against the VIEWBOX by
+   default, not the element - so "center" meant the centre of a 900x420 scene,
+   hundreds of units away, and every rotating piece swung around a point
+   outside itself. fill-box makes the origin mean what it says. */
+.sc-wheel,.sc-sails,.rm-scale,.rm-ladle,.rm-bellows,.rm-fire,.pickarm{transform-box:fill-box}
+@keyframes sailspin{to{transform:rotate(360deg)}}
+.sc-sails{transform-origin:center; animation:sailspin 13s linear infinite}
 @keyframes wheelspin{to{transform:rotate(360deg)}}
 @keyframes cartroll{0%{transform:translateX(0)}45%{transform:translateX(150px)}55%{transform:translateX(150px)}100%{transform:translateX(0)}}
 @keyframes smokepuff{0%{transform:translate(0,0) scale(.6); opacity:.55}100%{transform:translate(16px,-58px) scale(1.7); opacity:0}}
@@ -941,36 +1005,47 @@ MF.surfaceScene = function(){
     svg.appendChild(S('circle',{cx:(i*23+11)%W, cy:362+((i*13)%42), r:1.6+((i*7)%3), fill:'#7A6244', opacity:'.6'}));
   }
 
-  /* ---- the headframe (pit head) ---- */
-  var hf = S('g',{transform:'translate(120,150)'});
-  hf.appendChild(S('path',{d:'M14 190 L44 24 L60 24 L84 190 Z',fill:'#4A3F34'}));
-  hf.appendChild(S('path',{d:'M0 190 L34 34 L44 34 L20 190 Z',fill:'#5A4B3C'}));
-  [58,96,134].forEach(function(y){ hf.appendChild(S('rect',{x:'12',y:String(y),width:'70',height:'7',fill:'#6B5A47'})); });
-  hf.appendChild(S('rect',{x:'34',y:'12',width:'34',height:'10',rx:'3',fill:'#3A3129'}));
-  /* The positioning lives on an OUTER group and the animation on an inner one.
-     A CSS transform animation REPLACES the SVG transform attribute rather than
-     composing with it, so animating a positioned group makes it drift off its
-     mount - the ore cart ended up in the sky. */
-  var wheelMount = S('g',{transform:'translate(51,6)'});
-  var wheel = S('g',{class:'sc-wheel'});
-  wheel.appendChild(S('circle',{cx:'0',cy:'0',r:'21',fill:'none',stroke:'#3A3129','stroke-width':'6'}));
-  wheel.appendChild(S('circle',{cx:'0',cy:'0',r:'5',fill:'#C96A1F'}));
-  for(var a=0;a<6;a++){
-    wheel.appendChild(S('line',{x1:'0',y1:'0',x2:String(21*Math.cos(a*Math.PI/3)),y2:String(21*Math.sin(a*Math.PI/3)),
-      stroke:'#4A3F34','stroke-width':'3'}));
+  /* ---- the windmill. It drives the winding gear the Shifter is made for. ---- */
+  var wm = S('g',{transform:'translate(112,132)'});
+  /* stone tower, tapered, with banding and a door */
+  wm.appendChild(S('path',{d:'M14 208 L34 56 L74 56 L94 208 Z',fill:'#8A7A66'}));
+  wm.appendChild(S('path',{d:'M14 208 L34 56 L50 56 L38 208 Z',fill:'#9C8C77',opacity:'.7'}));
+  [96,140,180].forEach(function(y){
+    wm.appendChild(S('rect',{x:String(15+ (y-96)*0.06),y:String(y),width:String(78 - (y-96)*0.12),height:'6',fill:'#6E6053',opacity:'.75'}));
+  });
+  wm.appendChild(S('path',{d:'M44 208 l0 -34 q10 -10 20 0 l0 34 Z',fill:'#4A3524'}));
+  [ [40,104],[64,104],[46,150],[62,150] ].forEach(function(w){
+    wm.appendChild(S('rect',{x:String(w[0]),y:String(w[1]),width:'12',height:'14',rx:'2',fill:'#3A3129'}));
+    wm.appendChild(S('rect',{x:String(w[0]+2),y:String(w[1]+2),width:'8',height:'10',rx:'1',fill:'#FFE9A8',opacity:'.55'}));
+  });
+  /* cap and hub */
+  wm.appendChild(S('path',{d:'M26 58 q28 -34 56 0 Z',fill:'#6B4A32'}));
+  wm.appendChild(S('rect',{x:'48',y:'34',width:'14',height:'12',rx:'3',fill:'#4A3524'}));
+
+  /* the sails. Positioning on the mount, rotation on the inner group, and the
+     rotation is about the SAILS' own centre - see transform-box above. */
+  var sailMount = S('g',{transform:'translate(55,40)'});
+  var sails = S('g',{class:'sc-sails'});
+  for(var b=0;b<4;b++){
+    var ang = b*90;
+    var blade = S('g',{transform:'rotate('+ang+')'});
+    blade.appendChild(S('rect',{x:'-4',y:'-62',width:'8',height:'56',rx:'2',fill:'#6B5335'}));
+    /* lattice slats, which is what makes it read as a windmill and not a fan */
+    for(var sIdx=0;sIdx<5;sIdx++){
+      blade.appendChild(S('rect',{x:'-13',y:String(-58+sIdx*10),width:'26',height:'4',rx:'1',
+        fill:'#E4D5BB',opacity:'.92'}));
+    }
+    sails.appendChild(blade);
   }
-  wheelMount.appendChild(wheel);
-  hf.appendChild(wheelMount);
-  hf.appendChild(S('line',{x1:'51',y1:'27',x2:'51',y2:'150',stroke:'#2E2620','stroke-width':'2'}));
-  /* named, because an unexplained spinning wheel is just a spinning wheel -
-     and this is the winding house the Shifter's order is placed for */
-  /* above the wheel, not at the base: at ground level the ore cart runs over
-     it on its way down the rails and eats half the words */
-  var hfLabel = S('text',{x:'51',y:'-22','text-anchor':'middle',class:'hotlabel'});
-  hfLabel.setAttribute('opacity','.85');
-  hfLabel.textContent = 'the winding house';
-  hf.appendChild(hfLabel);
-  svg.appendChild(hf);
+  sails.appendChild(S('circle',{cx:'0',cy:'0',r:'7',fill:'#C96A1F',stroke:'#8F4712','stroke-width':'2'}));
+  sailMount.appendChild(sails);
+  wm.appendChild(sailMount);
+
+  var wmLabel = S('text',{x:'54',y:'-46','text-anchor':'middle',class:'hotlabel'});
+  wmLabel.setAttribute('opacity','.85');
+  wmLabel.textContent = 'the windmill';
+  wm.appendChild(wmLabel);
+  svg.appendChild(wm);
 
   /* ---- THE SMELTING HOUSE -> the ore workshop.
          The chimney building is where ore is taken APART, so it opens the
@@ -1049,6 +1124,51 @@ MF.surfaceScene = function(){
   en.appendChild(S('rect',{x:'81',y:'92',width:'11',height:'68',fill:'#6B4A32'}));
   en.appendChild(S('circle',{cx:'46',cy:'104',r:'7',fill:'#E8A33D',opacity:'.9',class:'sc-lamp'}));
   svg.appendChild(en);
+
+  /* ---- the small stuff that makes a site look worked rather than drawn ---- */
+  /* pines on the ridges */
+  [[42,246,1],[86,252,.8],[352,238,.9],[392,244,.7],[690,232,.8],[726,238,1]].forEach(function(t){
+    var g2 = S('g',{transform:'translate('+t[0]+','+t[1]+') scale('+t[2]+')'});
+    g2.appendChild(S('rect',{x:'-3',y:'0',width:'6',height:'16',fill:'#5A4632'}));
+    g2.appendChild(S('path',{d:'M0 -34 L14 -8 L-14 -8 Z',fill:'#4E6B4A'}));
+    g2.appendChild(S('path',{d:'M0 -46 L11 -22 L-11 -22 Z',fill:'#5A7A54'}));
+    svg.appendChild(g2);
+  });
+  /* spoil heap BESIDE the mine mouth, not across it - it was drawn over the
+     entrance arch and read as rubble blocking the doorway */
+  P('M866 380 q26 -34 54 -2 q8 5 -3 6 l-102 0 q-2 -5 6 -6 q22 -22 45 2 Z','#6B5A45');
+  [[878,370],[898,366],[912,374]].forEach(function(r){
+    svg.appendChild(S('circle',{cx:String(r[0]),cy:String(r[1]),r:'4',fill:'#5A4B38'}));
+  });
+  /* barrels and crates by the forge */
+  [[672,330],[694,334]].forEach(function(b){
+    svg.appendChild(S('rect',{x:String(b[0]),y:String(b[1]),width:'18',height:'26',rx:'5',fill:'#7A5B3A'}));
+    svg.appendChild(S('rect',{x:String(b[0]),y:String(b[1]+7),width:'18',height:'4',fill:'#4A3524'}));
+    svg.appendChild(S('rect',{x:String(b[0]),y:String(b[1]+17),width:'18',height:'4',fill:'#4A3524'}));
+  });
+  [[366,336],[388,342],[377,318]].forEach(function(c){
+    svg.appendChild(S('rect',{x:String(c[0]),y:String(c[1]),width:'22',height:'20',rx:'2',fill:'#8A6A45',stroke:'#5A4230','stroke-width':'2'}));
+    svg.appendChild(S('line',{x1:String(c[0]),y1:String(c[1]+10),x2:String(c[0]+22),y2:String(c[1]+10),stroke:'#5A4230','stroke-width':'2'}));
+  });
+  /* a lamp post over the yard */
+  svg.appendChild(S('rect',{x:'506',y:'300',width:'5',height:'62',fill:'#4A3F34'}));
+  P('M498 300 l20 0 l-4 -12 l-12 0 Z','#3A3129');
+  svg.appendChild(S('circle',{cx:'508',cy:'296',r:'6',fill:'#FFE9A8',class:'sc-lamp'}));
+  /* a fence running along the back of the yard */
+  for(var fx=250; fx<=470; fx+=26){
+    svg.appendChild(S('rect',{x:String(fx),y:'316',width:'4',height:'26',fill:'#6B5A47'}));
+  }
+  svg.appendChild(S('rect',{x:'250',y:'322',width:'224',height:'4',fill:'#6B5A47'}));
+  /* a second cart parked on a spur, already loaded */
+  var spur = S('g',{transform:'translate(596,344)'});
+  spur.appendChild(S('path',{d:'M0 8 L44 8 L39 30 L5 30 Z',fill:'#5A6570'}));
+  spur.appendChild(S('rect',{x:'2',y:'3',width:'40',height:'7',rx:'2',fill:'#77828D'}));
+  [[8,-1],[20,-4],[32,0]].forEach(function(o){
+    spur.appendChild(S('circle',{cx:String(4+o[0]),cy:String(4+o[1]),r:'4',fill:'#8C6A2A'}));
+  });
+  spur.appendChild(S('circle',{cx:'12',cy:'32',r:'5',fill:'#3A3129'}));
+  spur.appendChild(S('circle',{cx:'34',cy:'32',r:'5',fill:'#3A3129'}));
+  svg.appendChild(spur);
 
   /* birds */
   [[300,96],[338,84],[318,110]].forEach(function(b,i){
@@ -1734,6 +1854,21 @@ MF.paintShaft = function(){
   var box = E('div','shaft');
   box.appendChild(H('h3',null,'The Shaft'));
   box.appendChild(H('div','hint','Go as deep as you like. You never have to smelt anything to descend — fill the cart and work it whenever you feel like it.'));
+
+  /* the drawn shaft on the left, the layer buttons on the right */
+  var body = E('div','shaftbody');
+  var way = E('div','shaftway');
+  way.appendChild(E('div','sets'));
+  way.appendChild(E('div','ladder'));
+  var cable = E('div','cable');
+  way.appendChild(cable);
+  var cage = E('div','cage');
+  way.appendChild(cage);
+  body.appendChild(way);
+  var rungs = E('div'); rungs.style.flex='1 1 auto';
+  body.appendChild(rungs);
+  box.appendChild(body);
+
   MF.LAYERS.forEach(function(L){
     var b = E('button','layer'); b.type='button';
     b.appendChild(H('span','n','LAYER ' + L.n));
@@ -1745,16 +1880,30 @@ MF.paintShaft = function(){
       if(L.n > MF.state.deepest) MF.state.deepest = L.n;
       MF.paintMine();
     });
-    box.appendChild(b);
+    rungs.appendChild(b);
   });
   MF.SHUT_SHAFTS.forEach(function(s){
     var b = E('button','layer shut'); b.type='button'; b.disabled = true;
     b.appendChild(H('span','n','NOT YET TIMBERED'));
     b.appendChild(document.createTextNode(s.name));
     b.appendChild(H('div','hint', s.what));
-    box.appendChild(b);
+    rungs.appendChild(b);
   });
   host.appendChild(box);
+
+  /* ride the cage to whichever layer is being worked. Measured from the real
+     button positions rather than assumed, so it stays right when the layer
+     list changes length. */
+  requestAnimationFrame(function(){
+    var btns = rungs.querySelectorAll('.layer:not(.shut)');
+    var here = btns[MF.state.layer-1];
+    if(!here) return;
+    var wayTop = way.getBoundingClientRect().top;
+    var mid = here.getBoundingClientRect().top + here.getBoundingClientRect().height/2 - wayTop;
+    var top = Math.max(4, Math.min(way.clientHeight - 44, mid - 20));
+    cage.style.top = top + 'px';
+    cable.style.height = (top + 6) + 'px';
+  });
 };
 
 /* =========================================================================
@@ -1994,6 +2143,7 @@ MF.paintFace = function(){
     cartPanel.appendChild(H('p','hint','Empty. Swing the pick above — and dig as much as you want before you smelt anything.'));
   } else {
     cartPanel.appendChild(H('p','hint','Raw ore you are carrying. Pick one up to put it on the bench.'));
+    var body = E('div','cartbody');
     var cart = E('div','cart');
     MF.state.cart.forEach(function(o){
       var b = E('button','lump' + (o.fresh?' fresh':'')); b.type='button';
@@ -2008,7 +2158,12 @@ MF.paintFace = function(){
       });
       cart.appendChild(b);
     });
-    cartPanel.appendChild(cart);
+    body.appendChild(cart);
+    cartPanel.appendChild(body);
+    var wheels = E('div','cartwheels');
+    wheels.appendChild(E('i')); wheels.appendChild(E('i'));
+    cartPanel.appendChild(wheels);
+    cartPanel.appendChild(E('div','cartrail'));
   }
   host.appendChild(cartPanel);
 
@@ -2606,14 +2761,14 @@ MF.paintYard = function(){
   } else {
     box.appendChild(H('div','hint','Metals you have pulled out of the rock.'));
     /* plain metals on one shelf, x-carrying ones on another - a yard is sorted */
-    var rack = E('div','metalrack');
+    var rack = E('div','metalrack orebin');
     [['plain metal', function(g){ return g.m===0; }],
      ['metal with an x in it', function(g){ return g.m!==0; }]].forEach(function(grp){
       var these = keys.filter(function(k){ return grp[1](MF.state.yard[k].ingot); });
       if(!these.length) return;
       var shelf = E('div','shelf');
       shelf.appendChild(H('div','hint', grp[0]));
-      var row = E('div','metalrow');
+      var row = E('div','metalrow heap');
       these.sort().forEach(function(k){
         var e = MF.state.yard[k];
         var label = e.ingot.label || ingotText(e.ingot);
