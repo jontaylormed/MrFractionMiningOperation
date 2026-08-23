@@ -372,6 +372,8 @@ input[type=range]{width:100%; accent-color:var(--ore); height:44px}
 .scene .hot:focus-visible{outline:none}
 .scene .hotlabel{font-family:var(--display); font-size:13px; fill:#FFF3DE; paint-order:stroke;
   stroke:#2E2620; stroke-width:4px; stroke-linejoin:round}
+/* burnt into the plank: dark on light wood, no outline needed */
+.scene .signtext{font-family:var(--display); font-size:13px; fill:#3A2A18; color:#3A2A18}
 /* TRANSFORM-BOX IS NOT OPTIONAL ON SVG.
    `transform-origin` on an SVG element resolves against the VIEWBOX by
    default, not the element - so "center" meant the centre of a 900x420 scene,
@@ -1041,9 +1043,15 @@ MF.surfaceScene = function(){
   sailMount.appendChild(sails);
   wm.appendChild(sailMount);
 
-  var wmLabel = S('text',{x:'54',y:'-46','text-anchor':'middle',class:'hotlabel'});
-  wmLabel.setAttribute('opacity','.85');
-  wmLabel.textContent = 'the windmill';
+  /* the windmill gets a board too, so it is not the one thing on site still
+     labelled with floating text */
+  wm.appendChild(S('rect',{x:'20',y:'-40',width:'4',height:'11',fill:'#4A3F34'}));
+  wm.appendChild(S('rect',{x:'84',y:'-40',width:'4',height:'11',fill:'#4A3F34'}));
+  /* 112 wide, not 84: "The Windmill" ran off both ends of the plank */
+  wm.appendChild(S('rect',{x:'-2',y:'-62',width:'112',height:'22',rx:'4',fill:'#C79A66',stroke:'#6B4A32','stroke-width':'3'}));
+  wm.appendChild(S('rect',{x:'2',y:'-58',width:'104',height:'3',rx:'1',fill:'#DDB88A',opacity:'.7'}));
+  var wmLabel = S('text',{x:'54',y:'-47','text-anchor':'middle',class:'signtext'});
+  wmLabel.textContent = 'The Windmill';
   wm.appendChild(wmLabel);
   svg.appendChild(wm);
 
@@ -1055,7 +1063,10 @@ MF.surfaceScene = function(){
   var sm = S('g',{transform:'translate(238,224)'});
   sm.appendChild(S('rect',{x:'0',y:'34',width:'120',height:'80',rx:'4',fill:'#7A5B3A'}));
   sm.appendChild(S('path',{d:'M-8 36 L60 4 L128 36 Z',fill:'#8C4A3F'}));
-  sm.appendChild(S('rect',{x:'86',y:'-40',width:'22',height:'52',fill:'#6B4A32'}));
+  /* the chimney has to REACH the roof. The roof slopes from (60,4) to (128,36),
+     so at x=86 it sits at y≈16 - the stack used to stop at y=12 and float. */
+  sm.appendChild(S('rect',{x:'86',y:'-40',width:'22',height:'60',fill:'#6B4A32'}));
+  sm.appendChild(S('rect',{x:'84',y:'8',width:'26',height:'7',rx:'2',fill:'#5A3F2A'}));
   sm.appendChild(S('rect',{x:'82',y:'-46',width:'30',height:'9',rx:'2',fill:'#4A3F34'}));
   [0,1,2].forEach(function(k){
     var puff = S('circle',{cx:'97',cy:'-50',r:String(8+k*2),fill:'#D8CFC0',class:'sc-smoke'});
@@ -1095,9 +1106,19 @@ MF.surfaceScene = function(){
   var mouth = S('path',{d:'M40 96 q0 -30 24 -30 q24 0 24 30 Z',fill:'#E2600F',class:'sc-lamp'});
   fg.appendChild(mouth);
   fg.appendChild(S('path',{d:'M46 96 q0 -21 18 -21 q18 0 18 21 Z',fill:'#FFB347',opacity:'.85'}));
+  /* a door, so the building can be walked into rather than only looked at */
+  fg.appendChild(S('rect',{x:'88',y:'62',width:'24',height:'46',rx:'2',fill:'#3A2A1C'}));
+  fg.appendChild(S('rect',{x:'90',y:'64',width:'20',height:'42',rx:'2',fill:'#6B4A32'}));
+  fg.appendChild(S('rect',{x:'90',y:'80',width:'20',height:'4',fill:'#4A3524'}));
+  fg.appendChild(S('circle',{cx:'106',cy:'86',r:'2.4',fill:'#C8A24B'}));
   /* the anvil out front, which is what makes it read as a forge at a glance */
   fg.appendChild(S('path',{d:'M-24 104 h30 l-4 8 h-22 Z',fill:'#4A5158'}));
   fg.appendChild(S('path',{d:'M-30 96 q10 -7 24 -5 q10 1 14 5 l-4 8 h-30 Z',fill:'#5A626A'}));
+  /* a hammer left on the anvil, and a water butt against the wall */
+  fg.appendChild(S('rect',{x:'-22',y:'88',width:'20',height:'4',rx:'2',fill:'#7A5B3A'}));
+  fg.appendChild(S('rect',{x:'-6',y:'84',width:'9',height:'11',rx:'2',fill:'#5A626A'}));
+  fg.appendChild(S('rect',{x:'120',y:'78',width:'20',height:'30',rx:'4',fill:'#6B4A32'}));
+  fg.appendChild(S('rect',{x:'120',y:'86',width:'20',height:'4',fill:'#4A3524'}));
   svg.appendChild(fg);
 
   /* ---- rails and ore cart ---- */
@@ -1129,16 +1150,21 @@ MF.surfaceScene = function(){
   /* pines on the ridges */
   [[42,246,1],[86,252,.8],[352,238,.9],[392,244,.7],[690,232,.8],[726,238,1]].forEach(function(t){
     var g2 = S('g',{transform:'translate('+t[0]+','+t[1]+') scale('+t[2]+')'});
-    g2.appendChild(S('rect',{x:'-3',y:'0',width:'6',height:'16',fill:'#5A4632'}));
-    g2.appendChild(S('path',{d:'M0 -34 L14 -8 L-14 -8 Z',fill:'#4E6B4A'}));
-    g2.appendChild(S('path',{d:'M0 -46 L11 -22 L-11 -22 Z',fill:'#5A7A54'}));
+    /* foliage overlaps the trunk top - it used to stop 8 units short and the
+       tree read as a triangle hovering over a stick */
+    g2.appendChild(S('rect',{x:'-3',y:'-6',width:'6',height:'22',fill:'#5A4632'}));
+    g2.appendChild(S('path',{d:'M0 -34 L15 -2 L-15 -2 Z',fill:'#4E6B4A'}));
+    g2.appendChild(S('path',{d:'M0 -48 L12 -18 L-12 -18 Z',fill:'#5A7A54'}));
+    g2.appendChild(S('path',{d:'M0 -58 L9 -34 L-9 -34 Z',fill:'#6B8A62'}));
     svg.appendChild(g2);
   });
   /* spoil heap BESIDE the mine mouth, not across it - it was drawn over the
      entrance arch and read as rubble blocking the doorway */
-  P('M866 380 q26 -34 54 -2 q8 5 -3 6 l-102 0 q-2 -5 6 -6 q22 -22 45 2 Z','#6B5A45');
-  [[878,370],[898,366],[912,374]].forEach(function(r){
-    svg.appendChild(S('circle',{cx:String(r[0]),cy:String(r[1]),r:'4',fill:'#5A4B38'}));
+  /* low, and CLEAR of the entrance. Lowering it alone dropped it into the mouth
+     of the arch, where it read as rubble blocking the way in. */
+  P('M862 400 q22 -20 46 -2 q7 4 -3 5 l-88 0 q-2 -4 5 -5 q19 -14 40 2 Z','#6B5A45');
+  [[874,394],[892,391],[903,396]].forEach(function(r){
+    svg.appendChild(S('circle',{cx:String(r[0]),cy:String(r[1]),r:'3.2',fill:'#5A4B38'}));
   });
   /* barrels and crates by the forge */
   [[672,330],[694,334]].forEach(function(b){
@@ -1170,6 +1196,36 @@ MF.surfaceScene = function(){
   spur.appendChild(S('circle',{cx:'34',cy:'32',r:'5',fill:'#3A3129'}));
   svg.appendChild(spur);
 
+  /* a wheelbarrow, sacks, stacked timber and a trough - the clutter of a
+     place that is worked rather than drawn */
+  var wb = S('g',{transform:'translate(452,340)'});
+  wb.appendChild(S('path',{d:'M0 0 l34 0 l-5 16 l-24 0 Z',fill:'#7C838A'}));
+  wb.appendChild(S('rect',{x:'30',y:'6',width:'16',height:'3',rx:'1',fill:'#6B5335'}));
+  wb.appendChild(S('circle',{cx:'8',cy:'20',r:'5',fill:'#3A3129'}));
+  svg.appendChild(wb);
+  /* hessian, not cream - at #C8B89A they read as clouds that had fallen over */
+  [[214,344],[232,348]].forEach(function(s){
+    svg.appendChild(S('path',{d:'M'+s[0]+' '+s[1]+' q9 -14 18 0 q3 12 -9 13 q-12 -1 -9 -13 Z',
+      fill:'#A89372',stroke:'#7A6A50','stroke-width':'1.5'}));
+  });
+  /* stacked at x=300, not 766 - at 766 the pile sat inside the mine entrance */
+  [0,1,2].forEach(function(i){
+    svg.appendChild(S('rect',{x:String(300+ (i%2)*4),y:String(352 - i*7),width:'44',height:'6',rx:'2',fill:'#8A6A45',stroke:'#5A4230','stroke-width':'1'}));
+  });
+  svg.appendChild(S('rect',{x:'160',y:'344',width:'40',height:'14',rx:'3',fill:'#6B5335'}));
+  svg.appendChild(S('rect',{x:'163',y:'347',width:'34',height:'6',rx:'2',fill:'#7FA8C4',opacity:'.8'}));
+  /* grass tufts along the ground line */
+  for(var gt=0; gt<16; gt++){
+    var gx = 40 + gt*54 + ((gt*13)%17);
+    svg.appendChild(S('path',{d:'M'+gx+' 356 l3 -9 l3 9 M'+(gx+6)+' 356 l3 -7 l3 7',
+      fill:'none',stroke:'#6B7A52','stroke-width':'2'}));
+  }
+
+  /* THE CART RIDES IN FRONT OF THE FENCE. It is built earlier so it can sit on
+     the rails, but the fence was drawn after it and the cart passed behind the
+     posts. Re-appending moves it to the front of the paint order. */
+  svg.appendChild(cartMount);
+
   /* birds */
   [[300,96],[338,84],[318,110]].forEach(function(b,i){
     var g = S('g',{class:'sc-bird'}); g.style.animationDelay=(i*.7)+'s';
@@ -1187,9 +1243,21 @@ MF.surfaceScene = function(){
     ring.appendChild(S('rect',{x:x,y:y,width:w,height:h,rx:'10',fill:'rgba(232,163,61,.16)',
       stroke:'#E8A33D','stroke-width':'3','stroke-dasharray':'7 5'}));
     g.appendChild(ring);
-    var t = S('text',{x:String(x+w/2),y:String(y-8),'text-anchor':'middle',class:'hotlabel'});
+    /* A SIGN BOARD, not floating text: a hung plank on two irons, which is how
+       a building on a worksite actually tells you what it is. */
+    var cx = x + w/2, plankW = Math.max(84, label.length*8.4 + 22), plankH = 22;
+    var sx = cx - plankW/2, sy = y - 30;
+    var sign = S('g',{});
+    sign.appendChild(S('rect',{x:String(sx+8),y:String(sy+plankH-2),width:'4',height:'12',fill:'#4A3F34'}));
+    sign.appendChild(S('rect',{x:String(sx+plankW-12),y:String(sy+plankH-2),width:'4',height:'12',fill:'#4A3F34'}));
+    sign.appendChild(S('rect',{x:String(sx),y:String(sy),width:String(plankW),height:String(plankH),rx:'4',
+      fill:'#C79A66',stroke:'#6B4A32','stroke-width':'3'}));
+    sign.appendChild(S('rect',{x:String(sx+4),y:String(sy+4),width:String(plankW-8),height:'3',rx:'1',
+      fill:'#DDB88A',opacity:'.7'}));
+    var t = S('text',{x:String(cx),y:String(sy+15),'text-anchor':'middle',class:'signtext'});
     t.textContent = label;
-    g.appendChild(t);
+    sign.appendChild(t);
+    g.appendChild(sign);
     on(g,'click',function(){ MF.go(screen); });
     on(g,'keydown',function(e){ if(e.key==='Enter'||e.key===' '){ e.preventDefault(); MF.go(screen); } });
     svg.appendChild(g);
