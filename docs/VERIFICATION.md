@@ -513,3 +513,20 @@ Rule 41 is about output nobody read. **This is about output that was never produ
 - **Feedback must land where the mouse is.** A response below the fold is a response that did not happen — the same reason `inspectThis` scrolls the inspect panel into view.
 - **Assert the reaction in the DOM, not the state change.** The `knock` group mounts the mine, dispatches real clicks and asserts a reaction node appears on the face. Its control unwires `MF.knockRock` and re-runs: four assertions must fire. They do.
 - **Distinguish the answer from the act.** The knock is 300ms and local; the break is 720ms, nine shards and a shudder through the whole face. If acknowledging a click looked like acting on it, the student would learn nothing from either.
+
+## 43. A covered control is invisible to every instrument that asks whether it works
+
+§42 fixed three clicks that produced no reaction. It was the wrong diagnosis for two of them. **The reaction was wired correctly and could not fire, because the click never arrived.**
+
+> **The pick was eating the seam.** It follows the cursor at `(ux-46, uy-62)`, which puts the pointer at local `(46,62)` — *inside* the handle rect `x:40 y:10 w:9 h:92` — and it is appended after the rocks, so it paints on top of them. `document.elementsFromPoint` at the centre of a lump returned `rect` (handle), `polygon` (head), `rect` (collar). No rock, at any point on the face, ever.
+>
+> **The same fault held the front door of the mine shut.** Three things go on after the hotspots in `surfaceScene`: Mr Factor, the portal's dark mouth, and the cart rolling out of it. All three were live to the mouse. The black arch — *the most mine-looking part of the whole scene* — was its deadest pixel, and Mr Factor stood on the bottom-right corner of the smelting house.
+
+**Why every instrument said it was fine.** `MF.validate` mounted the mine and dispatched clicks — *on the element*. `el.dispatchEvent(new MouseEvent('click'))` skips hit-testing entirely: it delivers to the node you name, which is precisely the node a real mouse could not reach. The handler ran, the state changed, the reaction appeared, the check went green. **A DOM read of a click handler cannot see an occluder. Only a hit test can.**
+
+**The rules.**
+
+- **To test a click, test the pixel, not the node.** `document.elementsFromPoint(x, y)` and assert the top element is inside the control. Dispatching on the element proves the handler, never the reach.
+- **State it as a class, not per element.** `.scene svg *{pointer-events:none}` with `.scene .hot, .scene .hot *{pointer-events:auto}` — and the same shape for `.face svg` and `.rock`. Patching the pick would have left Mr Factor and the portal, and the next decoration would have re-added it.
+- **Sweep what is painted after a control, and only that.** Anything painted behind cannot intercept, so checking it is denominator padding. The `overlay` group sweeps 56.
+- **A hotspot should be the graphic.** The mine's was a `152×100` box starting 54 units below the top of the bluff — the arch, the timber head and the nameplate were all outside it, and a good half of what it did cover was sky and ground. **Do not size a target to the room you have; size it to the thing the student is aiming at.**

@@ -425,6 +425,16 @@ input[type=range]{width:100%; accent-color:var(--ore); height:44px}
 .scene{position:relative; border:3px solid var(--rock-3); border-radius:16px; overflow:hidden;
   background:#8FB8D6; box-shadow:inset 0 -30px 60px rgba(58,49,41,.35)}
 .scene svg{display:block; width:100%; height:auto}
+/* DECORATION PAINTED OVER A DOOR MUST NOT TAKE THE CLICK.
+   SVG paint order is document order, and three things go on AFTER the
+   hotspots: Mr Factor, the portal's dark mouth, and the cart rolling out of
+   it. All three were live to the mouse, so they swallowed clicks aimed at the
+   building underneath - and the mine's black opening, the most mine-looking
+   part of the whole scene, was the deadest spot on it.
+   Stated as a class rather than patched per element: in a scene, only a door
+   takes a hit. Everything else is a picture. */
+.scene svg *{pointer-events:none}
+.scene .hot,.scene .hot *{pointer-events:auto}
 .scene .hot{cursor:pointer}
 .scene .hot .hotring{opacity:0; transition:opacity .18s ease}
 .scene .hot:hover .hotring,.scene .hot:focus-visible .hotring{opacity:1}
@@ -485,6 +495,17 @@ input[type=range]{width:100%; accent-color:var(--ore); height:44px}
 .seamview::-webkit-scrollbar{height:10px}
 .seamview::-webkit-scrollbar-track{background:#241D18}
 .seamview::-webkit-scrollbar-thumb{background:var(--lamp); border-radius:999px}
+/* THE PICK WAS EATING EVERY CLICK ON THE SEAM.
+   It follows the cursor at (ux-46, uy-62), which puts the cursor at local
+   (46,62) - INSIDE the handle rect (x:40 y:10 w:9 h:92) - and it is appended
+   after the rocks, so it is painted on top of them. Hit-testing the centre of
+   a lump returned the pick's handle, head and collar; the rock was never
+   reached. The reaction was wired up correctly and could not fire, because the
+   click never arrived. Same rule as the scene: only a lump takes a hit here,
+   everything else is a picture. The svg itself keeps its events so that
+   dragging the face to scan along the seam still works. */
+.face svg *{pointer-events:none}
+.face .rock,.face .rock *{pointer-events:auto}
 .rock{cursor:pointer}
 .rock .body{transition:transform .16s ease, filter .16s ease}
 .rock:hover .body,.rock:focus-visible .body{transform:translateY(-2px); filter:brightness(1.22)}
@@ -1518,7 +1539,13 @@ MF.surfaceScene = function(){
   hot(222,220,152,132,'The Smelting House','workshop-ore');
   hot(392,240,134,116,'The Casting Shed','workshop-mold');
   hot(552,236,134,120,'The Forge','forge');
-  hot(712,300,152,100,'Into the Mine','mine');
+  /* THE WHOLE BLUFF, NOT A BOX UNDER IT. The mine is drawn at translate(742,214)
+     as a bluff spanning local x -30..130, y 32..160 - absolute 712..872 by
+     246..374. The hotspot was 712..864 by 300..400: it began 54 units BELOW the
+     top of the rock, so the arch, the timber head and the nameplate reading
+     "The Mine" were all outside the target, and half of what it did cover was
+     sky and ground rather than mine. */
+  hot(712,244,162,132,'Into the Mine','mine');
 
   /* Mr Factor, standing on the surface */
   var mf = MF.art(74);
@@ -3987,6 +4014,56 @@ MF.validate = function(){
       chk('knock');
       if(kHalos()) errs.push('CONTROL: the knock check reported a reaction with the reaction unwired');
       MF.knockRock = kSaved.knock;
+    }
+
+    /* 5j. NOTHING PAINTED OVER A CONTROL MAY TAKE ITS CLICK.
+           The knock above was wired correctly and could not fire, because the
+           pick follows the cursor with its HANDLE under the pointer and is
+           painted after the rocks: hit-testing the centre of a lump returned
+           the pick, never the rock. The same fault sat on the surface, where
+           Mr Factor, the portal's dark mouth and the out-going cart all go on
+           after the hotspots - so the blackest, most mine-looking part of the
+           mine was the one place a click did nothing.
+
+           This sweeps every element painted AFTER the first control in each
+           scene, which is exactly the set that can occlude one. It does not
+           look at anything painted behind a control, which cannot intercept
+           it, and it says nothing about whether a control is big enough or in
+           the right place - only that nothing is sitting on top of it. */
+    var kOverlay = function(svgEl, controlSel){
+      var out = [], started = false;
+      Array.prototype.forEach.call(svgEl.querySelectorAll('*'), function(n){
+        if(n.closest(controlSel)){ started = true; return; }   /* the control itself */
+        if(!started) return;                                   /* painted behind it */
+        chk('overlay');
+        if(getComputedStyle(n).pointerEvents !== 'none')
+          out.push('<' + n.tagName + ' class="' + (n.getAttribute('class')||'') + '">');
+      });
+      return out;
+    };
+    var seamSvg = MF._mine.mid.querySelector('.face svg');
+    var overSeam = kOverlay(seamSvg, '.rock');
+    chk('overlay');
+    if(overSeam.length)
+      errs.push('overlay: ' + overSeam.length + ' thing(s) painted over the lumps still take the click, first ' + overSeam[0]);
+
+    var sProbe = MF.surfaceScene();
+    kStage.appendChild(sProbe);
+    var sceneSvg = sProbe.querySelector('svg');
+    var overScene = kOverlay(sceneSvg, '.hot');
+    chk('overlay');
+    if(overScene.length)
+      errs.push('overlay: ' + overScene.length + ' thing(s) painted over the buildings still take the click, first ' + overScene[0]);
+
+    /* CONTROL: put the pick back in front of the mouse and the sweep must say so */
+    var kVictim = seamSvg.querySelector('.pickarmhost');
+    chk('overlay');
+    if(!kVictim){ errs.push('overlay: the seam drew no pick, so the control has nothing to break'); }
+    else {
+      kVictim.style.pointerEvents = 'auto';
+      if(!kOverlay(seamSvg, '.rock').length)
+        errs.push('CONTROL: the overlay sweep did not catch the pick sitting live in front of the lumps');
+      kVictim.style.pointerEvents = '';
     }
 
     /* a lump in the cart is ore too, and clicking the one already on the bench

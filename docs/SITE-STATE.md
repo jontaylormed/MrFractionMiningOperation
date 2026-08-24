@@ -22,7 +22,7 @@
 | **Screens** | **five** — surface, two workshops, the mine, the forge |
 | **Layers** | **five**, all reachable from the first screen, none gated on anything |
 | **Instruments** | **five**, all forged, none granted |
-| **Validation** | `MF.validate()` → **5,633 checks / 18 groups / 0 errors**, two controls that must fail, and do |
+| **Validation** | `MF.validate()` → **5,689 checks / 19 groups / 0 errors**, two controls that must fail, and do |
 
 > **A check is only as wide as the space it sweeps.** The `truthy` group reported 0 errors across 642 checks while **1,970 Decimal Dial states printed a falsehood**, because it tested each lump's original integer coefficients and never nudged `c` — the one thing the dial exists to do. It now sweeps every slider position the control can reach (3,287 checks). Ask of any green result: *what did it not look at?*
 | **Runtime** | Zero dependencies, no build step, no network requests, no storage, runs from `file://` |
@@ -46,6 +46,10 @@ An ingot is not a lump that refused to break. It is **already pure**.
 The face is **2280px of rock**, several screens wide, scanned by dragging, scrolling or the scan buttons, with a position indicator. Fifteen lumps spread down its length, refilling where they were taken. You inspect a lump — what it is, how many veins run through it, what sits in front of the x² — and it says plainly that *what kind of seam runs through it is not visible from here*, which is the assay's job. Then the pick swings, lands, shatters it, and the lump drops into the cart.
 
 **Every click on a lump is answered where the mouse is.** The rock takes a knock, chips come off it, a ring goes out from the point of contact and the pick tips in — 300ms and local, deliberately not the 720ms swing that means *breaking*. This holds for the three clicks that used to be silent: the lump already picked out (which repainted the face to an identical picture), any lump at all during a swing (which answers "not now" and changes nothing), and the cart lump already on the bench. The `knock` group in `MF.validate` asserts the reaction in the DOM — 11 checks, with a control that unwires the reaction and must be caught.
+
+**And the reason none of it fired at first: the pick was eating the click.** It follows the cursor with its *handle* under the pointer and is painted after the rocks, so hit-testing the centre of a lump returned the pick's handle, head and collar — the rock was never reached. The same fault sat on the surface, where Mr Factor, the portal's dark mouth and the out-going cart are all painted after the hotspots: **the blackest, most mine-looking part of the mine was the one place a click did nothing.** Both are now stated as a class — *in a scene, only a door takes a hit; on the face, only a lump does; everything else is a picture* — and swept by the `overlay` group (56 checks, control: put the pick back in front of the mouse, and it is caught).
+
+**The mine's hotspot is now the bluff, not a box below it.** It was `712,300 152×100`, starting 54 units below the top of the rock, so the arch, the timber head and the nameplate reading *The Mine* were all outside the target. It is now `712,244 162×132`, matching the graphic's drawn bounds. **The other three buildings' hotspots have not been re-measured against their graphics** — only the mine was.
 
 **Digging is decoupled from smelting.** You may descend to the deepest layer and hoard raw ore having processed nothing.
 
