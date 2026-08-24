@@ -1426,6 +1426,19 @@ MF.surfaceScene = function(){
   mf.setAttribute('width','74'); mf.setAttribute('height','90');
   svg.appendChild(mf);
 
+  /* ---- the cart out of the mine, in front of everything ---- */
+  svg.appendChild(outMount);
+  /* and the mouth of the portal re-drawn over it, so the only thing that hides
+     the cart is the darkness it is rolling out of. The lamp goes back on top
+     of the mask, or the mask would put it out. */
+  var mouthMask = S('g',{transform:'translate(742,214)'});
+  mouthMask.appendChild(S('path',{d:'M6 158 q0 -66 40 -66 q40 0 40 66 Z',fill:'#1B1511'}));
+  /* the wheels ride ~2 units below the arch base; without this the bottom of
+     them peeped out under the portal while the cart was parked inside */
+  mouthMask.appendChild(S('rect',{x:'6',y:'155',width:'80',height:'13',fill:'#1B1511'}));
+  mouthMask.appendChild(S('circle',{cx:'46',cy:'104',r:'7',fill:'#E8A33D',opacity:'.9',class:'sc-lamp'}));
+  svg.appendChild(mouthMask);
+
   wrap.appendChild(svg);
   return wrap;
 };
@@ -1558,18 +1571,6 @@ MF.roomScene = function(kind){
       svg.appendChild(S('rect',{x:String(x-9),y:String(84+(i%3)*14),width:'24',height:'10',rx:'3',fill:'#8A9AA6'}));
     });
   }
-
-  /* ---- the cart out of the mine, in front of everything ---- */
-  svg.appendChild(outMount);
-  /* and the mouth of the portal re-drawn over it. The lamp goes back on top of
-     the mask, or the mask would put it out. */
-  var mouthMask = S('g',{transform:'translate(742,214)'});
-  mouthMask.appendChild(S('path',{d:'M6 158 q0 -66 40 -66 q40 0 40 66 Z',fill:'#1B1511'}));
-  /* the wheels ride ~2 units below the arch base; without this the bottom of
-     them peeped out under the portal while the cart was parked inside */
-  mouthMask.appendChild(S('rect',{x:'6',y:'155',width:'80',height:'13',fill:'#1B1511'}));
-  mouthMask.appendChild(S('circle',{cx:'46',cy:'104',r:'7',fill:'#E8A33D',opacity:'.9',class:'sc-lamp'}));
-  svg.appendChild(mouthMask);
 
   wrap.appendChild(svg);
   return wrap;
@@ -3356,6 +3357,48 @@ MF.validate = function(){
   var matched = MF.forgeJudge(MF.TOOLS.drill, [{m:1,k:5},{m:1,k:-5}], ingotProduct([{m:1,k:5},{m:1,k:-5}]));
   if(!matched.ok) errs.push('forge: (x+5)(x-5) was rejected as a matched pair for the Drill');
 
+  /* 5j. EVERY SCREEN MUST ACTUALLY BUILD.
+         Three screens - both workshops and the forge - threw a ReferenceError
+         and showed "This screen did not build" for an entire session, while
+         MF.validate reported 0 errors across sixteen groups. The try/catch in
+         MF.go turned a fatal fault into a polite notice that only a human
+         reading the page would ever see, and no instrument was looking.
+         The screens are enumerated from MF.SCREENS itself, never a written
+         list, so a screen added later cannot escape this (VERIFICATION s36). */
+  var screenNames = Object.keys(MF.SCREENS);
+  chk('screens');
+  if(screenNames.length < 5) errs.push('screens: only ' + screenNames.length + ' screens are registered');
+  var scStage = document.createElement('div');
+  scStage.style.cssText = 'position:absolute; left:-12000px; top:0; width:1100px';
+  document.body.appendChild(scStage);
+  var scSavedMine = MF._mine;
+  screenNames.forEach(function(name){
+    chk('screens');
+    var probe = document.createElement('div');
+    scStage.appendChild(probe);
+    try {
+      MF.SCREENS[name](probe);
+    } catch(e){
+      errs.push('screens: "' + name + '" threw while building: ' + (e.message||e));
+      return;
+    }
+    var txt = (probe.textContent||'').trim();
+    if(txt.length < 120)
+      errs.push('screens: "' + name + '" built only ' + txt.length + ' characters - it is effectively empty');
+    if(/did not build/i.test(txt))
+      errs.push('screens: "' + name + '" rendered its own failure notice');
+  });
+  MF._mine = scSavedMine;
+  /* CONTROL: a throwing screen must be caught, not smoothed over */
+  chk('screens');
+  var realHome = MF.SCREENS.home;
+  MF.SCREENS.home = function(){ throw new Error('planted'); };
+  var caught = false;
+  try { MF.SCREENS.home(document.createElement('div')); } catch(e){ caught = true; }
+  MF.SCREENS.home = realHome;
+  if(!caught) errs.push('CONTROL: the screens check cannot detect a screen that throws');
+  document.body.removeChild(scStage);
+
   /* 5e. EVERY PLACE MUST HAVE A DOOR IN THE WORLD.
          The forge shipped as a whole screen with no building on the surface,
          in a design whose stated principle is that the buildings ARE the
@@ -3520,8 +3563,21 @@ MF.validate = function(){
   var animStage = document.createElement('div');
   animStage.style.cssText = 'position:absolute; left:-12000px; top:0; width:1100px';
   document.body.appendChild(animStage);
-  var animSubjects = [MF.surfaceScene(), MF.roomScene('foundry'), MF.roomScene('assay'),
-                      MF.roomScene('forge'), MF.cartTrack()];
+  /* built one at a time, each guarded. These used to be constructed in a bare
+     array literal, so a scene builder that threw killed MF.validate outright -
+     no report, no denominators, no findings, just an exception. An instrument
+     that dies on the defect it is meant to catch is worse than one that is
+     silent about it, because the crash looks like the tool being broken. */
+  var animSubjects = [];
+  [['surface', function(){ return MF.surfaceScene(); }],
+   ['foundry', function(){ return MF.roomScene('foundry'); }],
+   ['assay',   function(){ return MF.roomScene('assay'); }],
+   ['forge',   function(){ return MF.roomScene('forge'); }],
+   ['carttrack', function(){ return MF.cartTrack(); }]].forEach(function(pair){
+    chk('animmount');
+    try { animSubjects.push(pair[1]()); }
+    catch(e){ errs.push('animmount: the "' + pair[0] + '" scene threw while building: ' + (e.message||e)); }
+  });
   animSubjects.forEach(function(node){ animStage.appendChild(node); });
   MF.ANIM_TRANSFORM_CLASSES.forEach(function(cls){
     chk('animmount');

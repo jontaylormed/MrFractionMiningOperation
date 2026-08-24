@@ -22,7 +22,7 @@
 | **Screens** | **five** — surface, two workshops, the mine, the forge |
 | **Layers** | **five**, all reachable from the first screen, none gated on anything |
 | **Instruments** | **five**, all forged, none granted |
-| **Validation** | `MF.validate()` → **5,610 checks / 16 groups / 0 errors**, two controls that must fail, and do |
+| **Validation** | `MF.validate()` → **5,622 checks / 17 groups / 0 errors**, two controls that must fail, and do |
 
 > **A check is only as wide as the space it sweeps.** The `truthy` group reported 0 errors across 642 checks while **1,970 Decimal Dial states printed a falsehood**, because it tested each lump's original integer coefficients and never nudged `c` — the one thing the dial exists to do. It now sweeps every slider position the control can reach (3,287 checks). Ask of any green result: *what did it not look at?*
 | **Runtime** | Zero dependencies, no build step, no network requests, no storage, runs from `file://` |
@@ -82,6 +82,30 @@ Metals are **spent** here — this is the yard's sink. Forging *is* distributing
 ---
 
 ## Defects found by running it, this build
+
+**Three of the five screens did not open at all, and no instrument noticed.**
+`MF.roomScene` referenced `outMount`, a symbol declared inside `MF.surfaceScene`
+— an edit had matched the wrong one of two identically-shaped scene builders,
+for the **third** time in this project. `roomScene` threw on every call, so both
+workshops and the forge rendered nothing but "This screen did not build", and
+the homepage cart vanished with it.
+
+**It was reported as two faults, and was one.** The Smelting House *is* the ore
+workshop: its page is where ore is selectable. "Ores not selectable" and
+"workshop pages not accessible" were the same broken screen seen twice. Ore
+selection on the mine seam was measured and found working in every path — clean,
+after a drag, refused mid-swing by design, and working again after — so nothing
+was changed there. **A reported symptom is a place to look, not a diagnosis.**
+
+Two checks now exist so this cannot ship silently again, both proven by
+reintroducing the exact fault: **`screens`**, which builds every entry in
+`MF.SCREENS` — enumerated from the registry, never a written list — and fails on
+a throw or a near-empty surface; and a guard in **`animmount`**, which used to
+construct the scenes in a bare array literal, so a throwing builder **killed
+`MF.validate` outright** rather than reporting. An instrument that dies on the
+defect it exists to catch is worse than a silent one: the crash reads as the
+tool being broken.
+
 
 **The forge phase.** The reward moment was invisible — a successful pour set the tool, and the `&& !hasTool` guard then stopped painting the mold that held the casting. The Shifter's rail was built at paint time and showed the slot values from *before* the student typed. The layer-1 depth line measured 3.82:1 — it passed on the four dark layers and failed on the lightest rock.
 
