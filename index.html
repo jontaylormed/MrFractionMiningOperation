@@ -511,6 +511,46 @@ input[type=range]{width:100%; accent-color:var(--ore); height:44px}
 @keyframes shudder{0%,100%{transform:translate(0,0)}20%{transform:translate(-3px,2px)}40%{transform:translate(3px,-1px)}60%{transform:translate(-2px,-2px)}80%{transform:translate(2px,1px)}}
 .shudder{animation:shudder 320ms ease-in-out 1}
 
+/* ---- THE KNOCK: every click on a lump is answered where the mouse is ----
+   Clicking the lump you already had picked out repainted the face to a picture
+   identical to the one you were already looking at, and a click that landed
+   during a swing returned without a word. Both are indistinguishable from a
+   control that was never wired up. The knock decides nothing - it only says
+   "yes, that one", at the point of contact, every single time.
+
+   transform-box:fill-box is load-bearing. A <g> defaults to view-box, so
+   scale() on the rock body would resolve about the top-left corner of the
+   2280-wide seam and fling the rock off the face instead of compressing it
+   where it sits. */
+.rock .body{transform-box:fill-box; transform-origin:center}
+@keyframes rockknock{
+  0%{transform:translate(0,0) scale(1)}
+  28%{transform:translate(0,2.5px) scale(.93)}
+  58%{transform:translate(0,-1.5px) scale(1.05)}
+  100%{transform:translate(0,0) scale(1)}
+}
+.rock .body.knock{animation:rockknock 300ms cubic-bezier(.3,1.5,.4,1) 1}
+/* a swing is already in the air: the click still answers, it answers "not now" */
+@keyframes rockrefuse{0%,100%{transform:translate(0,0)}25%{transform:translate(-2.6px,0)}75%{transform:translate(2.6px,0)}}
+.rock .body.refuse{animation:rockrefuse 240ms ease-in-out 1}
+@keyframes chipfly{0%{opacity:.95; transform:translate(0,0)}100%{opacity:0; transform:translate(var(--dx),var(--dy))}}
+.chip{animation:chipfly 400ms ease-out forwards; pointer-events:none}
+@keyframes tapring{0%{opacity:.8; transform:scale(.62)}100%{opacity:0; transform:scale(1.28)}}
+.taphalo{transform-box:fill-box; transform-origin:center; pointer-events:none;
+  animation:tapring 400ms ease-out forwards}
+/* the pick is in your hand and follows the cursor, so it has to be seen to
+   touch what you touched - a tip, not the full swing, which is what breaking
+   looks like and must stay unmistakable */
+@keyframes picktap{0%,100%{transform:rotate(0)}42%{transform:rotate(-19deg)}}
+.pickarmhost.picktap{transform-origin:86% 88%; animation:picktap 260ms cubic-bezier(.4,.1,.3,1) 1}
+@keyframes tapfade{0%{opacity:.85}100%{opacity:0}}
+@media (prefers-reduced-motion:reduce){
+  /* the answer stays, it stops moving. A ring that fades is still an answer. */
+  .rock .body.knock,.rock .body.refuse,.lump.knock,.pickarmhost.picktap{animation:none}
+  .chip{display:none}
+  .taphalo{animation:tapfade 420ms linear forwards}
+}
+
 /* ---- inspecting a rock before you break it ---- */
 .inspect{background:#241D18; border:2px solid #6B5B48; border-radius:12px; padding:11px 13px; color:#F0E2C8; margin-top:10px}
 .inspect .label{font-size:11px; letter-spacing:.1em; text-transform:uppercase; color:var(--lamp)}
@@ -557,6 +597,12 @@ input[type=range]{width:100%; accent-color:var(--ore); height:44px}
 /* ---- a lump arriving in the cart ---- */
 @keyframes lumpdrop{from{opacity:0; transform:translateY(-16px) scale(.9)}to{opacity:1; transform:translateY(0) scale(1)}}
 .lump.fresh{animation:lumpdrop 380ms cubic-bezier(.2,.8,.3,1) 1}
+/* AFTER .lump.fresh, deliberately: same specificity, so a click on a lump that
+   has only just landed in the cart still knocks rather than being outranked by
+   its own arrival. */
+@keyframes lumpknock{0%{transform:translateY(0) scale(1)}34%{transform:translateY(2px) scale(.96)}
+  68%{transform:translateY(-1px) scale(1.025)}100%{transform:translateY(0) scale(1)}}
+.lump.knock{animation:lumpknock 260ms cubic-bezier(.3,1.4,.4,1) 1}
 
 table.scan{border-collapse:collapse; font-size:15px; margin-top:8px}
 table.scan th{font-family:var(--display); font-weight:400; font-size:12px; letter-spacing:.06em; text-transform:uppercase;
@@ -2394,7 +2440,7 @@ MF.paintFace = function(){
 
   /* the rocks */
   rocks.forEach(function(o, idx){
-    var g = S('g',{class:'rock',tabindex:'0',role:'button',
+    var g = S('g',{class:'rock',tabindex:'0',role:'button','data-i':idx,
       'aria-label':'A lump of ore: ' + MF.oreText(o) + '. Look at it, then break it.'});
     if(MF.state.inspecting===idx) g.setAttribute('data-sel','on');
     var x=o.px, y=o.py, r=o.sz;
@@ -2426,9 +2472,18 @@ MF.paintFace = function(){
        became undefined and every rock painted solid black. The seam looked
        like its ore had failed to render, and nothing threw. */
     function inspectThis(){
-      if(MF.state.breaking) return;
+      /* A SWING IN THE AIR MUST NOT BE INTERRUPTED - BUT IT MUST STILL ANSWER.
+         This used to `return` on the spot, so during the 900ms of a break every
+         rock on the face was a control that did nothing and said nothing. */
+      if(MF.state.breaking){ MF.knockRock(g, o, true); return; }
       MF.state.inspecting=idx;
       MF.paintMine();
+      /* THE FACE HAS JUST BEEN REBUILT, so `g` is detached and animating it
+         would play the knock on a node nobody can see. data-i survives the
+         repaint; the element reference does not. */
+      var fresh = MF._mine && MF._mine.mid &&
+                  MF._mine.mid.querySelector('.face .rock[data-i="'+idx+'"]');
+      MF.knockRock(fresh || g, o, false);
       /* make sure the answer is on screen. A click that works but whose
          response is below the fold is indistinguishable from a dead control. */
       var panel = MF._mine && MF._mine.mid && MF._mine.mid.querySelector('.inspect');
@@ -2593,14 +2648,19 @@ MF.paintFace = function(){
     var cart = E('div','cart');
     MF.state.cart.forEach(function(o){
       var b = E('button','lump' + (o.fresh?' fresh':'')); b.type='button';
+      b.setAttribute('data-ore', o.id);      /* survives the repaint, so the knock finds it */
       b.appendChild(E('span','glyph'));
       b.appendChild(H('span','txt', MF.oreLabel(o)));
       b.appendChild(H('span','lay','LAYER ' + o.layer));
       if(MF.state.selected && MF.state.selected.id===o.id) b.setAttribute('aria-current','true');
       on(b,'click',function(){
+        /* picking up the lump ALREADY on the bench resets the bench to the
+           assay, which is a real thing to have done - but off-screen, below the
+           cart, so the click looked like nothing. It knocks now. */
         MF.state.selected = o;
         MF.state.bench = null;
         MF.paintMine();
+        MF.knockLump(o.id);
       });
       cart.appendChild(b);
     });
@@ -2615,6 +2675,74 @@ MF.paintFace = function(){
 
   if(MF.state.selected) MF.paintBench(host);
   else if(MF.state.cart.length) host.appendChild(MF.says('<b>Mr Factor:</b> Pick a lump out of the cart and set it on the bench when you are ready. No hurry — the cart does not empty itself.'));
+};
+
+/* =========================================================================
+   THE KNOCK. Every click on a lump gets an answer at the point of contact,
+   whether or not it changed anything: the rock takes a knock, chips come off
+   it, a ring goes out from where you hit it, and the pick tips in.
+
+   THREE CLICKS USED TO BE SILENT, and all three looked like broken controls:
+   the lump already selected (repaint drew an identical picture), any lump at
+   all during the 900ms of a swing (an early `return`), and the cart lump
+   already on the bench (the change was below the fold).
+
+   This is deliberately NOT the break animation. Breaking is 720ms of swing,
+   nine shards and a shudder through the whole face; the knock is 300ms and
+   local. Nothing here decides anything, spends anything or moves the lump -
+   the pour is still the only correctness signal in the build.
+   ========================================================================= */
+MF.knockRock = function(node, o, refused){
+  if(!node || !o) return;
+  var reduced = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var body = node.querySelector('.body');
+  var cls  = refused ? 'refuse' : 'knock';
+  if(body){
+    /* remove, force a reflow, re-add: without the reflow a second click on the
+       same rock re-adds a class the element never lost and the browser does not
+       restart the animation - which is exactly the dead-click this fixes. */
+    body.classList.remove('knock','refuse');
+    void body.getBoundingClientRect();
+    body.classList.add(cls);
+    setTimeout(function(){ body.classList.remove(cls); }, 420);
+  }
+  var svg = node.ownerSVGElement;
+  if(!svg) return;
+  var look = MF.LAYER_LOOK[MF.state.layer-1] || MF.LAYER_LOOK[0];
+  var bits = [];
+  var halo = S('circle',{class:'taphalo',cx:o.px,cy:o.py,r:o.sz+7,fill:'none',
+    stroke:look.glint,'stroke-width':'3'});
+  svg.appendChild(halo); bits.push(halo);
+  if(!refused && !reduced){
+    for(var i=0;i<4;i++){
+      var ang = -Math.PI/2 + (i-1.5)*0.55;
+      var chip = S('circle',{class:'chip',cx:o.px+(i-1.5)*3.5,cy:o.py-o.sz*0.45,
+        r:(2.1+(i%2)).toFixed(1), fill: i%2 ? look.ore : look.grit});
+      chip.style.setProperty('--dx',(Math.cos(ang)*(18+i*6)).toFixed(1)+'px');
+      chip.style.setProperty('--dy',(Math.sin(ang)*(18+i*6)-5).toFixed(1)+'px');
+      svg.appendChild(chip); bits.push(chip);
+    }
+  }
+  /* the seam is repainted constantly; anything left behind accumulates */
+  setTimeout(function(){
+    bits.forEach(function(b){ if(b.parentNode) b.parentNode.removeChild(b); });
+  }, 520);
+  var arm = MF._pickArm;
+  if(arm && !reduced && !refused){
+    arm.classList.remove('picktap'); void arm.getBoundingClientRect();
+    arm.classList.add('picktap');
+    setTimeout(function(){ arm.classList.remove('picktap'); }, 320);
+  }
+};
+
+/* the same answer for a lump in the cart, which is ore too */
+MF.knockLump = function(id){
+  var host = MF._mine && MF._mine.mid;
+  var el = host && host.querySelector('.lump[data-ore="'+id+'"]');
+  if(!el) return;
+  el.classList.remove('knock'); void el.getBoundingClientRect();
+  el.classList.add('knock');
+  setTimeout(function(){ el.classList.remove('knock'); }, 320);
 };
 
 /* =========================================================================
@@ -3784,6 +3912,111 @@ MF.validate = function(){
   MF.state.yard=cSaved.yard; MF.state.tools=cSaved.tools; MF.state.cart=cSaved.cart;
   MF.state.selected=cSaved.sel; MF.state.bench=cSaved.bench; MF._mine=cSaved.mine;
   MF.state.layer=cSaved.layer; MF.state.face=cSaved.face; MF.state.faceLayer=cSaved.fl;
+
+  /* 5i. EVERY CLICK ON A LUMP MUST BE ANSWERED.
+         Three separate clicks in the mine used to produce nothing a student
+         could see: the lump already selected (paintMine drew a picture
+         identical to the one on screen), any lump at all during the 900ms of a
+         swing (an early `return`), and the cart lump already on the bench (the
+         change was real but below the fold). "It repainted to the same
+         picture" is indistinguishable from "this control is not wired up", so
+         the reaction is asserted in the DOM rather than trusted.
+
+         READ THE DENOMINATOR: this sweeps clicks on seam rocks and on cart
+         lumps. It says nothing about the shaft buttons, the bench, the yard or
+         the forge, and nothing about whether the reaction looks any good. */
+  var kSaved = {mine:MF._mine, layer:MF.state.layer, face:MF.state.face, fl:MF.state.faceLayer,
+                insp:MF.state.inspecting, cart:MF.state.cart, sel:MF.state.selected,
+                bench:MF.state.bench, brk:MF.state.breaking, scan:MF.state.scan,
+                knock:MF.knockRock};
+  var kStage = document.createElement('div');
+  kStage.style.cssText = 'position:fixed; left:-4000px; top:0; width:1100px';
+  document.body.appendChild(kStage);
+  var kRock = function(i){ return MF._mine.mid.querySelector('.face .rock[data-i="'+i+'"]'); };
+  var kHalos = function(){ return MF._mine.mid.querySelectorAll('.face .taphalo').length; };
+  var kHit = function(el){ el.dispatchEvent(new MouseEvent('click',{bubbles:true})); };
+  var kHasCls = function(el, sel, cls){
+    var n = el && el.querySelector(sel);
+    return !!(n && n.classList.contains(cls));
+  };
+  try {
+    MF._mine = null;
+    MF.state.layer = 3; MF.state.face = []; MF.state.faceLayer = null;
+    MF.state.inspecting = null; MF.state.breaking = false; MF.state.cart = [];
+    MF.state.selected = null; MF.state.bench = null;
+    MF.SCREENS.mine(kStage);
+
+    /* a bare repaint must leave no reaction behind, or every assertion below
+       would pass on scenery rather than on the click */
+    chk('knock');
+    if(kHalos()) errs.push('knock: a freshly painted seam already carries a tap ring - the clicks below prove nothing');
+
+    var r0 = kRock(0);
+    chk('knock');
+    if(!r0){ errs.push('knock: the seam painted no clickable lump at all'); }
+    else {
+      kHit(r0);
+      chk('knock');
+      if(!kHalos()) errs.push('knock: the first click on a lump left no reaction on the face');
+
+      /* THE ONE THAT SHIPPED SILENT: clicking the lump you already picked out */
+      MF.paintMine();                                   /* clear the previous answer */
+      chk('knock');
+      if(kHalos()) errs.push('knock: the repaint did not clear the previous reaction');
+      kHit(kRock(0));
+      chk('knock');
+      if(!kHalos()) errs.push('knock: clicking the lump already selected repainted an identical face and answered nothing');
+      chk('knock');
+      if(!kHasCls(kRock(0),'.body','knock')) errs.push('knock: the lump itself did not take the knock');
+
+      /* and a click that lands while a swing is in the air */
+      MF.state.breaking = true;
+      var r1 = kRock(1) || kRock(0);
+      kHit(r1);
+      chk('knock');
+      if(!kHasCls(r1,'.body','refuse')) errs.push('knock: a click during a swing was swallowed without a word');
+      chk('knock');
+      if(MF.state.inspecting === 1) errs.push('knock: a click during a swing changed the selection - the answer must not be an action');
+      MF.state.breaking = false;
+
+      /* CONTROL: unwire the reaction and the same click must go undetected.
+         Reintroducing the fault is the only proof the check can see it. */
+      MF.knockRock = function(){};
+      MF.paintMine();
+      kHit(kRock(0));
+      chk('knock');
+      if(kHalos()) errs.push('CONTROL: the knock check reported a reaction with the reaction unwired');
+      MF.knockRock = kSaved.knock;
+    }
+
+    /* a lump in the cart is ore too, and clicking the one already on the bench
+       resets it to the assay - a real thing to have done, off-screen */
+    var kRng = makeRng(4242);
+    var kl = MF.digOre(3, kRng), kl2 = MF.digOre(3, kRng);
+    if(kl && kl2){
+      MF.state.cart = [kl, kl2]; MF.state.selected = kl; MF.state.bench = null;
+      MF.paintMine();
+      var lumpEl = MF._mine.mid.querySelector('.lump[data-ore="'+kl.id+'"]');
+      chk('knock');
+      if(!lumpEl){ errs.push('knock: the cart drew no lump to click'); }
+      else {
+        kHit(lumpEl);
+        var after = MF._mine.mid.querySelector('.lump[data-ore="'+kl.id+'"]');
+        chk('knock');
+        if(!(after && after.classList.contains('knock')))
+          errs.push('knock: clicking the cart lump already on the bench answered nothing');
+      }
+    }
+  } catch(e){
+    chk('knock');
+    errs.push('knock: the seam threw while being clicked: ' + e.message);
+  }
+  MF.knockRock = kSaved.knock;
+  document.body.removeChild(kStage);
+  MF._mine = kSaved.mine; MF.state.layer = kSaved.layer; MF.state.face = kSaved.face;
+  MF.state.faceLayer = kSaved.fl; MF.state.inspecting = kSaved.insp; MF.state.cart = kSaved.cart;
+  MF.state.selected = kSaved.sel; MF.state.bench = kSaved.bench; MF.state.breaking = kSaved.brk;
+  MF.state.scan = kSaved.scan;
 
   /* 6. NOTHING ON SCREEN MAY HAVE A CEILING, A PERCENTAGE, OR A COMPARISON.
         This is a stated requirement, so it is checked mechanically rather

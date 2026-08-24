@@ -1,7 +1,7 @@
 # What the site is, right now
 ### The single place any brief, agent or session reads to find out what exists
 
-**Last verified 2026-08-22** by `MF.validate()` run in a browser against this tree, by clicking through the loop by hand, and by headless-Edge screenshots.
+**Last verified 2026-08-24** by `MF.validate()` run in a browser against this tree and by driving the seam's clicks by hand. The last **screenshot** pass was 2026-08-22 — the 2026-08-24 pass measured geometry from the DOM instead, because the preview pane renders a `file://` page as a static snapshot and its pixels are not the live page.
 
 ---
 
@@ -22,7 +22,7 @@
 | **Screens** | **five** — surface, two workshops, the mine, the forge |
 | **Layers** | **five**, all reachable from the first screen, none gated on anything |
 | **Instruments** | **five**, all forged, none granted |
-| **Validation** | `MF.validate()` → **5,622 checks / 17 groups / 0 errors**, two controls that must fail, and do |
+| **Validation** | `MF.validate()` → **5,633 checks / 18 groups / 0 errors**, two controls that must fail, and do |
 
 > **A check is only as wide as the space it sweeps.** The `truthy` group reported 0 errors across 642 checks while **1,970 Decimal Dial states printed a falsehood**, because it tested each lump's original integer coefficients and never nudged `c` — the one thing the dial exists to do. It now sweeps every slider position the control can reach (3,287 checks). Ask of any green result: *what did it not look at?*
 | **Runtime** | Zero dependencies, no build step, no network requests, no storage, runs from `file://` |
@@ -44,6 +44,8 @@ An ingot is not a lump that refused to break. It is **already pure**.
 ## The seam
 
 The face is **2280px of rock**, several screens wide, scanned by dragging, scrolling or the scan buttons, with a position indicator. Fifteen lumps spread down its length, refilling where they were taken. You inspect a lump — what it is, how many veins run through it, what sits in front of the x² — and it says plainly that *what kind of seam runs through it is not visible from here*, which is the assay's job. Then the pick swings, lands, shatters it, and the lump drops into the cart.
+
+**Every click on a lump is answered where the mouse is.** The rock takes a knock, chips come off it, a ring goes out from the point of contact and the pick tips in — 300ms and local, deliberately not the 720ms swing that means *breaking*. This holds for the three clicks that used to be silent: the lump already picked out (which repainted the face to an identical picture), any lump at all during a swing (which answers "not now" and changes nothing), and the cart lump already on the bench. The `knock` group in `MF.validate` asserts the reaction in the DOM — 11 checks, with a control that unwires the reaction and must be caught.
 
 **Digging is decoupled from smelting.** You may descend to the deepest layer and hoard raw ore having processed nothing.
 

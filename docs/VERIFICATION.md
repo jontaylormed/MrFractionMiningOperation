@@ -494,3 +494,22 @@ Rule 2 is about checks that find nothing and are believed. **This is its opposit
 - **When an instrument's output surprises you, re-read the output before re-running the check.** Twice today the answer was already on screen.
 
 > **And the corollary that makes §29 honest.** The same day proved both halves: the whole site was **tracked**, so a total working-tree loss cost one command. `.claude/launch.json` was **untracked**, so an overwrite by an agent that had never read it was permanent. **The safety net is not "git exists" — it is "git holds this file". Check which before you rely on it.**
+
+## 42. A control that repaints to the same picture is indistinguishable from one that is not wired up
+
+Rule 41 is about output nobody read. **This is about output that was never produced.** Three clicks in the mine did nothing a student could see, and all three were *correct code*:
+
+> **The lump you already picked out.** `inspectThis` set `MF.state.inspecting = idx` and called `paintMine()`. When `idx` was already the selected lump, the repaint drew a picture pixel-identical to the one on screen. The handler ran, the state was right, nothing happened.
+>
+> **Any lump during a swing.** `if(MF.state.breaking) return;` — a real and necessary guard, because rebuilding the face mid-break orphans the shatter. But for the 900ms of a swing every rock on the face was a dead control that said nothing about why.
+>
+> **The cart lump already on the bench.** Clicking it reset the bench to the assay. A real thing to have done — below the fold, where nobody saw it.
+
+**None of these throws, and no check could see them**, because every existing instrument asked *did the state change* or *is the text right*, and the answer to both was yes.
+
+**The rules.**
+
+- **A handler that guards with an early `return` still owes the click an answer.** "Not now" is a response; silence is a bug report the student files against themselves.
+- **Feedback must land where the mouse is.** A response below the fold is a response that did not happen — the same reason `inspectThis` scrolls the inspect panel into view.
+- **Assert the reaction in the DOM, not the state change.** The `knock` group mounts the mine, dispatches real clicks and asserts a reaction node appears on the face. Its control unwires `MF.knockRock` and re-runs: four assertions must fire. They do.
+- **Distinguish the answer from the act.** The knock is 300ms and local; the break is 720ms, nine shards and a shudder through the whole face. If acknowledging a click looked like acting on it, the student would learn nothing from either.
