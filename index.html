@@ -131,6 +131,9 @@ input[type=range]{width:100%; accent-color:var(--ore); height:44px}
 .card{background:#fff; border:2px solid var(--rule); border-radius:14px; padding:16px; display:flex; flex-direction:column; gap:8px}
 .card h3{font-size:19px}
 .card .why{font-size:14px; color:var(--ink-soft); flex:1 1 auto}
+/* the "To forge it" line is pushed to the foot of every card, so four cards of
+   different description lengths still line their instructions and buttons up */
+.card .hint{margin-top:auto}
 .card .go{align-self:flex-start}
 .card.locked{opacity:.72; background:var(--paper-2)}
 .tagline-pill{display:inline-block; font-size:12px; letter-spacing:.06em; text-transform:uppercase;
@@ -387,8 +390,18 @@ input[type=range]{width:100%; accent-color:var(--ore); height:44px}
        inherits the CSS `color` property while painting with `fill`, which
        makes it read as a false failure to any contrast sweep. Every word on
        these screens stays in HTML underneath. ---- */
-.room{border:3px solid var(--rock-3); border-radius:16px; overflow:hidden; margin:0 0 14px; background:#2E2620}
-.room svg{display:block; width:100%; height:auto}
+/* A ROOM IS A BANNER, NOT THE SCREEN. At width:100% the 900x210 viewBox drew
+   ~290px tall on a desktop, so the actual work started below the halfway line
+   and a student met scenery before they met anything to do. Fixed height with
+   `slice` scales to cover and crops a little wall and floor instead. */
+/* 232, not 176: at 176 the 900x210 room had to scale ~1.3x to cover and lost
+   nearly half its height to the crop, which read as being zoomed into the wall.
+   232 trims about 15% - enough to stop the banner dominating, little enough
+   that the room still looks like a room. */
+.room{border:3px solid var(--rock-3); border-radius:16px; overflow:hidden; margin:0 0 14px;
+  background:#2E2620; height:232px}
+.room svg{display:block; width:100%; height:100%}
+@media (max-width:700px){ .room{height:168px} }
 @keyframes bellowspush{0%,100%{transform:scaleY(1)}45%{transform:scaleY(.72)}}
 @keyframes firelick{0%,100%{transform:scaleY(1) translateY(0); opacity:.92}50%{transform:scaleY(1.18) translateY(-3px); opacity:1}}
 @keyframes quenchsteam{0%{transform:translateY(0) scale(.5); opacity:.5}100%{transform:translateY(-42px) scale(1.5); opacity:0}}
@@ -427,13 +440,17 @@ input[type=range]{width:100%; accent-color:var(--ore); height:44px}
 /* parks at +12, not +44: the arch interior runs 748-828 and the cart is 54
    wide from a mount at 756, so only 12 leaves it FULLY inside the dark. Any
    further right and its tail stuck out past the mask, over the bluff. */
+/* the fade is what conceals it deep in the shaft, now that nothing is painted
+   over the top of it - it comes up out of the dark and goes back into it */
 @keyframes cartout{
-  0%  {transform:translateX(12px)}
-  14% {transform:translateX(12px)}
-  44% {transform:translateX(-168px)}
-  58% {transform:translateX(-168px)}
-  88% {transform:translateX(12px)}
-  100%{transform:translateX(12px)}
+  0%  {transform:translateX(30px); opacity:0}
+  10% {transform:translateX(22px); opacity:0}
+  20% {transform:translateX(6px);  opacity:1}
+  44% {transform:translateX(-168px); opacity:1}
+  58% {transform:translateX(-168px); opacity:1}
+  82% {transform:translateX(6px);  opacity:1}
+  92% {transform:translateX(22px); opacity:0}
+  100%{transform:translateX(30px); opacity:0}
 }
 .sc-cartout{animation:cartout 16s ease-in-out infinite}
 @keyframes smokepuff{0%{transform:translate(0,0) scale(.6); opacity:.55}100%{transform:translate(16px,-58px) scale(1.7); opacity:0}}
@@ -507,9 +524,13 @@ input[type=range]{width:100%; accent-color:var(--ore); height:44px}
 
 /* ---- moving between places. A short wipe, so going somewhere feels like
        going somewhere rather than the page swapping its contents. ---- */
+/* MOVEMENT ONLY, NEVER OPACITY. Animating from opacity:0 means any dropped
+   frame, slow paint or interrupted animation leaves the whole screen faint or
+   blank - the mine looked like its rocks had not rendered at all. A transition
+   should never be able to hide the content it is introducing. */
 @keyframes placewipe{
-  0%{opacity:0; transform:translateY(10px)}
-  100%{opacity:1; transform:translateY(0)}
+  0%{transform:translateY(9px)}
+  100%{transform:translateY(0)}
 }
 #screen.arriving{animation:placewipe 260ms cubic-bezier(.2,.8,.3,1) 1}
 @media (prefers-reduced-motion:reduce){ #screen.arriving{animation:none} }
@@ -1070,6 +1091,32 @@ MF.loadScreen = function(){
    Everything that moves here is scenery: the wheel, the cart, the smoke and
    the clouds carry no information and never report a quantity.
    ========================================================================= */
+/* A PROPER LANTERN, not a glowing dot: a hooped cage with a hood, a wire
+   handle, glazing bars and a flame inside, sitting in its own pool of light.
+   Module scope so the surface and the rooms draw the same object. */
+function lantern(parent, cx, cy, scale, glowR){
+  var g = S('g',{transform:'translate('+cx+','+cy+') scale('+(scale||1)+')'});
+  /* the light it casts, behind everything */
+  /* a soft halo, not a headlight. At r26/.20 in daylight it read as a large
+     pale disc stuck to the scene, and the portal one covered the mine mouth. */
+  g.appendChild(S('circle',{cx:'0',cy:'0',r:String(glowR||13),fill:'#FFD68A',opacity:'.13',class:'sc-lamp'}));
+  /* hanging hook and handle */
+  g.appendChild(S('path',{d:'M0 -20 q-7 -6 0 -11 q7 5 0 11 Z',fill:'none',stroke:'#4A4038','stroke-width':'2'}));
+  /* hood */
+  g.appendChild(S('path',{d:'M-10 -12 l20 0 l-4 -6 l-12 0 Z',fill:'#5A626A',stroke:'#39424A','stroke-width':'1.5'}));
+  /* glass body */
+  g.appendChild(S('path',{d:'M-8 -12 l16 0 l2 18 l-20 0 Z',fill:'#FFE9A8',stroke:'#4A4038','stroke-width':'2'}));
+  /* glazing bars */
+  g.appendChild(S('line',{x1:'0',y1:'-12',x2:'0',y2:'6',stroke:'#8A6A45','stroke-width':'1.4',opacity:'.8'}));
+  g.appendChild(S('line',{x1:'-9',y1:'-3',x2:'9',y2:'-3',stroke:'#8A6A45','stroke-width':'1.4',opacity:'.8'}));
+  /* the flame */
+  g.appendChild(S('path',{d:'M0 3 q-4 -5 0 -10 q4 5 0 10 Z',fill:'#E2600F',class:'sc-lamp'}));
+  /* base */
+  g.appendChild(S('rect',{x:'-11',y:'5',width:'22',height:'5',rx:'2',fill:'#5A626A',stroke:'#39424A','stroke-width':'1.5'}));
+  parent.appendChild(g);
+  return g;
+}
+
 /* A nameplate BOLTED TO A FACADE. Module scope, not inside a scene: it was
    first written inside roomScene by accident - both scene builders have an
    identically shaped P() helper - so surfaceScene could not see it and every
@@ -1313,7 +1360,7 @@ MF.surfaceScene = function(){
   en.appendChild(S('rect',{x:'0',y:'86',width:'92',height:'11',rx:'2',fill:'#6B4A32'}));
   en.appendChild(S('rect',{x:'0',y:'92',width:'11',height:'68',fill:'#6B4A32'}));
   en.appendChild(S('rect',{x:'81',y:'92',width:'11',height:'68',fill:'#6B4A32'}));
-  en.appendChild(S('circle',{cx:'46',cy:'104',r:'7',fill:'#E8A33D',opacity:'.9',class:'sc-lamp'}));
+  lantern(en, 8, 100, 0.85, 14);   /* on the timber, clear of the opening */
   /* the nameplate sits DIRECTLY ABOVE THE OPENING, on the timber over the
      portal - that is where a mine actually carries its name */
   nameplate(en, 46, 56, 'The Mine');
@@ -1343,7 +1390,7 @@ MF.surfaceScene = function(){
   /* clear of the Casting Shed, which now reaches x=526 */
   svg.appendChild(S('rect',{x:'538',y:'300',width:'5',height:'62',fill:'#4A3F34'}));
   P('M530 300 l20 0 l-4 -12 l-12 0 Z','#3A3129');
-  svg.appendChild(S('circle',{cx:'540',cy:'296',r:'6',fill:'#FFE9A8',class:'sc-lamp'}));
+  lantern(svg, 540, 296, 0.9, 13);
   /* a fence running along the back of the yard */
   for(var fx=250; fx<=470; fx+=26){
     svg.appendChild(S('rect',{x:String(fx),y:'316',width:'4',height:'26',fill:'#6B5A47'}));
@@ -1426,18 +1473,20 @@ MF.surfaceScene = function(){
   mf.setAttribute('width','74'); mf.setAttribute('height','90');
   svg.appendChild(mf);
 
-  /* ---- the cart out of the mine, in front of everything ---- */
-  svg.appendChild(outMount);
-  /* and the mouth of the portal re-drawn over it, so the only thing that hides
-     the cart is the darkness it is rolling out of. The lamp goes back on top
-     of the mask, or the mask would put it out. */
+  /* THE DARK FIRST, THEN THE CART ON TOP OF IT.
+     The mask used to be painted over the cart, so the black arch cut across it
+     as it came out. Now the portal's darkness is laid down first and the cart
+     rides in front of it and of the timber outline - it emerges from the dark
+     rather than being sliced by it, and a short fade at the start is what
+     hides it while it is still deep inside. */
   var mouthMask = S('g',{transform:'translate(742,214)'});
   mouthMask.appendChild(S('path',{d:'M6 158 q0 -66 40 -66 q40 0 40 66 Z',fill:'#1B1511'}));
   /* the wheels ride ~2 units below the arch base; without this the bottom of
      them peeped out under the portal while the cart was parked inside */
   mouthMask.appendChild(S('rect',{x:'6',y:'155',width:'80',height:'13',fill:'#1B1511'}));
-  mouthMask.appendChild(S('circle',{cx:'46',cy:'104',r:'7',fill:'#E8A33D',opacity:'.9',class:'sc-lamp'}));
+  lantern(mouthMask, 8, 100, 0.85, 14);
   svg.appendChild(mouthMask);
+  svg.appendChild(outMount);          /* the cart, in front of the black outline */
 
   wrap.appendChild(svg);
   return wrap;
@@ -1450,7 +1499,10 @@ MF.surfaceScene = function(){
 MF.roomScene = function(kind){
   var wrap = E('div','room');
   var W=900, VH=210;
-  var svg = S('svg',{viewBox:'0 0 '+W+' '+VH,'aria-hidden':'true'});
+  /* slice, not the default meet: fill the banner and crop a little wall and
+     floor, rather than letterboxing the room inside its own frame */
+  var svg = S('svg',{viewBox:'0 0 '+W+' '+VH,'aria-hidden':'true',
+    preserveAspectRatio:'xMidYMid slice'});
   function R(x,y,w,h,f,extra){ var n=S('rect',{x:x,y:y,width:w,height:h,fill:f});
     if(extra) for(var k in extra) n.setAttribute(k,extra[k]); svg.appendChild(n); return n; }
   function P(d,f,extra){ var n=S('path',{d:d,fill:f}); if(extra) for(var k in extra) n.setAttribute(k,extra[k]);
@@ -1532,7 +1584,7 @@ MF.roomScene = function(kind){
       R(748,104+i*21,104,16,'#5E6A76',{rx:'2'});
       svg.appendChild(S('circle',{cx:'800',cy:String(112+i*21),r:'3',fill:'#C8A24B'}));
     });
-    svg.appendChild(S('circle',{cx:'440',cy:'34',r:'13',fill:'#FFE9A8',class:'sc-lamp'}));
+    lantern(svg, 440, 40, 1.1, 16);
     P('M432 22 l16 0 l6 -14 l-28 0 Z','#3A434C');
   }
 
@@ -1549,14 +1601,24 @@ MF.roomScene = function(kind){
     R(22,150,58,14,'#4A3524',{rx:'3'});
     var belMount = S('g',{transform:'translate(16,116)'});
     var bel = S('g',{class:'rm-bellows'});
-    bel.appendChild(S('path',{d:'M0 16 q34 -22 70 -2 q-34 22 -70 2 Z',fill:'#6B4A32',stroke:'#3A2A1C','stroke-width':'2'}));
-    bel.appendChild(S('path',{d:'M6 16 q28 -14 56 -2 q-28 14 -56 2 Z',fill:'#8A6A45',opacity:'.6'}));
+    /* a teardrop with pleats and a nozzle, so it reads as bellows rather than
+       as a tan lozenge floating by the wall */
+    bel.appendChild(S('path',{d:'M2 16 q30 -26 62 -8 q10 6 10 10 q0 4 -10 10 q-32 18 -62 -8 Z',
+      fill:'#7A5335',stroke:'#3A2A1C','stroke-width':'2.5'}));
+    [16,28,40].forEach(function(px){
+      bel.appendChild(S('line',{x1:String(px),y1:'6',x2:String(px),y2:'26',stroke:'#3A2A1C','stroke-width':'1.6',opacity:'.55'}));
+    });
+    bel.appendChild(S('rect',{x:'70',y:'13',width:'22',height:'6',rx:'3',fill:'#4A5158',stroke:'#2E353C','stroke-width':'1.5'}));
     belMount.appendChild(bel); svg.appendChild(belMount);
     R(78,128,30,8,'#4A3524',{rx:'3'});
-    /* anvil on its stump */
-    R(392,140,54,24,'#5A4938');
-    P('M356 118 q22 -10 46 -8 q18 1 24 8 l-6 16 h-58 Z','#5A626A');
-    P('M362 134 h48 l-6 8 h-36 Z','#4A5158');
+    /* anvil on its stump. Outlined and given its horn and waist - at banner
+       size the unoutlined version read as a grey blob on a brown block. */
+    R(388,142,58,22,'#4A3B2C',{stroke:'#2E2418','stroke-width':'2'});
+    P('M354 116 q26 -11 52 -9 q20 1 26 9 l-7 9 h-64 Z','#7C858E',{stroke:'#39424A','stroke-width':'2.5'});
+    P('M370 125 h32 l-4 12 h-24 Z','#5E6871',{stroke:'#39424A','stroke-width':'2'});
+    P('M362 137 h48 l4 7 h-56 Z','#7C858E',{stroke:'#39424A','stroke-width':'2.5'});
+    /* the horn */
+    P('M354 118 q-16 1 -22 6 q10 3 20 2 Z','#7C858E',{stroke:'#39424A','stroke-width':'2'});
     /* quench barrel, steaming */
     R(500,112,64,52,'#5A4938',{rx:'4'});
     R(500,112,64,10,'#6E5B49',{rx:'4'});
@@ -2350,9 +2412,14 @@ MF.paintFace = function(){
     /* not while a swing is in the air: rebuilding the face mid-break orphaned
        the shatter, threw the pick across the seam, and wiped the selection the
        student was reading. breaking guarded breakRock but not inspection. */
-    function look(){ if(MF.state.breaking) return; MF.state.inspecting=idx; MF.paintMine(); }
-    on(g,'click',look);
-    on(g,'keydown',function(e){ if(e.key==='Enter'||e.key===' '){ e.preventDefault(); look(); } });
+    /* NOT named `look`. A function declaration is hoisted to the top of its
+       enclosing scope, so `function look()` here shadowed the outer `look`
+       palette for the whole callback - look.rock, look.ore and look.glint all
+       became undefined and every rock painted solid black. The seam looked
+       like its ore had failed to render, and nothing threw. */
+    function inspectThis(){ if(MF.state.breaking) return; MF.state.inspecting=idx; MF.paintMine(); }
+    on(g,'click',inspectThis);
+    on(g,'keydown',function(e){ if(e.key==='Enter'||e.key===' '){ e.preventDefault(); inspectThis(); } });
     svg.appendChild(g);
   });
 
@@ -2419,7 +2486,11 @@ MF.paintFace = function(){
   marker.style.cssText='position:absolute;top:0;bottom:0;width:26%;background:var(--lamp);border-radius:999px;transition:left .12s linear';
   track.appendChild(marker); posWrap.appendChild(track);
   scanRow.appendChild(posWrap);
-  wall.appendChild(scanRow);
+  /* scanRow is built here but NOT appended here - it goes on after the inspect
+     panel below, so what you are looking at sits directly under the rock and
+     the seam navigation follows it. (Appending `insp` at this point referenced
+     a variable declared 40 lines further down: hoisted, undefined, and it threw
+     - which emptied the whole middle column. CLAUDE.md rule 1.) */
 
   /* keep the position marker honest as the student scrolls or drags */
   function syncMarker(){
@@ -2488,6 +2559,7 @@ MF.paintFace = function(){
     insp.appendChild(brow);
   }
   wall.appendChild(insp);
+  wall.appendChild(scanRow);          /* seam navigation, below what it acts on */
 
   /* the cart */
   var cartPanel = E('div','panel');
