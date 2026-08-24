@@ -424,13 +424,16 @@ input[type=range]{width:100%; accent-color:var(--ore); height:44px}
 @keyframes cartroll{0%{transform:translateX(0)}45%{transform:translateX(150px)}55%{transform:translateX(150px)}100%{transform:translateX(0)}}
 /* out of the portal, along the track in front of the mine, and back in again -
    a shuttle, which is what a haulage cart actually does all day */
+/* parks at +12, not +44: the arch interior runs 748-828 and the cart is 54
+   wide from a mount at 756, so only 12 leaves it FULLY inside the dark. Any
+   further right and its tail stuck out past the mask, over the bluff. */
 @keyframes cartout{
-  0%  {transform:translateX(44px)}
-  14% {transform:translateX(44px)}
+  0%  {transform:translateX(12px)}
+  14% {transform:translateX(12px)}
   44% {transform:translateX(-168px)}
   58% {transform:translateX(-168px)}
-  88% {transform:translateX(44px)}
-  100%{transform:translateX(44px)}
+  88% {transform:translateX(12px)}
+  100%{transform:translateX(12px)}
 }
 .sc-cartout{animation:cartout 16s ease-in-out infinite}
 @keyframes smokepuff{0%{transform:translate(0,0) scale(.6); opacity:.55}100%{transform:translate(16px,-58px) scale(1.7); opacity:0}}
@@ -1297,7 +1300,11 @@ MF.surfaceScene = function(){
   outCart.appendChild(S('circle',{cx:'14',cy:'38',r:'6',fill:'#3A3129'}));
   outCart.appendChild(S('circle',{cx:'42',cy:'38',r:'6',fill:'#3A3129'}));
   outMount.appendChild(outCart);
-  svg.appendChild(outMount);
+  /* NOT appended here. It goes on LAST, in front of every other thing in the
+     scene, with the portal's dark interior re-drawn over the top of it - so
+     the only thing that hides it is the darkness it is rolling out of, and
+     once clear it passes in front of the rails, the ground and the props
+     instead of behind them. */
 
   /* ---- the mine entrance, cut into a bluff ---- */
   var en = S('g',{transform:'translate(742,214)'});
@@ -1551,6 +1558,18 @@ MF.roomScene = function(kind){
       svg.appendChild(S('rect',{x:String(x-9),y:String(84+(i%3)*14),width:'24',height:'10',rx:'3',fill:'#8A9AA6'}));
     });
   }
+
+  /* ---- the cart out of the mine, in front of everything ---- */
+  svg.appendChild(outMount);
+  /* and the mouth of the portal re-drawn over it. The lamp goes back on top of
+     the mask, or the mask would put it out. */
+  var mouthMask = S('g',{transform:'translate(742,214)'});
+  mouthMask.appendChild(S('path',{d:'M6 158 q0 -66 40 -66 q40 0 40 66 Z',fill:'#1B1511'}));
+  /* the wheels ride ~2 units below the arch base; without this the bottom of
+     them peeped out under the portal while the cart was parked inside */
+  mouthMask.appendChild(S('rect',{x:'6',y:'155',width:'80',height:'13',fill:'#1B1511'}));
+  mouthMask.appendChild(S('circle',{cx:'46',cy:'104',r:'7',fill:'#E8A33D',opacity:'.9',class:'sc-lamp'}));
+  svg.appendChild(mouthMask);
 
   wrap.appendChild(svg);
   return wrap;
