@@ -144,7 +144,15 @@ input[type=range]{width:100%; accent-color:var(--ore); height:44px}
 /* minmax(0,1fr), NOT 1fr: a bare 1fr column has min-width:auto and grows to
    fit its widest child, so the 2280px seam stretched the whole page sideways
    in the single-column layout instead of scrolling inside its viewport. */
-@media (max-width:1080px){ .minegrid{grid-template-columns:minmax(0,1fr)} }
+/* On one column the rock face comes FIRST. The shaft is tall - five layers and
+   four unopened ones - so stacked above the face it pushed the seam and its
+   inspect panel about 1600px down the page: clicking a lump worked perfectly
+   and produced no visible response, because the panel that answers was far
+   below the fold. The work goes at the top; navigation follows it. */
+@media (max-width:1080px){
+  .minegrid{grid-template-columns:minmax(0,1fr)}
+  .minegrid > *:nth-child(2){order:-1}
+}
 .minegrid > *{min-width:0}
 
 /* the shaft / layers */
@@ -473,7 +481,7 @@ input[type=range]{width:100%; accent-color:var(--ore); height:44px}
 .seamview{overflow-x:auto; overflow-y:hidden; cursor:grab; scroll-behavior:smooth;
   scrollbar-color:var(--lamp) #241D18}
 .seamview:active{cursor:grabbing}
-.seamview svg{width:auto; max-width:none; height:250px}
+.seamview svg{width:auto; max-width:none; height:190px}
 .seamview::-webkit-scrollbar{height:10px}
 .seamview::-webkit-scrollbar-track{background:#241D18}
 .seamview::-webkit-scrollbar-thumb{background:var(--lamp); border-radius:999px}
@@ -504,7 +512,7 @@ input[type=range]{width:100%; accent-color:var(--ore); height:44px}
 .shudder{animation:shudder 320ms ease-in-out 1}
 
 /* ---- inspecting a rock before you break it ---- */
-.inspect{background:#241D18; border:2px solid #6B5B48; border-radius:12px; padding:14px; color:#F0E2C8; margin-top:12px}
+.inspect{background:#241D18; border:2px solid #6B5B48; border-radius:12px; padding:11px 13px; color:#F0E2C8; margin-top:10px}
 .inspect .label{font-size:11px; letter-spacing:.1em; text-transform:uppercase; color:var(--lamp)}
 .inspect .expr{font-family:var(--display); font-size:clamp(22px,3.4vw,34px); color:#FFF3DE; margin:2px 0 6px}
 .inspect .obs{font-size:14px; color:#D9C39C}
@@ -2241,7 +2249,7 @@ MF.LAYER_LOOK = [
    movement rather than reading a grid of seven.
    SEAM_W is the drawn width; the viewport shows roughly a third of it. */
 MF.SEAM_W = 2280;
-MF.SEAM_H = 250;
+MF.SEAM_H = 190;
 MF.SEAM_COUNT = 15;
 
 MF.stockFace = function(){
@@ -2417,7 +2425,17 @@ MF.paintFace = function(){
        palette for the whole callback - look.rock, look.ore and look.glint all
        became undefined and every rock painted solid black. The seam looked
        like its ore had failed to render, and nothing threw. */
-    function inspectThis(){ if(MF.state.breaking) return; MF.state.inspecting=idx; MF.paintMine(); }
+    function inspectThis(){
+      if(MF.state.breaking) return;
+      MF.state.inspecting=idx;
+      MF.paintMine();
+      /* make sure the answer is on screen. A click that works but whose
+         response is below the fold is indistinguishable from a dead control. */
+      var panel = MF._mine && MF._mine.mid && MF._mine.mid.querySelector('.inspect');
+      if(panel && panel.getBoundingClientRect().bottom > window.innerHeight){
+        panel.scrollIntoView({block:'nearest', behavior:'smooth'});
+      }
+    }
     on(g,'click',inspectThis);
     on(g,'keydown',function(e){ if(e.key==='Enter'||e.key===' '){ e.preventDefault(); inspectThis(); } });
     svg.appendChild(g);
@@ -2540,14 +2558,16 @@ MF.paintFace = function(){
     var o = rocks[MF.state.inspecting];
     insp.appendChild(H('div','label','YOU ARE LOOKING AT'));
     insp.appendChild(H('div','expr', MF.oreLabel(o)));
-    var obs = E('ul','obs');
+    /* one line, not a four-bullet list: this panel and the swing button have to
+       sit on the same screen as the rock they describe, or a click produces no
+       response the student can see */
     var terms = (o.kind==='number') ? 1 : [o.a,o.b,o.c].filter(function(v){ return v!==0; }).length;
-    obs.appendChild(H('li',null, terms===1 ? 'One vein runs through it.' : terms + ' veins run through it.'));
-    obs.appendChild(H('li',null, o.kind==='number' ? 'A plain lump of gravel — no x anywhere in it.' :
-      (o.a===0 ? 'No x² in it — it is a flat seam.' : (o.a===1 ? 'One x², with nothing sitting in front.' : num(o.a) + ' sitting in front of the x².'))));
-    obs.appendChild(H('li',null,'Came out of layer ' + o.layer + ', ' + MF.LAYERS[o.layer-1].name + '.'));
-    obs.appendChild(H('li',null,'<em>What kind of seam runs through it is not something you can see from here. That is what the assay is for.</em>'));
-    insp.appendChild(obs);
+    var frontOf = (o.kind==='number') ? 'no x in it at all'
+      : (o.a===0 ? 'no x², a flat seam' : (o.a===1 ? 'one x², nothing in front' : num(o.a) + ' in front of the x²'));
+    insp.appendChild(H('div','obs',
+      '<b>' + (terms===1 ? 'One vein' : terms + ' veins') + '</b> · ' + frontOf +
+      ' · layer ' + o.layer + ', ' + MF.LAYERS[o.layer-1].name +
+      '<br><em>Which seam runs through it is not something you can see from here — that is the assay’s job.</em>'));
     var brow = E('div','row'); brow.style.marginTop='10px';
     var br = E('button','btn primary big', MF.hasTool('pick') ? 'Swing the deep pick' : 'Swing the pick'); br.type='button';
     on(br,'click',function(){ MF.breakRock(MF.state.inspecting); });
