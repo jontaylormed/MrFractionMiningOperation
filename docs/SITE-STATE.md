@@ -22,7 +22,7 @@
 | **Screens** | **five** — surface, the Stamp Mill, the Casting Shed, the mine, the forge |
 | **Layers** | **five**, all reachable from the first screen, none gated on anything |
 | **Instruments** | **seven**, all made at the forge, none granted |
-| **Validation** | `MF.validate()` → **8,500 checks / 24 groups / 0 errors**, two controls that must fail, and do |
+| **Validation** | `MF.validate()` → **8,526 checks / 25 groups / 0 errors**, two controls that must fail, and do |
 
 > **A check is only as wide as the space it sweeps.** The `truthy` group reported 0 errors across 642 checks while **1,970 Decimal Dial states printed a falsehood**, because it tested each lump's original integer coefficients and never nudged `c` — the one thing the dial exists to do. It now sweeps every slider position the control can reach (3,287 checks). Ask of any green result: *what did it not look at?*
 | **Runtime** | Zero dependencies, no build step, no network requests, no storage, runs from `file://` |
@@ -83,6 +83,25 @@ The **Smelting House is the Stamp Mill** — the mine does not smelt any more, a
 The **Casting Shed** is unchanged — it still teaches the mold, which is still the forge's move.
 
 > The `doors` group hardcoded `/Smelt/i` for this building. It moved with the name **deliberately** rather than being quietly deleted, and it is `/Stamp|Mill|Crush|Break/i` now — proved by renaming the door to "The Tea Room" and watching it fire.
+
+## The surface, and the day that turns over it
+
+**A full day takes four minutes**, on one clock, and every part of it is a phase of the same turn:
+
+| | | |
+|---|---|---|
+| **0s** | morning | the sun clears the eastern hills, the dawn sky is up |
+| **60s** | noon | sun overhead, sky at its bluest, moon under the ground |
+| **120s** | dusk | sun setting west, the sky burns |
+| **180s** | midnight | moon overhead, stars out, the whole site goes dark |
+
+The sky is **four tinted sheets cross-fading** over the base gradient — you cannot animate the stops of a gradient, so you fade whole skies instead. The sun and the moon ride **one circle whose centre sits on the horizon** at `(450,310)`, which is what puts each of them up for exactly half the turn; drop the centre lower and the sun is only out for a third of the day. They rise and set **behind the hills**, which are drawn after them. Night falls on the **whole site**, not just the sky — the darkening rect is appended last, over the buildings and the cart, because a night sky above a daylit yard reads as a mistake. Windows and lanterns only earn their light after dark.
+
+Under `prefers-reduced-motion` the day stops at noon rather than flickering through four skies.
+
+**The windmill's bottom windows no longer touch its door.** They ended at y=174, which is exactly where the door's arch begins, and sat over the doorway's own width — two openings sharing an edge read as one hole in the wall. They are at y=148 now, ending seven clear of the arch, and spread either side of the doorway.
+
+> **The `surface` group (23) checks both**, and it has to run on a **live, mounted** scene: a detached svg has no running animations and `getBBox` on one returns zeroes, so a probe-built check would have passed for exactly the wrong reason. It asserts no window's box meets the door's; that every part of the day runs for the same 240,000ms; that the sun is up at noon and under at midnight with the moon opposite; and that each sky owns its own phase. Controls: put the windows back where they shipped (2 errors), put one part of the day on a 90s clock (2), stop the sun (1).
 
 ## The seam
 

@@ -839,6 +839,50 @@ input[type=range]{width:100%; accent-color:var(--ore); height:44px}
 .rm-stamp.s1{animation-delay:.23s} .rm-stamp.s2{animation-delay:.46s}
 .rm-stamp.s3{animation-delay:.69s} .rm-stamp.s4{animation-delay:.92s}
 
+/* ---- A DAY ON THE SURFACE, four minutes long ----
+   One clock, 240s, and every part of it is a phase of the same turn:
+
+     0s    morning     the sun clears the eastern hills
+     60s   noon        sun overhead, sky at its bluest
+     120s  dusk        sun setting west, the sky burns
+     180s  midnight    moon overhead, stars out, the site goes dark
+     240s  morning     round again
+
+   The sky is four tinted sheets cross-fading over the base gradient - you
+   cannot animate the stops of a gradient, so you fade whole skies instead. */
+@keyframes skyDawn { 0%{opacity:1} 12%{opacity:.9} 22%{opacity:0} 84%{opacity:0} 94%{opacity:.75} 100%{opacity:1} }
+@keyframes skyNoon { 0%{opacity:0} 16%{opacity:.85} 25%{opacity:1} 36%{opacity:.9} 46%{opacity:0} 100%{opacity:0} }
+@keyframes skyDusk { 0%{opacity:0} 40%{opacity:0} 50%{opacity:1} 60%{opacity:.85} 70%{opacity:0} 100%{opacity:0} }
+@keyframes skyNight{ 0%{opacity:0} 62%{opacity:0} 75%{opacity:1} 86%{opacity:1} 96%{opacity:.15} 100%{opacity:0} }
+.sc-sky{opacity:0}
+.sc-skyDawn { animation:skyDawn  240s linear infinite }
+.sc-skyNoon { animation:skyNoon  240s linear infinite }
+.sc-skyDusk { animation:skyDusk  240s linear infinite }
+.sc-skyNight{ animation:skyNight 240s linear infinite }
+
+/* THE CENTRE OF THE CIRCLE IS ON THE HORIZON, at (450,310) in the scene's own
+   coordinates. That is what makes each body up for exactly half the turn -
+   put the centre lower and the sun is only out for a third of the day. */
+@keyframes sunorbit { from{transform:rotate(-90deg)} to{transform:rotate(270deg)} }
+@keyframes moonorbit{ from{transform:rotate(90deg)}  to{transform:rotate(450deg)} }
+.sc-sun { transform-origin:450px 310px; animation:sunorbit  240s linear infinite }
+.sc-moon{ transform-origin:450px 310px; animation:moonorbit 240s linear infinite }
+@keyframes starsout{ 0%{opacity:0} 58%{opacity:0} 74%{opacity:1} 88%{opacity:.9} 96%{opacity:0} 100%{opacity:0} }
+.sc-stars{opacity:0; animation:starsout 240s linear infinite}
+/* the site itself goes dark, not only the sky above it */
+@keyframes nightfall{ 0%{opacity:0} 46%{opacity:0} 58%{opacity:.22} 75%{opacity:.52} 88%{opacity:.46} 97%{opacity:0} 100%{opacity:0} }
+.sc-night{opacity:0; animation:nightfall 240s linear infinite; mix-blend-mode:multiply}
+/* and the windows and lamps only earn their light after dark */
+@keyframes lampsup{ 0%{opacity:.28} 30%{opacity:.18} 52%{opacity:.5} 72%{opacity:1} 90%{opacity:.9} 100%{opacity:.28} }
+.sc-lit{animation:lampsup 240s linear infinite}
+@media (prefers-reduced-motion:reduce){
+  /* the day stops at noon rather than flickering through four skies */
+  .sc-sky,.sc-stars,.sc-night,.sc-sun,.sc-moon,.sc-lit{animation:none}
+  .sc-skyNoon{opacity:1}
+  .sc-moon{opacity:0}
+  .sc-lit{opacity:.28}
+}
+
 /* ---- the surface scene ---- */
 .scene{position:relative; border:3px solid var(--rock-3); border-radius:16px; overflow:hidden;
   background:#8FB8D6; box-shadow:inset 0 -30px 60px rgba(58,49,41,.35)}
@@ -1953,7 +1997,10 @@ function lantern(parent, cx, cy, scale, glowR){
   /* the light it casts, behind everything */
   /* a soft halo, not a headlight. At r26/.20 in daylight it read as a large
      pale disc stuck to the scene, and the portal one covered the mine mouth. */
-  g.appendChild(S('circle',{cx:'0',cy:'0',r:String(glowR||13),fill:'#FFD68A',opacity:'.13',class:'sc-lamp'}));
+  /* sc-lit: a lamp earns its light after dark. In daylight a bright halo read
+     as a pale disc stuck to the scene, which is what .13 was compensating for;
+     the day cycle does that properly now. */
+  g.appendChild(S('circle',{cx:'0',cy:'0',r:String(glowR||13),fill:'#FFD68A',opacity:'.13',class:'sc-lamp sc-lit'}));
   /* hanging hook and handle */
   g.appendChild(S('path',{d:'M0 -20 q-7 -6 0 -11 q7 5 0 11 Z',fill:'none',stroke:'#4A4038','stroke-width':'2'}));
   /* hood */
@@ -2010,9 +2057,58 @@ MF.surfaceScene = function(){
   var grd = S('linearGradient',{id:'grd',x1:'0',y1:'0',x2:'0',y2:'1'});
   [['0%','#9C7F55'],['100%','#6B5539']].forEach(function(st){ grd.appendChild(S('stop',{offset:st[0],'stop-color':st[1]})); });
   defs.appendChild(grd);
+  /* ---- A DAY, FOUR MINUTES LONG ----
+     Morning, noon, dusk, midnight, and round again. The sky is four tinted
+     sheets stacked over the base gradient, each fading in on its own phase -
+     you cannot animate the stops of a gradient, but you can cross-fade whole
+     skies, and that is what this does.
+
+     The sun and the moon ride ONE circle whose centre sits on the horizon at
+     (450,310), so each is above ground for exactly half the turn: they rise in
+     the east, cross, and set in the west behind the hills, which are drawn
+     after them. The moon is half a turn behind the sun, so it is at the top of
+     the sky at midnight and under the ground at noon.
+
+     Positioning is baked into the coordinates and the rotation is on the
+     class, so neither carries a transform attribute - MF.ANIM_TRANSFORM_CLASSES
+     and the animmount group. */
+  [['skyDawn',[['0%','#4E5C8A'],['38%','#C97F6A'],['72%','#F0B489'],['100%','#F6D9A8']]],
+   ['skyNoon',[['0%','#6FA9D6'],['54%','#AFD2E8'],['100%','#E3E9DC']]],
+   ['skyDusk',[['0%','#2E3A6B'],['40%','#A85A62'],['74%','#E08A4E'],['100%','#F2C078']]],
+   ['skyNight',[['0%','#080D22'],['58%','#141F3E'],['100%','#26314E']]]
+  ].forEach(function(sk){
+    var g3 = S('linearGradient',{id:sk[0],x1:'0',y1:'0',x2:'0',y2:'1'});
+    sk[1].forEach(function(st){ g3.appendChild(S('stop',{offset:st[0],'stop-color':st[1]})); });
+    defs.appendChild(g3);
+  });
   svg.appendChild(defs);
   R(0,0,W,VH,'url(#sky)');
-  svg.appendChild(S('circle',{cx:762,cy:74,r:30,fill:'#FFE9A8',opacity:'.85'}));
+  ['skyDawn','skyNoon','skyDusk','skyNight'].forEach(function(id){
+    svg.appendChild(S('rect',{class:'sc-sky sc-'+id, x:0,y:0,width:W,height:VH,fill:'url(#'+id+')'}));
+  });
+
+  /* stars, out only at night */
+  var stars = S('g',{class:'sc-stars'});
+  for(var st2=0; st2<46; st2++){
+    var sx = (st2*173)%W, sy = 12 + ((st2*67)%210);
+    stars.appendChild(S('circle',{cx:sx, cy:sy, r:String(0.8+((st2*7)%3)*0.5),
+      fill:'#FFF8E4', opacity:String(0.45+((st2*11)%5)*0.11)}));
+  }
+  svg.appendChild(stars);
+
+  /* the sun and the moon, on the same circle, half a turn apart */
+  var sun = S('g',{class:'sc-sun'});
+  sun.appendChild(S('circle',{cx:450,cy:46,r:44,fill:'#FFE9A8',opacity:'.22'}));
+  sun.appendChild(S('circle',{cx:450,cy:46,r:29,fill:'#FFD873'}));
+  sun.appendChild(S('circle',{cx:450,cy:46,r:23,fill:'#FFF3C4'}));
+  svg.appendChild(sun);
+  var moon = S('g',{class:'sc-moon'});
+  moon.appendChild(S('circle',{cx:450,cy:46,r:34,fill:'#CFE0EA',opacity:'.16'}));
+  moon.appendChild(S('circle',{cx:450,cy:46,r:22,fill:'#E8EEF4'}));
+  moon.appendChild(S('circle',{cx:458,cy:40,r:5,fill:'#C6D2DC',opacity:'.8'}));
+  moon.appendChild(S('circle',{cx:444,cy:53,r:3.4,fill:'#C6D2DC',opacity:'.7'}));
+  moon.appendChild(S('circle',{cx:452,cy:57,r:2.4,fill:'#C6D2DC',opacity:'.6'}));
+  svg.appendChild(moon);
 
   /* clouds */
   [[0,58,1],[0,112,.75],[0,40,.6]].forEach(function(c,i){
@@ -2055,10 +2151,16 @@ MF.surfaceScene = function(){
     wm.appendChild(S('rect',{x:String(15+ (y-96)*0.06),y:String(y),width:String(78 - (y-96)*0.12),height:'6',fill:'#6E6053',opacity:'.75'}));
   });
   wm.appendChild(S('path',{d:'M44 208 l0 -34 q10 -10 20 0 l0 34 Z',fill:'#4A3524'}));
-  /* windows moved clear of y=122, where the nameplate is now bolted */
-  [ [40,92],[64,92],[44,160],[62,160] ].forEach(function(w){
+  /* THE BOTTOM WINDOWS MUST NOT TOUCH THE DOOR. They were at y=160 and 14 tall,
+     so they ended exactly on y=174 - which is where the door's arch begins -
+     and they sat over the door's own x range (44..64) as well. Two openings
+     sharing an edge read as one hole in the wall.
+     They are at y=148 now (ending at 162, seven clear of the arch's peak) and
+     spread to x=30 and x=66, which is symmetric about the tower's centre line
+     at this height and clear of the doorway on both sides. */
+  [ [40,92],[64,92],[30,148],[66,148] ].forEach(function(w){
     wm.appendChild(S('rect',{x:String(w[0]),y:String(w[1]),width:'12',height:'14',rx:'2',fill:'#3A3129'}));
-    wm.appendChild(S('rect',{x:String(w[0]+2),y:String(w[1]+2),width:'8',height:'10',rx:'1',fill:'#FFE9A8',opacity:'.55'}));
+    wm.appendChild(S('rect',{x:String(w[0]+2),y:String(w[1]+2),width:'8',height:'10',rx:'1',fill:'#FFE9A8',opacity:'.55',class:'sc-lit'}));
   });
   /* cap and hub */
   wm.appendChild(S('path',{d:'M26 58 q28 -34 56 0 Z',fill:'#6B4A32'}));
@@ -2347,6 +2449,11 @@ MF.surfaceScene = function(){
   lantern(mouthMask, 8, 100, 0.85, 14);
   svg.appendChild(mouthMask);
   svg.appendChild(outMount);          /* the cart, in front of the black outline */
+
+  /* NIGHT FALLS ON THE WHOLE SITE, not just the sky. Appended last so it lies
+     over the buildings, the cart and the ground - a night sky above a
+     daylit yard reads as a mistake. Inert like everything else in here. */
+  svg.appendChild(S('rect',{class:'sc-night', x:0,y:0,width:W,height:VH,fill:'#0B1226'}));
 
   wrap.appendChild(svg);
   return wrap;
@@ -5599,7 +5706,7 @@ MF.validate = function(){
          This asserts the class: position on an outer mount, animate the inner. */
   MF.ANIM_TRANSFORM_CLASSES = ['sc-wheel','sc-sails','sc-cart','sc-smoke','sc-cloud','sc-bird',
                                'rm-fire','rm-bellows','rm-steam','rm-ladle','rm-stamp','pickarm',
-                               'ct-cart','ct-jolt','ct-wheel','sc-cartout','hammerswing'];
+                               'ct-cart','ct-jolt','ct-wheel','sc-cartout','hammerswing','sc-sun','sc-moon'];
   var animStage = document.createElement('div');
   animStage.style.cssText = 'position:absolute; left:-12000px; top:0; width:1100px';
   document.body.appendChild(animStage);
@@ -5637,6 +5744,107 @@ MF.validate = function(){
   var caught = false;
   animStage.querySelectorAll('.rm-fire').forEach(function(el){ if(el.hasAttribute('transform')) caught = true; });
   if(!caught) errs.push('CONTROL: the animated-transform check did not catch a planted offender');
+
+  /* 5n. THE SURFACE: what is built where, and the day that turns over it.
+
+         Two things nothing else looks at. The windmill's bottom windows ended
+         exactly on the line where the door's arch begins and sat over the
+         doorway's own width - two openings sharing an edge read as one hole in
+         the wall, and it took a person to notice.
+
+         And the day is four minutes of animation that a still screenshot
+         cannot check at all: the only way to know the sun is up at noon and
+         under the ground at midnight is to stop the clock at each phase and
+         look. Mounted live, because a detached svg has no running animations
+         and getBBox on one returns zeroes - both would pass for the wrong
+         reason. */
+  var surfStage = document.createElement('div');
+  surfStage.style.cssText = 'position:absolute; left:-12000px; top:0; width:900px';
+  document.body.appendChild(surfStage);
+  try {
+    surfStage.appendChild(MF.surfaceScene());
+    var sSvg = surfStage.querySelector('svg');
+    var sWm = [].slice.call(sSvg.querySelectorAll('g')).filter(function(g){
+      return g.getAttribute('transform')==='translate(112,132)'; })[0];
+    chk('surface');
+    if(!sWm){ errs.push('surface: the windmill is not on the site'); }
+    else {
+      var sDoor = [].slice.call(sWm.querySelectorAll('path')).filter(function(p){
+        return (p.getAttribute('d')||'').indexOf('M44 208')===0; })[0];
+      var sWins = [].slice.call(sWm.querySelectorAll('rect')).filter(function(r){
+        return r.getAttribute('width')==='12' && r.getAttribute('height')==='14'; });
+      chk('surface');
+      if(!sDoor || !sWins.length){ errs.push('surface: the windmill has no door or no windows to check'); }
+      else {
+        var sHits = function(win){
+          var a = win.getBBox(), b = sDoor.getBBox();
+          return (Math.min(a.x+a.width, b.x+b.width) - Math.max(a.x, b.x)) >= 0 &&
+                 (Math.min(a.y+a.height, b.y+b.height) - Math.max(a.y, b.y)) >= 0;
+        };
+        sWins.forEach(function(win){
+          chk('surface');
+          if(sHits(win)) errs.push('surface: a windmill window at y=' + Math.round(win.getBBox().y) + ' touches the door');
+        });
+        /* CONTROL: put a window back exactly where it shipped - x=44, y=160,
+           ending on the arch line at 174 and over the doorway's own width -
+           and the check must catch it. Restoring only `y` does not recreate
+           the fault, because the fix moved the windows sideways as well; a
+           control that reintroduces half a bug proves half a check. */
+        chk('surface');
+        var sX = sWins[2].getAttribute('x'), sY = sWins[2].getAttribute('y');
+        sWins[2].setAttribute('x','44'); sWins[2].setAttribute('y','160');
+        if(!sHits(sWins[2])) errs.push('CONTROL: the window check cannot see a window sitting on the door');
+        sWins[2].setAttribute('x', sX); sWins[2].setAttribute('y', sY);
+      }
+    }
+
+    /* the day itself */
+    var sSun = sSvg.querySelector('.sc-sun'), sMoon = sSvg.querySelector('.sc-moon');
+    var sSkies = ['skyDawn','skyNoon','skyDusk','skyNight'].map(function(k){ return sSvg.querySelector('.sc-'+k); });
+    chk('surface');
+    if(!sSun || !sMoon || sSkies.indexOf(null) >= 0)
+      errs.push('surface: the sky is missing a body or one of its four phases');
+    else {
+      var sAll = [sSun, sMoon].concat(sSkies);
+      var sAnims = [];
+      sAll.forEach(function(el){ el.getAnimations().forEach(function(an){ sAnims.push(an); }); });
+      chk('surface');
+      if(sAnims.length < 6){ errs.push('surface: the day is not running - only ' + sAnims.length + ' of its parts are animated'); }
+      else {
+        /* ONE CLOCK. Parts of a day on different durations drift apart, and by
+           the third turn the sun sets in a blue sky. */
+        sAnims.forEach(function(an){
+          chk('surface');
+          if(an.effect.getTiming().duration !== 240000)
+            errs.push('surface: a part of the day runs for ' + an.effect.getTiming().duration + 'ms, not the four minutes the rest of it takes');
+        });
+        var sAt = function(ms){ sAnims.forEach(function(an){ an.pause(); an.currentTime = ms; }); };
+        var sUp = function(el){
+          var b = el.getBoundingClientRect(), s = sSvg.getBoundingClientRect();
+          return ((b.y + b.height/2) - s.y) / s.height * 420 < 300;      /* above the horizon */
+        };
+        [['noon', 60000, true, false],['midnight', 180000, false, true]].forEach(function(p){
+          sAt(p[1]);
+          chk('surface');
+          if(sUp(sSun) !== p[2]) errs.push('surface: at ' + p[0] + ' the sun is ' + (p[2]?'below':'above') + ' the ground');
+          chk('surface');
+          if(sUp(sMoon) !== p[3]) errs.push('surface: at ' + p[0] + ' the moon is ' + (p[3]?'below':'above') + ' the ground');
+        });
+        /* each sky must own its phase */
+        [[0,0,'dawn'],[1,60000,'noon'],[2,120000,'dusk'],[3,180000,'night']].forEach(function(p){
+          sAt(p[1]);
+          chk('surface');
+          if(Number(getComputedStyle(sSkies[p[0]]).opacity) < 0.9)
+            errs.push('surface: the ' + p[2] + ' sky is not the one showing at ' + p[2]);
+        });
+        sAnims.forEach(function(an){ an.play(); });
+      }
+    }
+  } catch(e){
+    chk('surface');
+    errs.push('surface: the site threw while being checked: ' + e.message);
+  }
+  document.body.removeChild(surfStage);
   document.body.removeChild(animStage);
 
   /* 5f. CONTRAST, MEASURED RATHER THAN REMEMBERED.

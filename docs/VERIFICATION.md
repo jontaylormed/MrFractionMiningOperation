@@ -632,3 +632,23 @@ It survived a commit because every test I had asked whether the *state* was righ
 - **A one-shot flag has exactly one consumer.** Read it once, at the top of the function that owns the repaint, into a local; clear it there; pass the local to everything that needs it. Two `if(B.flag)` sites in one function is the bug, not the symptom.
 - **Put the effect where the cause is.** The burst was in the floorbox because the hammer bar disappears on the finishing blow — a real problem solved in the wrong place. It belongs at the anvil; the finishing blow now draws the anvil once more, with the piece that was struck on it, so the last swing lands where every other swing landed.
 - **Assert the animation is RUNNING, on a live node.** `getAnimations()` returns nothing on a detached element, so a check built on a probe would have passed for exactly the wrong reason. The `swing` group mounts the mine, swings three ways — a swing with work left, the finishing blow, a glance — and asserts the hammer carries a running animation and the burst is inside the anvil stage. Control: re-consume the flag before the stage reads it, and all three fire.
+
+## 50. A control that reintroduces half a bug proves half a check
+
+The windmill's bottom windows ended exactly on the line where the door's arch begins, **and** sat over the doorway's own width. The fix moved them both up and outwards. The control I wrote to prove the new check restored only the `y`:
+
+> ```js
+> sWins[2].setAttribute('y','160');          /* the old height */
+> if(!sHits(sWins[2])) errs.push('CONTROL: …');
+> ```
+>
+> It fired — correctly. A window at `x=30` is left of a door at `x=44..64` however far down you drag it, so restoring the height alone recreated *nothing*. The control was right and my reintroduction was wrong, and for a moment the two are indistinguishable.
+
+Restoring **both** coordinates — `x=44, y=160`, exactly what shipped — reproduces the fault and the check catches it twice, once per window.
+
+**The rules.**
+
+- **Reintroduce the whole fault, not the part you happened to change last.** A fix that moves two things needs a control that moves both back. Otherwise you have proved the check against a state that never existed.
+- **A control that fires is not automatically a working check.** Read what it says. This one said the sweep could not see a window on the door — which was true of the window it was handed.
+- **Mount live when the property is a live one.** The day cycle cannot be checked on a detached scene: `getAnimations()` returns nothing and `getBBox()` returns zeroes there, and both would have passed. The `surface` group appends a real scene to the document, stops the clock at noon and midnight, and looks.
+- **One clock for one phenomenon.** Parts of a day on different durations drift apart, and by the third turn the sun sets in a blue sky. Every part of it is asserted to run for the same 240,000ms — proved by putting one sky on a 90s clock, which fires twice: the duration, and then the dusk sky not being the one showing at dusk.
