@@ -601,3 +601,20 @@ The fault was one line away from the engine:
 - **Nine readings of the x-part box are asserted** — empty, `1`, `x`, `-x`, `-`, `0`, `3`, `2x`, `−4` — plus the constant box still reading empty as nought, plus the reported case end to end. Control: point the x-part box back at `readInt` and six of them fail.
 
 > **And the interface was the real defect.** Two text boxes under a line of prose could not show what they were about to do. The lump is drawn on an anvil now, the factor is typed into the hammer head, and the hammer comes down on it — so what you cut it to and what you hit it with are the same object on screen.
+
+## 48. An arc needs its pivot in the right place, and zero degrees is the bottom
+
+The hammer was asked to swing in an arc. Two attempts got it wrong in ways worth keeping.
+
+> **First: translation is not rotation.** The head moved with `translateY` and a few degrees of tilt. That is a lift shaft with a wobble. An arc comes from rotating about the **hand**, not the head — `transform-origin` 132px above the head, where a fist would be on the end of the shaft.
+>
+> **Second, and less obvious: with the pivot directly above, 0° is the LOWEST point of the arc.** Swinging "to +15° for the impact" therefore *lifted the head away from the anvil*. Every angle either side of zero is higher than zero. The head rests level at 0° — readable, typeable, sitting over the rock — winds up anti-clockwise along the arc, sweeps back down through the bottom, and the last of the travel is a short drive straight into the face.
+
+Measured on the settled animation by pausing it and stepping `currentTime`: **131px of horizontal travel and 166px of vertical**, and the head's bottom passes the rock's top at the impact frame. A vertical drop would have shown zero in the first number.
+
+**Two things the arc then broke, both found by hit-testing rather than by looking:**
+
+- **`overflow:hidden` guillotined the wind-up.** The head sweeps ~80px across and ~34px up at −41°, which is off the stage — and it is worst on a narrow column, where the swing is most worth seeing.
+- **The head did not fit its column.** Two sign toggles, two number boxes, an x, two remove buttons and four brackets came to more than the middle column is wide, and with visible overflow the whole plate hung off the **left edge to x = −20**, where the x-socket's sign toggle could not be clicked at all. It wraps now. `elementsFromPoint` returned an empty stack — the giveaway that a control is not merely covered but off-screen.
+
+**The rule.** *An animation that moves a control changes where that control is.* Re-run the reach tests after any motion work, at more than one width, and treat an empty hit stack as "off-screen", not "nothing on top".

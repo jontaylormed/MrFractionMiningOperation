@@ -22,7 +22,7 @@
 | **Screens** | **five** — surface, the Stamp Mill, the Casting Shed, the mine, the forge |
 | **Layers** | **five**, all reachable from the first screen, none gated on anything |
 | **Instruments** | **seven**, all made at the forge, none granted |
-| **Validation** | `MF.validate()` → **8,479 checks / 23 groups / 0 errors**, two controls that must fail, and do |
+| **Validation** | `MF.validate()` → **8,481 checks / 23 groups / 0 errors**, two controls that must fail, and do |
 
 > **A check is only as wide as the space it sweeps.** The `truthy` group reported 0 errors across 642 checks while **1,970 Decimal Dial states printed a falsehood**, because it tested each lump's original integer coefficients and never nudged `c` — the one thing the dial exists to do. It now sweeps every slider position the control can reach (3,287 checks). Ask of any green result: *what did it not look at?*
 | **Runtime** | Zero dependencies, no build step, no network requests, no storage, runs from `file://` |
@@ -47,9 +47,19 @@ What will not break further is **native metal** — a prime, or a polynomial no 
 - **Assay** is a gate: `display:none` on stage 2 until the seam is called correctly. Verified on a freshly built, never-clicked, detached task.
 - **Break** is one swing at a time. You name **one** thing that is in the rock; the seam runs and the lump comes apart into that factor and the remainder, or the hammer glances off and the rock is described. **Both pieces land on the floor, and anything still carrying a seam goes back under the hammer.**
 
-**The lump is drawn on an anvil and you type the factor into the hammer head.** The head is a real box holding the real inputs, so your factor is what comes down — not a picture of one. The hammer says **"cut to (x + 6)"** as you type, it falls with anticipation and a hard stop, and the impact lands a comic burst — **THUD!** when the seam runs, **CLANG!** when it glances — with the anvil shuddering and the new pieces held back on `animation-delay` so they arrive on the beat rather than before it. Under `prefers-reduced-motion` the burst still reports the hit; it just does not perform.
+**The lump is drawn on an anvil and you build the hammer head out of parts.** A **London-pattern anvil on a stump** — horn, step, polished face, hardy and pritchel holes, waisted body, feet, iron banding, a pair of tongs leaning on it — with the lump sitting on the face where the hammer lands and its expression cut into the stone.
 
-> **This replaced two text boxes under a line of prose, and those boxes caused a bug reported as a maths error** (`VERIFICATION.md` §47). The x-part box and the constant box shared one reader, and empty meant nought in both — so clearing the x-part swung `6` instead of `(x + 6)` and the refusal named a shape the student had never typed. An empty x-part means **one** now, `x` and `-x` are read, nine readings are asserted, and every refusal names the shape that actually landed.
+**You drag an `x` and a `#` out of the parts tray into the head.** Two sockets, either of which can be left empty:
+
+| | |
+|---|---|
+| **x socket empty** | no x in what you are taking out — a plain metal |
+| **# socket empty** | no number on the end — something like `3x` |
+| **the sign** | a **± toggle** on each filled socket, green for plus and orange for minus |
+
+**A socket cannot be ambiguous** — either a tile is in it or it is not, and you can see which from across the room. That is why they exist: the head used to be two text boxes sharing one reader, an empty box meant nought in both, and clearing the x-part swung `6` instead of `(x + 6)`. It was reported as a maths error and it was an input error (`VERIFICATION.md` §47). The head also echoes **"the hammer is cut to (x + 6)"** under itself as you build it, and every refusal names the shape that actually landed. Drag and click both work, as everywhere else in the build.
+
+**The swing is a true arc**: rotation about the hand 132px above the head, wind-up anti-clockwise, back down through the bottom of the arc, and a short drive into the face — **131px of horizontal travel and 166px of vertical**, measured by pausing the animation and stepping through it. The impact lands a comic burst, **THUD!** when the seam runs and **CLANG!** when it glances and the hammer rebounds, with the anvil shuddering and the new pieces held back on `animation-delay` so they arrive on the beat. Under `prefers-reduced-motion` the burst still reports the hit; it just does not perform.
 
 ```
 60             -> 6 | 10  -> 2 | 3, 5 | 2
