@@ -851,6 +851,140 @@ MF.smeltString = function(res){
 };
 
 /* =========================================================================
+   BREAKING - THE MINE'S ONE MOVE.
+
+   You name ONE factor and swing. Either the seam runs and the lump comes
+   apart into that factor and what is left, or the pick glances off. What is
+   left goes straight back on the anvil, so factoring 60 and factoring
+   x² − 5x + 6 are the SAME REPEATED ACT rather than two methods that happen
+   to share a word.
+
+   The mine does not pour and does not multiply back in front of a student:
+   that is the forge's move and it is distribution. Here the only signal is
+   whether the rock came apart.
+
+   NOTHING IN HERE JUDGES A STUDENT. Every `why` describes the rock.
+   `reason` is a code for the checks, never shown.
+   ========================================================================= */
+
+/* a piece that has lost its x is a number again, not a polynomial with two
+   zeroes in it - or isNative would ask smeltPoly about a constant, and the
+   anvil would offer an x-shaped pick to something with no x in it */
+function asOre(a,b,c){
+  return (a===0 && b===0) ? {kind:'number', n:c} : {kind:'poly', a:a, b:b, c:c};
+}
+MF.asOre = asOre;
+
+/* CAN THIS BE BROKEN FURTHER? That is the whole of it. A prime and an
+   irreducible polynomial answer the same way, because they are the same
+   object - which is the one idea this site exists to carry. */
+MF.isNative = function(ore){
+  if(!ore) return false;
+  if(ore.kind==='number') return isPrime(ore.n);
+  /* a constant wearing polynomial clothes: smeltPoly calls {0,0,1} 'pure',
+     and 1 is not an element - it is nothing at all */
+  if(ore.a===0 && ore.b===0) return isPrime(ore.c);
+  return MF.smeltPoly(ore.a, ore.b, ore.c).kind === 'pure';
+};
+
+/* the coefficients of any piece, number or polynomial */
+function oreCoeffs(o){ return o.kind==='number' ? {a:0,b:0,c:o.n} : {a:o.a,b:o.b,c:o.c}; }
+
+/* MULTIPLY TWO PIECES BACK TOGETHER.
+   NOT ingotProduct. An irreducible quadratic is stored as an ingot with
+   m:0,k:0 and a label - which is what the YARD needs and what ingotProduct
+   multiplies to ZERO. Every piece that comes off the anvil can be quadratic,
+   so arithmetic on pieces goes through here and never through ingotProduct.
+   The check found this on its first run: 2x² + 10x refused its own factor. */
+MF.oreMul = function(l, r){
+  var L=oreCoeffs(l), R=oreCoeffs(r);
+  var p=[L.c,L.b,L.a], q=[R.c,R.b,R.a], out=[0,0,0,0,0];
+  for(var i=0;i<3;i++) for(var j=0;j<3;j++) out[i+j] += p[i]*q[j];
+  if(out[3]||out[4]) return {overflow:true, degree:(out[4]?4:3)};
+  return {a:out[2], b:out[1], c:out[0]};
+};
+MF.oreSame = function(prod, ore){
+  var w = oreCoeffs(ore);
+  return !prod.overflow && prod.a===w.a && prod.b===w.b && prod.c===w.c;
+};
+
+/* the ingot a piece becomes once it is set aside in the yard. An irreducible
+   POLYNOMIAL carries its label, matching what the yard has always stored
+   (ingotKey). NEVER use the result for arithmetic - see MF.oreMul. */
+MF.oreToIngot = function(ore){
+  if(ore.kind==='number') return {m:0, k:ore.n};
+  if(ore.a===0 && ore.b===0) return {m:0, k:ore.c};
+  if(ore.a===0) return {m:ore.b, k:ore.c};
+  return {m:0, k:0, poly:{a:ore.a,b:ore.b,c:ore.c}, label:MF.oreText(ore)};
+};
+
+MF.breakOff = function(ore, factor){
+  var no = function(reason, why){ return {ok:false, reason:reason, why:why}; };
+  if(!ore || !factor || !isInt(factor.m) || !isInt(factor.k))
+    return no('malformed','That is not a shape a pick can be cut to.');
+  if(factor.m===0 && factor.k===0)
+    return no('nothing','That is nothing at all — there is no edge on it to swing.');
+  if(factor.m===0 && Math.abs(factor.k)===1)
+    return no('nothing','Everything divides by one. Taking it out would leave the lump exactly as it is.');
+
+  var yes = function(left, right){
+    /* MULTIPLY BACK BEFORE HANDING IT OVER. The algebra below solves for the
+       quotient; this proves it. A division that solves and does not
+       reconstruct would reach a student as a rock splitting into the wrong
+       two pieces, with nothing on screen saying so. */
+    if(!MF.oreSame(MF.oreMul(left, right), ore))
+      return no('unsound','The pieces do not add back up to the rock they came out of.');
+    return {ok:true, left:left, right:right, why:'The seam runs.'};
+  };
+
+  /* ---- a number lump ---- */
+  if(ore.kind==='number'){
+    if(factor.m!==0)
+      return no('shape','There is no x anywhere in this lump for that to bite on.');
+    var d = factor.k, n = ore.n;
+    /* DIVISIBILITY FIRST. Ordered the other way, a pick bigger than the lump
+       and a pick that simply does not fit both came back "that is the whole
+       lump" - and 100 is not the whole of 12. */
+    if(n % d !== 0)
+      return no('glance','The pick glanced off. ' + num(d) + ' does not run through ' + num(n) + '.');
+    if(Math.abs(d) >= Math.abs(n))
+      return no('whole','That is the whole lump. It would leave nothing behind it.');
+    return yes({kind:'number', n:d}, {kind:'number', n:n/d});
+  }
+
+  /* ---- a plain metal out of a polynomial: the common-factor seam ---- */
+  var a=ore.a, b=ore.b, c=ore.c;
+  if(factor.m===0){
+    var g = factor.k;
+    if(a%g!==0 || b%g!==0 || c%g!==0)
+      return no('glance','The pick glanced off. ' + num(g) + ' does not run through every term.');
+    var restPlain = asOre(a/g, b/g, c/g);
+    if(restPlain.kind==='number' && Math.abs(restPlain.n)===1)
+      return no('whole','That is the whole lump. It would leave nothing behind it.');
+    return yes({kind:'number', n:g}, restPlain);
+  }
+
+  /* ---- an x-carrying bracket: (mx + k)(px + q) ---- */
+  var m=factor.m, k=factor.k, p, q;
+  if(a % m !== 0) return no('glance','The pick glanced off. Nothing of that shape runs through this one.');
+  p = a/m;
+  if(k !== 0){
+    if(c % k !== 0) return no('glance','The pick glanced off. Nothing of that shape runs through this one.');
+    q = c/k;
+  } else {
+    if(c !== 0)   return no('glance','The pick glanced off. Nothing of that shape runs through this one.');
+    if(b % m !== 0) return no('glance','The pick glanced off. Nothing of that shape runs through this one.');
+    q = b/m;
+  }
+  if(p*k + q*m !== b)
+    return no('glance','The pick glanced off. The ends match but the middle does not.');
+  var rest = asOre(0, p, q);
+  if(rest.kind==='number' && Math.abs(rest.n)===1)
+    return no('whole','That is the whole lump. It would leave nothing behind it.');
+  return yes(asOre(0, m, k), rest);
+};
+
+/* =========================================================================
    ORE. Any expression is ore: a number, a monomial, a binomial, a trinomial.
    {kind:'number', n} | {kind:'poly', a,b,c}
    ========================================================================= */
@@ -3546,6 +3680,112 @@ MF.validate = function(){
       if(layer===1 && o.kind!=='number') errs.push('ore: layer 1 handed out a polynomial');
     }
   }
+
+  /* 3b. BREAKING. The mine's one move, swept the way a student uses it: take
+         a real lump, break its true factors off ONE AT A TIME, and assert at
+         every step that the two pieces still reconstruct the rock they came
+         out of. A lump is only finished when nothing left on the floor can be
+         broken further.
+
+         READ THE DENOMINATOR: this sweeps generated ore at every layer, and
+         the factors it names are the engine's own. It does not sweep what a
+         student might type instead - the refusals below do that, and only for
+         the four shapes named. */
+  var brRng = makeRng(770077);
+  for(var bl=1; bl<=MF.LAYERS.length; bl++){
+    for(var bi=0; bi<40; bi++){
+      var bore = MF.digOre(bl, brRng);
+      if(!bore) continue;
+      chk('break');
+      /* the pieces on the floor, broken down until every one is native */
+      var floor = [bore], guard = 0, wantTotal = (bore.kind==='number')
+        ? {a:0,b:0,c:bore.n} : {a:bore.a,b:bore.b,c:bore.c};
+      while(guard++ < 24){
+        var at = -1;
+        for(var fi=0; fi<floor.length; fi++){ if(!MF.isNative(floor[fi])){ at=fi; break; } }
+        if(at < 0) break;                       /* everything is native metal */
+        var piece = floor[at];
+        /* the engine's own idea of what is in there, one factor of it */
+        var one = null;
+        if(piece.kind==='number'){ one = {m:0, k:primeFactors(piece.n)[0]}; }
+        else {
+          var pr = MF.smeltPoly(piece.a,piece.b,piece.c);
+          var cand = (pr.ingots||[]).filter(function(g){ return !(g.m===0&&g.k===0) && !(g.m===0&&Math.abs(g.k)===1); });
+          one = cand[0];
+        }
+        if(!one){ errs.push('break: '+MF.oreText(piece)+' is not native and the engine names nothing in it'); break; }
+        var got = MF.breakOff(piece, one);
+        if(!got.ok){
+          errs.push('break: the engine\'s own factor '+ingotText(one)+' would not come out of '+MF.oreText(piece)+' ('+got.reason+')');
+          break;
+        }
+        chk('break');
+        if(!MF.oreSame(MF.oreMul(got.left, got.right), piece))
+          errs.push('break: '+MF.oreText(piece)+' split into pieces that do not rebuild it');
+        floor.splice(at, 1, got.left, got.right);
+      }
+      if(guard >= 24){ errs.push('break: '+MF.oreText(bore)+' never broke down to native metal'); continue; }
+      /* and the whole floor must still be the lump that was dug */
+      var acc = {kind:'number', n:1}, blew = false;
+      floor.forEach(function(pc){
+        if(blew) return;
+        var mm = MF.oreMul(acc, pc);
+        if(mm.overflow){ blew = true; return; }
+        acc = MF.asOre(mm.a, mm.b, mm.c);
+      });
+      chk('break');
+      if(blew || !MF.oreSame(MF.oreMul(acc, {kind:'number',n:1}), bore))
+        errs.push('break: the pieces of '+MF.oreText(bore)+' do not multiply back to it');
+    }
+  }
+
+  /* the four refusals, each a shape a student will actually swing */
+  [[{kind:'poly',a:1,b:-5,c:6}, {m:1,k:2},  'glance',  'a bracket that is not in there'],
+   [{kind:'number',n:12},       {m:0,k:5},  'glance',  'a number that does not divide'],
+   [{kind:'number',n:12},       {m:0,k:12}, 'whole',   'the whole lump'],
+   [{kind:'number',n:12},       {m:0,k:1},  'nothing', 'one, which takes nothing out'],
+   [{kind:'number',n:12},       {m:1,k:3},  'shape',   'an x-shaped pick on a number'],
+   [{kind:'poly',a:1,b:0,c:-9}, {m:0,k:0},  'nothing', 'a pick with no edge on it']
+  ].forEach(function(t){
+    chk('break');
+    var r = MF.breakOff(t[0], t[1]);
+    if(r.ok) errs.push('break: '+ingotText(t[1])+' came out of '+MF.oreText(t[0])+' and it is '+t[3]);
+    else if(r.reason!==t[2]) errs.push('break: '+t[3]+' was refused as "'+r.reason+'", expected "'+t[2]+'"');
+  });
+  /* and the ones that MUST come out, or the refusals above prove nothing */
+  [[{kind:'poly',a:1,b:-5,c:6},  {m:1,k:-2}, 'x − 3'],
+   [{kind:'poly',a:6,b:7,c:-3},  {m:2,k:3},  '3x − 1'],
+   [{kind:'poly',a:0,b:6,c:15},  {m:0,k:3},  '2x + 5'],
+   [{kind:'poly',a:1,b:0,c:-9},  {m:1,k:3},  'x − 3'],
+   [{kind:'poly',a:0,b:5,c:15},  {m:1,k:3},  '5'],
+   [{kind:'number',n:60},        {m:0,k:6},  '10']
+  ].forEach(function(t){
+    chk('break');
+    var r = MF.breakOff(t[0], t[1]);
+    if(!r.ok) errs.push('break: '+ingotText(t[1])+' would not come out of '+MF.oreText(t[0])+' ('+r.reason+')');
+    else if(MF.oreText(r.right)!==t[2])
+      errs.push('break: '+MF.oreText(t[0])+' ÷ '+ingotText(t[1])+' left '+MF.oreText(r.right)+', expected '+t[2]);
+  });
+
+  /* 3c. NATIVE METAL. A prime and an irreducible polynomial must answer this
+         question identically - that identity is the whole thesis of the site,
+         so it is asserted rather than assumed. */
+  for(var nn=2; nn<=200; nn++){
+    chk('native');
+    if(MF.isNative({kind:'number',n:nn}) !== isPrime(nn))
+      errs.push('native: '+nn+' disagreed with isPrime');
+  }
+  for(var na=0; na<=4; na++) for(var nb=-9; nb<=9; nb++) for(var nc=-9; nc<=9; nc++){
+    if(na===0 && nb===0) continue;
+    chk('native');
+    var want = MF.smeltPoly(na,nb,nc).kind === 'pure';
+    if(MF.isNative({kind:'poly',a:na,b:nb,c:nc}) !== want)
+      errs.push('native: '+quadText(na,nb,nc)+' disagreed with the smelting engine');
+  }
+  /* a constant in polynomial clothes is the number, not a 'pure' polynomial */
+  chk('native'); if(MF.isNative({kind:'poly',a:0,b:0,c:1}))  errs.push('native: 1 was called an element');
+  chk('native'); if(!MF.isNative({kind:'poly',a:0,b:0,c:7})) errs.push('native: 7 in polynomial clothes was not called an element');
+  chk('native'); if(MF.isNative({kind:'poly',a:0,b:0,c:12})) errs.push('native: 12 in polynomial clothes was called an element');
 
   /* 4. printing must never leak a float artefact, and never a phantom term */
   [0.1+0.2, 1/3, 4.5, -0.5].forEach(function(f){ chk('print'); if(num(f).length>9) errs.push('print: long float '+num(f)); });
