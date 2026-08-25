@@ -652,3 +652,19 @@ Restoring **both** coordinates — `x=44, y=160`, exactly what shipped — repro
 - **A control that fires is not automatically a working check.** Read what it says. This one said the sweep could not see a window on the door — which was true of the window it was handed.
 - **Mount live when the property is a live one.** The day cycle cannot be checked on a detached scene: `getAnimations()` returns nothing and `getBBox()` returns zeroes there, and both would have passed. The `surface` group appends a real scene to the document, stops the clock at noon and midnight, and looks.
 - **One clock for one phenomenon.** Parts of a day on different durations drift apart, and by the third turn the sun sets in a blue sky. Every part of it is asserted to run for the same 240,000ms — proved by putting one sky on a 90s clock, which fires twice: the duration, and then the dusk sky not being the one showing at dusk.
+
+## 51. Two animations cannot share one property, and the loser says nothing
+
+The day cycle was supposed to brighten every lamp on the site after dark. It did — except on the lamps.
+
+> `.sc-lamp{animation:lampflicker 3.2s}` was already on the lantern halo, the lantern flame, the smelting-house glow, the casting-shed window and the forge mouth. The new `.sc-lit{animation:lampsup 240s}` went on the same elements. **Both animate `opacity`. Equal specificity, and `.sc-lamp` is declared later, so it wins the whole shorthand and `lampsup` never runs at all.** Five of the nine lamps — every one a student would point at and call a lamp — ignored the clock entirely, and nothing anywhere reported it.
+>
+> The fix is not to fight over the property. The level goes on a **wrapper**; the flicker stays on the shape; the two opacities **multiply**, which is what "flickering, and brighter after dark" actually means.
+
+**The rules.**
+
+- **Before adding an animation, grep for what already animates that property on that element.** A CSS conflict has no console error, no visual glitch on the winner, and no trace at all on the loser.
+- **Composition, not competition.** Nest the two effects when both are wanted. Opacity multiplies down the tree for free.
+- **Assert the conflict is absent as a class**, not the instance: `.sc-lamp.sc-lit, .sc-lamp.sc-glow` must match nothing. Proved by re-merging the classes onto one element — 9 lights caught.
+
+> **And the level check had the same shape of bug inside it.** It stopped the sky's animations, sampled the lamps at "noon" and "midnight", and reported `0.72 -> 0.72` — because **the lamps were never added to the set it paused**, so they carried on in real time and both samples read the same moment. It blamed the lights for a fault in the instrument. **A check that stops a clock must stop every hand on it.**

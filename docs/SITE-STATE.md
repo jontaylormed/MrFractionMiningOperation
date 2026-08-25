@@ -22,7 +22,7 @@
 | **Screens** | **five** — surface, the Stamp Mill, the Casting Shed, the mine, the forge |
 | **Layers** | **five**, all reachable from the first screen, none gated on anything |
 | **Instruments** | **seven**, all made at the forge, none granted |
-| **Validation** | `MF.validate()` → **8,526 checks / 25 groups / 0 errors**, two controls that must fail, and do |
+| **Validation** | `MF.validate()` → **8,552 checks / 25 groups / 0 errors**, two controls that must fail, and do |
 
 > **A check is only as wide as the space it sweeps.** The `truthy` group reported 0 errors across 642 checks while **1,970 Decimal Dial states printed a falsehood**, because it tested each lump's original integer coefficients and never nudged `c` — the one thing the dial exists to do. It now sweeps every slider position the control can reach (3,287 checks). Ask of any green result: *what did it not look at?*
 | **Runtime** | Zero dependencies, no build step, no network requests, no storage, runs from `file://` |
@@ -101,7 +101,18 @@ Under `prefers-reduced-motion` the day stops at noon rather than flickering thro
 
 **The windmill's bottom windows no longer touch its door.** They ended at y=174, which is exactly where the door's arch begins, and sat over the doorway's own width — two openings sharing an edge read as one hole in the wall. They are at y=148 now, ending seven clear of the arch, and spread either side of the doorway.
 
-> **The `surface` group (23) checks both**, and it has to run on a **live, mounted** scene: a detached svg has no running animations and `getBBox` on one returns zeroes, so a probe-built check would have passed for exactly the wrong reason. It asserts no window's box meets the door's; that every part of the day runs for the same 240,000ms; that the sun is up at noon and under at midnight with the moon opposite; and that each sky owns its own phase. Controls: put the windows back where they shipped (2 errors), put one part of the day on a 90s clock (2), stop the sun (1).
+**Every light on the site answers the clock** — eighteen of them, in two ranges, because a lamp and the light it throws are not the same thing:
+
+| | |
+|---|---|
+| **`sc-lit`** | the *source* — lantern glass, a furnace mouth, a lit window. Never goes out, only gets stronger: **0.56 at noon → 0.99 at midnight**. |
+| **`sc-glow`** | the light *cast* — a halo, a pool on the ground. All but invisible by day, unmistakable after dark: **0.06 → 0.70**. |
+
+> **The level goes on a wrapper, not on the flickering shape.** `.sc-lamp` already animates opacity at 3.2s, and **two animations cannot share one property**: the later rule wins outright and the other silently does nothing. `.sc-lamp` is declared below the level classes, so it was cancelling the day/night level on **five of the nine lamps** — every one a student would call a lamp — and nothing said a word. Nested, the two opacities multiply.
+
+**The forge has two chimneys** — the tall one off the hearth and a squatter one off the second fire, each smoking on its own delay — and its walls are **coursed rubble stone**: offset joints, dressed quoins down both corners, a heavy sill course, pantiles on the roof, and a pool of furnace light on the ground outside.
+
+> **The `surface` group (47) checks all of it**, and it has to run on a **live, mounted** scene: a detached svg has no running animations and `getBBox` on one returns zeroes, so a probe-built check would have passed for exactly the wrong reason. It asserts no window's box meets the door's; that every part of the day runs for the same 240,000ms; that the sun is up at noon and under at midnight with the moon opposite; that each sky owns its phase; that **no light carries both the flicker and a level**; that the lamps and their cast light are **measurably brighter at midnight**; and that the forge smokes from two flues. Controls: the windows back where they shipped (2 errors), one part of the day on a 90s clock (2), the sun stopped (1), the flicker/level conflict restored (10), lights that never brighten (2), the forge back to one chimney (1).
 
 ## The seam
 

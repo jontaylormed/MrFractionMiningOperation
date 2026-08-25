@@ -872,15 +872,31 @@ input[type=range]{width:100%; accent-color:var(--ore); height:44px}
 /* the site itself goes dark, not only the sky above it */
 @keyframes nightfall{ 0%{opacity:0} 46%{opacity:0} 58%{opacity:.22} 75%{opacity:.52} 88%{opacity:.46} 97%{opacity:0} 100%{opacity:0} }
 .sc-night{opacity:0; animation:nightfall 240s linear infinite; mix-blend-mode:multiply}
-/* and the windows and lamps only earn their light after dark */
-@keyframes lampsup{ 0%{opacity:.28} 30%{opacity:.18} 52%{opacity:.5} 72%{opacity:1} 90%{opacity:.9} 100%{opacity:.28} }
+/* ---- EVERY LIGHT ON THE SITE ANSWERS THE CLOCK ----
+   Two ranges, because a lamp and the light it throws are not the same thing.
+   `sc-lit` is the SOURCE - lantern glass, a furnace mouth, a lit window - and
+   it never goes out, it only gets stronger. `sc-glow` is the light CAST - a
+   halo, a pool on the ground - which should be all but invisible at noon and
+   unmistakable at midnight.
+
+   AND THEY GO ON A WRAPPER, NOT ON THE FLICKERING SHAPE ITSELF. `.sc-lamp`
+   already animates opacity at 3.2s, and two animations cannot share one
+   property: the later rule wins outright and the other silently does nothing.
+   `.sc-lamp` is declared below this, so it was quietly cancelling the day/night
+   level on five of the nine lights - every one of the ones a student would
+   call a lamp. Nested, the two opacities multiply, which is what "flickering,
+   and brighter after dark" actually means. */
+@keyframes lampsup{ 0%{opacity:.72} 22%{opacity:.55} 46%{opacity:.66} 62%{opacity:.86} 76%{opacity:1} 90%{opacity:1} 100%{opacity:.72} }
 .sc-lit{animation:lampsup 240s linear infinite}
+@keyframes glowup{ 0%{opacity:.18} 22%{opacity:.05} 46%{opacity:.14} 62%{opacity:.4} 76%{opacity:.72} 90%{opacity:.66} 100%{opacity:.18} }
+.sc-glow{animation:glowup 240s linear infinite}
 @media (prefers-reduced-motion:reduce){
   /* the day stops at noon rather than flickering through four skies */
-  .sc-sky,.sc-stars,.sc-night,.sc-sun,.sc-moon,.sc-lit{animation:none}
+  .sc-sky,.sc-stars,.sc-night,.sc-sun,.sc-moon,.sc-lit,.sc-glow{animation:none}
   .sc-skyNoon{opacity:1}
   .sc-moon{opacity:0}
-  .sc-lit{opacity:.28}
+  .sc-lit{opacity:.55}
+  .sc-glow{opacity:.05}
 }
 
 /* ---- the surface scene ---- */
@@ -1992,26 +2008,38 @@ MF.loadScreen = function(){
 /* A PROPER LANTERN, not a glowing dot: a hooped cage with a hood, a wire
    handle, glazing bars and a flame inside, sitting in its own pool of light.
    Module scope so the surface and the rooms draw the same object. */
+/* A LIGHT THAT BOTH FLICKERS AND ANSWERS THE CLOCK.
+   .sc-lamp animates opacity at 3.2s and the day/night level animates opacity
+   over 240s; one property cannot carry both, and the later rule wins outright
+   while the other silently does nothing. So the level goes on a wrapper and
+   the flicker stays on the shape, and the two opacities multiply. */
+function lit(node, kind){
+  var g = S('g',{class:kind || 'sc-lit'});
+  g.appendChild(node);
+  return g;
+}
+
 function lantern(parent, cx, cy, scale, glowR){
   var g = S('g',{transform:'translate('+cx+','+cy+') scale('+(scale||1)+')'});
   /* the light it casts, behind everything */
   /* a soft halo, not a headlight. At r26/.20 in daylight it read as a large
      pale disc stuck to the scene, and the portal one covered the mine mouth. */
-  /* sc-lit: a lamp earns its light after dark. In daylight a bright halo read
-     as a pale disc stuck to the scene, which is what .13 was compensating for;
-     the day cycle does that properly now. */
-  g.appendChild(S('circle',{cx:'0',cy:'0',r:String(glowR||13),fill:'#FFD68A',opacity:'.13',class:'sc-lamp sc-lit'}));
+  /* THE HALO IS CAST LIGHT, so it rides sc-glow rather than sc-lit: all but
+     invisible at noon, unmistakable at midnight. Its own opacity was pinned at
+     .13 to stop it reading as a pale disc stuck to the scene in daylight - the
+     day cycle does that properly now, so the shape can be a real light. */
+  g.appendChild(lit(S('circle',{cx:'0',cy:'0',r:String(glowR||13),fill:'#FFD68A',opacity:'.55',class:'sc-lamp'}),'sc-glow'));
   /* hanging hook and handle */
   g.appendChild(S('path',{d:'M0 -20 q-7 -6 0 -11 q7 5 0 11 Z',fill:'none',stroke:'#4A4038','stroke-width':'2'}));
   /* hood */
   g.appendChild(S('path',{d:'M-10 -12 l20 0 l-4 -6 l-12 0 Z',fill:'#5A626A',stroke:'#39424A','stroke-width':'1.5'}));
   /* glass body */
-  g.appendChild(S('path',{d:'M-8 -12 l16 0 l2 18 l-20 0 Z',fill:'#FFE9A8',stroke:'#4A4038','stroke-width':'2'}));
+  g.appendChild(S('path',{d:'M-8 -12 l16 0 l2 18 l-20 0 Z',fill:'#FFE9A8',stroke:'#4A4038','stroke-width':'2',class:'sc-lit'}));
   /* glazing bars */
   g.appendChild(S('line',{x1:'0',y1:'-12',x2:'0',y2:'6',stroke:'#8A6A45','stroke-width':'1.4',opacity:'.8'}));
   g.appendChild(S('line',{x1:'-9',y1:'-3',x2:'9',y2:'-3',stroke:'#8A6A45','stroke-width':'1.4',opacity:'.8'}));
   /* the flame */
-  g.appendChild(S('path',{d:'M0 3 q-4 -5 0 -10 q4 5 0 10 Z',fill:'#E2600F',class:'sc-lamp'}));
+  g.appendChild(lit(S('path',{d:'M0 3 q-4 -5 0 -10 q4 5 0 10 Z',fill:'#E2600F',class:'sc-lamp'})));
   /* base */
   g.appendChild(S('rect',{x:'-11',y:'5',width:'22',height:'5',rx:'2',fill:'#5A626A',stroke:'#39424A','stroke-width':'1.5'}));
   parent.appendChild(g);
@@ -2216,7 +2244,7 @@ MF.surfaceScene = function(){
     sm.appendChild(puff);
   });
   nameplate(sm, 66, 54, 'The Stamp Mill');
-  sm.appendChild(S('rect',{x:'14',y:'92',width:'32',height:'32',rx:'3',fill:'#E2600F',opacity:'.9',class:'sc-lamp'}));
+  sm.appendChild(lit(S('rect',{x:'14',y:'92',width:'32',height:'32',rx:'3',fill:'#E2600F',opacity:'.9',class:'sc-lamp'})));
   sm.appendChild(S('rect',{x:'56',y:'96',width:'24',height:'24',rx:'3',fill:'#3A2A1C'}));
   sm.appendChild(S('rect',{x:'92',y:'98',width:'26',height:'38',rx:'2',fill:'#4A3524'}));
   svg.appendChild(sm);
@@ -2227,7 +2255,7 @@ MF.surfaceScene = function(){
   cs.appendChild(S('path',{d:'M-8 34 L59 4 L126 34 Z',fill:'#4A5560'}));
   cs.appendChild(S('rect',{x:'-10',y:'30',width:'138',height:'7',rx:'2',fill:'#3E4750'}));
   nameplate(cs, 59, 44, 'Casting Shed');
-  cs.appendChild(S('rect',{x:'12',y:'80',width:'24',height:'24',rx:'2',fill:'#FFE9A8',class:'sc-lamp'}));
+  cs.appendChild(lit(S('rect',{x:'12',y:'80',width:'24',height:'24',rx:'2',fill:'#FFE9A8',class:'sc-lamp'})));
   cs.appendChild(S('rect',{x:'46',y:'80',width:'24',height:'24',rx:'3',fill:'#2E3840'}));
   cs.appendChild(S('rect',{x:'84',y:'78',width:'26',height:'38',rx:'2',fill:'#3E4750'}));
   /* a stack of finished ingots by the door */
@@ -2240,22 +2268,66 @@ MF.surfaceScene = function(){
   /* ---- THE FORGE. It had no building at all: a whole screen with no door in
          a world whose whole principle is that the buildings ARE the doors. ---- */
   var fg = S('g',{transform:'translate(560,230)'});
+  /* THE WALLS ARE STONE, and they are coursed. A flat brown rectangle with a
+     roof on it was a shed; a forge is the heaviest building on the site and it
+     should look like it was built to hold heat in. */
   fg.appendChild(S('rect',{x:'0',y:'38',width:'118',height:'84',rx:'4',fill:'#5E4636'}));
+  /* courses of rubble stone, offset row to row so no two joints line up */
+  for(var cse=0; cse<6; cse++){
+    var cy2 = 44 + cse*13;
+    fg.appendChild(S('rect',{x:'2',y:String(cy2),width:'114',height:'1.6',fill:'#3E2C20',opacity:'.55'}));
+    for(var stn=0; stn<5; stn++){
+      var sxx = 6 + stn*23 + (cse%2 ? 11 : 0);
+      if(sxx > 104) continue;
+      fg.appendChild(S('rect',{x:String(sxx),y:String(cy2+1.6),width:'1.6',height:'11.4',fill:'#3E2C20',opacity:'.42'}));
+      /* a few stones catch the light, which is what makes rubble read as rubble */
+      if((cse*5+stn)%4===0)
+        fg.appendChild(S('rect',{x:String(sxx+2),y:String(cy2+3),width:'16',height:'7',rx:'1.5',
+          fill:'#745944',opacity:'.5'}));
+    }
+  }
+  /* dressed quoins down both corners, and a heavy sill course at the base */
+  [0,1].forEach(function(side){
+    for(var q=0;q<6;q++){
+      fg.appendChild(S('rect',{x:String(side? 104 : 0),y:String(44+q*13),width:'14',height:'11',rx:'1',
+        fill:(q%2?'#7A6250':'#6B5343'),opacity:'.85'}));
+    }
+  });
+  fg.appendChild(S('rect',{x:'-4',y:'116',width:'126',height:'8',rx:'2',fill:'#4A3A2E'}));
   fg.appendChild(S('path',{d:'M-8 38 L59 6 L126 38 Z',fill:'#6B3F32'}));
+  /* pantiles on the roof */
+  for(var tl=0; tl<7; tl++)
+    fg.appendChild(S('path',{d:'M'+(-2+tl*17)+' 38 L'+(57-tl*7.3)+' 9',
+      stroke:'#5A3428','stroke-width':'1.6',opacity:'.5',fill:'none'}));
   fg.appendChild(S('rect',{x:'-10',y:'34',width:'138',height:'7',rx:'2',fill:'#5A3428'}));
   nameplate(fg, 59, 47, 'The Forge');
-  /* squat stone chimney, and the furnace mouth burning inside */
-  fg.appendChild(S('rect',{x:'6',y:'-18',width:'26',height:'60',rx:'2',fill:'#6E6055'}));
-  fg.appendChild(S('rect',{x:'2',y:'-24',width:'34',height:'9',rx:'2',fill:'#4A4038'}));
-  [0,1].forEach(function(k){
-    var puff = S('circle',{cx:'19',cy:'-28',r:String(7+k*3),fill:'#C7BCAE',
-      opacity:'0',class:'sc-smoke'});
-    puff.style.animationDelay = (-(k*2.1))+'s';
-    fg.appendChild(puff);
+
+  /* TWO CHIMNEYS: the tall one off the hearth, and a squatter one off the
+     second fire. A forge this size does not vent through one flue. */
+  [{x:6, y:-30, w:26, h:72, capW:34, capX:2, smoke:0},
+   {x:82, y:-6, w:22, h:48, capW:30, capX:78, smoke:1}].forEach(function(ch){
+    fg.appendChild(S('rect',{x:String(ch.x),y:String(ch.y),width:String(ch.w),height:String(ch.h),rx:'2',fill:'#6E6055'}));
+    /* the stone shows on the stacks too, or they read as pipes */
+    for(var b2=0; b2<Math.floor(ch.h/11); b2++){
+      fg.appendChild(S('rect',{x:String(ch.x+1),y:String(ch.y+7+b2*11),width:String(ch.w-2),height:'1.4',
+        fill:'#4A4038',opacity:'.5'}));
+      fg.appendChild(S('rect',{x:String(ch.x + (b2%2 ? ch.w*0.32 : ch.w*0.62)),y:String(ch.y+8+b2*11),
+        width:'1.4',height:'9.6',fill:'#4A4038',opacity:'.38'}));
+    }
+    fg.appendChild(S('rect',{x:String(ch.x),y:String(ch.y),width:'5',height:String(ch.h),fill:'#83756A',opacity:'.45'}));
+    fg.appendChild(S('rect',{x:String(ch.capX),y:String(ch.y-6),width:String(ch.capW),height:'9',rx:'2',fill:'#4A4038'}));
+    [0,1].forEach(function(k){
+      var puff = S('circle',{cx:String(ch.x+ch.w/2),cy:String(ch.y-10),r:String(6+k*3+ch.smoke),
+        fill:'#C7BCAE', opacity:'0', class:'sc-smoke'});
+      puff.style.animationDelay = (-(k*2.1 + ch.smoke*1.3))+'s';
+      fg.appendChild(puff);
+    });
   });
-  var mouth = S('path',{d:'M34 112 q0 -30 24 -30 q24 0 24 30 Z',fill:'#E2600F',class:'sc-lamp'});
-  fg.appendChild(mouth);
-  fg.appendChild(S('path',{d:'M40 112 q0 -21 18 -21 q18 0 18 21 Z',fill:'#FFB347',opacity:'.85'}));
+
+  /* the furnace mouth burning inside, and the light it throws on the ground */
+  fg.appendChild(S('ellipse',{cx:'58',cy:'120',rx:'52',ry:'13',fill:'#E2600F',opacity:'.6',class:'sc-glow'}));
+  fg.appendChild(lit(S('path',{d:'M34 112 q0 -30 24 -30 q24 0 24 30 Z',fill:'#E2600F',class:'sc-lamp'})));
+  fg.appendChild(S('path',{d:'M40 112 q0 -21 18 -21 q18 0 18 21 Z',fill:'#FFB347',opacity:'.85',class:'sc-lit'}));
   /* a door, so the building can be walked into rather than only looked at */
   fg.appendChild(S('rect',{x:'94',y:'76',width:'24',height:'46',rx:'2',fill:'#3A2A1C'}));
   fg.appendChild(S('rect',{x:'96',y:'78',width:'20',height:'42',rx:'2',fill:'#6B4A32'}));
@@ -5837,6 +5909,70 @@ MF.validate = function(){
           if(Number(getComputedStyle(sSkies[p[0]]).opacity) < 0.9)
             errs.push('surface: the ' + p[2] + ' sky is not the one showing at ' + p[2]);
         });
+        /* ---- THE LIGHTS ON THE SITE ---- */
+        var sLit = [].slice.call(sSvg.querySelectorAll('.sc-lit'));
+        var sGlow = [].slice.call(sSvg.querySelectorAll('.sc-glow'));
+        chk('surface');
+        if(!sLit.length || !sGlow.length)
+          errs.push('surface: the operation has no lights that answer the clock');
+
+        /* NOTHING MAY CARRY BOTH A FLICKER AND A LEVEL. .sc-lamp animates
+           opacity at 3.2s and the day/night level animates opacity over 240s;
+           one property cannot carry both, the later rule wins outright, and
+           the other silently does nothing. It cancelled the level on five of
+           the nine lamps and nothing said a word - the level goes on a wrapper
+           now so the two opacities multiply. */
+        chk('surface');
+        var sClash = sSvg.querySelectorAll('.sc-lamp.sc-lit, .sc-lamp.sc-glow').length;
+        if(sClash)
+          errs.push('surface: ' + sClash + ' light(s) carry both the flicker and the day level on one opacity — one of the two will silently do nothing');
+
+        /* every one of them must be on the day's own clock - AND JOIN THE SET
+           `sAt` DRIVES. Left out of it they carry on running in real time
+           while the sky is stopped, so noon and midnight both sample whatever
+           moment the page happens to be at: the first version of the level
+           check below reported 0.72 -> 0.72 and blamed the lights. */
+        sLit.concat(sGlow).forEach(function(el){
+          chk('surface');
+          var la = el.getAnimations();
+          if(!la.length || la[0].effect.getTiming().duration !== 240000)
+            errs.push('surface: a light on the site is not running on the day\'s clock');
+          la.forEach(function(an){
+            if(an.effect.getTiming().duration === 240000){ an.pause(); sAnims.push(an); }
+          });
+        });
+
+        /* AND THEY MUST ACTUALLY GET BRIGHTER. A light wired to the clock but
+           whose keyframes go the wrong way, or nowhere, passes everything
+           above. This is the only check that reads the levels. */
+        var sMean = function(list){
+          return list.reduce(function(s,el){ return s + Number(getComputedStyle(el).opacity); }, 0) / list.length;
+        };
+        sAt(60000);  var sNoonLit = sMean(sLit),  sNoonGlow = sMean(sGlow);
+        sAt(180000); var sMidLit  = sMean(sLit),  sMidGlow  = sMean(sGlow);
+        chk('surface');
+        if(sMidLit <= sNoonLit + 0.1)
+          errs.push('surface: the lamps are no brighter at midnight than at noon (' +
+            sNoonLit.toFixed(2) + ' -> ' + sMidLit.toFixed(2) + ')');
+        chk('surface');
+        if(sMidGlow <= sNoonGlow + 0.1)
+          errs.push('surface: the light they cast is no stronger at midnight than at noon (' +
+            sNoonGlow.toFixed(2) + ' -> ' + sMidGlow.toFixed(2) + ')');
+
+        /* ---- THE FORGE HAS TWO CHIMNEYS ---- */
+        var sFg = [].slice.call(sSvg.querySelectorAll('g')).filter(function(g){
+          return g.getAttribute('transform')==='translate(560,230)'; })[0];
+        chk('surface');
+        if(!sFg){ errs.push('surface: the forge is not on the site'); }
+        else {
+          var sFlues = {};
+          Array.prototype.forEach.call(sFg.querySelectorAll('.sc-smoke'), function(p){
+            sFlues[p.getAttribute('cx')] = true;
+          });
+          chk('surface');
+          if(Object.keys(sFlues).length < 2)
+            errs.push('surface: the forge smokes from ' + Object.keys(sFlues).length + ' chimney, and it is built with two');
+        }
         sAnims.forEach(function(an){ an.play(); });
       }
     }
