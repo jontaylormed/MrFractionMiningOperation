@@ -549,7 +549,9 @@ input[type=range]{width:100%; accent-color:var(--ore); height:44px}
 
 /* THE BURST. Comic book: a jagged star and the word, punched in on the beat
    and held long enough to read before it goes. */
-.thud{position:absolute; left:50%; top:46%; transform:translate(-50%,-50%);
+/* centred on the rock, which is where the face lands - a little left of the
+   stage centre and just above halfway down */
+.thud{position:absolute; left:47%; top:55%; transform:translate(-50%,-50%);
   pointer-events:none; opacity:0; z-index:4}
 .thud .tstar{position:absolute; left:50%; top:50%; width:168px; height:168px; margin:-84px 0 0 -84px;
   background:radial-gradient(circle at 50% 50%, #FFD27A 0 34%, #E8A33D 55%, #C96A1F 100%);
@@ -565,12 +567,12 @@ input[type=range]{width:100%; accent-color:var(--ore); height:44px}
   90%{opacity:1; transform:translate(-50%,-50%) scale(1) rotate(0deg)}
   100%{opacity:0; transform:translate(-50%,-50%) scale(1.1) rotate(0deg)}
 }
-.floorbox[data-anim] .thud{animation:thudpop 3000ms cubic-bezier(.3,1.5,.5,1) 1}
+.anvilstage[data-anim] .thud{animation:thudpop 3000ms cubic-bezier(.3,1.5,.5,1) 1}
 @keyframes starspin{0%,56%{transform:rotate(0)}100%{transform:rotate(26deg)}}
-.floorbox[data-anim] .thud .tstar{animation:starspin 3000ms ease-out 1}
+.anvilstage[data-anim] .thud .tstar{animation:starspin 3000ms ease-out 1}
 /* a glance is a smaller, colder ring of a word */
-.floorbox[data-anim=glance] .thud .tword{font-size:30px; color:#DCE6EE; -webkit-text-stroke:6px #26333D; text-shadow:0 4px 0 #46545F}
-.floorbox[data-anim=glance] .thud .tstar{background:radial-gradient(circle at 50% 50%, #E6EEF4 0 34%, #A9B8C4 55%, #6E7E8C 100%)}
+.anvilstage[data-anim=glance] .thud .tword{font-size:30px; color:#DCE6EE; -webkit-text-stroke:6px #26333D; text-shadow:0 4px 0 #46545F}
+.anvilstage[data-anim=glance] .thud .tstar{background:radial-gradient(circle at 50% 50%, #E6EEF4 0 34%, #A9B8C4 55%, #6E7E8C 100%)}
 
 /* the pieces are held back so they arrive ON the beat - 58% of 3000ms.
    `backwards` is what holds them invisible through the delay, so the timeout
@@ -583,9 +585,9 @@ input[type=range]{width:100%; accent-color:var(--ore); height:44px}
 
 @media (prefers-reduced-motion:reduce){
   .anvilstage[data-anim] .hammerswing,.anvilstage[data-anim] .anvilsvg,
-  .anvilstage[data-anim] .anvilrock,.floorbox[data-anim] .thud .tstar,.gallglow{animation:none}
+  .anvilstage[data-anim] .anvilrock,.anvilstage[data-anim] .thud .tstar,.gallglow{animation:none}
   /* the burst still reports the hit, it just does not perform */
-  .floorbox[data-anim] .thud{animation:none; opacity:1; transform:translate(-50%,-50%)}
+  .anvilstage[data-anim] .thud{animation:none; opacity:1; transform:translate(-50%,-50%)}
   .piece.fresh{animation-delay:0s}
 }
 
@@ -3955,6 +3957,14 @@ MF.anvilArt = function(){
   return wrap;
 };
 
+/* the comic burst, built where it is going to be seen */
+MF.thudBurst = function(anim){
+  var thud = E('div','thud');
+  thud.appendChild(E('div','tstar'));
+  thud.appendChild(H('div','tword', anim==='glance' ? 'CLANG!' : 'THUD!'));
+  return thud;
+};
+
 /* WHAT THE HAMMER IS CUT TO, echoed under it. The line whose absence let a
    cleared box swing 6 at a lump the student meant to hit with (x + 6). */
 MF.echoHammer = function(B){
@@ -4111,23 +4121,20 @@ MF.paintBreak = function(host, B){
     for(var i=0;i<pieces.length;i++){ if(!MF.isNative(pieces[i].ore)){ B.at=i; break; } }
   }
 
+  /* READ THE SWING FLAG ONCE, AT THE TOP, AND CLEAR IT HERE.
+     It used to be consumed by the floorbox partway down this function, and the
+     anvil stage - built further down still - then read it as null. So the
+     burst fired and THE HAMMER NEVER MOVED: a flash, and a THUD in the box
+     above the hammer. Two readers, one flag, and whichever ran first won. */
+  var anim = B.anim;
+  B.anim = null;
+
   host.appendChild(H('p','hint', pieces.length===1
     ? '<b>Name one thing that is in there, and swing.</b> If the seam runs, the lump comes apart and both pieces land on the floor. Nothing here tells you beforehand whether it will.'
     : '<b>Anything still rock goes back under the pick.</b> Break it again.'));
 
   /* ---- the floor: every piece this lump has come apart into ---- */
   var fl = E('div','floorbox');
-  /* THE BURST LIVES HERE, NOT IN THE HAMMER BAR. The bar disappears the moment
-     every piece is native - which is the FINISHING blow, the most satisfying
-     one there is - so a burst drawn inside it played on every hit except that
-     one. The floor is always on screen while a lump is being worked.
-     `B.anim` is consumed here too, in the one place that always runs, so a
-     later repaint cannot replay a swing that already happened. */
-  if(B.anim){ fl.setAttribute('data-anim', B.anim); }
-  var thud = E('div','thud');
-  thud.appendChild(E('div','tstar'));
-  thud.appendChild(H('div','tword', B.anim==='glance' ? 'CLANG!' : 'THUD!'));
-  fl.appendChild(thud);
   fl.appendChild(MF.anvilArt());
   fl.appendChild(H('h4',null, pieces.length===1 ? 'On the anvil' : 'On the floor'));
   /* THE BELT HANGS HERE, inside the floorbox and directly above the pieces.
@@ -4175,7 +4182,6 @@ MF.paintBreak = function(host, B){
   });
   fl.appendChild(rowf);
   host.appendChild(fl);
-  B.anim = null;                 /* consumed: a repaint must not replay a swing */
 
   /* ---- what the last swing did. A description of the rock, every time ---- */
   if(B.last){
@@ -4198,6 +4204,18 @@ MF.paintBreak = function(host, B){
 
   /* ---- the swing, or the end of the lump ---- */
   if(done){
+    /* THE FINISHING BLOW STILL LANDS ON SCREEN. The hammer bar goes when every
+       piece is native, and that is the most satisfying swing there is - so the
+       anvil is drawn once more with the piece that was just struck on it, and
+       the hammer comes down on it. No boxes, nothing to type: the work is
+       finished, this is just the blow that finished it. */
+    if(anim && B.last && B.last.struck){
+      var endStage = E('div','anvilstage done');
+      endStage.setAttribute('data-anim', anim);
+      endStage.appendChild(MF.anvilScene(B.last.struck));
+      endStage.appendChild(MF.thudBurst(anim));
+      host.appendChild(endStage);
+    }
     host.appendChild(H('div','note good','<b>Every piece on the floor is native metal.</b> ' +
       'Nothing in any of them comes apart any further. That is the end of the lump — ' +
       'not a failure to get further into it.'));
@@ -4223,8 +4241,11 @@ MF.paintBreak = function(host, B){
     cut.appendChild(H('div','cutlab','UNDER THE HAMMER'));
 
     var stage = E('div','anvilstage');
-    if(B.anim) stage.setAttribute('data-anim', B.anim);
+    if(anim) stage.setAttribute('data-anim', anim);
     stage.appendChild(MF.anvilScene(t.ore));
+    /* THE BURST BELONGS WHERE THE HAMMER LANDS. It was drawn in the floorbox
+       above, so the noise came from one box and the blow from another. */
+    stage.appendChild(MF.thudBurst(anim));
     cut.appendChild(stage);
 
     var isNum = t.ore.kind==='number';
@@ -4329,7 +4350,7 @@ MF.swing = function(B){
   }
   var a = {ore:r.left, id:++B.seq, fresh:true}, b2 = {ore:r.right, id:++B.seq, fresh:true};
   B.floor.splice(B.at, 1, a, b2);
-  B.last = {ok:true, why:r.why, left:r.left, right:r.right};
+  B.last = {ok:true, why:r.why, left:r.left, right:r.right, struck:t.ore};
   /* the pick moves itself to the next thing that is still rock */
   var nx = -1;
   for(var i=0;i<B.floor.length;i++){ if(!MF.isNative(B.floor[i].ore)){ nx=i; break; } }
@@ -6036,6 +6057,72 @@ MF.validate = function(){
         errs.push('CONTROL: the overlay sweep did not catch the pick sitting live in front of the lumps');
       kVictim.style.pointerEvents = '';
     }
+
+    /* 5m. A SWING MUST ACTUALLY SWING.
+
+           `B.anim` had two readers - the floorbox partway down paintBreak and
+           the anvil stage further down - and the first one cleared it. So the
+           second read null, the hammer never got the flag, and a swing was a
+           flash and a THUD in the box above the hammer. Everything about the
+           animation was correct; nothing reached it.
+
+           Asserted on the live DOM because a running animation is the thing in
+           question: getAnimations() on a detached node reports nothing, which
+           would have passed for exactly the wrong reason.
+
+           READ THE DENOMINATOR: this checks that a swing arms the hammer and
+           puts the burst where the hammer is. It says nothing about how the
+           swing looks or how long it takes. */
+    var swSetup = function(a,b,c){
+      var so = {kind:'poly',a:a,b:b,c:c,layer:5,id:'sw'+a+b+c};
+      MF.state.cart=[so]; MF.state.selected=so; MF.state.anvil=null; MF.state.rockpile=[];
+      MF.paintMine();
+      var m2 = MF._mine.mid, nm2 = MF.ASSAY[MF.assayOf(so)].name;
+      var ch2 = [].slice.call(m2.querySelectorAll('.choice')).filter(function(x){
+        return (x.textContent||'').indexOf(nm2)===0; })[0];
+      if(ch2) kHit(ch2);
+      return MF._mine.mid;
+    };
+    var swHit = function(m2, xs, ks){
+      var ins = m2.querySelectorAll('.hbox input');
+      if(!ins.length) return null;
+      ins[0].value = xs; ins[0].dispatchEvent(new Event('input',{bubbles:true}));
+      if(ins[1]){ ins[1].value = ks; ins[1].dispatchEvent(new Event('input',{bubbles:true})); }
+      var btn = [].slice.call(m2.querySelectorAll('.cutbar .btn')).filter(function(b){
+        return /hammer/i.test(b.textContent); })[0];
+      if(btn) kHit(btn);
+      return MF._mine.mid;
+    };
+    [['a swing that leaves work to do', 2,10,12, '0','2'],
+     ['the finishing blow',             3,22,24, '', '6'],
+     ['a swing that glances off',       3,22,24, '1','5']
+    ].forEach(function(t){
+      var m2 = swSetup(t[1],t[2],t[3]);
+      m2 = swHit(m2, t[4], t[5]);
+      chk('swing');
+      if(!m2){ errs.push('swing: ' + t[0] + ' — the hammer bar drew no boxes to type in'); return; }
+      var stg = m2.querySelector('.anvilstage[data-anim]');
+      if(!stg){ errs.push('swing: ' + t[0] + ' left the anvil with no swing on it — the hammer would not move'); return; }
+      chk('swing');
+      var hs = stg.querySelector('.hammerswing');
+      if(!hs || !hs.getAnimations || hs.getAnimations().length === 0)
+        errs.push('swing: ' + t[0] + ' — the hammer carries no running animation');
+      chk('swing');
+      if(!stg.querySelector('.thud'))
+        errs.push('swing: ' + t[0] + ' — the burst is not at the anvil where the hammer lands');
+      chk('swing');
+      if(m2.querySelector('.floorbox .thud'))
+        errs.push('swing: ' + t[0] + ' — a burst is drawn in the floorbox, away from the blow');
+    });
+    /* CONTROL: put the two-readers bug back and the check must say so */
+    chk('swing');
+    var swReal = MF.thudBurst;
+    var swMid = swSetup(2,10,12);
+    MF.state.anvil.anim = null;              /* exactly what the floorbox used to do */
+    MF.paintMine();
+    if(MF._mine.mid.querySelector('.anvilstage[data-anim]'))
+      errs.push('CONTROL: the swing check cannot see an anvil that was never armed');
+    MF.thudBurst = swReal;
 
     /* a lump in the cart is ore too, and clicking the one already on the bench
        resets it to the assay - a real thing to have done, off-screen */

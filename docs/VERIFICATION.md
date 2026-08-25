@@ -618,3 +618,17 @@ Measured on the settled animation by pausing it and stepping `currentTime`: **13
 - **The head did not fit its column.** Two sign toggles, two number boxes, an x, two remove buttons and four brackets came to more than the middle column is wide, and with visible overflow the whole plate hung off the **left edge to x = −20**, where the x-socket's sign toggle could not be clicked at all. It wraps now. `elementsFromPoint` returned an empty stack — the giveaway that a control is not merely covered but off-screen.
 
 **The rule.** *An animation that moves a control changes where that control is.* Re-run the reach tests after any motion work, at more than one width, and treat an empty hit stack as "off-screen", not "nothing on top".
+
+## 49. Two readers, one flag, and the first one wins
+
+`B.anim` is set by `MF.swing` and read during the repaint to start the swing. It ended up with **two** readers in one function: the floorbox, drawn partway down `paintBreak`, and the anvil stage, built further down. The floorbox read it *and cleared it*. The anvil stage then read `null`.
+
+> Everything about the animation was correct. The keyframes were right, the timing was right, the arc was right. **Nothing reached the hammer.** What a student saw was a flash, and then a THUD in the box *above* the hammer — the burst firing from the one reader that still had the flag, and the blow never happening at all.
+
+It survived a commit because every test I had asked whether the *state* was right — floor, pieces, burst word, `data-anim` on the floorbox — and all of that was right.
+
+**The rules.**
+
+- **A one-shot flag has exactly one consumer.** Read it once, at the top of the function that owns the repaint, into a local; clear it there; pass the local to everything that needs it. Two `if(B.flag)` sites in one function is the bug, not the symptom.
+- **Put the effect where the cause is.** The burst was in the floorbox because the hammer bar disappears on the finishing blow — a real problem solved in the wrong place. It belongs at the anvil; the finishing blow now draws the anvil once more, with the piece that was struck on it, so the last swing lands where every other swing landed.
+- **Assert the animation is RUNNING, on a live node.** `getAnimations()` returns nothing on a detached element, so a check built on a probe would have passed for exactly the wrong reason. The `swing` group mounts the mine, swings three ways — a swing with work left, the finishing blow, a glance — and asserts the hammer carries a running animation and the burst is inside the anvil stage. Control: re-consume the flag before the stage reads it, and all three fire.
