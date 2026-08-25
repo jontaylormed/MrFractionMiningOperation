@@ -582,3 +582,22 @@ The mine had never had this, because the mine repaints its three columns in plac
 > **The check for this was written wrong first, and only reintroducing the fault found it.** The first version compared the grid node before and after a click — but `MF.go` rebuilds `#screen`, and the probe mounts somewhere else entirely, so a re-entry left the probe's grid untouched and the check passed. It **watches `MF.go` itself** now: neuter it for the duration of a click and record anything that reaches for it. Proved by wiring the forge's metal buttons back the old way — *"dropping a metal called MF.go(\"forge\")"*.
 >
 > Two of the reintroductions in between were also wrong and worth naming, because both looked like the check failing: one guarded on `MF.state.screen === 'forge'`, which is never true inside `validate()`; the other stubbed `MF.paintForge` to call `MF.go`, which **recursed infinitely** — `go` → `SCREENS.forge` → `paintForge` → `go` — and hung the renderer. **Reintroduce a fault at the layer that had it.** This one lived in the handlers, not the painter.
+
+## 47. It was reported as a maths error. The maths was right and the input lied.
+
+> *"On Layer 5 of the mine asked to factor 3x² + 22x + 24 and x + 6 was marked as not a factor."*
+
+(x + 6) **is** a factor: 3x² + 22x + 24 = (3x + 4)(x + 6). The engine had it right the whole time — `MF.breakOff` accepted it on the first try when tested directly, and a sweep of **36,000 divisor tests against a brute-force cross-check found zero false rejections** across generated ore at every layer.
+
+The fault was one line away from the engine:
+
+> The x-part box and the constant box shared a reader, `MF.readInt`, and it returns **0** for an empty string. That is correct for the constant box — no constant is nought. It is **wrong** for the x-part box, where an empty box means no coefficient written in front of the x, which is **one**, exactly as `x` means `1x` in every notation there is. The box was pre-filled with `1`; the student cleared it to type what they meant; the hammer was cut to **6**; and the refusal read *"6 does not run through every term"* — naming a shape they had never typed, about a factor that was genuinely theirs.
+
+**The rules.**
+
+- **A report of a wrong answer is a report about the whole path, not the arithmetic.** Test the engine first because it is cheap, but a green engine narrows the search — it does not end it. The bug was between the keyboard and the call.
+- **Two boxes that mean different things need two readers.** One reader with one empty-string convention is a bug waiting for whichever box the convention is wrong for.
+- **Echo the input back before it is committed.** The hammer now says *"cut to (x + 6)"* as you type, and every refusal names the shape that actually landed. Either of those alone would have turned this from a maths error into an obvious typo.
+- **Nine readings of the x-part box are asserted** — empty, `1`, `x`, `-x`, `-`, `0`, `3`, `2x`, `−4` — plus the constant box still reading empty as nought, plus the reported case end to end. Control: point the x-part box back at `readInt` and six of them fail.
+
+> **And the interface was the real defect.** Two text boxes under a line of prose could not show what they were about to do. The lump is drawn on an anvil now, the factor is typed into the hammer head, and the hammer comes down on it — so what you cut it to and what you hit it with are the same object on screen.

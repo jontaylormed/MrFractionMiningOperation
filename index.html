@@ -452,13 +452,106 @@ input[type=range]{width:100%; accent-color:var(--ore); height:44px}
   70%{transform:translateY(-1px) scale(1.03)}100%{transform:translateY(0) scale(1)}}
 .piece.knock{animation:pieceknock 280ms cubic-bezier(.3,1.4,.4,1) 1}
 
-/* the bar you cut the pick to */
+/* ---- THE ANVIL AND THE HAMMER ----
+       You type the factor into the hammer head and bring it down on the lump.
+       The head is a real box holding real inputs, so it sizes to them and it
+       is your factor that comes down - not a picture of one. ---- */
 .cutbar{background:#241D18; border:2px dashed #6B5B48; border-radius:12px; padding:12px 14px; margin-top:12px; color:#E4D5BB}
 .cutbar .cutlab{font-size:11px; letter-spacing:.1em; text-transform:uppercase; color:var(--lamp); margin-bottom:3px}
 .cutbar .eq{color:#FFF3DE; margin-bottom:4px}
 .cutbar .hint{color:#C9B695}
-.cutbar input{width:70px; text-align:center; font-family:var(--display); font-size:18px; padding:7px 6px; min-height:44px}
-.cutbar .paren{font-family:var(--display); font-size:22px; color:#E4D5BB; padding:0 2px}
+.cutbar input{width:66px; text-align:center; font-family:var(--display); font-size:18px; padding:7px 6px; min-height:44px}
+/* #3A3129 on the old darker plate measured 2.3:1, and NO dark text can reach
+   4.5 on a #5E6A76 ground - the plate had to get lighter, not the ink darker.
+   This is the same polished steel the yard's metal chips already pass on. */
+.cutbar .paren{font-family:var(--display); font-size:22px; color:#2A3138; padding:0 2px}
+
+.anvilstage{position:relative; display:flex; flex-direction:column; align-items:center;
+  padding:6px 0 0; overflow:hidden}
+.anvilsvg{width:100%; max-width:360px}
+.anvilsvg svg{display:block; width:100%; height:auto}
+.anvilsvg svg *{pointer-events:none}
+/* the head: forged steel, riveted, with the boxes set into it */
+.hammer{position:relative; z-index:3; margin-bottom:-6px; transform-origin:88% 92%}
+.hplate{position:relative; display:flex; align-items:center; gap:2px;
+  background:linear-gradient(180deg,#E6ECF2 0%,#C4CED8 52%,#9DA9B5 100%);
+  border:3px solid #2A3138; border-radius:7px; padding:7px 12px;
+  box-shadow:inset 0 3px 0 rgba(255,255,255,.4), inset 0 -4px 0 rgba(0,0,0,.28), 0 3px 0 rgba(0,0,0,.35)}
+/* the rivets that hold the face on */
+.hplate:before,.hplate:after{content:""; position:absolute; top:50%; width:7px; height:7px; margin-top:-3px;
+  border-radius:50%; background:radial-gradient(circle at 35% 35%,#D6DEE5,#4A545E)}
+.hplate:before{left:4px} .hplate:after{right:4px}
+.hboxes{display:flex; align-items:center; gap:2px; padding:0 6px}
+/* the shaft, running up out of the head and off the top of the stage */
+.hhandle{position:absolute; left:50%; bottom:100%; width:13px; height:34px; margin-left:-6px;
+  background:linear-gradient(90deg,#6B4A32,#9A7350 42%,#5A3D28);
+  border-radius:3px 3px 0 0; box-shadow:inset 0 0 0 2px rgba(0,0,0,.18)}
+.hecho{font-size:13px; color:#C9B695; margin-top:7px}
+.hecho b{font-family:var(--display); font-size:16px; color:#FFE9C4}
+.hecho .bad{color:#FFB37A}
+
+/* THE SWING. Anticipation, a fast fall, a hard stop, then back up. */
+@keyframes hammerfall{
+  0%{transform:translateY(0) rotate(0deg)}
+  18%{transform:translateY(-13px) rotate(-9deg)}
+  42%{transform:translateY(26px) rotate(5deg)}
+  50%{transform:translateY(22px) rotate(4deg)}
+  70%{transform:translateY(-5px) rotate(-2deg)}
+  100%{transform:translateY(0) rotate(0deg)}
+}
+@keyframes hammerbounce{
+  0%{transform:translateY(0) rotate(0deg)}
+  18%{transform:translateY(-13px) rotate(-9deg)}
+  40%{transform:translateY(22px) rotate(4deg)}
+  52%{transform:translateY(-16px) rotate(-6deg)}
+  68%{transform:translateY(4px) rotate(2deg)}
+  100%{transform:translateY(0) rotate(0deg)}
+}
+.anvilstage[data-anim] .hammer{animation:hammerfall 620ms cubic-bezier(.45,0,.55,1) 1}
+.anvilstage[data-anim=glance] .hammer{animation-name:hammerbounce}
+/* the anvil takes it: a hard shudder on the beat, not before */
+@keyframes anvilhit{0%,38%{transform:translate(0,0)}
+  44%{transform:translate(-3px,3px)}52%{transform:translate(3px,-2px)}
+  60%{transform:translate(-2px,1px)}100%{transform:translate(0,0)}}
+.anvilstage[data-anim] .anvilsvg{animation:anvilhit 620ms ease-out 1}
+@keyframes rockcrack{0%,38%{transform:scale(1)}46%{transform:scale(.9,1.1)}58%{transform:scale(1.06,.94)}100%{transform:scale(1)}}
+.anvilstage[data-anim=hit] .anvilrock{transform-box:fill-box; transform-origin:center;
+  animation:rockcrack 620ms ease-out 1}
+
+/* THE BURST. Comic book: a jagged star and the word, both punched in on the
+   beat of the impact and gone a third of a second later. */
+.thud{position:absolute; left:50%; top:46%; transform:translate(-50%,-50%);
+  pointer-events:none; opacity:0; z-index:4}
+.thud .tstar{position:absolute; left:50%; top:50%; width:150px; height:150px; margin:-75px 0 0 -75px;
+  background:radial-gradient(circle at 50% 50%, #FFD27A 0 34%, #E8A33D 55%, #C96A1F 100%);
+  clip-path:polygon(50% 0%,60% 22%,83% 12%,77% 35%,100% 40%,80% 55%,96% 74%,72% 71%,73% 96%,53% 80%,
+                    38% 100%,33% 76%,10% 84%,17% 61%,0% 50%,20% 38%,7% 17%,31% 22%,34% 2%)}
+.thud .tword{position:relative; font-family:var(--display); font-size:34px; letter-spacing:.03em;
+  color:#FFF3DE; paint-order:stroke; -webkit-text-stroke:5px #3A2408; text-shadow:0 3px 0 #7A4A12}
+@keyframes thudpop{
+  0%,36%{opacity:0; transform:translate(-50%,-50%) scale(.2) rotate(-16deg)}
+  44%{opacity:1; transform:translate(-50%,-50%) scale(1.22) rotate(4deg)}
+  54%{opacity:1; transform:translate(-50%,-50%) scale(.98) rotate(-2deg)}
+  78%{opacity:1; transform:translate(-50%,-50%) scale(1) rotate(0deg)}
+  100%{opacity:0; transform:translate(-50%,-50%) scale(1.08) rotate(0deg)}
+}
+.floorbox[data-anim] .thud{animation:thudpop 900ms cubic-bezier(.3,1.5,.5,1) 1}
+@keyframes starspin{from{transform:rotate(0)}to{transform:rotate(26deg)}}
+.floorbox[data-anim] .thud .tstar{animation:starspin 900ms ease-out 1}
+/* a glance is a smaller, colder ring of a word */
+.floorbox[data-anim=glance] .thud .tword{font-size:27px; color:#DCE6EE; -webkit-text-stroke:5px #26333D; text-shadow:0 3px 0 #46545F}
+.floorbox[data-anim=glance] .thud .tstar{background:radial-gradient(circle at 50% 50%, #E6EEF4 0 34%, #A9B8C4 55%, #6E7E8C 100%)}
+
+/* the pieces are held back so they arrive ON the beat, not before it */
+.piece.fresh{animation-delay:260ms; animation-fill-mode:backwards}
+
+@media (prefers-reduced-motion:reduce){
+  .anvilstage[data-anim] .hammer,.anvilstage[data-anim] .anvilsvg,
+  .anvilstage[data-anim] .anvilrock,.floorbox[data-anim] .thud .tstar{animation:none}
+  /* the burst still reports the hit, it just does not perform */
+  .floorbox[data-anim] .thud{animation:none; opacity:1; transform:translate(-50%,-50%)}
+  .piece.fresh{animation-delay:0s}
+}
 
 /* casting */
 .casting{border-radius:12px; padding:14px; margin-top:12px; border:3px solid}
@@ -1193,9 +1286,9 @@ MF.oreToIngot = function(ore){
 MF.breakOff = function(ore, factor){
   var no = function(reason, why){ return {ok:false, reason:reason, why:why}; };
   if(!ore || !factor || !isInt(factor.m) || !isInt(factor.k))
-    return no('malformed','That is not a shape a pick can be cut to.');
+    return no('malformed','That is not a shape a hammer can be cut to.');
   if(factor.m===0 && factor.k===0)
-    return no('nothing','That is nothing at all — there is no edge on it to swing.');
+    return no('nothing','That is nothing at all — there is no edge on it to bring down.');
   if(factor.m===0 && Math.abs(factor.k)===1)
     return no('nothing','Everything divides by one. Taking it out would leave the lump exactly as it is.');
 
@@ -1218,7 +1311,7 @@ MF.breakOff = function(ore, factor){
        and a pick that simply does not fit both came back "that is the whole
        lump" - and 100 is not the whole of 12. */
     if(n % d !== 0)
-      return no('glance','The pick glanced off. ' + num(d) + ' does not run through ' + num(n) + '.');
+      return no('glance','The hammer glanced off. ' + num(d) + ' does not run through ' + num(n) + '.');
     if(Math.abs(d) >= Math.abs(n))
       return no('whole','That is the whole lump. It would leave nothing behind it.');
     return yes({kind:'number', n:d}, {kind:'number', n:n/d});
@@ -1229,7 +1322,7 @@ MF.breakOff = function(ore, factor){
   if(factor.m===0){
     var g = factor.k;
     if(a%g!==0 || b%g!==0 || c%g!==0)
-      return no('glance','The pick glanced off. ' + num(g) + ' does not run through every term.');
+      return no('glance','The hammer glanced off. ' + num(g) + ' does not run through every term.');
     var restPlain = asOre(a/g, b/g, c/g);
     if(restPlain.kind==='number' && Math.abs(restPlain.n)===1)
       return no('whole','That is the whole lump. It would leave nothing behind it.');
@@ -1238,18 +1331,18 @@ MF.breakOff = function(ore, factor){
 
   /* ---- an x-carrying bracket: (mx + k)(px + q) ---- */
   var m=factor.m, k=factor.k, p, q;
-  if(a % m !== 0) return no('glance','The pick glanced off. Nothing of that shape runs through this one.');
+  if(a % m !== 0) return no('glance','The hammer glanced off. Nothing of that shape runs through this one.');
   p = a/m;
   if(k !== 0){
-    if(c % k !== 0) return no('glance','The pick glanced off. Nothing of that shape runs through this one.');
+    if(c % k !== 0) return no('glance','The hammer glanced off. Nothing of that shape runs through this one.');
     q = c/k;
   } else {
-    if(c !== 0)   return no('glance','The pick glanced off. Nothing of that shape runs through this one.');
-    if(b % m !== 0) return no('glance','The pick glanced off. Nothing of that shape runs through this one.');
+    if(c !== 0)   return no('glance','The hammer glanced off. Nothing of that shape runs through this one.');
+    if(b % m !== 0) return no('glance','The hammer glanced off. Nothing of that shape runs through this one.');
     q = b/m;
   }
   if(p*k + q*m !== b)
-    return no('glance','The pick glanced off. The ends match but the middle does not.');
+    return no('glance','The hammer glanced off. The ends match but the middle does not.');
   var rest = asOre(0, p, q);
   if(rest.kind==='number' && Math.abs(rest.n)===1)
     return no('whole','That is the whole lump. It would leave nothing behind it.');
@@ -3800,10 +3893,53 @@ MF.anvilArt = function(){
   return wrap;
 };
 
-/* what the pick is cut to by default, for the shape of lump under it */
-MF.pickDefault = function(ore){
-  return (ore.kind==='number') ? {m:'0', k:'2'} : {m:'1', k:'0'};
+/* THE ANVIL, WITH THE LUMP ON IT. The thing being worked is drawn as the rock
+   it is, sitting on the face where the hammer will land, with its expression
+   cut into it - so the expression on screen and the object being hit are one
+   thing rather than a label above a pair of boxes. */
+MF.anvilScene = function(ore){
+  var wrap = E('div','anvilsvg');
+  var W=340, VH=132;
+  var svg = S('svg',{viewBox:'0 0 '+W+' '+VH,'aria-hidden':'true'});
+
+  /* the block the anvil stands on */
+  svg.appendChild(S('path',{d:'M104 118 l10 -22 h112 l10 22 Z',fill:'#4A3524'}));
+  svg.appendChild(S('rect',{x:96,y:118,width:148,height:12,rx:2,fill:'#3A2A1C'}));
+
+  /* the anvil: horn on the left, waisted body, and a face to work on */
+  svg.appendChild(S('path',{d:'M120 96 l6 -18 h88 l6 18 Z',fill:'#3E464E'}));
+  svg.appendChild(S('path',{
+    d:'M60 62 q26 -6 54 -7 l112 0 l0 19 l-100 0 q-38 1 -66 -4 Z',
+    fill:'#5E6A76',stroke:'#2A3138','stroke-width':'2','stroke-linejoin':'round'}));
+  svg.appendChild(S('rect',{x:110,y:56,width:122,height:9,rx:2,fill:'#8A9AA6'}));  /* the lit face */
+  svg.appendChild(S('rect',{x:226,y:56,width:22,height:20,rx:3,fill:'#5E6A76',stroke:'#2A3138','stroke-width':'2'}));
+
+  /* the lump, sitting on the face, in the same silhouette the seam uses */
+  var g = S('g',{class:'anvilrock'});
+  g.appendChild(S('polygon',{
+    points:'126,20 178,10 216,26 224,46 196,56 146,56 120,42',
+    fill:'#7A6650',stroke:'#3A2E22','stroke-width':'3','stroke-linejoin':'round'}));
+  g.appendChild(S('path',{d:'M134 30 q22 -7 44 -2',fill:'none',stroke:'#C96A1F','stroke-width':'3','stroke-linecap':'round',opacity:'.85'}));
+  var label = S('text',{x:'172',y:'44','text-anchor':'middle','font-size':'19',
+    'font-family':"'Black Han Sans','Arial Black',Impact,sans-serif",fill:'#FFF3DE',
+    'paint-order':'stroke',stroke:'#2E2620','stroke-width':'4','stroke-linejoin':'round'});
+  label.textContent = MF.oreText(ore);
+  /* a long loaded trinomial runs off the rock at 19px; shrink to fit rather
+     than let it hang over the anvil */
+  var chars = label.textContent.length;
+  if(chars > 12) label.setAttribute('font-size', String(Math.max(11, 19 - (chars-12)*1.1)));
+  g.appendChild(label);
+  svg.appendChild(g);
+
+  wrap.appendChild(svg);
+  return wrap;
 };
+
+/* what the pick is cut to by default, for the shape of lump under it */
+/* THE HEAD STARTS EMPTY, with the boxes showing what they would mean if left
+   that way. Pre-filling them with 1 and 0 made the resting hammer read "cut to
+   (x)" - a shape nobody had chosen, sitting there looking like a suggestion. */
+MF.pickDefault = function(ore){ return {m:'', k:''}; };
 
 MF.paintBreak = function(host, B){
   var pieces = B.floor;
@@ -3822,6 +3958,17 @@ MF.paintBreak = function(host, B){
 
   /* ---- the floor: every piece this lump has come apart into ---- */
   var fl = E('div','floorbox');
+  /* THE BURST LIVES HERE, NOT IN THE HAMMER BAR. The bar disappears the moment
+     every piece is native - which is the FINISHING blow, the most satisfying
+     one there is - so a burst drawn inside it played on every hit except that
+     one. The floor is always on screen while a lump is being worked.
+     `B.anim` is consumed here too, in the one place that always runs, so a
+     later repaint cannot replay a swing that already happened. */
+  if(B.anim){ fl.setAttribute('data-anim', B.anim); }
+  var thud = E('div','thud');
+  thud.appendChild(E('div','tstar'));
+  thud.appendChild(H('div','tword', B.anim==='glance' ? 'CLANG!' : 'THUD!'));
+  fl.appendChild(thud);
   fl.appendChild(MF.anvilArt());
   fl.appendChild(H('h4',null, pieces.length===1 ? 'On the anvil' : 'On the floor'));
   /* THE BELT HANGS HERE, inside the floorbox and directly above the pieces.
@@ -3869,6 +4016,7 @@ MF.paintBreak = function(host, B){
   });
   fl.appendChild(rowf);
   host.appendChild(fl);
+  B.anim = null;                 /* consumed: a repaint must not replay a swing */
 
   /* ---- what the last swing did. A description of the rock, every time ---- */
   if(B.last){
@@ -3883,6 +4031,8 @@ MF.paintBreak = function(host, B){
         MF.paintShifterRail(host, MF.oreToIngot(l), MF.oreToIngot(r));
     } else {
       host.appendChild(H('div','note','<b>' + B.last.why + '</b>' +
+        (B.last.swung ? ' The hammer was cut to <b>' +
+            (B.last.swung.m===0 ? num(B.last.swung.k) : '(' + ingotHtml(B.last.swung) + ')') + '</b>.' : '') +
         (B.last.native ? '' : ' Nothing is lost — the rock is exactly as it was, and you can swing again.')));
     }
   }
@@ -3898,35 +4048,88 @@ MF.paintBreak = function(host, B){
        number is a swing that can never land */
     if(B.rawFor !== t.id){ B.raw = MF.pickDefault(t.ore); B.rawFor = t.id; }
 
-    var cut = E('div','cutbar');
-    cut.appendChild(H('div','cutlab','UNDER THE PICK'));
-    cut.appendChild(H('div','eq sm', MF.oreLabel(t.ore)));
-    cut.appendChild(H('div','hint', t.ore.kind==='number'
-      ? 'Name a whole number that runs through it.'
-      : 'Name one thing that is in there. Leave the x-part at 0 to take out a plain number.'));
+    /* ---- THE ANVIL, THE HAMMER, AND WHAT YOU CUT THE HAMMER TO ----
+       The lump sits ON the anvil and you type the factor INTO THE HAMMER HEAD,
+       so the thing you are about to hit it with is the thing you wrote. The
+       head is a real HTML box rather than drawn in the svg: it holds the
+       inputs, so it sizes itself to them and comes down WITH your factor on it
+       when the hammer falls. A drawn head would have needed the boxes pinned
+       on top of it at percentages, and they would have shrunk below a
+       touchable size on a narrow column.
 
-    var inner = E('div','row'); inner.style.gap='4px'; inner.style.alignItems='center';
-    if(t.ore.kind!=='number'){
-      inner.appendChild(H('span','paren','('));
+       This replaces two text boxes under a line of prose. The old bar never
+       showed the shape it was about to swing, which is how a student cleared
+       the x-part box, swung 6 instead of (x + 6), and was told "6 does not run
+       through every term" about a bracket the mine had never seen. */
+    var cut = E('div','cutbar');
+    cut.appendChild(H('div','cutlab','UNDER THE HAMMER'));
+
+    var stage = E('div','anvilstage');
+    if(B.anim) stage.setAttribute('data-anim', B.anim);
+
+    /* the hammer: head with the factor in it, handle running up off the top */
+    var hammer = E('div','hammer');
+    var plate = E('div','hplate');
+    var isNum = t.ore.kind==='number';
+
+    var echo = E('div','hecho');
+    var readShape = function(){
+      var m = isNum ? 0 : MF.readPickM(B.raw.m), k = MF.readInt(B.raw.k);
+      if(!isFinite(m) || !isFinite(k)) return null;
+      return {m:m, k:k};
+    };
+    var showEcho = function(){
+      /* THE SHAPE, ECHOED AS IT IS TYPED. An empty x-part box means one, not
+         nought, and a student has to be able to SEE which of those the hammer
+         is cut to before it comes down. This is the line whose absence let a
+         cleared box swing 6 at a lump the student meant to hit with (x + 6). */
+      var blank = String(B.raw.k).trim()==='' && String(B.raw.m).trim()==='';
+      if(blank){ echo.innerHTML = 'the head is empty — type what you are taking out'; return; }
+      var g = readShape();
+      echo.innerHTML = g ? ('cut to <b>' + (g.m===0 ? num(g.k) : '(' + ingotHtml(g) + ')') + '</b>')
+                         : '<span class="bad">that is not a whole shape</span>';
+    };
+
+    var boxes = E('div','hboxes');
+    if(!isNum){
+      boxes.appendChild(H('span','paren','('));
       var mi = document.createElement('input'); mi.type='text'; mi.inputMode='numeric';
-      mi.value = B.raw.m; mi.setAttribute('aria-label','the x part of what you are taking out');
-      on(mi,'input',function(){ B.raw.m = mi.value; });
+      mi.value = B.raw.m;
+      mi.setAttribute('aria-label','the x part of what you are taking out — leave it empty for a single x');
+      mi.placeholder = '1';
+      on(mi,'input',function(){ B.raw.m = mi.value; showEcho(); });
       on(mi,'keydown',function(e){ if(e.key==='Enter'){ e.preventDefault(); MF.swing(B); } });
-      inner.appendChild(mi);
-      inner.appendChild(H('span','paren','x +'));
+      boxes.appendChild(mi);
+      boxes.appendChild(H('span','paren','x +'));
     }
     var ki = document.createElement('input'); ki.type='text'; ki.inputMode='numeric';
     ki.value = B.raw.k;
-    ki.setAttribute('aria-label', t.ore.kind==='number'
+    ki.placeholder = isNum ? '2' : '0';
+    ki.setAttribute('aria-label', isNum
       ? 'the number you are taking out' : 'the number part of what you are taking out');
-    on(ki,'input',function(){ B.raw.k = ki.value; });
+    on(ki,'input',function(){ B.raw.k = ki.value; showEcho(); });
     on(ki,'keydown',function(e){ if(e.key==='Enter'){ e.preventDefault(); MF.swing(B); } });
-    inner.appendChild(ki);
-    if(t.ore.kind!=='number') inner.appendChild(H('span','paren',')'));
-    cut.appendChild(inner);
+    boxes.appendChild(ki);
+    if(!isNum) boxes.appendChild(H('span','paren',')'));
+
+    plate.appendChild(boxes);
+    hammer.appendChild(plate);
+    hammer.appendChild(E('div','hhandle'));
+    stage.appendChild(hammer);
+
+    /* the anvil, and the lump sitting on its face */
+    stage.appendChild(MF.anvilScene(t.ore));
+
+    cut.appendChild(stage);
+    cut.appendChild(echo);
+    showEcho();
+
+    cut.appendChild(H('div','hint', isNum
+      ? 'Name a whole number that runs through it, then bring the hammer down.'
+      : 'Type what you are taking out into the hammer. Leave the x-part empty for a single x, or put 0 in it to take out a plain number.'));
 
     var swr = E('div','row'); swr.style.marginTop='10px';
-    var sw = E('button','btn primary big', MF.hasTool('pick') ? 'Swing the deep pick' : 'Swing the pick');
+    var sw = E('button','btn primary big', 'Bring the hammer down');
     sw.type='button';
     on(sw,'click',function(){ MF.swing(B); });
     swr.appendChild(sw);
@@ -3934,6 +4137,7 @@ MF.paintBreak = function(host, B){
     cut.appendChild(swr);
     host.appendChild(cut);
     B._cutbar = cut;
+    B._stage = stage;
 
     /* THE PAIR SCANNER IS NOT FREE ANY MORE. It is the Core Drill's reading,
        held to the piece you choose - the same move §10a already made with the
@@ -3972,17 +4176,23 @@ MF.swing = function(B){
   var t = B.floor[B.at];
   if(!t || MF.isNative(t.ore)) return;
   var isNum = t.ore.kind==='number';
-  var m = isNum ? 0 : MF.readInt(B.raw.m);
+  var m = isNum ? 0 : MF.readPickM(B.raw.m);
   var k = MF.readInt(B.raw.k);
   B.swings++;
   if(!isFinite(m) || !isFinite(k)){
-    B.last = {ok:false, why:'A pick is cut to a whole shape. Those boxes only take whole numbers.'};
-    MF.paintMine(); MF.glanceOff(); return;
+    B.last = {ok:false, why:'A hammer is cut to a whole shape. Those boxes only take whole numbers.'};
+    B.anim = 'glance';
+    MF.paintMine(); return;
   }
   var r = MF.breakOff(t.ore, {m:m, k:k});
   if(!r.ok){
-    B.last = {ok:false, why:r.why, reason:r.reason};
-    MF.paintMine(); MF.glanceOff(); return;
+    /* WHAT WAS ACTUALLY SWUNG, on every refusal. A student who meant one shape
+       and cut another has to be able to see the difference; being told "6 does
+       not run through every term" when you typed x + 6 reads as the mine being
+       wrong about arithmetic. */
+    B.last = {ok:false, why:r.why, reason:r.reason, swung:{m:m, k:k}};
+    B.anim = 'glance';
+    MF.paintMine(); return;
   }
   var a = {ore:r.left, id:++B.seq, fresh:true}, b2 = {ore:r.right, id:++B.seq, fresh:true};
   B.floor.splice(B.at, 1, a, b2);
@@ -3992,8 +4202,16 @@ MF.swing = function(B){
   for(var i=0;i<B.floor.length;i++){ if(!MF.isNative(B.floor[i].ore)){ nx=i; break; } }
   if(nx >= 0) B.at = nx;
   B.rawFor = null;
+  B.anim = 'hit';
+  /* THE STATE CHANGES NOW AND THE PICTURE CATCHES UP.
+     The splice and the repaint stay synchronous, because MF.playthrough and
+     the `break` and `inplace` groups all read the floor the instant swing()
+     returns - deferring it to the moment of impact would have made every one
+     of them read a floor that had not moved yet. The sequence a student sees
+     is built out of animation-delay instead: the hammer falls, the burst lands
+     at 260ms, and the new pieces are held back to arrive with it. */
   MF.paintMine();
-  setTimeout(function(){ a.fresh=false; b2.fresh=false; }, 700);
+  setTimeout(function(){ a.fresh=false; b2.fresh=false; }, 900);
 };
 
 /* THE AUGER'S TRACE: the division, after it has run. Not a hint - the swing
@@ -4026,17 +4244,10 @@ MF.augerTrace = function(host, last){
   host.appendChild(box);
 };
 
-/* the pick bounces and the rock does not move: a swing that did not land has
-   to be felt at the pick, not only read underneath it */
-MF.glanceOff = function(){
-  var B = MF.state.anvil;
-  var bar = B && B._cutbar;
-  if(!bar || !bar.isConnected) return;
-  if(window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
-  bar.classList.remove('shudder'); void bar.getBoundingClientRect();
-  bar.classList.add('shudder');
-  setTimeout(function(){ bar.classList.remove('shudder'); }, 360);
-};
+/* MF.glanceOff is gone. It shuddered the whole input bar to say a swing had
+   not landed, which was the best a row of text boxes could do. The hammer
+   bounces off the anvil and the burst reads CLANG! now - the refusal is
+   performed where the swing happened, so a class on a panel is not needed. */
 
 /* every click on a piece is answered, the same rule as the lumps in the seam */
 MF.knockPiece = function(id){
@@ -4057,6 +4268,26 @@ MF.tipFloor = function(B, why){
     else MF.state.rockpile.push(p.ore);
   });
   MF.finishLump(B, why);
+};
+/* THE X-PART BOX IS NOT THE NUMBER BOX, AND EMPTY DOES NOT MEAN ZERO IN IT.
+
+   An empty CONSTANT box means "no constant", which is nought. An empty X-PART
+   box means the student wrote no coefficient in front of the x — and that is
+   ONE, exactly as x means 1x everywhere else in mathematics.
+
+   Read as nought, clearing that box turned a swing at (x + 6) into a swing at
+   6, refused it, and reported "6 does not run through every term" about a
+   bracket the student had typed and the mine had never seen. It was reported
+   as a maths error, and from where the student sat it was one: they swung a
+   true factor of 3x² + 22x + 24 and were told it was not one.
+
+   'x' and '-x' are read too, because a student who types what they mean has
+   not made a mistake. */
+MF.readPickM = function(raw){
+  var s = String(raw==null?'':raw).trim().replace(/[−–—]/g,'-').replace(/[xX]/g,'');
+  if(s==='' || s==='+') return 1;
+  if(s==='-') return -1;
+  return MF.readInt(s);
 };
 MF.readInt = function(raw){
   var s = String(raw||'').trim().replace(/[−–—]/g,'-');
@@ -4814,6 +5045,40 @@ MF.validate = function(){
         errs.push('break: the pieces of '+MF.oreText(bore)+' do not multiply back to it');
     }
   }
+
+  /* 3b-i. WHAT THE BOXES MEAN, WHICH IS NOT WHAT THE ENGINE THINKS.
+           Reported as a maths error: on layer 5, (x + 6) was refused as a
+           factor of 3x² + 22x + 24 — which it is. The engine was right the
+           whole time. The student had CLEARED the x-part box, which read as
+           nought, so the hammer was cut to 6 rather than to (x + 6), and the
+           refusal named a shape they had never typed.
+
+           An empty constant box means no constant, which IS nought. An empty
+           x-part box means no coefficient written in front of the x, which is
+           ONE. They are different boxes and they had one reader. */
+  [['',      1, 'an empty x-part is one x, not none'],
+   ['1',     1, 'a plain 1'],
+   ['x',     1, 'the letter itself'],
+   ['-x',   -1, 'a negative single x'],
+   ['-',    -1, 'a lone minus'],
+   ['0',     0, 'an explicit nought, which is how you ask for a plain metal'],
+   ['3',     3, 'a coefficient'],
+   ['2x',    2, 'a coefficient written with its x'],
+   ['−4',   -4, 'a typographic minus']
+  ].forEach(function(t){
+    chk('break');
+    var got = MF.readPickM(t[0]);
+    if(got !== t[1])
+      errs.push('break: the x-part box read "' + t[0] + '" as ' + got + ', expected ' + t[1] + ' — ' + t[2]);
+  });
+  /* and the constant box must still read empty as nought */
+  chk('break');
+  if(MF.readInt('') !== 0) errs.push('break: the constant box no longer reads empty as nought');
+  /* the reported case, end to end through the two readers */
+  chk('break');
+  var repM = MF.readPickM(''), repK = MF.readInt('6');
+  if(!MF.breakOff({kind:'poly',a:3,b:22,c:24}, {m:repM, k:repK}).ok)
+    errs.push('break: an empty x-part and a 6 still will not take (x + 6) out of 3x² + 22x + 24');
 
   /* the four refusals, each a shape a student will actually swing */
   [[{kind:'poly',a:1,b:-5,c:6}, {m:1,k:2},  'glance',  'a bracket that is not in there'],

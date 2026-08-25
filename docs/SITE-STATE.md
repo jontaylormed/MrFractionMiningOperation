@@ -22,7 +22,7 @@
 | **Screens** | **five** — surface, the Stamp Mill, the Casting Shed, the mine, the forge |
 | **Layers** | **five**, all reachable from the first screen, none gated on anything |
 | **Instruments** | **seven**, all made at the forge, none granted |
-| **Validation** | `MF.validate()` → **8,466 checks / 23 groups / 0 errors**, two controls that must fail, and do |
+| **Validation** | `MF.validate()` → **8,479 checks / 23 groups / 0 errors**, two controls that must fail, and do |
 
 > **A check is only as wide as the space it sweeps.** The `truthy` group reported 0 errors across 642 checks while **1,970 Decimal Dial states printed a falsehood**, because it tested each lump's original integer coefficients and never nudged `c` — the one thing the dial exists to do. It now sweeps every slider position the control can reach (3,287 checks). Ask of any green result: *what did it not look at?*
 | **Runtime** | Zero dependencies, no build step, no network requests, no storage, runs from `file://` |
@@ -45,7 +45,11 @@ What will not break further is **native metal** — a prime, or a polynomial no 
 **ASSAY → BREAK, and BREAK again.**
 
 - **Assay** is a gate: `display:none` on stage 2 until the seam is called correctly. Verified on a freshly built, never-clicked, detached task.
-- **Break** is one swing at a time. You name **one** thing that is in the rock; the seam runs and the lump comes apart into that factor and the remainder, or the pick glances off and the rock is described. **Both pieces land on the floor, and anything still carrying a seam goes back under the pick.**
+- **Break** is one swing at a time. You name **one** thing that is in the rock; the seam runs and the lump comes apart into that factor and the remainder, or the hammer glances off and the rock is described. **Both pieces land on the floor, and anything still carrying a seam goes back under the hammer.**
+
+**The lump is drawn on an anvil and you type the factor into the hammer head.** The head is a real box holding the real inputs, so your factor is what comes down — not a picture of one. The hammer says **"cut to (x + 6)"** as you type, it falls with anticipation and a hard stop, and the impact lands a comic burst — **THUD!** when the seam runs, **CLANG!** when it glances — with the anvil shuddering and the new pieces held back on `animation-delay` so they arrive on the beat rather than before it. Under `prefers-reduced-motion` the burst still reports the hit; it just does not perform.
+
+> **This replaced two text boxes under a line of prose, and those boxes caused a bug reported as a maths error** (`VERIFICATION.md` §47). The x-part box and the constant box shared one reader, and empty meant nought in both — so clearing the x-part swung `6` instead of `(x + 6)` and the refusal named a shape the student had never typed. An empty x-part means **one** now, `x` and `-x` are read, nine readings are asserted, and every refusal names the shape that actually landed.
 
 ```
 60             -> 6 | 10  -> 2 | 3, 5 | 2
