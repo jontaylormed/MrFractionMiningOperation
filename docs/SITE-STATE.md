@@ -22,7 +22,7 @@
 | **Screens** | **five** — surface, the Stamp Mill, the Casting Shed, the mine, the forge |
 | **Layers** | **five**, all reachable from the first screen, none gated on anything |
 | **Instruments** | **seven**, all made at the forge, none granted |
-| **Validation** | `MF.validate()` → **8,416 checks / 22 groups / 0 errors**, two controls that must fail, and do |
+| **Validation** | `MF.validate()` → **8,415 checks / 22 groups / 0 errors**, two controls that must fail, and do |
 
 > **A check is only as wide as the space it sweeps.** The `truthy` group reported 0 errors across 642 checks while **1,970 Decimal Dial states printed a falsehood**, because it tested each lump's original integer coefficients and never nudged `c` — the one thing the dial exists to do. It now sweeps every slider position the control can reach (3,287 checks). Ask of any green result: *what did it not look at?*
 | **Runtime** | Zero dependencies, no build step, no network requests, no storage, runs from `file://` |
@@ -109,6 +109,20 @@ The belt is **a leather strap with the instruments hanging in loops**, not a lis
 **The ladder buys reach and sight, never an answer.** The Steel Pick only takes the metal every term is already carrying — a move the student demonstrated at the forge to earn it — and the Auger narrows where to look without naming anything. The hand pick is free and always in your hands; the `nogate` group still walks every layer with an empty yard and no tools.
 
 > **An instrument may say what is there, never what to swing.** The `sheet` group asserts the Lantern's reading never contains the factorisation, with a control that prints it and must be caught. **The pair scanner is no longer free** — it is the Drill's reading now, the same move §10a made with the casting preview, and it also stopped the swing button falling below the fold.
+
+## The forge: orders on the left, the yard and the mold on the right
+
+**The yard is on screen from the moment you walk in.** It used to appear only *inside* the mold, after an order had already been chosen — so a student picked a tool with no idea what metal they were holding and found out afterwards. What you own is the whole reason one order is possible and another is not, so it sits beside the board while you choose.
+
+- **Left — the order board.** Seven orders as cards on a board, each showing whether it is in your hands, whether you have the metal, or whether it needs more. **Every one opens**, including the ones you cannot fill: a disabled button explains nothing, and an open mold can say what it is waiting for, which is what sends you back down the shaft knowing what to look for. Clicking one you have already made explains it instead of remaking it.
+- **Right, top — the yard**, drawn as the same place it is in the mine. Metal on the rack is **clickable and goes straight into the mold**; metal already in the mold greys out on the rack. Clicking a metal with no order open says so rather than doing nothing.
+- **Right, below — the craft floor.** The mold, its slots, the pour, and the casting. Cold and plainly labelled until an order is picked.
+
+**The heap is drawn here and is deliberately not spendable.** The forge takes native metal; rock still carrying a seam is no use until it has been broken. It is not a button, because a control that looks live and refuses is worse than a thing that plainly is not one — and seeing it sitting there unusable is what sends a student back down. That is the sink working.
+
+On one column the **work comes first** and the seven-item board follows it, the same rule the mine follows — verified stacked at 760px with the yard above the board.
+
+> **A denominator that had been silently wrong:** the `contrast` group mounted the forge **cold**, so the crucible, the filled and empty slots and the not-on-the-rack warning were never measured. It now mounts it with a mold open and something in it. Verified by counting the probe's contents rather than trusting the total, which went *down* — the cold plate left the sweep as the mold entered it.
 
 ## The forge, and the instruments
 

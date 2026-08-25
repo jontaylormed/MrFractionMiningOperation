@@ -548,3 +548,21 @@ A rename gives you three options and only one of them is honest. **Delete the ch
 - **A check that hardcodes a name is coupled to that name.** When you rename, grep for the string in the instruments before you grep for it in the copy — the copy is visible and the assertion is not.
 - **After moving an assertion, reintroduce the fault it was written for.** "It still passes" is not evidence; it is the same evidence a deleted check gives you. The Tea Room test took ten seconds.
 - **The same applies to a class registry.** `MF.ANIM_TRANSFORM_CLASSES` lost `rm-scale` and gained `rm-stamp` in the same edit that replaced the balance with a stamp battery. A new animated part that is not in that list is not checked, and nothing anywhere says so — so the registry is updated in the same commit as the part, and the new entry is proved by planting a transform on it.
+
+## 45. A green sweep of a screen in its resting state has not swept the screen
+
+The `contrast` group mounts every screen and measures every run of text on it. It reported 0 errors on the forge for as long as the forge has existed. It had never measured the mold.
+
+> Mounted cold, `MF.SCREENS.forge` draws an order board and a plate reading *the mold is cold*. **The crucible, the filled slots, the empty slots and the "not on the rack yet" warning only exist once an order is picked** — and nothing picked one, so none of them was ever in the denominator.
+
+The same shape had already been fixed once on the mine, where the probe deliberately digs a lump, sets it on the anvil and advances it past the assay so the working surfaces are on screen when the sweep runs. The forge was left in its resting state and nobody noticed, because a screen with nothing wrong on it and a screen with nothing measured on it both report zero.
+
+**And the fix produced a smaller number.** Contrast went from 240 checks to 236 — because the cold plate and Mr Factor's paragraph left the sweep as the crucible and slots entered it. **A total that moves in the wrong direction is not evidence either way**; the only thing that settled it was counting what the probe actually contained: `crucible 0 → 1`, `slots 0 → 2`, `filled ingots 0 → 1`.
+
+**The rules.**
+
+- **Mount every screen in its WORKING state, not its resting one.** A probe that does not push the screen into the state a student spends their time in is measuring the waiting room.
+- **When you widen a sweep, assert what it now contains** — do not read the total. Totals move for two reasons and they look identical.
+- **Ask it of every screen you add a mode to.** A panel that only appears after a click is invisible to any check that never clicks.
+
+> **And a hazard in the instrument itself.** Probing this build from the browser console with `var S = document.getElementById('screen')` **overwrites the page's own `S()` SVG helper**, and every scene builder then throws `S is not a function`. The build's graceful failure text — *"This screen did not build. That is a fault in the mine, not in you."* — is what appeared, and it reads exactly like a real defect. This is §35 again, from a new direction: **the probe damaged the subject.** Scope everything in an IIFE, and never take a bare global name in a page whose helpers are `S`, `E`, `H`, `q` and `on`.

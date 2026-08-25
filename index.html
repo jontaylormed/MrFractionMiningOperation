@@ -155,6 +155,71 @@ input[type=range]{width:100%; accent-color:var(--ore); height:44px}
 }
 .minegrid > *{min-width:0}
 
+/* ---- THE FORGE: orders on the left, the yard and the mold on the right.
+       Same rule as the mine on one column - the WORK goes first and the list
+       of what could be made follows it, because a seven-item board stacked on
+       top pushes the mold below the fold. ---- */
+.forgegrid{display:grid; grid-template-columns:290px minmax(0,1fr); gap:18px; align-items:start}
+@media (max-width:980px){
+  .forgegrid{grid-template-columns:minmax(0,1fr)}
+  .forgegrid > *:nth-child(2){order:-1}
+}
+.forgegrid > *{min-width:0}
+.orderboard{position:sticky; top:12px; background:linear-gradient(180deg,#3A3129,#241C15);
+  border:3px solid #1B1511; border-radius:14px; padding:13px 11px 14px;
+  box-shadow:inset 0 8px 22px rgba(0,0,0,.5)}
+@media (max-width:980px){ .orderboard{position:static} }
+.orderboard h3{font-size:14px; letter-spacing:.09em; text-transform:uppercase; color:var(--lamp); margin-bottom:4px}
+.orderboard > .hint{color:#D9C39C; margin-bottom:9px}
+/* an order is a card hung on the board, not a row in a table */
+.order{position:relative; display:flex; gap:10px; align-items:center; width:100%; text-align:left;
+  cursor:pointer; border:2px solid #6B5B48; border-radius:10px; padding:9px 11px; margin:0 0 7px;
+  min-height:44px; font-family:var(--body); color:#F0E2C8;
+  background:linear-gradient(180deg,#463A2E,#3A3129)}
+.order:hover{border-color:var(--lamp); background:linear-gradient(180deg,#55432F,#463A2E)}
+.order:focus-visible{outline:3px solid var(--lamp); outline-offset:2px}
+.order .oic{font-size:21px; line-height:1; flex:0 0 auto}
+.order .otx{display:flex; flex-direction:column; gap:1px; min-width:0}
+.order .onm{font-family:var(--display); font-size:15px; color:#FFF3DE}
+.order .ost{font-size:11px; letter-spacing:.05em; text-transform:uppercase; color:#C9B695}
+.order.ready .ost{color:#8FE0C0}
+.order.short{opacity:.82}
+.order.short .ost{color:#E8B87A}
+.order.made{background:linear-gradient(180deg,#2E3B34,#25302B); border-color:#3F6B58}
+.order.made .ost{color:#8FE0C0}
+.order.made:after{content:"\2713"; position:absolute; right:11px; top:50%; transform:translateY(-50%);
+  color:#8FE0C0; font-size:17px}
+.order[aria-current=true]{border-color:var(--lamp); box-shadow:0 0 0 2px rgba(232,163,61,.5)}
+
+/* metal on the rack, as something you pick up */
+.metalbtn{position:relative; display:inline-flex; align-items:center; gap:7px; cursor:pointer;
+  background:linear-gradient(170deg,#E6ECF2 0%,#BFC9D3 58%,#9DA9B5 100%);
+  color:#141B22; border:0; padding:9px 13px 10px 11px; margin:2px; min-height:44px;
+  clip-path:polygon(10% 0%, 92% 3%, 100% 42%, 94% 92%, 40% 100%, 4% 88%, 0% 34%);
+  font-family:var(--display); font-size:14px;
+  filter:drop-shadow(0 2px 1px rgba(0,0,0,.45))}
+.metalbtn:before{content:""; width:11px; height:11px; flex:0 0 auto;
+  background:linear-gradient(150deg,#8A7358,#4A3F34);
+  clip-path:polygon(20% 6%, 78% 0%, 100% 40%, 86% 88%, 40% 100%, 4% 70%, 0% 28%)}
+.metalbtn.pure{background:linear-gradient(160deg,#F2DCA4,#C8A24B); color:#2E2208}
+.metalbtn.pure:before{background:linear-gradient(150deg,#F2DCA4,#A5811F)}
+.metalbtn:hover{filter:brightness(1.1) drop-shadow(0 2px 1px rgba(0,0,0,.45))}
+.metalbtn:focus-visible{outline:3px solid var(--lamp); outline-offset:2px}
+/* already in the mold: still there, still readable, plainly not available */
+.metalbtn.spent{opacity:.4; cursor:default}
+/* rock in the forge's yard is shown and is NOT a button - the furnace will
+   not take it, and a control that looks live and refuses is worse than a
+   thing that plainly is not one */
+.heaprock.cold{cursor:default; opacity:.72}
+
+.craft{margin-top:16px}
+.crafthead{display:flex; gap:9px; align-items:center; font-family:var(--display); font-size:20px; margin-bottom:6px}
+.crafthead .ci{font-size:24px}
+.coldmold{font-family:var(--display); font-size:19px; color:var(--ink-soft);
+  background:var(--paper-3); border:2px dashed var(--tan); border-radius:12px;
+  padding:20px; text-align:center; margin-bottom:12px}
+.moldslot{min-width:78px; text-align:center}
+
 /* the shaft / layers */
 .shaft{position:sticky; top:12px}
 @media (max-width:1080px){ .shaft{position:static} }
@@ -1606,6 +1671,11 @@ MF.yardList = function(){                     /* one entry per metal held */
     var e = MF.state.yard[k];
     for(var i=0;i<e.count;i++) out.push({key:k, ingot:e.ingot});
   });
+  /* its position in this list IS its identity while it is being spent - the
+     forge's slots hold yardIdx, and the rack is drawn in shelves that filter
+     the list, so the index has to travel with the entry rather than being the
+     loop counter of whichever subset happens to be on screen */
+  out.forEach(function(e, i){ e.idx = i; });
   return out;
 };
 MF.spendFromYard = function(keys){
@@ -2560,6 +2630,21 @@ MF.toolReady = function(key){
   return false;
 };
 
+/* =========================================================================
+   THE FORGE, IN TWO COLUMNS.
+
+   ORDERS ON THE LEFT, THE YARD AND THE MOLD ON THE RIGHT - and the yard is
+   there from the moment you walk in. It used to appear only INSIDE the mold,
+   after an order had already been chosen, so a student picked a tool with no
+   idea what metal they were holding and found out afterwards. What you own is
+   the whole reason one order is possible and another is not; it has to be on
+   screen while you choose.
+
+   The heap is drawn here too, and it is deliberately not spendable. The forge
+   takes native metal - rock still carrying a seam is no use until it has been
+   broken, and seeing it sitting there unusable is what sends a student back
+   down the shaft. That is the sink working.
+   ========================================================================= */
 MF.SCREENS.forge = function(host){
   var st = MF.state.forge;
   host.appendChild(MF.roomScene('forge'));
@@ -2568,38 +2653,14 @@ MF.SCREENS.forge = function(host){
     'native metal goes into a mold and one formed tool comes out. That is <b>distributing</b>, it happens nowhere else in the operation, ' +
     'and the mold forms around what you pour rather than being chosen. The part is sound, or it is scrap.'));
 
-  /* ---- the order board ---- */
-  var board = E('div','panel');
-  board.appendChild(H('div','panel-tag','THE ORDER BOARD'));
-  board.appendChild(H('p','hint','Every tool here is made by doing the very thing it then helps you with — the making of it IS the lesson. ' +
-    'Nothing on this board is required, and nothing below is locked because you have not built it.'));
-  var grid = E('div','cards');
-  Object.keys(MF.TOOLS).forEach(function(key){
-    var t = MF.TOOLS[key], made = MF.hasTool(key), ready = MF.toolReady(key);
-    var c = E('div','card' + (made?'':(ready?'':' locked')));
-    c.appendChild(H('div','tagline-pill', made ? 'IN YOUR HANDS' : (ready ? 'YOU HAVE THE METAL' : 'NEEDS MORE METAL')));
-    c.appendChild(H('h3',null, t.ic + ' ' + t.nm));
-    c.appendChild(H('div','why', '<b>' + t.order + '</b><br>' + t.ds));
-    c.appendChild(H('div','hint','<b>To forge it:</b> ' + t.forge));
-    if(made){
-      c.appendChild(H('div','note good','Forged. It is on your belt and it is working.'));
-    } else {
-      var b = E('button','btn primary go', ready ? 'Craft it' : 'Not enough metal yet'); b.type='button';
-      b.disabled = !ready;
-      on(b,'click',function(){ st.picked = key; st.slots = []; MF.go('forge'); });
-      c.appendChild(b);
-    }
-    grid.appendChild(c);
-  });
-  board.appendChild(grid);
-  host.appendChild(board);
+  var grid = E('div','forgegrid');
+  var colL = E('div'), colR = E('div');
+  grid.appendChild(colL); grid.appendChild(colR);
+  host.appendChild(grid);
 
-  /* NOT "&& !hasTool" - a successful forge sets the tool, so that condition
-     stopped painting the mold at the exact moment the casting appeared in it.
-     The student poured, the tool was made, and they never saw it happen. */
-  if(st.picked) MF.paintForgeMold(host, st);
-  else host.appendChild(MF.says('<b>Mr Factor:</b> Pick an order and I will open the mold. ' +
-    'Whatever you drop in gets used up — so if you spend your only (x + 3), you will be going back down for another.'));
+  MF.paintOrders(colL, st);
+  MF.paintForgeYard(colR, st);
+  MF.paintCraft(colR, st);
 
   var back = E('div','row'); back.style.marginTop='14px';
   back.appendChild(MF.jump('Back to the mine &rarr;','mine'));
@@ -2607,68 +2668,184 @@ MF.SCREENS.forge = function(host){
   host.appendChild(back);
 };
 
-MF.paintForgeMold = function(host, st){
-  var t = MF.TOOLS[st.picked];
-  var panel = E('div','panel'); panel.style.background='#fff';
-  panel.appendChild(H('div','panel-tag','THE MOLD &mdash; ' + t.nm.toUpperCase()));
+/* ---------- the left column: what can be made ---------- */
+MF.paintOrders = function(host, st){
+  var box = E('div','orderboard');
+  box.appendChild(H('h3',null,'The Order Board'));
+  box.appendChild(H('div','hint','Every tool here is made by doing the very thing it then helps you with. Nothing on this board is required.'));
 
-  /* once poured, the casting IS the screen - the slots are gone and what the
-     student is looking at is the thing they made */
-  if(st.result){
-    panel.appendChild(st.result);
-    host.appendChild(panel);
+  Object.keys(MF.TOOLS).forEach(function(key){
+    var t = MF.TOOLS[key], made = MF.hasTool(key), ready = MF.toolReady(key);
+    var b = E('button','order' + (made?' made':(ready?' ready':' short')));
+    b.type = 'button';
+    b.setAttribute('data-order', key);
+    if(st.picked===key && !made) b.setAttribute('aria-current','true');
+    b.appendChild(H('span','oic', t.ic));
+    var txt = E('span','otx');
+    txt.appendChild(H('span','onm', t.nm));
+    txt.appendChild(H('span','ost', made ? 'in your hands' : (ready ? 'you have the metal' : 'needs more metal')));
+    b.appendChild(txt);
+    b.setAttribute('aria-label', t.nm + ' — ' + (made ? 'already made and on your belt' :
+      (ready ? 'you have the metal for this. Open the mold.' : 'you do not have the metal for this yet. Open the mold to see what it wants.')));
+    /* EVERY ORDER OPENS. A disabled button is a dead control that explains
+       nothing; an open mold can say what it is waiting for, which is the
+       thing that sends you back down the shaft knowing what to look for. */
+    on(b,'click',function(){
+      if(made){ MF.explainTool(key, b); return; }
+      st.picked = key; st.slots = []; st.result = null;
+      MF.go('forge');
+    });
+    box.appendChild(b);
+  });
+  host.appendChild(box);
+};
+
+/* ---------- the right column, top: what you are holding ---------- */
+MF.paintForgeYard = function(host, st){
+  var box = E('div','panel'); box.style.marginTop='0';
+  box.appendChild(H('div','panel-tag','THE YARD'));
+
+  var open = !!st.picked && !st.result;
+  var want = open ? MF.slotsWanted(MF.TOOLS[st.picked]) : 0;
+
+  var place = E('div','yardplace');
+  place.appendChild(MF.yardScene());
+  var inner = E('div','yardin');
+
+  /* ---- the rack: what the forge can actually spend ---- */
+  var rk = E('div','shelfrow');
+  rk.appendChild(H('div','ylab','THE RACK &mdash; native metal, and the forge spends this'));
+  var have = MF.yardList();
+  if(!have.length){
+    rk.appendChild(H('div','yempty','Bare. Break a lump all the way down in the mine and the metal is racked here.'));
+  } else {
+    var rack = E('div','rack');
+    [['plain metal', function(g){ return g.m===0; }],
+     ['metal with an x in it', function(g){ return g.m!==0; }]].forEach(function(grp){
+      var these = have.filter(function(e){ return grp[1](e.ingot); });
+      if(!these.length) return;
+      var shelf = E('div','shelf');
+      shelf.appendChild(H('div','sh', grp[0]));
+      var row = E('div','metalrow');
+      these.forEach(function(e){
+        var used = st.slots.some(function(s){ return s.yardIdx===e.idx; });
+        var b = E('button','metalbtn' + (isPlainMetal(e.ingot)?' pure':'') + (used?' spent':''));
+        b.type='button';
+        b.setAttribute('data-metal', e.idx);
+        b.appendChild(H('span','ml', e.ingot.label || ingotText(e.ingot)));
+        b.setAttribute('aria-label', (e.ingot.label || ingotText(e.ingot)) +
+          (used ? ' — already in the mold' : (open ? ' — drop it in the mold' : ' — pick an order first')));
+        b.title = used ? 'Already in the mold' : (open ? 'Drop it in the mold' : 'Pick an order first');
+        on(b,'click',function(){
+          /* NOT A DEAD CONTROL WHEN NOTHING IS OPEN. It says what is missing
+             instead of doing nothing, which is how the old chips behaved. */
+          if(used){ st.note = 'That one is already in the mold. Click it in the slot to take it back out.'; MF.go('forge'); return; }
+          if(!open){ st.note = 'Pick an order from the board on the left first, and the mold will open.'; MF.go('forge'); return; }
+          if(st.slots.length >= want){ st.note = 'The mold is full. Take something out of a slot if you want to change it.'; MF.go('forge'); return; }
+          st.slots.push({yardIdx:e.idx, key:e.key, ingot:e.ingot});
+          st.note = null;
+          MF.go('forge');
+        });
+        row.appendChild(b);
+      });
+      shelf.appendChild(row);
+      rack.appendChild(shelf);
+    });
+    rk.appendChild(rack);
+  }
+  inner.appendChild(rk);
+
+  /* ---- the heap: here, and deliberately not spendable ---- */
+  var hp = E('div','heaprow');
+  hp.appendChild(H('div','ylab','THE HEAP &mdash; still carrying a seam'));
+  if(!MF.state.rockpile.length){
+    hp.appendChild(H('div','yempty','Nothing tipped here. Anything you leave half-broken in the mine lands on the heap.'));
+  } else {
+    var heap = E('div','heap');
+    MF.state.rockpile.forEach(function(o){
+      var r = E('div','heaprock cold');
+      r.appendChild(H('span','hv', MF.oreLabel(o)));
+      r.setAttribute('aria-label', MF.oreText(o) + ' — still rock. The forge cannot spend it until it is broken down.');
+      heap.appendChild(r);
+    });
+    hp.appendChild(heap);
+    hp.appendChild(H('div','yhint','<b>The furnace will not take rock.</b> Anything on the heap still has a seam in it — break it down in the mine and the metal comes back here.'));
+  }
+  inner.appendChild(hp);
+
+  place.appendChild(inner);
+  box.appendChild(place);
+  host.appendChild(box);
+};
+
+/* how many slots an order's mold has. This used to special-case matchedPair to
+   2 - which its own `count` already says, and every other order's does too. */
+MF.slotsWanted = function(t){ return t.need.count; };
+
+/* ---------- the right column, below: the mold ---------- */
+MF.paintCraft = function(host, st){
+  var box = E('div','panel craft');
+  box.appendChild(H('div','panel-tag','THE CRAFT FLOOR'));
+
+  if(st.note){
+    box.appendChild(H('div','note', st.note));
+    st.note = null;
+  }
+
+  if(!st.picked){
+    box.appendChild(H('div','coldmold','The mold is cold.'));
+    box.appendChild(MF.says('<b>Mr Factor:</b> Pick an order off the board and I will open the mold. ' +
+      'Whatever you drop in gets used up — so if you spend your only (x + 3), you will be going back down for another.'));
+    host.appendChild(box);
     return;
   }
-  panel.appendChild(H('p','hint','<b>' + t.forge + '</b> Drop metals into the slots, then pour.'));
 
-  /* slots: filled or empty, drawn - never counted */
+  var t = MF.TOOLS[st.picked];
+  box.appendChild(H('div','crafthead','<span class="ci">' + t.ic + '</span><b>' + t.nm + '</b>'));
+
+  /* once poured, the casting IS the panel - the slots are gone and what the
+     student is looking at is the thing they made */
+  if(st.result){
+    box.appendChild(st.result);
+    host.appendChild(box);
+    return;
+  }
+
+  box.appendChild(H('p','hint','<b>' + t.forge + '</b>'));
+
+  var want = MF.slotsWanted(t);
   var cru = E('div','crucible');
   cru.appendChild(H('h4',null,'What is going in'));
   var slotRow = E('div','ingotrow');
-  var want = (t.need.kind==='matchedPair') ? 2 : t.need.count;
   for(var i=0;i<want;i++){
     (function(idx){
       var got = st.slots[idx];
       if(got){
-        var chip = H('div','ingot' + (isPlainMetal(got.ingot)?' pure':''), ingotText(got.ingot));
-        chip.style.cursor='pointer'; chip.title='Take it back out';
-        on(chip,'click',function(){ st.slots.splice(idx,1); MF.go('forge'); });
+        var chip = E('button','ingot' + (isPlainMetal(got.ingot)?' pure':''));
+        chip.type='button';
+        chip.appendChild(document.createTextNode(ingotText(got.ingot)));
+        chip.title='Take it back out';
+        chip.setAttribute('aria-label', ingotText(got.ingot) + ' is in the mold. Take it back out.');
+        on(chip,'click',function(){ st.slots.splice(idx,1); st.note=null; MF.go('forge'); });
         slotRow.appendChild(chip);
       } else {
-        var empty = H('div','slot','<span style="opacity:.6">empty</span>');
-        empty.style.minWidth='74px'; empty.style.textAlign='center';
+        var empty = H('div','slot moldslot','<span style="opacity:.6">empty</span>');
         slotRow.appendChild(empty);
       }
     })(i);
   }
   cru.appendChild(slotRow);
-  panel.appendChild(cru);
+  cru.appendChild(H('div','hint', st.slots.length
+    ? 'Click one to take it back out.'
+    : 'Click a metal on the rack above to drop it in.'));
+  box.appendChild(cru);
 
-  /* the yard, as things you can pick up */
-  var have = MF.yardList();
-  panel.appendChild(H('div','hint','<b>Your yard.</b> Click a metal to drop it in the mold.'));
-  if(!have.length){
-    panel.appendChild(H('div','note warn','Nothing in the yard. Smelt some ore and bring the metals back.'));
-  } else {
-    /* a working yard runs to dozens of metals and filled the whole screen.
-       It scrolls in its own box rather than pushing the pour button off. */
-    var row = E('div','chips');
-    row.style.maxHeight='196px'; row.style.overflowY='auto';
-    row.style.border='2px solid var(--rule)'; row.style.borderRadius='11px';
-    row.style.padding='9px'; row.style.background='var(--paper-2)';
-    have.forEach(function(e, idx){
-      var used = st.slots.filter(function(s){ return s.yardIdx===idx; }).length;
-      if(used) return;
-      var b = E('button','chip', ingotText(e.ingot)); b.type='button';
-      if(isPlainMetal(e.ingot)) b.style.borderColor='#8A6A2A';
-      on(b,'click',function(){
-        if(st.slots.length >= want) return;
-        st.slots.push({yardIdx:idx, key:e.key, ingot:e.ingot});
-        MF.go('forge');
-      });
-      row.appendChild(b);
-    });
-    panel.appendChild(row);
+  /* WHAT IT IS WAITING FOR, when you cannot fill it. The old board disabled
+     the button and said "not enough metal yet", which named nothing you could
+     go and look for. */
+  if(!MF.toolReady(st.picked) && st.slots.length < want){
+    box.appendChild(H('div','note warn','<b>Not on the rack yet.</b> ' + t.forge +
+      ' Nothing is locked — break more ore and the metal comes back here.'));
   }
 
   var full = st.slots.length === want;
@@ -2678,10 +2855,8 @@ MF.paintForgeMold = function(host, st){
   on(pour,'click',function(){ MF.forgePour(st); });
   pourRow.appendChild(pour);
   if(!full) pourRow.appendChild(H('div','hint','The mold is not full yet.'));
-  panel.appendChild(pourRow);
-
-  if(st.result) panel.appendChild(st.result);
-  host.appendChild(panel);
+  box.appendChild(pourRow);
+  host.appendChild(box);
 };
 
 MF.forgePour = function(st){
@@ -4988,7 +5163,8 @@ MF.validate = function(){
   /* populate hard: tools forged, a stocked yard, a lump mid-smelt - the states
      where the new surfaces actually have text on them */
   var cSaved = {yard:MF.state.yard, tools:MF.state.tools, cart:MF.state.cart, sel:MF.state.selected,
-                bench:MF.state.anvil, mine:MF._mine, layer:MF.state.layer, face:MF.state.face, fl:MF.state.faceLayer};
+                bench:MF.state.anvil, mine:MF._mine, layer:MF.state.layer, face:MF.state.face, fl:MF.state.faceLayer,
+                forge:MF.state.forge};
   MF.state.yard={}; MF.state.tools={lantern:{forged:true},shifter:{forged:true},drill:{forged:true}};
   var cRng = makeRng(5150);
   for(var ci=0; ci<10; ci++){
@@ -5009,6 +5185,16 @@ MF.validate = function(){
         var lump = MF.digOre(4, cRng);
         if(lump){ MF.state.cart=[lump]; MF.state.selected=lump; MF.state.anvil=MF.anvilInit(lump); MF.state.anvil.step='break'; }
         MF.paintMine();
+      } else if(scr==='forge'){
+        /* WITH A MOLD OPEN, and with something in it. Mounted cold the forge
+           shows an order board and a "the mold is cold" plate - the crucible,
+           the filled slots, the empty slots and the not-on-the-rack warning
+           were all outside the sweep, which is the denominator question this
+           project keeps having to ask of a green result. */
+        MF.state.forge = {picked:'lantern', slots:[], result:null};
+        var cHave = MF.yardList();
+        if(cHave.length) MF.state.forge.slots = [{yardIdx:cHave[0].idx, key:cHave[0].key, ingot:cHave[0].ingot}];
+        MF.SCREENS.forge(probe);
       } else { MF.SCREENS[scr](probe); }
     } catch(e){ errs.push('contrast: screen '+scr+' threw: '+e.message); return; }
     MF._measureContrast(probe).forEach(function(m){
@@ -5029,6 +5215,7 @@ MF.validate = function(){
   MF.state.yard=cSaved.yard; MF.state.tools=cSaved.tools; MF.state.cart=cSaved.cart;
   MF.state.selected=cSaved.sel; MF.state.anvil=cSaved.bench; MF._mine=cSaved.mine;
   MF.state.layer=cSaved.layer; MF.state.face=cSaved.face; MF.state.faceLayer=cSaved.fl;
+  MF.state.forge=cSaved.forge;
 
   /* 5k. THE INSTRUMENT PANEL, AND THE RULE THAT MAKES INSTRUMENTS LEGITIMATE.
 
