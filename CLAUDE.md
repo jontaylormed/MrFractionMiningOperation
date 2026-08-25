@@ -5,10 +5,20 @@ Open it and it works. **`MF.validate()` in the console is the first instrument.*
 
 ## What this is
 
-Ore is any expression. **Smelting separates** (factoring). An **ingot** is an
-irreducible — a prime and an irreducible polynomial are *the same object*.
-The **mold combines** (distributing). **Pouring is the only correctness signal
-in the build.** Tools assist; they never gate. Nothing is scored.
+Ore is any expression. **The mine breaks, the forge smelts** — and that split
+is load-bearing:
+
+- **In the mine you BREAK.** Name one factor, swing, and either the seam runs
+  or the pick glances off. What is left goes back under the pick. That is
+  **factoring**, and it is repeated until nothing left will come apart.
+- What will not come apart is **native metal** — a prime and an irreducible
+  polynomial are *the same object*. That is the whole thesis.
+- **In the forge you POUR.** Metal into a mold, one formed object out. That is
+  **distributing**, it happens in exactly one place, and it makes tools.
+
+**Two correctness signals, one per place, both physical: the seam runs or it
+does not; the casting is sound or it is scrap.** Neither is a mark. Tools
+assist; they never gate. Nothing is scored.
 
 ## The five rules that have actually cost this project time
 
@@ -40,7 +50,7 @@ in the build.** Tools assist; they never gate. Nothing is scored.
 
 ```
 MF.validate()      // 0 errors, every group reports its denominator
-MF.playthrough(4)  // drives one lump: dig, assay, smelt, pour
+MF.playthrough(4)  // drives one lump: dig, assay, swing until nothing breaks
 ```
 
 Every check carries a control that must fail. When you add one, prove it by

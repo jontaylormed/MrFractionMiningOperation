@@ -338,6 +338,43 @@ input[type=range]{width:100%; accent-color:var(--ore); height:44px}
 .slot input{width:66px; text-align:center; font-family:var(--display); font-size:18px; padding:7px 6px; min-height:44px}
 .slot .paren{font-family:var(--display); font-size:22px; color:#E4D5BB; padding:0 2px}
 
+/* ---- the breaking floor: rock on one side of a swing, metal on the other.
+       A piece must SAY which it is without being read - rock is dark and
+       knocked about, native metal is a cast bar with a lit edge. ---- */
+.floorbox{background:linear-gradient(180deg,#3A3129,#241D18); border:3px solid var(--rock-3);
+  border-radius:14px; padding:14px; color:#F0E2C8}
+.floorbox h4{color:#FFE9C4; font-size:16px; margin-bottom:9px}
+.pieces{display:flex; gap:10px; flex-wrap:wrap; align-items:stretch}
+.piece{display:flex; flex-direction:column; gap:2px; align-items:center; cursor:pointer;
+  font-family:var(--body); padding:10px 15px; min-height:44px; min-width:78px;
+  border:2px solid transparent; border-radius:8px; position:relative}
+.piece .pv{font-family:var(--display); font-size:19px; line-height:1.15}
+.piece .pt{font-size:10px; letter-spacing:.08em; text-transform:uppercase; opacity:.8}
+/* still rock: the same knocked-corner silhouette the seam and the cart use */
+.piece.rock{background:linear-gradient(160deg,#7A6650,#4A3F34); color:#FFF3DE; border-color:#2E2620;
+  clip-path:polygon(7% 6%, 78% 0%, 100% 26%, 95% 82%, 62% 100%, 14% 94%, 0% 46%)}
+.piece.rock:hover{filter:brightness(1.18)}
+/* native metal: a cast bar, the same gold as a pure ingot elsewhere */
+.piece.native{background:linear-gradient(160deg,#F2DCA4,#C8A24B); color:#2E2208; border-color:#8A6A2A;
+  border-radius:7px 7px 10px 10px; cursor:default}
+.piece.native .pt{color:#6B4E12; opacity:1}
+/* under the pick: the lamp ring, the same one the seam uses for a chosen lump */
+.piece.under{box-shadow:0 0 0 3px var(--lamp), 0 0 12px 3px rgba(232,163,61,.4)}
+.piece:focus-visible{outline:3px solid var(--lamp); outline-offset:2px}
+@keyframes piecedrop{from{opacity:0; transform:translateY(-13px) scale(.88)}to{opacity:1; transform:translateY(0) scale(1)}}
+.piece.fresh{animation:piecedrop 420ms cubic-bezier(.2,.8,.3,1) 1}
+@keyframes pieceknock{0%{transform:translateY(0) scale(1)}34%{transform:translateY(2px) scale(.95)}
+  70%{transform:translateY(-1px) scale(1.03)}100%{transform:translateY(0) scale(1)}}
+.piece.knock{animation:pieceknock 280ms cubic-bezier(.3,1.4,.4,1) 1}
+
+/* the bar you cut the pick to */
+.cutbar{background:#241D18; border:2px dashed #6B5B48; border-radius:12px; padding:12px 14px; margin-top:12px; color:#E4D5BB}
+.cutbar .cutlab{font-size:11px; letter-spacing:.1em; text-transform:uppercase; color:var(--lamp); margin-bottom:3px}
+.cutbar .eq{color:#FFF3DE; margin-bottom:4px}
+.cutbar .hint{color:#C9B695}
+.cutbar input{width:70px; text-align:center; font-family:var(--display); font-size:18px; padding:7px 6px; min-height:44px}
+.cutbar .paren{font-family:var(--display); font-size:22px; color:#E4D5BB; padding:0 2px}
+
 /* casting */
 .casting{border-radius:12px; padding:14px; margin-top:12px; border:3px solid}
 .casting.clean{border-color:var(--vein); background:#F1F8F5}
@@ -374,6 +411,13 @@ input[type=range]{width:100%; accent-color:var(--ore); height:44px}
   background:linear-gradient(150deg,#8A7358,#4A3F34);
   clip-path:polygon(20% 6%, 78% 0%, 100% 40%, 86% 88%, 40% 100%, 4% 70%, 0% 28%)}
 .metal.pure:before{background:linear-gradient(150deg,#F2DCA4,#A5811F)}
+/* rock on the heap is NOT metal on the rack, and must not be mistaken for it:
+   dark, unlit, and it says so. Contrast measured on the dark rack. */
+/* #8A7358 measured 4.09:1 against #FFF3DE and the contrast sweep failed the
+   build over it on the first run. #7A6650 is 4.94:1 and is the same brown the
+   rock pieces on the floor start from. */
+.metal.rough{background:linear-gradient(170deg,#7A6650 0%,#5A4B3C 58%,#42382C 100%); color:#FFF3DE}
+.metal.rough:before{background:linear-gradient(150deg,#4A3F34,#241D18)}
 /* the bin the heap sits in */
 .orebin{background:linear-gradient(180deg,#4A3B2C,#2E2620); border:3px solid #241C15;
   border-radius:4px 4px 12px 12px; padding:10px 10px 12px; box-shadow:inset 0 6px 14px rgba(0,0,0,.5)}
@@ -1155,12 +1199,13 @@ MF.state = {
   layer:1,
   deepest:1,
   cart:[],            /* raw ore held, unsmelted - you may hoard freely */
-  yard:{},            /* ingotKey -> {ingot, count} */
+  yard:{},            /* ingotKey -> {ingot, count} - NATIVE METAL only */
+  rockpile:[],        /* ore tipped in the yard still carrying a seam */
   selected:null,
-  bench:null,
+  anvil:null,         /* the lump under the pick, and the floor around it */
   tools:{},           /* forged instruments - never granted, always made */
   forge:{slots:[], picked:null},
-  pours:0,
+  broken:0,
   rng: makeRng((Date.now()^0x5f3759df)>>>0)
 };
 
@@ -2819,7 +2864,7 @@ MF.paintFace = function(){
            assay, which is a real thing to have done - but off-screen, below the
            cart, so the click looked like nothing. It knocks now. */
         MF.state.selected = o;
-        MF.state.bench = null;
+        MF.state.anvil = null;
         MF.paintMine();
         MF.knockLump(o.id);
       });
@@ -2834,7 +2879,7 @@ MF.paintFace = function(){
   }
   host.appendChild(cartPanel);
 
-  if(MF.state.selected) MF.paintBench(host);
+  if(MF.state.selected) MF.paintAnvil(host);
   else if(MF.state.cart.length) host.appendChild(MF.says('<b>Mr Factor:</b> Pick a lump out of the cart and set it on the bench when you are ready. No hurry — the cart does not empty itself.'));
 };
 
@@ -2968,38 +3013,55 @@ MF.breakRock = function(idx){
   }, doneMs);
 };
 
-/* ---------- the bench: ASSAY -> SMELT -> POUR ---------- */
-MF.benchInit = function(ore){
+/* =========================================================================
+   THE BREAKING FLOOR.  ASSAY, then BREAK - and break again.
+
+   THERE IS NO CRUCIBLE HERE AND NO MOLD. You do not pour in the mine. You
+   name ONE thing that is in the rock, swing, and either the seam runs or the
+   pick glances off. What comes off lands on the floor beside it, and anything
+   on the floor still carrying a seam goes back under the pick.
+
+   That is the whole of it, and it is why 60 and x² − 5x + 6 are the same
+   problem: both come apart one factor at a time until what is left will not
+   come apart at all.
+
+   Pouring metal into a mold is DISTRIBUTION, it is the opposite move, and it
+   happens in exactly one place in this build - the forge, where it makes
+   tools. The mine breaks. The forge smelts.
+   ========================================================================= */
+MF.anvilInit = function(ore){
   return { ore:ore, step:'assay', assayTried:false,
-           pieces: ore.kind==='number' ? [ore.n] : null,
-           slots: [{m:1,k:0},{m:1,k:0}],
-           casting:null };
+           floor:[{ore:ore, id:1}],   /* every piece off this lump, in order */
+           seq:1,                     /* piece ids, so a repaint can find one */
+           at:0,                      /* which piece is under the pick */
+           raw:{m:'1', k:'0'},        /* what the student typed, kept verbatim */
+           last:null, swings:0 };
 };
-MF.paintBench = function(host){
+MF.paintAnvil = function(host){
   var ore = MF.state.selected;
-  if(!MF.state.bench || MF.state.bench.ore.id !== ore.id) MF.state.bench = MF.benchInit(ore);
-  var B = MF.state.bench;
+  if(!MF.state.anvil || MF.state.anvil.ore.id !== ore.id) MF.state.anvil = MF.anvilInit(ore);
+  var B = MF.state.anvil;
 
   var bench = E('div','bench');
-  bench.appendChild(H('div','panel-tag','THE BENCH'));
+  bench.appendChild(H('div','panel-tag','THE BREAKING FLOOR'));
 
-  /* the rack on the wall: the instruments are objects lying on the bench,
-     not a list in a sidebar. Empty racks say what they are for. */
+  /* the rack: the instruments are objects lying where you work, not a list in
+     a sidebar. Empty racks say what they are for. */
   var rack = E('div','toolrack');
-  rack.appendChild(H('span','rk','on the bench'));
+  rack.appendChild(H('span','rk','to hand'));
   var anyTool = false;
   Object.keys(MF.TOOLS).forEach(function(k){
     if(!MF.hasTool(k)) return;
     anyTool = true;
     rack.appendChild(H('span','tl','<span class="ic">'+MF.TOOLS[k].ic+'</span>'+MF.TOOLS[k].nm));
   });
-  if(!anyTool) rack.appendChild(H('span','empty','bare — the forge is where tools come from'));
+  if(!anyTool) rack.appendChild(H('span','empty','a bare pick — the forge is where the rest come from'));
   bench.appendChild(rack);
 
   bench.appendChild(H('div','eq', MF.oreLabel(ore)));
 
   var strip = E('div','stepstrip');
-  [['assay','ASSAY','what is this?'],['smelt','SMELT','separate it'],['pour','POUR','find out']].forEach(function(s){
+  [['assay','ASSAY','what is this?'],['break','BREAK','take it apart']].forEach(function(s){
     var d = E('div','st' + (B.step===s[0]?' on':'') + (MF.stepDone(B,s[0])?' done':''));
     d.appendChild(H('b',null,s[1]));
     d.appendChild(H('div','s', s[2]));
@@ -3010,13 +3072,12 @@ MF.paintBench = function(host){
   /* the call is always drawn - interactive at the assay step, settled after -
      so the reason a student gave stays with the lump instead of vanishing */
   MF.paintAssay(bench, B);
-  if(B.step==='smelt')     MF.paintSmelt(bench, B);
-  else if(B.step==='pour') MF.paintPour(bench, B);
+  if(B.step==='break') MF.paintBreak(bench, B);
 
   host.appendChild(bench);
 };
 MF.stepDone = function(B, step){
-  var order = {assay:0, smelt:1, pour:2};
+  var order = {assay:0, 'break':1};
   return order[step] < order[B.step];
 };
 
@@ -3086,7 +3147,7 @@ MF.paintAssay = function(host, B){
            which a passed gate still took clicks). */
         B.calledAs = k;
         B.calledWhy = why;
-        B.step = 'smelt';
+        B.step = 'break';
         MF.paintMine();
       } else {
         btn.setAttribute('data-result','no');
@@ -3110,131 +3171,212 @@ MF.balanced = function(seed, list){
   return out;
 };
 
-MF.paintSmelt = function(host, B){
-  var ore = B.ore, kind = MF.assayOf(ore);
+/* what the pick is cut to by default, for the shape of lump under it */
+MF.pickDefault = function(ore){
+  return (ore.kind==='number') ? {m:'0', k:'2'} : {m:'1', k:'0'};
+};
 
-  if(kind==='pure'){
-    /* Being RIGHT about an ingot used to shrink the bench by a third and take
-       every input away with it - the reward for reading the one object this
-       mine exists to teach was a smaller panel. It is a result now, and it is
-       given the room a result deserves. */
-    host.appendChild(H('p','hint','<b>Nothing to separate — and that is the answer, not the absence of one.</b> ' +
-      'You called it an ingot and the crucible agrees. It goes in and comes out the same thing.'));
-    var cru = E('div','crucible');
-    cru.appendChild(H('h4',null,'The crucible'));
-    var rowp = E('div','ingotrow');
-    var big = H('div','ingot pure', MF.oreText(ore));
-    big.style.fontSize='26px'; big.style.padding='16px 26px'; big.style.minWidth='150px';
-    big.style.boxShadow='0 0 0 4px rgba(232,163,61,.28), inset 0 3px 0 rgba(255,255,255,.5)';
-    rowp.appendChild(big);
-    cru.appendChild(rowp);
-    cru.appendChild(H('div','hint','The furnace did not fail. There is simply nothing in there but the thing itself.'));
-    host.appendChild(cru);
-    host.appendChild(H('div','note good','<b>' + (ore.kind==='number' ? 'A prime.' : 'An irreducible.') +
-      '</b> ' + (ore.kind==='number'
-        ? 'Further down the mine you will meet polynomial ones — <b>x² + 4</b> is the same kind of object as this, and the smelter treats them identically.'
-        : 'This is the same kind of object as a prime. A number like 97 and a lump like this are one idea wearing different clothes, and that is the whole reason this mine exists.')));
-    if(ore.kind==='poly'){
-      var r = MF.smeltPoly(ore.a,ore.b,ore.c);
-      /* a single-root list printed "runs at -1.417 and ?" - realRoots has
-         length 1 for a linear lump and for a repeated root */
-      host.appendChild(H('div','note','<b>Why nothing came out.</b> ' + (r.realRoots
-        ? (r.realRoots.length > 1
-            ? 'There is a seam in there, but it runs at ' + num(Math.round(r.realRoots[0]*1000)/1000) + ' and ' +
-              num(Math.round(r.realRoots[1]*1000)/1000) + ' — not on whole numbers, so no bracket of whole numbers will ever land on it.'
-            : 'There is a seam in there, but it runs at ' + num(Math.round(r.realRoots[0]*1000)/1000) +
-              ' — not a whole number, so no bracket of whole numbers will ever land on it.')
-        : 'No seam at all, on whole numbers or on decimals. This one genuinely does not come apart.')));
-    }
-    var b = E('button','btn primary','Set it in the yard'); b.type='button';
+MF.paintBreak = function(host, B){
+  var pieces = B.floor;
+  var done = pieces.every(function(p){ return MF.isNative(p.ore); });
+
+  /* THE PICK NEVER RESTS ON FINISHED METAL. Without this the swing bar sat
+     over an ingot and every swing came back "nothing left in that one",
+     which reads as a broken control rather than as a finished piece. */
+  if(!done && (B.at >= pieces.length || MF.isNative(pieces[B.at].ore))){
+    for(var i=0;i<pieces.length;i++){ if(!MF.isNative(pieces[i].ore)){ B.at=i; break; } }
+  }
+
+  host.appendChild(H('p','hint', pieces.length===1
+    ? '<b>Name one thing that is in there, and swing.</b> If the seam runs, the lump comes apart and both pieces land on the floor. Nothing here tells you beforehand whether it will.'
+    : '<b>Anything still rock goes back under the pick.</b> Break it again.'));
+
+  /* ---- the floor: every piece this lump has come apart into ---- */
+  var fl = E('div','floorbox');
+  fl.appendChild(H('h4',null, pieces.length===1 ? 'On the anvil' : 'On the floor'));
+  var rowf = E('div','pieces');
+  pieces.forEach(function(p, idx){
+    var nat = MF.isNative(p.ore);
+    var b = E('button','piece' + (nat?' native':' rock') + (idx===B.at && !nat?' under':'') + (p.fresh?' fresh':''));
+    b.type='button';
+    b.setAttribute('data-piece', p.id);
+    b.appendChild(H('span','pv', MF.oreLabel(p.ore)));
+    b.appendChild(H('span','pt', nat ? 'native metal' : 'still rock'));
+    b.setAttribute('aria-label', MF.oreText(p.ore) + (nat
+      ? ' — native metal. Nothing in it comes apart.'
+      : ' — still rock. Put it under the pick.'));
     on(b,'click',function(){
-      var ing = (ore.kind==='number') ? {m:0,k:ore.n} : null;
-      if(ing) MF.addToYard(ing);
-      else MF.addToYard({m:0,k:0, poly:{a:ore.a,b:ore.b,c:ore.c}, label:MF.oreText(ore)});
-      MF.finishLump(B, true, 'It went in an ingot and came out an ingot.');
+      if(nat) B.last = {ok:false, native:true,
+        why:'Nothing left in that one. ' + MF.oreText(p.ore) + ' does not come apart — it is an element.'};
+      else { B.at = idx; B.last = null; }
+      MF.paintMine();
+      MF.knockPiece(p.id);
     });
-    host.appendChild(b);
-    return;
-  }
-
-  if(ore.kind==='number'){ MF.paintNumberSmelt(host, B); return; }
-
-  /* polynomial: fill the crucible with ingots of the form m·x + k */
-  host.appendChild(H('p','hint','<b>Separate it.</b> Say what metals are in there. Each ingot is <b>m&middot;x + k</b> — ' +
-    'set m to 0 for a plain number, or k to 0 for something like 3x. Nothing here tells you whether you are right; ' +
-    'the mold does that.'));
-
-  var cru = E('div','crucible');
-  cru.appendChild(H('h4',null,'The crucible &mdash; what came out'));
-  var slots = E('div','slotwrap');
-  B.slots.forEach(function(g, idx){
-    var sl = E('div','slot');
-    sl.appendChild(H('label',null,'ingot ' + (idx+1)));
-    var inner = E('div','row'); inner.style.gap='4px';
-    inner.appendChild(H('span','paren','('));
-    /* g.raw* holds what the student TYPED. Writing a computed value back into
-       the box put the literal string "NaN" in front of them the moment they
-       typed a letter, and the warning vanished on the next repaint. */
-    var mi = document.createElement('input'); mi.type='text'; mi.inputMode='numeric';
-    mi.value = (g.rawM!=null) ? g.rawM : String(g.m);
-    mi.setAttribute('aria-label','ingot '+(idx+1)+' x coefficient');
-    on(mi,'input',function(){ g.rawM = mi.value; g.m = MF.readInt(mi.value); MF.previewCasting(B); });
-    inner.appendChild(mi);
-    inner.appendChild(H('span','paren','x +'));
-    var ki = document.createElement('input'); ki.type='text'; ki.inputMode='numeric';
-    ki.value = (g.rawK!=null) ? g.rawK : String(g.k);
-    ki.setAttribute('aria-label','ingot '+(idx+1)+' constant');
-    on(ki,'input',function(){ g.rawK = ki.value; g.k = MF.readInt(ki.value); MF.previewCasting(B); });
-    inner.appendChild(ki);
-    inner.appendChild(H('span','paren',')'));
-    sl.appendChild(inner);
-    slots.appendChild(sl);
+    rowf.appendChild(b);
   });
-  cru.appendChild(slots);
-  var addRow = E('div','row'); addRow.style.marginTop='10px';
-  if(B.slots.length < 3){
-    var add = E('button','btn','+ another ingot'); add.type='button';
-    add.style.background='#241D18'; add.style.color='#E4D5BB'; add.style.borderColor='#6B5B48';
-    on(add,'click',function(){ B.slots.push({m:1,k:0}); MF.paintMine(); });
-    addRow.appendChild(add);
-  }
-  if(B.slots.length > 2){
-    var rm = E('button','btn','− fewer'); rm.type='button';
-    rm.style.background='#241D18'; rm.style.color='#E4D5BB'; rm.style.borderColor='#6B5B48';
-    on(rm,'click',function(){ B.slots.pop(); MF.paintMine(); });
-    addRow.appendChild(rm);
-  }
-  cru.appendChild(addRow);
-  host.appendChild(cru);
+  fl.appendChild(rowf);
+  host.appendChild(fl);
 
-  /* the scanner is a tool, not an answer: it lists pairs, it does not pick one */
-  var target = (ore.a===1||ore.a===0) ? ore.c : ore.a*ore.c;
-  if(ore.a!==0 && ore.c!==0 && Math.abs(target)<600){
-    var sc = E('div','panel'); sc.style.background='#fff'; sc.style.margin='12px 0 0';
-    sc.appendChild(H('div','hint','<b>Pair scanner.</b> Every pair that multiplies to <b>' + num(target) + '</b>' +
-      (ore.a===1?'':' (that is a·c)') + '. You are looking for the one that also adds to <b>' + num(ore.b) + '</b>.'));
-    /* NO highlight. The scanner lists every pair; picking the one that also
-       adds to b is the student's job, and marking the winning row was the
-       answer printed above the pour - which is meant to be the only judge. */
-    MF.scanTable(sc, target, null);
-    host.appendChild(sc);
+  /* ---- what the last swing did. A description of the rock, every time ---- */
+  if(B.last){
+    if(B.last.ok){
+      host.appendChild(H('div','note good','<b>The seam runs.</b> <b>' + MF.oreLabel(B.last.left) +
+        '</b> came out of it, and <b>' + MF.oreLabel(B.last.right) + '</b> is what was left behind.'));
+      /* the rail, if it is on the belt: where the x² in that lump came from */
+      var l=B.last.left, r=B.last.right, flat = function(o){ return o.kind==='number' || o.a===0; };
+      if(MF.hasTool('shifter') && flat(l) && flat(r))
+        MF.paintShifterRail(host, MF.oreToIngot(l), MF.oreToIngot(r));
+    } else {
+      host.appendChild(H('div','note','<b>' + B.last.why + '</b>' +
+        (B.last.native ? '' : ' Nothing is lost — the rock is exactly as it was, and you can swing again.')));
+    }
   }
 
-  /* THE SHIFTER'S POWER lives in its own host and is repainted on every
-     keystroke by previewCasting - built once at paint time it showed the slot
-     values from before the student typed, which is worse than not showing it. */
-  var railHost = E('div'); host.appendChild(railHost); B._rail = railHost;
-  if(MF.hasTool('dial') && ore.kind==='poly') MF.paintDial(host, B);
+  /* ---- the swing, or the end of the lump ---- */
+  if(done){
+    host.appendChild(H('div','note good','<b>Every piece on the floor is native metal.</b> ' +
+      'Nothing in any of them comes apart any further. That is the end of the lump — ' +
+      'not a failure to get further into it.'));
+  } else {
+    var t = pieces[B.at];
+    /* the boxes are cut for the lump under the pick: an x-shaped pick on a
+       number is a swing that can never land */
+    if(B.rawFor !== t.id){ B.raw = MF.pickDefault(t.ore); B.rawFor = t.id; }
 
-  var prev = E('div'); prev.id='casting-preview'; host.appendChild(prev);
-  B._preview = prev;
-  var pourRow = E('div','row'); pourRow.style.marginTop='12px';
-  var pour = E('button','btn primary big','Pour it into the mold'); pour.type='button';
-  on(pour,'click',function(){ B.step='pour'; MF.paintMine(); });
-  pourRow.appendChild(pour);
-  pourRow.appendChild(H('div','hint','The mold forms around whatever you poured. You will see the casting.'));
-  host.appendChild(pourRow);
-  MF.previewCasting(B, prev);
+    var cut = E('div','cutbar');
+    cut.appendChild(H('div','cutlab','UNDER THE PICK'));
+    cut.appendChild(H('div','eq sm', MF.oreLabel(t.ore)));
+    cut.appendChild(H('div','hint', t.ore.kind==='number'
+      ? 'Name a whole number that runs through it.'
+      : 'Name one thing that is in there. Leave the x-part at 0 to take out a plain number.'));
+
+    var inner = E('div','row'); inner.style.gap='4px'; inner.style.alignItems='center';
+    if(t.ore.kind!=='number'){
+      inner.appendChild(H('span','paren','('));
+      var mi = document.createElement('input'); mi.type='text'; mi.inputMode='numeric';
+      mi.value = B.raw.m; mi.setAttribute('aria-label','the x part of what you are taking out');
+      on(mi,'input',function(){ B.raw.m = mi.value; });
+      on(mi,'keydown',function(e){ if(e.key==='Enter'){ e.preventDefault(); MF.swing(B); } });
+      inner.appendChild(mi);
+      inner.appendChild(H('span','paren','x +'));
+    }
+    var ki = document.createElement('input'); ki.type='text'; ki.inputMode='numeric';
+    ki.value = B.raw.k;
+    ki.setAttribute('aria-label', t.ore.kind==='number'
+      ? 'the number you are taking out' : 'the number part of what you are taking out');
+    on(ki,'input',function(){ B.raw.k = ki.value; });
+    on(ki,'keydown',function(e){ if(e.key==='Enter'){ e.preventDefault(); MF.swing(B); } });
+    inner.appendChild(ki);
+    if(t.ore.kind!=='number') inner.appendChild(H('span','paren',')'));
+    cut.appendChild(inner);
+
+    var swr = E('div','row'); swr.style.marginTop='10px';
+    var sw = E('button','btn primary big', MF.hasTool('pick') ? 'Swing the deep pick' : 'Swing the pick');
+    sw.type='button';
+    on(sw,'click',function(){ MF.swing(B); });
+    swr.appendChild(sw);
+    swr.appendChild(H('div','hint','Nothing here says whether it will run. The rock does.'));
+    cut.appendChild(swr);
+    host.appendChild(cut);
+    B._cutbar = cut;
+
+    /* the scanner lists pairs, it does not pick one */
+    var o = t.ore;
+    if(o.kind==='poly' && o.a!==0 && o.c!==0){
+      var tgt = (o.a===1) ? o.c : o.a*o.c;
+      if(Math.abs(tgt) < 600){
+        var sc = E('div','panel'); sc.style.background='#fff'; sc.style.margin='12px 0 0';
+        sc.appendChild(H('div','hint','<b>Pair scanner.</b> Every pair that multiplies to <b>' + num(tgt) + '</b>' +
+          (o.a===1?'':' (that is a·c)') + '. You are looking for the one that also adds to <b>' + num(o.b) + '</b>.'));
+        MF.scanTable(sc, tgt, null);
+        host.appendChild(sc);
+      }
+    }
+    if(MF.hasTool('dial') && o.kind==='poly') MF.paintDial(host, {ore:o});
+  }
+
+  /* ---- the ways off the floor. Always at least one. ---- */
+  var exits = E('div','row'); exits.style.marginTop='14px';
+  if(done){
+    var carry = E('button','btn primary','Carry the metal to the yard'); carry.type='button';
+    on(carry,'click',function(){ MF.tipFloor(B, 'Native metal on the rack.'); });
+    exits.appendChild(carry);
+  } else {
+    var tip = E('button','btn primary','Tip what you have in the yard'); tip.type='button';
+    on(tip,'click',function(){ MF.tipFloor(B, 'Tipped in the yard. The rock is still there when you want it.'); });
+    exits.appendChild(tip);
+    exits.appendChild(H('div','hint','Metal goes on the rack, rock goes on the heap. The heap can be broken later.'));
+  }
+  var leave = E('button','btn','Leave it for now'); leave.type='button';
+  leave.style.background='#241D18'; leave.style.color='#E4D5BB'; leave.style.borderColor='#6B5B48';
+  /* the floor is NOT thrown away - the anvil is keyed to this lump, so picking
+     it up again puts every piece back exactly where it was left */
+  on(leave,'click',function(){ MF.state.selected = null; MF.paintMine(); });
+  exits.appendChild(leave);
+  host.appendChild(exits);
+};
+
+/* THE SWING. The only thing in the mine that decides anything, and all it
+   decides is whether the rock came apart. */
+MF.swing = function(B){
+  var t = B.floor[B.at];
+  if(!t || MF.isNative(t.ore)) return;
+  var isNum = t.ore.kind==='number';
+  var m = isNum ? 0 : MF.readInt(B.raw.m);
+  var k = MF.readInt(B.raw.k);
+  B.swings++;
+  if(!isFinite(m) || !isFinite(k)){
+    B.last = {ok:false, why:'A pick is cut to a whole shape. Those boxes only take whole numbers.'};
+    MF.paintMine(); MF.glanceOff(); return;
+  }
+  var r = MF.breakOff(t.ore, {m:m, k:k});
+  if(!r.ok){
+    B.last = {ok:false, why:r.why, reason:r.reason};
+    MF.paintMine(); MF.glanceOff(); return;
+  }
+  var a = {ore:r.left, id:++B.seq, fresh:true}, b2 = {ore:r.right, id:++B.seq, fresh:true};
+  B.floor.splice(B.at, 1, a, b2);
+  B.last = {ok:true, why:r.why, left:r.left, right:r.right};
+  /* the pick moves itself to the next thing that is still rock */
+  var nx = -1;
+  for(var i=0;i<B.floor.length;i++){ if(!MF.isNative(B.floor[i].ore)){ nx=i; break; } }
+  if(nx >= 0) B.at = nx;
+  B.rawFor = null;
+  MF.paintMine();
+  setTimeout(function(){ a.fresh=false; b2.fresh=false; }, 700);
+};
+
+/* the pick bounces and the rock does not move: a swing that did not land has
+   to be felt at the pick, not only read underneath it */
+MF.glanceOff = function(){
+  var B = MF.state.anvil;
+  var bar = B && B._cutbar;
+  if(!bar || !bar.isConnected) return;
+  if(window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+  bar.classList.remove('shudder'); void bar.getBoundingClientRect();
+  bar.classList.add('shudder');
+  setTimeout(function(){ bar.classList.remove('shudder'); }, 360);
+};
+
+/* every click on a piece is answered, the same rule as the lumps in the seam */
+MF.knockPiece = function(id){
+  var host = MF._mine && MF._mine.mid;
+  var el = host && host.querySelector('.piece[data-piece="'+id+'"]');
+  if(!el) return;
+  el.classList.remove('knock'); void el.getBoundingClientRect();
+  el.classList.add('knock');
+  setTimeout(function(){ el.classList.remove('knock'); }, 320);
+};
+
+/* THE FLOOR GOES IN THE YARD: metal on the rack, rock on the heap. Rock is
+   never destroyed and never counted - it is ore you have not finished with,
+   and the heap is where you left it. */
+MF.tipFloor = function(B, why){
+  B.floor.forEach(function(p){
+    if(MF.isNative(p.ore)) MF.addToYard(MF.oreToIngot(p.ore));
+    else MF.state.rockpile.push(p.ore);
+  });
+  MF.finishLump(B, why);
 };
 MF.readInt = function(raw){
   var s = String(raw||'').trim().replace(/[−–—]/g,'-');
@@ -3242,70 +3384,16 @@ MF.readInt = function(raw){
   if(!/^-?\d+$/.test(s)) return NaN;
   return parseInt(s,10);
 };
-/* The preview element is passed in, NOT looked up by id. paintSmelt runs
-   while the bench is still detached, so q('#casting-preview') searched the
-   document, found nothing, and returned silently - the live preview was blank
-   on every single entry to the crucible and nothing errored. */
-/* THE LANTERN'S POWER, and it is not decoration.
-
-   This preview used to be free, which quietly broke the build's one rule: a
-   student could nudge the numbers until the preview matched the ore and the
-   pour became a formality. Now it is dark until you have forged the Lantern
-   out of three primes - and the forging of it IS distribution over plain
-   numbers, so the tool is earned by doing the thing it goes on to show you.
-
-   Before the Lantern: you pour, and the casting teaches you.
-   After it: you can see what you are building. Blind trial becomes reasoning. */
-MF.previewCasting = function(B, host){
-  host = host || B._preview; if(!host) return;
-  B._preview = host;
-  clear(host);
-  var bad = B.slots.some(function(g){ return !isFinite(g.m) || !isFinite(g.k); });
-  if(bad){ host.appendChild(H('div','note warn','One of those boxes is not a whole number. The crucible only holds whole metals.')); return; }
-
-  MF.paintShifterRail(B);          /* the rail follows every keystroke too */
-
-  if(!MF.hasTool('lantern')){
-    host.appendChild(H('div','hint','<span style="opacity:.75">The mold is dark. Pour it and the casting will tell you. ' +
-      '(A lantern would let you see it first — the forge knows how to make one.)</span>'));
-    return;
-  }
-
-  var prod = ingotProduct(B.slots);
-  var txt = prod.overflow ? 'something of degree ' + prod.degree : quad(prod.a,prod.b,prod.c);
-  var lit = E('div','note');
-  lit.style.borderLeftColor = 'var(--lamp)';
-  lit.innerHTML = '<b>&#128367; By lantern-light:</b> what you are holding would pour as <b>' + txt + '</b>';
-  host.appendChild(lit);
-
-  /* and the model that makes distribution visible rather than imagined */
-  if(!prod.overflow && B.slots.length===2 && B.slots.every(function(g){ return isFinite(g.m)&&isFinite(g.k); })){
-    var g1=B.slots[0], g2=B.slots[1];
-    MF.areaModel(host, {
-      rows:[{label:ingotText(g1)==='0'?'0':(g1.m===0?num(g1.k):(g1.m===1?'x':num(g1.m)+'x')), known:true},
-            {label:num(g1.k), known:true}],
-      cols:[{label:(g2.m===0?num(g2.k):(g2.m===1?'x':num(g2.m)+'x')), known:true},{label:num(g2.k), known:true}],
-      cells:[
-        [{kind:'sq', text: (g1.m*g2.m===0?'0':(g1.m*g2.m===1?'x²':num(g1.m*g2.m)+'x²'))},
-         {kind:'x', text: xt2(g1.m*g2.k), negative:(g1.m*g2.k)<0}],
-        [{kind:'x', text: xt2(g1.k*g2.m), negative:(g1.k*g2.m)<0},
-         {kind:'k', text: num(g1.k*g2.k), negative:(g1.k*g2.k)<0}]
-      ],
-      sideMode:'show',
-      caption:'Every corner is one of the four products. The two middle tiles are the same kind of thing, so they run together.'
-    });
-  }
-};
 function xt2(k){ if(k===0) return '0'; if(k===1) return 'x'; if(k===-1) return '−x'; return num(k)+'x'; }
 
 /* THE SHIFTER'S POWER: the four products, named and traced, so x·x becoming x²
-   is watched rather than asserted. Repainted on every keystroke. */
-MF.paintShifterRail = function(B, host){
-  host = host || B._rail; if(!host) return;
-  clear(host);
-  if(!MF.hasTool('shifter')) return;
-  if(B.slots.length!==2) return;
-  var s1=B.slots[0], s2=B.slots[1];
+   is watched rather than asserted.
+   TAKES TWO INGOTS DIRECTLY. It used to read B.slots and repaint into a host
+   it had cached - both of which belonged to a crucible that no longer exists.
+   On the breaking floor the two things it traces are the two pieces a swing
+   just made, so it is handed them. */
+MF.paintShifterRail = function(host, s1, s2){
+  if(!host || !s1 || !s2) return;
   if(!isFinite(s1.m)||!isFinite(s1.k)||!isFinite(s2.m)||!isFinite(s2.k)) return;
 
   var rail = E('div','panel'); rail.style.background='#fff'; rail.style.margin='12px 0 0';
@@ -3332,49 +3420,6 @@ MF.paintShifterRail = function(B, host){
   rail.appendChild(H('div','hint','The two shaded rows are the same kind of thing, so they run together: ' +
     '<b>' + xt2(s1.m*s2.k) + '</b> and <b>' + xt2(s1.k*s2.m) + '</b> make <b>' + xt2(mid) + '</b>.'));
   host.appendChild(rail);
-};
-
-/* the number path: split, and keep splitting, until every piece is an ingot */
-MF.paintNumberSmelt = function(host, B){
-  host.appendChild(H('p','hint','<b>Split it, and keep splitting.</b> Choose any cut you like — every route reaches the same metals.'));
-  var cru = E('div','crucible');
-  cru.appendChild(H('h4',null,'The crucible'));
-  var row = E('div','ingotrow');
-  var allPure = true;
-  B.pieces.forEach(function(v, idx){
-    if(isPrime(v)){
-      row.appendChild(H('div','ingot pure', num(v)));
-    } else {
-      allPure = false;
-      var box = E('div');
-      box.appendChild(H('div','ingot', num(v)));
-      var chips = E('div','chips'); chips.style.marginTop='4px';
-      factorPairs(v).filter(function(p){ return p[0]!==1; }).forEach(function(p){
-        var b = E('button','btn', num(p[0])+' × '+num(p[1])); b.type='button';
-        b.style.minHeight='38px'; b.style.padding='5px 10px'; b.style.fontSize='13px';
-        on(b,'click',function(){
-          B.pieces.splice(idx,1,p[0],p[1]);
-          MF.paintMine();
-        });
-        chips.appendChild(b);
-      });
-      box.appendChild(chips);
-      row.appendChild(box);
-    }
-  });
-  cru.appendChild(row);
-  host.appendChild(cru);
-  if(allPure){
-    host.appendChild(H('div','note good','<b>Everything in there is an ingot now.</b> Nothing splits any further.'));
-    var pour = E('button','btn primary big','Pour it into the mold'); pour.type='button';
-    on(pour,'click',function(){
-      B.slots = B.pieces.map(function(v){ return {m:0,k:v}; });
-      B.step='pour'; MF.paintMine();
-    });
-    host.appendChild(pour);
-  } else {
-    host.appendChild(H('p','hint','Keep cutting until every piece is pure.'));
-  }
 };
 
 /* the decimal dial - gear. This is where integers stop being an assumption. */
@@ -3437,91 +3482,12 @@ MF.scanTable = function(host, target, wanted){
   return rows.length;
 };
 
-/* ---------- POUR: the only correctness signal in the build ---------- */
-MF.paintPour = function(host, B){
-  var ore = B.ore;
-  var prod = ingotProduct(B.slots);
-  var want = (ore.kind==='number') ? {a:0,b:0,c:ore.n} : {a:ore.a,b:ore.b,c:ore.c};
-  var clean = !prod.overflow && prod.a===want.a && prod.b===want.b && prod.c===want.c;
 
-  /* the pour itself, drawn: molten metal falls from the crucible into the mold
-     and the casting comes out of it. The spectacle rewards the work; it never
-     reports a quantity and there is nothing to score. */
-  var pourArt = E('div','stage'); pourArt.style.background = 'linear-gradient(180deg,#3A3129,#241D18)';
-  pourArt.style.borderColor = '#6B5B48';
-  var PW=420, PH=190;
-  var psvg = S('svg',{viewBox:'0 0 '+PW+' '+PH, role:'img',
-    'aria-label': clean ? 'Molten metal pours into the mold and a clean casting forms.'
-                        : 'Molten metal pours into the mold and the casting comes out misshapen.'});
-  psvg.appendChild(S('path',{d:'M120 26 q46 -14 92 0 l-12 42 q-34 -10 -68 0 Z',fill:'#7C838A',stroke:'#4A5158','stroke-width':'2'}));
-  psvg.appendChild(S('path',{d:'M132 34 q34 -9 68 0 l-5 17 q-29 -8 -58 0 Z',fill:'#E2600F'}));
-  var stream = S('rect',{class:'moltenstream',x:'160',y:'66',width:'11',height:'56',rx:'5',fill:'#FFB347'});
-  psvg.appendChild(stream);
-  psvg.appendChild(S('path',{d:'M96 122 h140 l-14 46 h-112 Z',fill:'#4A3F34',stroke:'#2E2620','stroke-width':'3'}));
-  if(clean){
-    psvg.appendChild(S('rect',{x:'250',y:'104',width:'116',height:'40',rx:'6',fill:'#F2DCA4',stroke:'#8A6A2A','stroke-width':'3'}));
-    psvg.appendChild(S('rect',{x:'258',y:'110',width:'100',height:'10',rx:'4',fill:'#FFF3DE',opacity:'.75'}));
-  } else {
-    psvg.appendChild(S('path',{d:'M250 140 q16 -34 40 -18 q10 -30 34 -8 q28 -14 34 26 q-16 14 -54 8 q-34 8 -54 -8 Z',
-      fill:'#8C6A4B',stroke:'#5A4230','stroke-width':'3'}));
-    psvg.appendChild(S('path',{d:'M276 132 l12 -14 l6 16 l14 -12',fill:'none',stroke:'#3A2A1C','stroke-width':'3'}));
-  }
-  var lbl = S('text',{x:'308',y:'168','text-anchor':'middle','font-size':'13',
-    'font-family':'Verdana,system-ui,sans-serif',fill:'#D9C39C'});
-  lbl.textContent = clean ? 'it holds its shape' : 'it will not hold its shape';
-  psvg.appendChild(lbl);
-  pourArt.appendChild(psvg);
-  host.appendChild(pourArt);
-
-  var cast = E('div','casting castingwrap ' + (clean?'clean':'deformed'));
-  cast.appendChild(H('h4',null, clean ? 'A clean casting.' : 'The casting came out deformed.'));
-
-  var poured = B.slots.map(function(g){
-    return (g.m===0) ? num(g.k) : '(' + linear(g.m,g.k) + ')';
-  }).join('');
-  cast.appendChild(H('div','eq sm','you poured ' + poured));
-  cast.appendChild(H('div','eq sm','the mold formed <b>' + (prod.overflow ? 'something of degree '+prod.degree : quad(prod.a,prod.b,prod.c)) + '</b>'));
-  cast.appendChild(H('div','eq sm','<span class="dim">the ore was</span> ' + MF.oreLabel(ore)));
-
-  if(clean){
-    cast.appendChild(H('p',null,'Those metals were in that rock. Nobody had to tell you — the mold told you.'));
-  } else {
-    var diffs = [];
-    if(prod.overflow){ diffs.push('you poured enough metal for a degree-' + prod.degree + ' object, and the ore is not that big'); }
-    else {
-      if(prod.a!==want.a) diffs.push('the x² part came out <b>' + num(prod.a) + '</b> and the ore has <b>' + num(want.a) + '</b>');
-      if(prod.b!==want.b) diffs.push('the middle came out <b>' + num(prod.b) + '</b> and the ore has <b>' + num(want.b) + '</b>');
-      if(prod.c!==want.c) diffs.push('the plain number came out <b>' + num(prod.c) + '</b> and the ore has <b>' + num(want.c) + '</b>');
-    }
-    cast.appendChild(H('p',null,'Where it went wrong: ' + diffs.join('; ') + '.'));
-    cast.appendChild(H('p','hint','Nothing is lost. The metal goes back in the crucible and you can pour again.'));
-  }
-  host.appendChild(cast);
-
-  var row = E('div','row'); row.style.marginTop='12px';
-  if(clean){
-    var keep = E('button','btn primary','Take the metals to the yard'); keep.type='button';
-    on(keep,'click',function(){
-      B.slots.forEach(function(g){ MF.addToYard({m:g.m,k:g.k}); });
-      MF.finishLump(B, true, 'Clean casting.');
-    });
-    row.appendChild(keep);
-  } else {
-    var again = E('button','btn primary','Back to the crucible'); again.type='button';
-    on(again,'click',function(){ B.step='smelt'; MF.paintMine(); });
-    row.appendChild(again);
-    var toss = E('button','btn','Put the lump back in the cart'); toss.type='button';
-    on(toss,'click',function(){ MF.state.bench=null; MF.state.selected=null; MF.paintMine(); });
-    row.appendChild(toss);
-  }
-  host.appendChild(row);
-};
-
-MF.finishLump = function(B, ok, why){
+MF.finishLump = function(B, why){
   var id = B.ore.id;
   MF.state.cart = MF.state.cart.filter(function(o){ return o.id!==id; });
-  MF.state.selected = null; MF.state.bench = null;
-  MF.state.pours++;
+  MF.state.selected = null; MF.state.anvil = null;
+  MF.state.broken++;
   MF.paintMine();
   MF.flash(why || 'Done.');
 };
@@ -3558,11 +3524,28 @@ MF.paintYard = function(){
   var box = E('div','yard');
 
   box.appendChild(H('h3',null,'The Yard'));
+
+  /* THE HEAP: ore tipped here still carrying a seam. Nothing is lost and
+     nothing is counted against you - it is rock you have not finished with,
+     and it stays exactly where you left it. (Stage 3 draws this properly; it
+     is listed here from the moment it can be filled, because state a student
+     cannot see is state that does not exist to them.) */
+  if(MF.state.rockpile.length){
+    box.appendChild(H('div','hint','<b>The heap</b> — tipped here, still carrying a seam.'));
+    var heap = E('div','metalrack orebin'); heap.style.marginBottom='12px';
+    var hrow = E('div','metalrow heap');
+    MF.state.rockpile.forEach(function(o){
+      hrow.appendChild(H('div','metal rough', MF.oreText(o)));
+    });
+    heap.appendChild(hrow);
+    box.appendChild(heap);
+  }
+
   var keys = Object.keys(MF.state.yard);
   if(!keys.length){
-    box.appendChild(H('div','hint','No metals yet. Everything you smelt cleanly ends up here.'));
+    box.appendChild(H('div','hint','No metal yet. Anything you break down to an element ends up on the rack.'));
   } else {
-    box.appendChild(H('div','hint','Metals you have pulled out of the rock.'));
+    box.appendChild(H('div','hint','<b>The rack</b> — native metal, broken out of the rock by you.'));
     /* plain metals on one shelf, x-carrying ones on another - a yard is sorted */
     var rack = E('div','metalrack orebin');
     [['plain metal', function(g){ return g.m===0; }],
@@ -4013,10 +3996,10 @@ MF.validate = function(){
   [[1,-5,6],[4,0,-4],[1,0,4]].forEach(function(t){
     chk('explain');
     var probe = {kind:'poly', a:t[0], b:t[1], c:t[2], layer:4, id:'exp-'+t[1]+'-'+t[2]};
-    var B = MF.benchInit(probe);
+    var B = MF.anvilInit(probe);
     var host = document.createElement('div');
     /* the state a student is in one instant after a correct call */
-    B.step = 'smelt';
+    B.step = 'break';
     B.calledAs = MF.assayOf(probe);
     B.calledWhy = MF.ASSAY[B.calledAs].tell;
     MF.paintAssay(host, B);
@@ -4138,7 +4121,7 @@ MF.validate = function(){
   /* populate hard: tools forged, a stocked yard, a lump mid-smelt - the states
      where the new surfaces actually have text on them */
   var cSaved = {yard:MF.state.yard, tools:MF.state.tools, cart:MF.state.cart, sel:MF.state.selected,
-                bench:MF.state.bench, mine:MF._mine, layer:MF.state.layer, face:MF.state.face, fl:MF.state.faceLayer};
+                bench:MF.state.anvil, mine:MF._mine, layer:MF.state.layer, face:MF.state.face, fl:MF.state.faceLayer};
   MF.state.yard={}; MF.state.tools={lantern:{forged:true},shifter:{forged:true},drill:{forged:true}};
   var cRng = makeRng(5150);
   for(var ci=0; ci<10; ci++){
@@ -4157,7 +4140,7 @@ MF.validate = function(){
         MF.SCREENS.mine(probe);
         MF.state.layer=4; MF.state.face=[]; MF.state.faceLayer=null;
         var lump = MF.digOre(4, cRng);
-        if(lump){ MF.state.cart=[lump]; MF.state.selected=lump; MF.state.bench=MF.benchInit(lump); MF.state.bench.step='smelt'; }
+        if(lump){ MF.state.cart=[lump]; MF.state.selected=lump; MF.state.anvil=MF.anvilInit(lump); MF.state.anvil.step='break'; }
         MF.paintMine();
       } else { MF.SCREENS[scr](probe); }
     } catch(e){ errs.push('contrast: screen '+scr+' threw: '+e.message); return; }
@@ -4177,7 +4160,7 @@ MF.validate = function(){
 
   document.body.removeChild(stage);
   MF.state.yard=cSaved.yard; MF.state.tools=cSaved.tools; MF.state.cart=cSaved.cart;
-  MF.state.selected=cSaved.sel; MF.state.bench=cSaved.bench; MF._mine=cSaved.mine;
+  MF.state.selected=cSaved.sel; MF.state.anvil=cSaved.bench; MF._mine=cSaved.mine;
   MF.state.layer=cSaved.layer; MF.state.face=cSaved.face; MF.state.faceLayer=cSaved.fl;
 
   /* 5i. EVERY CLICK ON A LUMP MUST BE ANSWERED.
@@ -4194,7 +4177,7 @@ MF.validate = function(){
          the forge, and nothing about whether the reaction looks any good. */
   var kSaved = {mine:MF._mine, layer:MF.state.layer, face:MF.state.face, fl:MF.state.faceLayer,
                 insp:MF.state.inspecting, cart:MF.state.cart, sel:MF.state.selected,
-                bench:MF.state.bench, brk:MF.state.breaking, scan:MF.state.scan,
+                bench:MF.state.anvil, brk:MF.state.breaking, scan:MF.state.scan,
                 knock:MF.knockRock};
   var kStage = document.createElement('div');
   kStage.style.cssText = 'position:fixed; left:-4000px; top:0; width:1100px';
@@ -4210,7 +4193,7 @@ MF.validate = function(){
     MF._mine = null;
     MF.state.layer = 3; MF.state.face = []; MF.state.faceLayer = null;
     MF.state.inspecting = null; MF.state.breaking = false; MF.state.cart = [];
-    MF.state.selected = null; MF.state.bench = null;
+    MF.state.selected = null; MF.state.anvil = null;
     MF.SCREENS.mine(kStage);
 
     /* a bare repaint must leave no reaction behind, or every assertion below
@@ -4311,7 +4294,7 @@ MF.validate = function(){
     var kRng = makeRng(4242);
     var kl = MF.digOre(3, kRng), kl2 = MF.digOre(3, kRng);
     if(kl && kl2){
-      MF.state.cart = [kl, kl2]; MF.state.selected = kl; MF.state.bench = null;
+      MF.state.cart = [kl, kl2]; MF.state.selected = kl; MF.state.anvil = null;
       MF.paintMine();
       var lumpEl = MF._mine.mid.querySelector('.lump[data-ore="'+kl.id+'"]');
       chk('knock');
@@ -4332,7 +4315,7 @@ MF.validate = function(){
   document.body.removeChild(kStage);
   MF._mine = kSaved.mine; MF.state.layer = kSaved.layer; MF.state.face = kSaved.face;
   MF.state.faceLayer = kSaved.fl; MF.state.inspecting = kSaved.insp; MF.state.cart = kSaved.cart;
-  MF.state.selected = kSaved.sel; MF.state.bench = kSaved.bench; MF.state.breaking = kSaved.brk;
+  MF.state.selected = kSaved.sel; MF.state.anvil = kSaved.bench; MF.state.breaking = kSaved.brk;
   MF.state.scan = kSaved.scan;
 
   /* 6. NOTHING ON SCREEN MAY HAVE A CEILING, A PERCENTAGE, OR A COMPARISON.
@@ -4383,29 +4366,56 @@ MF.playthrough = function(layer){
   var log = [], rng = makeRng(99);
   MF.go('mine');
   var ore = MF.digOre(layer, rng);
-  MF.state.cart.push(ore); MF.state.selected = ore; MF.state.bench = null;
+  MF.state.cart.push(ore); MF.state.selected = ore; MF.state.anvil = null;
   MF.paintMine();
-  var B = MF.state.bench = MF.benchInit(ore);
+  var B = MF.state.anvil = MF.anvilInit(ore);
   log.push('ore: ' + MF.oreText(ore));
   var kind = MF.assayOf(ore);
-  B.step = 'smelt'; log.push('assayed: ' + kind);
-  var res = (ore.kind==='number') ? null : MF.smeltPoly(ore.a,ore.b,ore.c);
-  if(ore.kind==='number'){
-    B.pieces = primeFactors(ore.n);
-    B.slots = B.pieces.map(function(v){ return {m:0,k:v}; });
-  } else if(kind==='pure'){
-    log.push('pure - nothing to smelt');
-    return {ore:MF.oreText(ore), kind:kind, log:log, clean:true, steps:log.length};
-  } else {
-    B.slots = res.ingots.slice();
+  B.step = 'break'; log.push('assayed: ' + kind);
+
+  /* SWING UNTIL NOTHING ON THE FLOOR CAN BE BROKEN. Each swing names one
+     factor from the engine and drives it through the real UI path, so what is
+     covered is the loop a student walks rather than the arithmetic alone. */
+  var swings = 0, glances = 0;
+  while(swings < 20){
+    var at = -1;
+    for(var i=0;i<B.floor.length;i++){ if(!MF.isNative(B.floor[i].ore)){ at=i; break; } }
+    if(at < 0) break;
+    var pc = B.floor[at].ore, one = null;
+    if(pc.kind==='number') one = {m:0, k:primeFactors(pc.n)[0]};
+    else {
+      var pr = MF.smeltPoly(pc.a,pc.b,pc.c);
+      one = (pr.ingots||[]).filter(function(g){
+        return !(g.m===0&&g.k===0) && !(g.m===0&&Math.abs(g.k)===1); })[0];
+    }
+    if(!one){ log.push('nothing named for ' + MF.oreText(pc)); break; }
+    B.at = at;
+    B.raw = {m:String(one.m), k:String(one.k)};
+    B.rawFor = B.floor[at].id;
+    var before = B.floor.length;
+    MF.swing(B);
+    swings++;
+    if(B.floor.length === before){ glances++; log.push('glanced off ' + MF.oreText(pc) + ' with ' + ingotText(one)); break; }
+    log.push('swung ' + ingotText(one) + ' at ' + MF.oreText(pc) + ' -> ' +
+             B.floor.map(function(p){ return MF.oreText(p.ore); }).join(' · '));
   }
-  var prod = ingotProduct(B.slots);
-  var want = (ore.kind==='number') ? {a:0,b:0,c:ore.n} : {a:ore.a,b:ore.b,c:ore.c};
-  var clean = !prod.overflow && prod.a===want.a && prod.b===want.b && prod.c===want.c;
-  log.push('poured: ' + B.slots.map(ingotText).join(' · '));
-  log.push('casting: ' + (prod.overflow?'overflow':quadText(prod.a,prod.b,prod.c)) + (clean?' - CLEAN':' - DEFORMED'));
-  B.step='pour'; MF.paintMine();
-  return {ore:MF.oreText(ore), kind:kind, clean:clean, log:log, steps:log.length};
+
+  var floor = B.floor.map(function(p){ return p.ore; });
+  var allNative = floor.every(MF.isNative);
+  /* the pieces must still be the lump that was dug - the mine's whole claim */
+  var acc = {kind:'number', n:1}, blew = false;
+  floor.forEach(function(pc2){
+    if(blew) return;
+    var mm = MF.oreMul(acc, pc2);
+    if(mm.overflow){ blew = true; return; }
+    acc = MF.asOre(mm.a, mm.b, mm.c);
+  });
+  var whole = !blew && MF.oreSame(MF.oreMul(acc, {kind:'number',n:1}), ore);
+  log.push('floor: ' + floor.map(MF.oreText).join(' · ') + (allNative ? ' - ALL NATIVE' : ' - STILL ROCK'));
+  log.push(whole ? 'the pieces rebuild the lump' : 'THE PIECES DO NOT REBUILD THE LUMP');
+  MF.paintMine();
+  return {ore:MF.oreText(ore), kind:kind, swings:swings, glances:glances,
+          native:allNative, whole:whole, log:log, steps:log.length};
 };
 
 /* =========================================================================

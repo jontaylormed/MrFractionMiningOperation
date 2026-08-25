@@ -1,7 +1,7 @@
 # What the site is, right now
 ### The single place any brief, agent or session reads to find out what exists
 
-**Last verified 2026-08-24** by `MF.validate()` run in a browser against this tree and by driving the seam's clicks by hand. The last **screenshot** pass was 2026-08-22 — the 2026-08-24 pass measured geometry from the DOM instead, because the preview pane renders a `file://` page as a static snapshot and its pixels are not the live page.
+**Last verified 2026-08-24** by `MF.validate()` run in a browser against this tree, by driving the seam's clicks by hand, and by walking a lump through assay → swing → glance-off → swing → yard through the real DOM. The last **screenshot** pass was 2026-08-22 — the 2026-08-24 pass measured geometry from the DOM instead, because the preview pane renders a `file://` page as a static snapshot and its pixels are not the live page.
 
 ---
 
@@ -18,28 +18,43 @@
 
 | | |
 |---|---|
-| **File** | **one** — `index.html`, ~3,600 lines, fully self-contained |
+| **File** | **one** — `index.html`, ~4,400 lines, fully self-contained |
 | **Screens** | **five** — surface, two workshops, the mine, the forge |
 | **Layers** | **five**, all reachable from the first screen, none gated on anything |
 | **Instruments** | **five**, all forged, none granted |
-| **Validation** | `MF.validate()` → **5,689 checks / 19 groups / 0 errors**, two controls that must fail, and do |
+| **Validation** | `MF.validate()` → **8,309 checks / 21 groups / 0 errors**, two controls that must fail, and do |
 
 > **A check is only as wide as the space it sweeps.** The `truthy` group reported 0 errors across 642 checks while **1,970 Decimal Dial states printed a falsehood**, because it tested each lump's original integer coefficients and never nudged `c` — the one thing the dial exists to do. It now sweeps every slider position the control can reach (3,287 checks). Ask of any green result: *what did it not look at?*
 | **Runtime** | Zero dependencies, no build step, no network requests, no storage, runs from `file://` |
 
 ## The metaphor, and it is load-bearing
 
-**Ore** is any expression. **Smelting separates** — that is factoring. An **ingot** is an irreducible: a prime, or a polynomial no whole-number seam runs through, *and they are the same object.* The **mold combines** — that is distributing. **Pouring** is the check.
+**Ore** is any expression. **The mine breaks and the forge smelts**, and the two acts never mix (`MINE-SPEC.md` §11).
 
-An ingot is not a lump that refused to break. It is **already pure**.
+| | THE MINE | THE FORGE |
+|---|---|---|
+| imagery | pick, rock, dust, anvil | furnace, crucible, molten stream, mold |
+| the act | **break** ore until what is left will not break | **pour** metal into a mold |
+| the maths | **factoring** | **distributing** |
+| the signal | the seam runs, or the pick glances off | the casting is sound, or it is scrap |
+
+What will not break further is **native metal** — a prime, or a polynomial no whole-number seam runs through, *and they are the same object*. It is not a lump that refused to break. It is **already an element**.
 
 ## The loop
 
-**ASSAY → SMELT → POUR**, everywhere, at every layer, in the forge as well as at the bench.
+**ASSAY → BREAK, and BREAK again.**
 
 - **Assay** is a gate: `display:none` on stage 2 until the seam is called correctly. Verified on a freshly built, never-clicked, detached task.
-- **Smelt** is where you say what metals are in there. **Nothing here judges you.**
-- **Pour** is the only correctness signal in the entire build. The mold forms around what you poured — you never choose the shape — and the casting is clean or visibly deformed, naming which term disagrees.
+- **Break** is one swing at a time. You name **one** thing that is in the rock; the seam runs and the lump comes apart into that factor and the remainder, or the pick glances off and the rock is described. **Both pieces land on the floor, and anything still carrying a seam goes back under the pick.**
+
+```
+60             -> 6 | 10  -> 2 | 3, 5 | 2
+2x² + 10x + 12 -> 2 | x² + 5x + 6 -> (x + 2) | (x + 3)
+```
+
+That is the payoff: prime factorisation and polynomial factoring are not two methods sharing a word, they are **one repeated act**.
+
+- **There are two correctness signals, one per place, and both are physical.** In the mine the rock came apart or it did not; in the forge the casting is sound or it is scrap, naming which term disagrees. Neither is a mark, and `MF.breakOff` multiplies every split back together before handing it over.
 
 ## The seam
 
@@ -51,7 +66,13 @@ The face is **2280px of rock**, several screens wide, scanned by dragging, scrol
 
 **The mine's hotspot is now the bluff, not a box below it.** It was `712,300 152×100`, starting 54 units below the top of the rock, so the arch, the timber head and the nameplate reading *The Mine* were all outside the target. It is now `712,244 162×132`, matching the graphic's drawn bounds. **The other three buildings' hotspots have not been re-measured against their graphics** — only the mine was.
 
-**Digging is decoupled from smelting.** You may descend to the deepest layer and hoard raw ore having processed nothing.
+**Digging is decoupled from breaking.** You may descend to the deepest layer and hoard raw ore having broken nothing.
+
+## The yard: a heap and a rack
+
+The yard takes **both**. Metal broken all the way down to an element goes on **the rack**, and that is what the forge spends. Ore tipped there still carrying a seam goes on **the heap** — nothing is destroyed, nothing is counted against you, and it is there when you come back for it. Leaving a lump half-broken has a visible consequence and still no mark anywhere.
+
+> **Not yet done (stage 3 of the §11 work):** the heap is currently *listed*, not drawn, and rock on it cannot yet be dragged back to the anvil. It is listed rather than hidden because state a student cannot see is state that does not exist to them.
 
 ## The forge, and the instruments
 

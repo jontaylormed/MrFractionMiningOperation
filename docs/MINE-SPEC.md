@@ -164,3 +164,52 @@ The rock face is a **seam 2280px long** — several screens wide — scanned alo
 Everything in §8's original in-list, **plus** the forge screen, the five forgeable instruments, and the scanning seam. Still out: the guided route, the fully open face, and all four challenge shafts.
 
 `MF.validate()` now runs **2027 checks across ten groups** — engine, classify, ore, print, pour, **forge**, **seam**, **nogate**, nogrades, control — with two controls that must fail, and do.
+
+---
+
+## 11. Amendment, 2026-08-24 — the mine breaks, the forge smelts
+
+A user decision moved the mold out of the mine. §3 said the bench has three verbs — assay, smelt, **pour** — and that a fourth is out of scope until the spec is revised. This is that revision, and it *removes* a verb rather than adding one.
+
+> **The user's words:** *"In the mine, they should be able to break up the ore, but they should only be pouring into molds in the Forge making tools. This is also pedagogically true because they are really factoring… it is ok to have a second breaking of the ore in the mine as if swinging the pick again because the lantern showed it was still a composite expression."*
+
+### 11a. The split, and why it is load-bearing
+
+| | THE MINE | THE FORGE |
+|---|---|---|
+| imagery | pick, rock, dust, anvil | furnace, crucible, molten stream, mold |
+| the act | **break** ore until what is left will not break | **pour** metal into a mold |
+| the maths | **factoring** | **distributing** |
+| the signal | the seam runs, or the pick glances off | the casting is sound, or it is scrap |
+
+The old bench had the student **distributing inside the mine** in order to check a factorisation. That is the opposite move performed in the wrong place, and it left the mine full of furnace equipment — crucible, molten stream, mold — that has nothing to do with breaking rock.
+
+**§2's table is amended:** the mine no longer smelts. What will not break further is **native metal**, which is exactly what a prime and an irreducible polynomial are. The identity survives without a furnace: nobody smelts to find native gold.
+
+### 11b. The verbs are now ASSAY → BREAK, and BREAK repeats
+
+You name **one** factor and swing. The seam runs and the lump comes apart into that factor and the remainder, or the pick glances off and the rock is described. **Both pieces land on the floor, and anything on the floor still carrying a seam goes back under the pick.**
+
+```
+60             -> 6 | 10  -> 2 | 3, 5 | 2
+2x² + 10x + 12 -> 2 | x² + 5x + 6 -> (x + 2) | (x + 3)
+```
+
+That is the amendment's whole pedagogical payoff: **prime factorisation and polynomial factoring stop being two methods that share a word and become one repeated act.** The recognition gate (§3's ASSAY) is untouched.
+
+### 11c. §6 is amended: there are two correctness signals, one per place
+
+The old §6 said the pour is the whole feedback mechanism and there is no second one. There are now two, and each belongs to the act it judges:
+
+- **In the mine:** the rock came apart, or it did not. Described, never marked — *"the pick glanced off"* is a fact about the rock.
+- **In the forge:** the casting is sound, or it is scrap, and you can see where.
+
+Neither has a ceiling, a percentage or a comparison. The `nogrades` group still asserts that mechanically.
+
+### 11d. The yard takes ore, not only metal
+
+The yard now has **a heap and a rack**. Metal broken all the way down goes on the rack and is what the forge spends; ore tipped there still carrying a seam goes on the heap and can be broken again later. Nothing is destroyed and nothing is counted against you.
+
+### 11e. Still out
+
+Everything §8 excludes, unchanged — the guided route, the fully open face, the four challenge shafts. **Also out:** any second way of checking a factorisation in the mine. The rock is the only judge there.
