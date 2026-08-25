@@ -487,6 +487,82 @@ input[type=range]{width:100%; accent-color:var(--ore); height:44px}
 .gear .ds{font-size:12px; color:var(--ink-soft)}
 .gear.new{border-color:var(--lamp); background:#FFF9EC}
 
+/* ---- THE BELT: a leather strap with the instruments hanging off it. You
+       take them off it to use them, which a list of cards never let you do. ---- */
+.beltstrap{position:relative; display:flex; gap:9px; flex-wrap:wrap; align-items:flex-start;
+  background:linear-gradient(180deg,#6B4A32 0%,#54371F 46%,#3E2917 100%);
+  border:2px solid #2E1E10; border-radius:9px; padding:13px 11px 12px; margin-top:6px;
+  box-shadow:inset 0 3px 0 rgba(255,255,255,.09), inset 0 -3px 0 rgba(0,0,0,.3)}
+/* the stitching along the strap */
+.beltstrap:before{content:""; position:absolute; left:6px; right:6px; top:5px; height:0;
+  border-top:2px dashed rgba(255,220,170,.32)}
+.beltstrap.bare{padding:11px}
+.beltempty{font-size:13px; font-style:italic; color:#E8D6BC}
+.beltloop{position:relative; padding-top:7px}
+/* the loop the tool hangs in */
+.beltloop:before{content:""; position:absolute; left:50%; top:-6px; width:15px; height:15px; margin-left:-7px;
+  border:3px solid #8A6A45; border-radius:50%; background:transparent}
+.belttool{display:flex; flex-direction:column; align-items:center; gap:2px; cursor:grab;
+  background:linear-gradient(170deg,#4A4038,#2E2620); color:#FFF3DE; border:2px solid #8A6A45;
+  border-radius:8px; padding:8px 10px; min-height:44px; min-width:62px; touch-action:none;
+  font-family:var(--body)}
+.belttool .bic{font-size:19px; line-height:1}
+.belttool .bnm{font-family:var(--display); font-size:10px; letter-spacing:.04em}
+.belttool:hover{border-color:var(--lamp); filter:brightness(1.15)}
+.belttool:active{cursor:grabbing}
+.belttool:focus-visible{outline:3px solid var(--lamp); outline-offset:2px}
+.dragghost.tool{background:linear-gradient(170deg,#4A4038,#2E2620)}
+
+/* ---- THE SLOT on a piece of rock ---- */
+.piececell{display:flex; flex-direction:column; align-items:center; gap:4px}
+.toolslot{cursor:pointer; width:100%; min-height:26px; padding:2px 6px;
+  background:#241D18; color:#8A7358; border:2px dashed #6B5B48; border-radius:6px;
+  font-family:var(--display); font-size:13px; line-height:1.3}
+.toolslot .si{display:block}
+.toolslot:hover{border-color:var(--lamp); color:#E4D5BB}
+.toolslot:focus-visible{outline:3px solid var(--lamp); outline-offset:2px}
+/* something is in it: the slot is lit and solid, not dashed and empty */
+.toolslot.filled{border-style:solid; border-color:var(--lamp); background:#3A2E1C; color:#FFE9C4;
+  box-shadow:0 0 9px rgba(232,163,61,.45)}
+/* a tool is in the air and this is somewhere it can go */
+.piece[data-tooldrop=open]{outline:2px dashed rgba(232,163,61,.7); outline-offset:2px}
+.piece[data-tooldrop=hot]{outline:3px solid #8FE0C0; outline-offset:2px}
+
+/* ---- THE INSTRUMENT PANEL. A real dialog: traps Tab, closes on Escape,
+       hands focus back to the slot it came from. ---- */
+@keyframes scrimin{from{opacity:0}to{opacity:1}}
+@keyframes sheetrise{from{transform:translateY(16px)}to{transform:translateY(0)}}
+.scrim{position:fixed; inset:0; z-index:70; display:flex; align-items:center; justify-content:center;
+  padding:18px; background:rgba(20,15,11,.72); animation:scrimin 160ms ease-out 1}
+.toolsheet{width:min(560px,100%); max-height:88vh; overflow-y:auto; background:var(--paper);
+  border:3px solid var(--rock-3); border-radius:15px; box-shadow:0 18px 44px rgba(0,0,0,.5);
+  animation:sheetrise 220ms cubic-bezier(.2,.8,.3,1) 1}
+.toolsheet:focus{outline:none}
+@media (prefers-reduced-motion:reduce){ .scrim,.toolsheet{animation:none} }
+.tshead{display:flex; gap:11px; align-items:center; padding:13px 15px;
+  background:linear-gradient(180deg,var(--rock-2),var(--rock)); border-radius:12px 12px 0 0; color:#FFF3DE}
+.tshead .ic{font-size:26px; line-height:1}
+.tshead .tsname{font-family:var(--display); font-size:19px; color:#FFE9C4}
+.tshead .tsore{font-size:13px; color:#E4D5BB}
+.tsclose{margin-left:auto; font-family:var(--body); font-size:13px; padding:9px 13px; min-height:44px;
+  cursor:pointer; border-radius:8px; border:2px solid #8A6A45; background:#241D18; color:#F0E2C8}
+.tsclose:hover{border-color:var(--lamp); color:#FFF3DE}
+.tsbody{padding:15px}
+.tsfoot{padding:0 15px 14px}
+/* the lantern's reading, which is the one a student sees most */
+.lampread{border-radius:11px; padding:14px 16px; border:3px solid}
+.lampread .big{font-family:var(--display); font-size:clamp(19px,3.2vw,25px); line-height:1.15}
+.lampread .sm{font-size:15px; margin-top:5px}
+.lampread.seamed{border-color:var(--lamp); background:#FFF6E3; color:#4A3410}
+.lampread.clear{border-color:var(--vein); background:#F1F8F5; color:#123F35}
+.pickrow{display:flex; gap:9px; flex-wrap:wrap}
+.pickbtn{display:flex; flex-direction:column; align-items:center; gap:3px; cursor:pointer;
+  background:#fff; border:2px solid var(--tan); border-radius:11px; padding:11px 13px; min-height:44px;
+  font-family:var(--body); color:var(--ink)}
+.pickbtn .ic{font-size:21px}
+.pickbtn .nm{font-family:var(--display); font-size:13px}
+.pickbtn:hover{border-color:var(--ore); background:#FFF6EA}
+
 /* =========================================================================
    THE WORLD. Everything below exists to make the page feel like a PLACE.
    Rules it follows: motion carries weight (a pick swings and lands, it does
@@ -1278,21 +1354,21 @@ MF.state = {
 MF.TOOLS = {
   lantern: {
     ic:'&#128367;', nm:'The Lantern', order:'a pit lantern for the lower workings',
-    ds:'Lights the mold: you can see what your metals will cast before you pour them.',
+    ds:'Hold it to a lump and it tells you whether a seam still runs through it — so you know when a piece is worth another swing, and when it is an element. It never says along what.',
     forge:'Three pure ingots, poured together. Primes multiplied is distribution at its plainest.',
     need:{kind:'primes', count:3},
     teaches:'distribution'
   },
   shifter: {
     ic:'&#8646;', nm:'The Shifter', order:'a gear shifter for the winding house',
-    ds:'The exponent rail: expands any product term by term, so x·x becoming x² is something you watch rather than something you are told.',
+    ds:'Held to a lump it shows where its x² can have come from — the two x-parts multiplied, which is the only place an x² ever comes from.',
     forge:'Two ingots that carry an x. Pour them and watch where the x² comes from.',
     need:{kind:'xIngots', count:2},
     teaches:'exponents'
   },
   drill: {
     ic:'&#9881;', nm:'The Drill', order:'a core drill for the assay office',
-    ds:'Reads your whole yard and reports the structure that keeps turning up.',
+    ds:'Takes a core out of a lump and reads every pair that could run through it. It lists them all and marks none.',
     forge:'A matched pair — (x + k) and (x − k). You forge it by casting a twin seam.',
     need:{kind:'matchedPair', count:2},
     teaches:'patterns'
@@ -1306,13 +1382,109 @@ MF.TOOLS = {
   },
   dial: {
     ic:'&#128207;', nm:'The Decimal Dial', order:'a fine-adjust dial for the bench',
-    ds:'Nudges a lump off the whole numbers so you can watch the seam vanish.',
+    ds:'Nudges a lump off the whole numbers so you can watch the seam vanish — why nothing will come out, when nothing will.',
     forge:'Any four metals at all — the dial is fiddly, not fussy.',
     need:{kind:'any', count:4},
     teaches:'integers and decimals'
   }
 };
 MF.hasTool = function(k){ return !!MF.state.tools[k]; };
+
+/* =========================================================================
+   WHAT A TOOL DOES WHEN YOU HOLD IT TO A PIECE OF ROCK.
+
+   Each `read` builds the panel that rises when the tool is dropped on a lump.
+   THE BINDING RULE, and it is the same one the Decimal Dial has always
+   carried: an instrument may say what IS THERE, never what to swing. The
+   Lantern says a seam still runs and refuses to say which; the Drill lists
+   every pair and refuses to pick one. A tool that named the factor would be
+   doing the one thing the student came to do.
+   ========================================================================= */
+MF.TOOL_READ = {
+  /* THE PIT LANTERN: is there still a seam in this, or is it an element?
+     This is the tool the whole repeated swing hangs off - it is what tells you
+     the piece in front of you is worth another go. */
+  lantern: function(host, ore){
+    var native = MF.isNative(ore);
+    var lit = E('div','lampread' + (native?' clear':' seamed'));
+    lit.appendChild(H('div','big', native
+      ? 'Nothing moves in there.'
+      : 'A seam still runs through this one.'));
+    lit.appendChild(H('div','sm', native
+      ? (ore.kind==='number'
+          ? 'It is a prime. Held to the light it stays exactly what it is — there is nothing inside it to come out.'
+          : 'No whole-number seam runs through it. It is an element, the same kind of object as a prime, and the mine has nothing more to take out of it.')
+      : 'It will come apart. The lantern does not say along what — that is what the swing is for.'));
+    host.appendChild(lit);
+    if(!native) host.appendChild(H('p','hint','Put it back under the pick and name something that is in it.'));
+  },
+
+  /* THE CORE DRILL: takes a core and reads the pairs out of it. It lists
+     every pair and marks none of them - picking the one that also adds up is
+     the student's job, and it always was. */
+  drill: function(host, ore){
+    if(ore.kind==='number'){
+      host.appendChild(H('p','hint','<b>The core comes up in whole pieces.</b> Every pair of whole numbers that multiplies to <b>' + num(ore.n) + '</b>:'));
+      MF.scanTable(host, ore.n, null);
+      host.appendChild(H('div','hint','Any of these can be swung. Some leave you more still to break than others.'));
+      return;
+    }
+    if(ore.a===0){
+      host.appendChild(H('p','hint','<b>A flat core — no x² in this one.</b> There is one thing every term here carries, and the drill will not name it for you. Look at ' +
+        num(ore.b) + ' and ' + num(ore.c) + ' together.'));
+      return;
+    }
+    var tgt = (ore.a===1) ? ore.c : ore.a*ore.c;
+    if(Math.abs(tgt) >= 600){
+      host.appendChild(H('p','hint','<b>The core is too deep to read.</b> ' + num(tgt) + ' has more pairs in it than the drill will bring up.'));
+      return;
+    }
+    host.appendChild(H('p','hint','<b>The core reads ' + num(tgt) + '</b>' + (ore.a===1?'':' — that is a·c') +
+      '. Every pair that multiplies to it, and what each one adds to. You are looking for the pair that also adds to <b>' + num(ore.b) + '</b>.'));
+    MF.scanTable(host, tgt, null);
+    host.appendChild(H('div','hint','No row is marked. The drill reads the rock; it does not choose where to swing.'));
+  },
+
+  /* THE EXPONENT RAIL: where an x² can come from, and where it cannot. */
+  shifter: function(host, ore){
+    if(ore.kind==='number' || ore.a===0){
+      host.appendChild(H('p','hint','<b>No x² in this one.</b> The rail traces where an x² comes from, and there is none here to trace.'));
+      return;
+    }
+    host.appendChild(H('p','hint','<b>An x² of ' + num(ore.a) + ' in front.</b> An x² can only ever come from one place: the two x-parts multiplied together. ' +
+      'So whatever two pieces come out of this, their x-parts multiply to <b>' + num(ore.a) + '</b>.'));
+    var rows = [];
+    factorPairs(ore.a).forEach(function(pr){ rows.push(pr); });
+    var tbl = E('table','scan');
+    var hr = E('tr'); ['the two x-parts','multiplied','gives'].forEach(function(h){ hr.appendChild(E('th',null,h)); });
+    tbl.appendChild(hr);
+    rows.forEach(function(r){
+      var tr = E('tr');
+      tr.appendChild(E('td',null, (r[0]===1?'x':num(r[0])+'x') + '  and  ' + (r[1]===1?'x':num(r[1])+'x')));
+      tr.appendChild(E('td',null, num(r[0]) + ' × ' + num(r[1])));
+      tr.appendChild(H('td',null, '<b>' + (r[0]*r[1]===1?'x²':num(r[0]*r[1])+'x²') + '</b>'));
+      tbl.appendChild(tr);
+    });
+    host.appendChild(tbl);
+    host.appendChild(H('div','hint','The plain number on the end comes from the other corner — the two numbers multiplied. The middle is the two of them crossed over, and that is the part the rail cannot do for you.'));
+  },
+
+  /* THE DECIMAL DIAL: why nothing will come out, when nothing will. */
+  dial: function(host, ore){
+    if(ore.kind==='number'){
+      host.appendChild(H('p','hint','<b>The dial is cut for lumps with an x in them.</b> On a plain number there is nothing to nudge off the whole numbers.'));
+      return;
+    }
+    MF.paintDial(host, {ore:ore});
+  },
+
+  /* THE DEEP PICK works at the face, not on the floor. Saying so is better
+     than a panel that does nothing and does not explain itself. */
+  pick: function(host, ore){
+    host.appendChild(H('p','hint','<b>This one works at the seam, not on the floor.</b> The deep pick brings up three lumps a swing when you are cutting rock out of the wall. ' +
+      'Down here on the anvil, a swing is a swing.'));
+  }
+};
 
 /* ---- the yard: metals in, and now metals OUT ---- */
 MF.addToYard = function(ingot){
@@ -3253,6 +3425,7 @@ MF.paintBreak = function(host, B){
   var rowf = E('div','pieces');
   pieces.forEach(function(p, idx){
     var nat = MF.isNative(p.ore);
+    var cell = E('div','piececell');
     var b = E('button','piece' + (nat?' native':' rock') + (idx===B.at && !nat?' under':'') + (p.fresh?' fresh':''));
     b.type='button';
     b.setAttribute('data-piece', p.id);
@@ -3268,7 +3441,24 @@ MF.paintBreak = function(host, B){
       MF.paintMine();
       MF.knockPiece(p.id);
     });
-    rowf.appendChild(b);
+    cell.appendChild(b);
+
+    /* THE SLOT: where an instrument goes. It shows what was last held to this
+       piece, and opening it is the click path for everything the drag does. */
+    var t = p.tool && MF.hasTool(p.tool) ? MF.TOOLS[p.tool] : null;
+    var slot = E('button','toolslot' + (t?' filled':'')); slot.type='button';
+    slot.setAttribute('data-piece', p.id);
+    slot.innerHTML = t ? ('<span class="si">'+t.ic+'</span>') : '<span class="si">+</span>';
+    slot.setAttribute('aria-label', t
+      ? (t.nm + ' is in the slot on ' + MF.oreText(p.ore) + '. Open its reading again.')
+      : ('Empty instrument slot on ' + MF.oreText(p.ore) + '. Choose something to hold to it.'));
+    slot.title = t ? ('Read it again with the ' + t.nm) : 'Hold an instrument to this';
+    on(slot,'click',function(){
+      if(t) MF.openTool(p.tool, p.ore, slot);
+      else MF.openSlot(p.id, slot);
+    });
+    cell.appendChild(slot);
+    rowf.appendChild(cell);
   });
   fl.appendChild(rowf);
   host.appendChild(fl);
@@ -3336,19 +3526,14 @@ MF.paintBreak = function(host, B){
     host.appendChild(cut);
     B._cutbar = cut;
 
-    /* the scanner lists pairs, it does not pick one */
-    var o = t.ore;
-    if(o.kind==='poly' && o.a!==0 && o.c!==0){
-      var tgt = (o.a===1) ? o.c : o.a*o.c;
-      if(Math.abs(tgt) < 600){
-        var sc = E('div','panel'); sc.style.background='#fff'; sc.style.margin='12px 0 0';
-        sc.appendChild(H('div','hint','<b>Pair scanner.</b> Every pair that multiplies to <b>' + num(tgt) + '</b>' +
-          (o.a===1?'':' (that is a·c)') + '. You are looking for the one that also adds to <b>' + num(o.b) + '</b>.'));
-        MF.scanTable(sc, tgt, null);
-        host.appendChild(sc);
-      }
-    }
-    if(MF.hasTool('dial') && o.kind==='poly') MF.paintDial(host, {ore:o});
+    /* THE PAIR SCANNER IS NOT FREE ANY MORE. It is the Core Drill's reading,
+       held to the piece you choose - the same move §10a already made with the
+       casting preview, and for the same reason: a list of every pair sitting
+       permanently under the lump did the looking for you. It also made this
+       column long enough that the swing button fell below the fold.
+       Without the drill you are not stuck: you name something and swing. */
+    if(!MF.hasTool('drill'))
+      cut.appendChild(H('div','hint','<span style="opacity:.8">No instrument on this one. A core drill would read the pairs out of it — the forge knows how to make one.</span>'));
   }
 
   /* ---- the ways off the floor. Always at least one. ---- */
@@ -3573,8 +3758,273 @@ MF.drainFlashes = function(){
     setTimeout(function(){ if(n.parentNode) n.parentNode.removeChild(n); }, 5200);
   });
 };
+/* =========================================================================
+   HOLDING AN INSTRUMENT TO A PIECE OF ROCK.
 
-/* ---------- the yard and the gear rack ---------- */
+   Drag a tool off the belt onto a lump, or open the lump's slot and pick one.
+   The slot lights up with whatever is in it, and a panel rises with the
+   reading. Both routes reach the same place: a drag with no click path is a
+   control half the users cannot reach.
+
+   THE PANEL IS A REAL DIALOG. It traps Tab, closes on Escape, and hands focus
+   back to the slot it came from. A panel that steals focus and does not give
+   it back leaves a keyboard user stranded on a page they cannot see.
+
+   AND IT MUST LEAVE NOTHING BEHIND. A scrim left in the DOM covers the entire
+   page and makes every control dead - the exact fault class that had the pick
+   eating every click on the seam. The `sheet` group asserts it is gone.
+   ========================================================================= */
+MF._sheet = null;
+
+/* ONE PLACE BUILDS THE PANEL. Three surfaces open one - a tool held to a
+   lump, a tool explained off the belt, and an empty slot asking which - and
+   three copies of the scrim, the focus move, the Tab trap and the Escape
+   wiring is three chances for one of them to drift and quietly lose the trap.
+   Callers supply the head and fill the body; everything that makes it a
+   dialog lives here. */
+MF._openSheet = function(o){
+  MF.closeTool();                              /* never two at once */
+  var scrim = E('div','scrim');
+  var sheet = E('div','toolsheet');
+  sheet.setAttribute('role','dialog');
+  sheet.setAttribute('aria-modal','true');
+  sheet.setAttribute('aria-label', o.label);
+  sheet.tabIndex = -1;
+
+  var head = E('div','tshead');
+  head.appendChild(H('span','ic', o.icon));
+  var ht = E('div');
+  ht.appendChild(H('div','tsname', o.title));
+  ht.appendChild(H('div','tsore', o.sub));
+  head.appendChild(ht);
+  var x = E('button','tsclose', o.closeText || 'Close'); x.type='button';
+  x.setAttribute('aria-label', (o.closeText || 'Close') + ' — closes this panel');
+  on(x,'click',function(){ MF.closeTool(); });
+  head.appendChild(x);
+  sheet.appendChild(head);
+
+  var body = E('div','tsbody');
+  try { o.fill(body); }
+  catch(e){ body.appendChild(H('div','note warn','This instrument could not get a reading off that.')); }
+  sheet.appendChild(body);
+
+  var foot = E('div','tsfoot');
+  foot.appendChild(H('div','hint', o.foot ||
+    'Nothing here is a mark, and nothing here swings for you. Press <b>Esc</b> to put it away.'));
+  sheet.appendChild(foot);
+
+  scrim.appendChild(sheet);
+  document.body.appendChild(scrim);
+  /* clicking the ground outside the panel puts the instrument away */
+  on(scrim,'pointerdown',function(e){ if(e.target===scrim) MF.closeTool(); });
+
+  MF._sheet = {scrim:scrim, sheet:sheet, opener:o.opener || document.activeElement, key:o.key||null};
+  sheet.focus();
+  document.addEventListener('keydown', MF._sheetKeys, true);
+};
+
+MF.openTool = function(key, ore, opener){
+  var t = MF.TOOLS[key];
+  if(!t || !ore) return;
+  MF._openSheet({
+    label: t.nm + ', held to ' + MF.oreText(ore),
+    icon: t.ic, title: t.nm, sub: 'held to <b>' + MF.oreLabel(ore) + '</b>',
+    closeText: 'Take it away', opener: opener, key: key,
+    fill: function(body){
+      var reader = MF.TOOL_READ[key];
+      if(reader) reader(body, ore);
+      else body.appendChild(H('p','hint', t.ds));
+    }
+  });
+};
+
+MF._sheetKeys = function(e){
+  if(!MF._sheet) return;
+  if(e.key === 'Escape'){ e.preventDefault(); MF.closeTool(); return; }
+  if(e.key !== 'Tab') return;
+  /* TRAP TAB. Without this, tabbing walks out of the panel and onto the page
+     behind it, which is inert to the eye and live to the keyboard. */
+  var f = MF._sheet.sheet.querySelectorAll('button, a[href], input, select, textarea, [tabindex]:not([tabindex="-1"])');
+  if(!f.length) return;
+  var first = f[0], last = f[f.length-1];
+  if(e.shiftKey && (document.activeElement===first || document.activeElement===MF._sheet.sheet)){
+    e.preventDefault(); last.focus();
+  } else if(!e.shiftKey && document.activeElement===last){
+    e.preventDefault(); first.focus();
+  }
+};
+
+MF.closeTool = function(){
+  var s = MF._sheet;
+  if(!s) return;
+  MF._sheet = null;
+  document.removeEventListener('keydown', MF._sheetKeys, true);
+  if(s.scrim.parentNode) s.scrim.parentNode.removeChild(s.scrim);
+  /* focus goes back where it came from, if that node still exists after the
+     repaints that may have happened while the panel was open */
+  if(s.opener && s.opener.isConnected && s.opener.focus) s.opener.focus();
+};
+
+/* =========================================================================
+   THE BELT. The instruments hang off it, and you take them off it to use
+   them. It replaces a list of cards in a sidebar, which described the tools
+   without ever letting you pick one up.
+   ========================================================================= */
+MF.paintBelt = function(host){
+  var owned = Object.keys(MF.TOOLS).filter(MF.hasTool);
+  var box = E('div','gearbox');
+  box.appendChild(H('h3',null,'On your belt'));
+
+  if(!owned.length){
+    var bare = E('div','beltstrap bare');
+    bare.appendChild(H('div','beltempty','Bare leather. Tools are not handed out — you make them at the forge, out of metal you broke out yourself.'));
+    box.appendChild(bare);
+    host.appendChild(box);
+    return;
+  }
+
+  box.appendChild(H('div','hint','Drag one onto a piece of rock, or open a slot on the floor and choose it.'));
+  var strap = E('div','beltstrap');
+  owned.forEach(function(k){
+    var t = MF.TOOLS[k];
+    var loop = E('div','beltloop');
+    var b = E('button','belttool'); b.type='button';
+    b.setAttribute('data-tool', k);
+    b.setAttribute('draggable','true');
+    b.appendChild(H('span','bic', t.ic));
+    b.appendChild(H('span','bnm', t.nm.replace(/^The /,'')));
+    b.setAttribute('aria-label', t.nm + '. ' + t.ds + ' Drag it onto a piece of rock, or open a slot on the floor to choose it.');
+    b.title = t.ds;
+    /* CLICKING A TOOL EXPLAINS IT. It cannot apply it - there is nothing here
+       saying which lump - so it says what it is for and where to put it,
+       rather than being a control that looks live and does nothing. */
+    on(b,'click',function(){ MF.explainTool(k, b); });
+    MF.dragTool(b, k);
+    loop.appendChild(b);
+    strap.appendChild(loop);
+  });
+  box.appendChild(strap);
+  host.appendChild(box);
+};
+
+MF.explainTool = function(key, opener){
+  var t = MF.TOOLS[key];
+  MF._openSheet({
+    label: t.nm, icon: t.ic, title: t.nm, sub: 'on your belt',
+    closeText: 'Put it back', opener: opener, key: key,
+    fill: function(body){
+      body.appendChild(H('p',null, t.ds));
+      body.appendChild(H('div','note','<b>To use it:</b> drag it onto a piece of rock on the breaking floor, or open that piece’s slot and choose it from there.'));
+      body.appendChild(H('div','hint','<b>You made this by:</b> ' + t.forge));
+    }
+  });
+};
+
+/* dragging a tool off the belt. Same shape as the heap drag, and the drop
+   targets are the pieces on the floor. */
+MF.dragTool = function(node, key){
+  var moved=0, sx=0, sy=0, ghost=null, live=false;
+  on(node,'pointerdown',function(e){
+    if(e.button) return;
+    live=true; moved=0; sx=e.clientX; sy=e.clientY;
+    node.setPointerCapture && node.setPointerCapture(e.pointerId);
+  });
+  on(node,'pointermove',function(e){
+    if(!live) return;
+    moved = Math.max(moved, Math.abs(e.clientX-sx)+Math.abs(e.clientY-sy));
+    if(moved <= 5) return;
+    if(!ghost){
+      ghost = E('div','dragghost tool', MF.TOOLS[key].ic + ' ' + MF.TOOLS[key].nm);
+      document.body.appendChild(ghost);
+      MF.markPieceTargets(true);
+    }
+    ghost.style.left = (e.clientX+12)+'px';
+    ghost.style.top  = (e.clientY+12)+'px';
+    var over = MF.pieceAt(e.clientX, e.clientY);
+    ghost.setAttribute('data-over', over ? 'yes' : 'no');
+    MF.markPieceTargets(true, over);
+  });
+  ['pointerup','pointercancel'].forEach(function(ev){
+    on(node,ev,function(e){
+      if(!live) return;
+      live=false;
+      if(!ghost) return;
+      var over = MF.pieceAt(e.clientX, e.clientY);
+      ghost.parentNode && ghost.parentNode.removeChild(ghost); ghost=null;
+      MF.markPieceTargets(false);
+      if(over){ MF.applyTool(key, parseInt(over.getAttribute('data-piece'),10), node); }
+    });
+  });
+};
+
+MF.markPieceTargets = function(on_, hot){
+  var host = MF._mine && MF._mine.mid;
+  if(!host) return;
+  Array.prototype.forEach.call(host.querySelectorAll('.piece'), function(p){
+    if(!on_){ p.removeAttribute('data-tooldrop'); return; }
+    p.setAttribute('data-tooldrop', p===hot ? 'hot' : 'open');
+  });
+};
+MF.pieceAt = function(x, y){
+  var host = MF._mine && MF._mine.mid;
+  if(!host) return null;
+  var hit = null;
+  Array.prototype.forEach.call(host.querySelectorAll('.piece'), function(p){
+    var b = p.getBoundingClientRect();
+    if(x>=b.left && x<=b.right && y>=b.top && y<=b.bottom) hit = p;
+  });
+  return hit;
+};
+
+/* the instrument goes in the piece's slot, the slot lights up, and the panel
+   rises. The slot keeps showing what was last held to that piece. */
+MF.applyTool = function(key, pieceId, opener){
+  var B = MF.state.anvil;
+  if(!B) return;
+  var p = null;
+  B.floor.forEach(function(pc){ if(pc.id===pieceId) p = pc; });
+  if(!p) return;
+  p.tool = key;
+  MF.paintMine();
+  var slot = MF._mine.mid.querySelector('.toolslot[data-piece="'+pieceId+'"]');
+  MF.openTool(key, p.ore, slot || opener);
+};
+
+/* opening a slot with no tool in it: choose one, or be told plainly that the
+   belt is empty and where tools come from */
+MF.openSlot = function(pieceId, opener){
+  var B = MF.state.anvil;
+  if(!B) return;
+  var p = null;
+  B.floor.forEach(function(pc){ if(pc.id===pieceId) p = pc; });
+  if(!p) return;
+  var owned = Object.keys(MF.TOOLS).filter(MF.hasTool);
+  MF._openSheet({
+    label: 'Choose an instrument to hold to ' + MF.oreText(p.ore),
+    icon: '&#128269;', title: 'The slot', sub: 'on <b>' + MF.oreLabel(p.ore) + '</b>',
+    closeText: 'Close', opener: opener,
+    fill: function(body){
+      if(!owned.length){
+        body.appendChild(H('div','note','<b>Nothing on the belt yet.</b> Instruments are not handed out here — you make them at the forge, out of metal you broke out yourself. ' +
+          'Everything in the mine works without them; they only make it easier to see.'));
+        return;
+      }
+      body.appendChild(H('p','hint','Which one do you want to hold to it?'));
+      var row = E('div','pickrow');
+      owned.forEach(function(k){
+        var t = MF.TOOLS[k];
+        var b = E('button','pickbtn'); b.type='button';
+        b.appendChild(H('span','ic', t.ic));
+        b.appendChild(H('span','nm', t.nm));
+        b.setAttribute('aria-label','Hold ' + t.nm + ' to ' + MF.oreText(p.ore));
+        on(b,'click',function(){ MF.applyTool(k, pieceId, opener); });
+        row.appendChild(b);
+      });
+      body.appendChild(row);
+    }
+  });
+};
+
 /* =========================================================================
    THE YARD, DRAWN AS A PLACE.
 
@@ -3705,23 +4155,7 @@ MF.paintYard = function(){
   place.appendChild(inner);
   box.appendChild(place);
 
-  var gear = E('div','gearbox'); gear.style.marginTop='18px';
-  gear.appendChild(H('h3',null,'On your belt'));
-  var any = false;
-  Object.keys(MF.TOOLS).forEach(function(k){
-    if(!MF.hasTool(k)) return;
-    any = true;
-    var g = MF.TOOLS[k];
-    var d = E('div','gear');
-    d.appendChild(H('div','ic', g.ic));
-    var t = E('div');
-    t.appendChild(H('div','nm', g.nm));
-    t.appendChild(H('div','ds', g.ds));
-    d.appendChild(t);
-    gear.appendChild(d);
-  });
-  if(!any) gear.appendChild(H('div','hint','Empty. Tools are not handed out here — you forge them, from metal you broke out yourself.'));
-  box.appendChild(gear);
+  MF.paintBelt(box);
 
   var toForge = E('button','btn primary'); toForge.type='button';
   toForge.textContent = 'Haul the metal to the forge';
@@ -4375,6 +4809,103 @@ MF.validate = function(){
   MF.state.yard=cSaved.yard; MF.state.tools=cSaved.tools; MF.state.cart=cSaved.cart;
   MF.state.selected=cSaved.sel; MF.state.anvil=cSaved.bench; MF._mine=cSaved.mine;
   MF.state.layer=cSaved.layer; MF.state.face=cSaved.face; MF.state.faceLayer=cSaved.fl;
+
+  /* 5k. THE INSTRUMENT PANEL, AND THE RULE THAT MAKES INSTRUMENTS LEGITIMATE.
+
+         Two separate things are asserted here. First the panel behaves like a
+         dialog: focus goes in, Escape closes it, focus comes back, and NOTHING
+         IS LEFT IN THE DOM. A scrim left behind covers the whole page and
+         makes every control dead - the same fault class that had the pick
+         eating every click on the seam (§43), except page-wide.
+
+         Second, and it is the one that matters: an instrument may say what is
+         there, never what to swing. The Lantern says a seam still runs and
+         must not say along what. A tool that named the factor would be doing
+         the one thing the student came to do.
+
+         READ THE DENOMINATOR: five readings across seven shapes of ore, and
+         the leak check covers the LANTERN only - the Drill lists every pair by
+         design, so the same assertion would be false for it. */
+  var shSaved = {tools:MF.state.tools, sheet:MF._sheet};
+  MF.closeTool();
+  MF.state.tools = {lantern:{forged:true}, drill:{forged:true}, shifter:{forged:true},
+                    dial:{forged:true}, pick:{forged:true}};
+  var shOres = [{kind:'number',n:60},{kind:'number',n:31},{kind:'poly',a:1,b:-5,c:6},
+                {kind:'poly',a:0,b:6,c:15},{kind:'poly',a:6,b:7,c:-3},
+                {kind:'poly',a:1,b:0,c:4},{kind:'poly',a:0,b:1,c:3}];
+  Object.keys(MF.TOOL_READ).forEach(function(tk){
+    shOres.forEach(function(so){
+      chk('sheet');
+      var h = document.createElement('div');
+      try { MF.TOOL_READ[tk](h, so); }
+      catch(e){ errs.push('sheet: ' + tk + ' threw on ' + MF.oreText(so) + ': ' + e.message); return; }
+      var txt = (h.textContent||'').replace(/\s+/g,' ').trim();
+      if(txt.length < 25)
+        errs.push('sheet: ' + tk + ' held to ' + MF.oreText(so) + ' said almost nothing (' + txt.length + ' chars)');
+    });
+  });
+
+  /* THE LANTERN MUST NOT LEAK THE FACTORISATION */
+  var lampLeak = function(reader){
+    var hits = [];
+    [[1,-5,6],[6,7,-3],[2,10,12],[1,0,-9]].forEach(function(t){
+      var o = {kind:'poly',a:t[0],b:t[1],c:t[2]};
+      var h = document.createElement('div');
+      try { reader(h, o); } catch(e){ return; }
+      var txt = (h.textContent||'').replace(/\s+/g,' ');
+      var res = MF.smeltPoly(t[0],t[1],t[2]);
+      (res.ingots||[]).forEach(function(g){
+        if(g.m===0 && g.k===0) return;
+        var s = ingotText(g);
+        if(s.length > 1 && txt.indexOf(s) >= 0) hits.push(MF.oreText(o) + ' leaked "' + s + '"');
+      });
+    });
+    return hits;
+  };
+  chk('sheet');
+  var leaks = lampLeak(MF.TOOL_READ.lantern);
+  if(leaks.length) errs.push('sheet: the lantern named the factor — ' + leaks[0]);
+  /* CONTROL: a lantern that DID name it must be caught */
+  chk('sheet');
+  if(!lampLeak(function(h,o){
+      h.appendChild(H('div','x','A seam runs, and it is ' + MF.smeltString(MF.smeltPoly(o.a,o.b,o.c)) + '.'));
+    }).length)
+    errs.push('CONTROL: the leak check cannot see a lantern that prints the factorisation');
+
+  /* the panel itself: opens, focuses, closes on Escape, leaves nothing */
+  var shHost = document.createElement('div');
+  shHost.style.cssText = 'position:fixed; left:-9000px; top:0';
+  document.body.appendChild(shHost);
+  var shOpener = document.createElement('button');
+  shHost.appendChild(shOpener);
+  shOpener.focus();
+  MF.openTool('lantern', {kind:'poly',a:1,b:-5,c:6}, shOpener);
+  chk('sheet');
+  if(!document.querySelector('.scrim .toolsheet')) errs.push('sheet: the panel did not open');
+  chk('sheet');
+  if(!(document.activeElement && document.activeElement.closest && document.activeElement.closest('.toolsheet')))
+    errs.push('sheet: the panel opened without taking focus — a keyboard user is left on the page behind it');
+  chk('sheet');
+  var shd = document.querySelector('.toolsheet');
+  if(!shd || shd.getAttribute('role')!=='dialog' || shd.getAttribute('aria-modal')!=='true')
+    errs.push('sheet: the panel is not announced as a modal dialog');
+  document.dispatchEvent(new KeyboardEvent('keydown',{key:'Escape',bubbles:true}));
+  chk('sheet');
+  if(document.querySelector('.scrim'))
+    errs.push('sheet: Escape left the scrim in the DOM — it covers the page and every control under it is dead');
+  chk('sheet');
+  if(document.activeElement !== shOpener)
+    errs.push('sheet: closing the panel did not hand focus back to what opened it');
+  /* CONTROL: a scrim left behind must be detectable */
+  chk('sheet');
+  var ghostScrim = E('div','scrim');
+  document.body.appendChild(ghostScrim);
+  if(!document.querySelector('.scrim'))
+    errs.push('CONTROL: the sheet check cannot see a scrim left covering the page');
+  document.body.removeChild(ghostScrim);
+  document.body.removeChild(shHost);
+  MF.state.tools = shSaved.tools;
+  MF.closeTool();
 
   /* 5i. EVERY CLICK ON A LUMP MUST BE ANSWERED.
          Three separate clicks in the mine used to produce nothing a student

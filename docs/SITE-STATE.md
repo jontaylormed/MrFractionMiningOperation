@@ -22,7 +22,7 @@
 | **Screens** | **five** — surface, two workshops, the mine, the forge |
 | **Layers** | **five**, all reachable from the first screen, none gated on anything |
 | **Instruments** | **five**, all forged, none granted |
-| **Validation** | `MF.validate()` → **8,361 checks / 21 groups / 0 errors**, two controls that must fail, and do |
+| **Validation** | `MF.validate()` → **8,385 checks / 22 groups / 0 errors**, two controls that must fail, and do |
 
 > **A check is only as wide as the space it sweeps.** The `truthy` group reported 0 errors across 642 checks while **1,970 Decimal Dial states printed a falsehood**, because it tested each lump's original integer coefficients and never nudged `c` — the one thing the dial exists to do. It now sweeps every slider position the control can reach (3,287 checks). Ask of any green result: *what did it not look at?*
 | **Runtime** | Zero dependencies, no build step, no network requests, no storage, runs from `file://` |
@@ -77,6 +77,26 @@ The yard takes **both**. Metal broken all the way down to an element goes on **t
 **Rock goes back under the pick** by clicking it *or* dragging it onto the floor — the drag is built on pointer events (there is no HTML5 drag-and-drop anywhere in this file) and a movement under 5px is not a drag at all, so the click still lands. It routes through the cart, because the cart is the one way anything reaches the anvil.
 
 > **The scenery is inert.** `pointer-events:none` on the yard's svg, asserted by the `overlay` group with its own control — the same fault class that had the pick eating every click on the seam (`VERIFICATION.md` §43).
+
+## The belt, and holding an instrument to a lump
+
+The belt is **a leather strap with the instruments hanging in loops**, not a list of cards. You take one off it and use it.
+
+**Every piece on the breaking floor has a slot.** Drag a tool onto the piece, or open its slot and choose — both routes reach the same place, because a drag with no click path is a control half the users cannot reach. The slot lights up with whatever is in it and keeps showing it, and a panel rises with that instrument's reading.
+
+**The panel is a real dialog:** `role="dialog"`, `aria-modal`, focus moved in, **Tab trapped**, Escape closes, focus handed back to the slot it came from, and nothing left in the DOM — a scrim left behind covers the page and makes every control dead, which is §43's fault class page-wide. One function builds it for all three routes (tool-on-lump, tool explained off the belt, empty slot); three copies of the focus wiring was three chances to lose the trap.
+
+**What each instrument does, and the rule they all obey:**
+
+| | held to a lump, it says |
+|---|---|
+| **Lantern** | whether a seam still runs through it — so you know when a piece is worth another swing. Never says along what. |
+| **Core Drill** | every pair that could run through it, marked none |
+| **Exponent Rail** | where its x² can have come from — the two x-parts multiplied |
+| **Decimal Dial** | why nothing will come out, when nothing will |
+| **Deep Pick** | that it works at the seam, not on the floor |
+
+> **An instrument may say what is there, never what to swing.** The `sheet` group asserts the Lantern's reading never contains the factorisation, with a control that prints it and must be caught. **The pair scanner is no longer free** — it is the Drill's reading now, the same move §10a made with the casting preview, and it also stopped the swing button falling below the fold.
 
 ## The forge, and the instruments
 
