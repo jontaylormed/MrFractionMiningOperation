@@ -22,7 +22,7 @@
 | **Screens** | **five** — surface, two workshops, the mine, the forge |
 | **Layers** | **five**, all reachable from the first screen, none gated on anything |
 | **Instruments** | **five**, all forged, none granted |
-| **Validation** | `MF.validate()` → **8,309 checks / 21 groups / 0 errors**, two controls that must fail, and do |
+| **Validation** | `MF.validate()` → **8,361 checks / 21 groups / 0 errors**, two controls that must fail, and do |
 
 > **A check is only as wide as the space it sweeps.** The `truthy` group reported 0 errors across 642 checks while **1,970 Decimal Dial states printed a falsehood**, because it tested each lump's original integer coefficients and never nudged `c` — the one thing the dial exists to do. It now sweeps every slider position the control can reach (3,287 checks). Ask of any green result: *what did it not look at?*
 | **Runtime** | Zero dependencies, no build step, no network requests, no storage, runs from `file://` |
@@ -72,7 +72,11 @@ The face is **2280px of rock**, several screens wide, scanned by dragging, scrol
 
 The yard takes **both**. Metal broken all the way down to an element goes on **the rack**, and that is what the forge spends. Ore tipped there still carrying a seam goes on **the heap** — nothing is destroyed, nothing is counted against you, and it is there when you come back for it. Leaving a lump half-broken has a visible consequence and still no mark anywhere.
 
-> **Not yet done (stage 3 of the §11 work):** the heap is currently *listed*, not drawn, and rock on it cannot yet be dragged back to the anvil. It is listed rather than hidden because state a student cannot see is state that does not exist to them.
+**It is drawn as a place**: a paling fence along the back with a lit lamp on a post, dirt below it with barrow ruts, metal racked on timber and rock heaped on the ground in the same knocked-corner silhouette the seam uses. The fence-and-lamp band is a **fixed 76px, sliced and pinned to the right edge** — filling the panel with `preserveAspectRatio:none` smeared the palings over 438px and rendered the lamp as an ellipse. Verified round and on screen at column widths 240 → 460.
+
+**Rock goes back under the pick** by clicking it *or* dragging it onto the floor — the drag is built on pointer events (there is no HTML5 drag-and-drop anywhere in this file) and a movement under 5px is not a drag at all, so the click still lands. It routes through the cart, because the cart is the one way anything reaches the anvil.
+
+> **The scenery is inert.** `pointer-events:none` on the yard's svg, asserted by the `overlay` group with its own control — the same fault class that had the pick eating every click on the seam (`VERIFICATION.md` §43).
 
 ## The forge, and the instruments
 

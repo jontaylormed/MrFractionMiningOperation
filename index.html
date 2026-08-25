@@ -383,6 +383,62 @@ input[type=range]{width:100%; accent-color:var(--ore); height:44px}
 .casting.clean h4{color:var(--vein)}
 .casting.deformed h4{color:#A33E0B}
 
+/* ---- THE YARD AS A PLACE: fenced ground, a lamp on a post, a heap on the
+       dirt and metal racked on timber. The drawing is BEHIND the controls and
+       inert - the `overlay` group asserts that nothing painted in here can
+       take a click meant for a rock. ---- */
+/* the background-color is NOT cosmetic - the svg paints over it, but it is the
+   only backdrop MF._measureContrast can read, and it is set to the LIGHTEST
+   thing the scrimmed drawing puts behind text so the measurement is honest */
+/* background-COLOR, not a background shorthand with a gradient in it. The
+   shorthand resets background-color to transparent, MF._measureContrast reads
+   background-color and would have walked straight past this to the cream panel
+   underneath - measuring a backdrop that is not there. The colour is the
+   LIGHTEST thing the drawing puts behind text, so the reading is honest; the
+   gradient only darkens the dirt below the band. */
+.yardplace{position:relative; border:3px solid #241C15; border-radius:12px; overflow:hidden; margin-top:8px;
+  background-color:#3C3228;
+  background-image:linear-gradient(180deg,rgba(0,0,0,0) 0 76px,rgba(0,0,0,.14) 76px,rgba(0,0,0,.30) 100%)}
+/* the band is a fixed 76px at the top; everything below it is dirt drawn in
+   CSS, which stretches without a shape in it to distort */
+.yardart{position:absolute; left:0; right:0; top:0; height:76px; pointer-events:none}
+.yardart svg{display:block; width:100%; height:76px}
+.yardart svg *{pointer-events:none}
+@keyframes yardlamp{0%,100%{opacity:.8}45%{opacity:1}72%{opacity:.62}}
+.yardglow{animation:yardlamp 4.2s ease-in-out infinite}
+@media (prefers-reduced-motion:reduce){ .yardglow{animation:none} }
+.yardin{position:relative; z-index:1; padding:11px 12px 13px}
+.yardin .ylab{font-family:var(--display); font-size:10px; letter-spacing:.11em; color:var(--lamp); margin-bottom:5px}
+.yardin .yempty{font-size:13px; font-style:italic; color:#C9B695; max-width:34ch}
+.yardin .yhint{font-size:12px; color:#C9B695; margin-top:6px}
+.shelfrow{margin-bottom:13px}
+/* timber shelving, drawn in CSS so it grows with what is on it */
+.rack{background:linear-gradient(180deg,rgba(90,68,50,.85),rgba(66,48,31,.85)); border:2px solid #332416;
+  border-radius:8px; padding:8px; max-height:190px; overflow-y:auto}
+.rack .shelf{border-bottom:3px solid #6E5B49; padding-bottom:7px; margin-bottom:7px}
+.rack .shelf:last-child{border-bottom:0; margin-bottom:0; padding-bottom:0}
+.rack .sh{font-size:11px; color:#E4D5BB; margin-bottom:3px}
+/* the heap: rock lying on the dirt, sitting at slightly different heights so
+   it reads as tipped rather than filed */
+.heap{display:flex; flex-wrap:wrap; gap:5px; align-items:flex-end; padding-top:3px}
+.heaprock{cursor:grab; font-family:var(--display); font-size:14px; color:#FFF3DE;
+  background:linear-gradient(160deg,#7A6650,#42382C); border:0; padding:8px 12px 9px; margin:0;
+  min-height:44px; touch-action:none;
+  clip-path:polygon(9% 5%, 76% 0%, 100% 30%, 94% 84%, 58% 100%, 12% 92%, 0% 42%);
+  filter:drop-shadow(0 2px 1px rgba(0,0,0,.5))}
+.heaprock:nth-child(2n){margin-bottom:5px}
+.heaprock:nth-child(3n){margin-bottom:2px}
+.heaprock:hover{filter:brightness(1.2) drop-shadow(0 2px 1px rgba(0,0,0,.5))}
+.heaprock:active{cursor:grabbing}
+.heaprock:focus-visible{outline:3px solid var(--lamp); outline-offset:2px}
+/* what is in your hand while you carry it */
+.dragghost{position:fixed; z-index:60; pointer-events:none; font-family:var(--display); font-size:15px;
+  color:#FFF3DE; background:linear-gradient(160deg,#7A6650,#42382C); border:2px solid var(--lamp);
+  border-radius:6px; padding:6px 11px; box-shadow:0 5px 14px rgba(0,0,0,.45); opacity:.94}
+.dragghost[data-over=yes]{border-color:#8FE0C0; box-shadow:0 0 0 3px rgba(143,224,192,.35), 0 5px 14px rgba(0,0,0,.45)}
+/* and where it can go */
+.floorbox[data-drop=open]{outline:3px dashed var(--lamp); outline-offset:3px}
+
 /* yard + gear */
 .yard{position:sticky; top:12px}
 @media (max-width:1080px){ .yard{position:static} }
@@ -3519,42 +3575,95 @@ MF.drainFlashes = function(){
 };
 
 /* ---------- the yard and the gear rack ---------- */
+/* =========================================================================
+   THE YARD, DRAWN AS A PLACE.
+
+   Not two lists with headings. A yard is a fenced patch of ground outside the
+   adit with a lamp on a post: broken rock goes on the HEAP, and metal that
+   will not break any further is racked on timber under the lamp. You can see
+   at a glance how much of what you have brought up you have actually finished
+   with, and you can pick a rock back off the heap.
+
+   THE BACKDROP IS SCENERY AND MUST NEVER TAKE A CLICK. It is painted behind
+   the rocks and bars, which are the controls; pointer-events:none on the svg
+   is what keeps it that way, and the `overlay` group asserts it.
+   ========================================================================= */
+MF.yardScene = function(){
+  var wrap = E('div','yardart');
+  var W=300, VH=76;
+  /* A BAND AT A FIXED HEIGHT, NOT A STRETCHED BACKDROP. Filling the whole
+     panel with preserveAspectRatio:none scaled a 104-tall drawing over 438px
+     of panel - the palings smeared and the lamp rendered as an ellipse. Sliced
+     and pinned to the right edge, the drawing keeps its proportions at every
+     column width and the lamp stays on screen; the dirt below it is a CSS
+     gradient on .yardplace, which stretches without a shape to distort. */
+  var svg = S('svg',{viewBox:'0 0 '+W+' '+VH,'aria-hidden':'true',preserveAspectRatio:'xMaxYMid slice'});
+
+  var sky = S('linearGradient',{id:'yardsky',x1:'0',y1:'0',x2:'0',y2:'1'});
+  sky.appendChild(S('stop',{offset:'0%','stop-color':'#4A3F34'}));
+  sky.appendChild(S('stop',{offset:'100%','stop-color':'#2E2620'}));
+  var defs = S('defs',{}); defs.appendChild(sky); svg.appendChild(defs);
+  svg.appendChild(S('rect',{x:0,y:0,width:W,height:VH,fill:'url(#yardsky)'}));
+
+  /* the paling fence along the back - a yard has an edge */
+  for(var p=0;p<16;p++){
+    var px = 4 + p*19;
+    svg.appendChild(S('rect',{x:px,y:18,width:5,height:52,rx:1,fill:'#5A4B3C'}));
+    svg.appendChild(S('path',{d:'M'+px+' 18 l2.5 -5 l2.5 5 Z',fill:'#6B5B48'}));
+  }
+  svg.appendChild(S('rect',{x:0,y:28,width:W,height:4,fill:'#6B5B48',opacity:'.8'}));
+  svg.appendChild(S('rect',{x:0,y:52,width:W,height:4,fill:'#6B5B48',opacity:'.8'}));
+
+  /* the ground the heap is tipped on, and the ruts a barrow leaves in it */
+  svg.appendChild(S('path',{d:'M0 66 q64 -6 126 -2 q74 5 174 -2 L'+W+' '+VH+' L0 '+VH+' Z',fill:'#3E3328'}));
+  svg.appendChild(S('path',{d:'M22 72 q42 -4 84 1',fill:'none',stroke:'#2A2118','stroke-width':'2',opacity:'.7'}));
+
+  /* THE SCRIM, and it is not decoration. Text sits over this drawing, and the
+     lightest thing behind it was a fence paling at #5A4B3C - lamp-gold on that
+     measures 3.88:1 at 10px and the contrast sweep failed the build over it.
+     The scrim pulls every backdrop down to about #3C3228, which .yardplace
+     declares as its background-color so the sweep measures what is actually
+     behind the words rather than the panel underneath the drawing. */
+  svg.appendChild(S('rect',{x:0,y:0,width:W,height:VH,fill:'rgba(30,24,20,.55)'}));
+
+  /* the lamp on its post, lit - the same flicker the mine's lanterns carry.
+     Pinned near the right edge because the band slices from xMax, so it is on
+     screen at every column width. */
+  svg.appendChild(S('rect',{x:270,y:16,width:5,height:56,fill:'#4A3F34'}));
+  svg.appendChild(S('path',{d:'M259 18 q13 -10 26 0 Z',fill:'#5A626A'}));
+  svg.appendChild(S('circle',{class:'yardglow',cx:'272',cy:'28',r:'15',fill:'rgba(232,163,61,.22)'}));
+  svg.appendChild(S('rect',{x:'266',y:'21',width:'12',height:'15',rx:'3',fill:'#E8A33D',stroke:'#8A6A2A','stroke-width':'2'}));
+
+  wrap.appendChild(svg);
+  return wrap;
+};
+
 MF.paintYard = function(){
   var host = clear(MF._mine.right);
   var box = E('div','yard');
 
   box.appendChild(H('h3',null,'The Yard'));
+  box.appendChild(H('div','hint','Everything you have hauled out. Rock on the heap, metal on the rack.'));
 
-  /* THE HEAP: ore tipped here still carrying a seam. Nothing is lost and
-     nothing is counted against you - it is rock you have not finished with,
-     and it stays exactly where you left it. (Stage 3 draws this properly; it
-     is listed here from the moment it can be filled, because state a student
-     cannot see is state that does not exist to them.) */
-  if(MF.state.rockpile.length){
-    box.appendChild(H('div','hint','<b>The heap</b> — tipped here, still carrying a seam.'));
-    var heap = E('div','metalrack orebin'); heap.style.marginBottom='12px';
-    var hrow = E('div','metalrow heap');
-    MF.state.rockpile.forEach(function(o){
-      hrow.appendChild(H('div','metal rough', MF.oreText(o)));
-    });
-    heap.appendChild(hrow);
-    box.appendChild(heap);
-  }
+  var place = E('div','yardplace');
+  place.appendChild(MF.yardScene());
+  var inner = E('div','yardin');
 
+  /* ---- THE RACK: metal that will not break any further ---- */
+  var rk = E('div','shelfrow');
+  rk.appendChild(H('div','ylab','THE RACK &mdash; native metal'));
   var keys = Object.keys(MF.state.yard);
   if(!keys.length){
-    box.appendChild(H('div','hint','No metal yet. Anything you break down to an element ends up on the rack.'));
+    rk.appendChild(H('div','yempty','Bare. Anything you break down to an element is racked here, and this is what the forge spends.'));
   } else {
-    box.appendChild(H('div','hint','<b>The rack</b> — native metal, broken out of the rock by you.'));
-    /* plain metals on one shelf, x-carrying ones on another - a yard is sorted */
-    var rack = E('div','metalrack orebin');
+    var rack = E('div','rack');
     [['plain metal', function(g){ return g.m===0; }],
      ['metal with an x in it', function(g){ return g.m!==0; }]].forEach(function(grp){
       var these = keys.filter(function(k){ return grp[1](MF.state.yard[k].ingot); });
       if(!these.length) return;
       var shelf = E('div','shelf');
-      shelf.appendChild(H('div','hint', grp[0]));
-      var row = E('div','metalrow heap');
+      shelf.appendChild(H('div','sh', grp[0]));
+      var row = E('div','metalrow');
       these.sort().forEach(function(k){
         var e = MF.state.yard[k];
         var label = e.ingot.label || ingotText(e.ingot);
@@ -3564,8 +3673,37 @@ MF.paintYard = function(){
       shelf.appendChild(row);
       rack.appendChild(shelf);
     });
-    box.appendChild(rack);
+    rk.appendChild(rack);
   }
+  inner.appendChild(rk);
+
+  /* ---- THE HEAP: rock tipped here still carrying a seam ---- */
+  var hp = E('div','heaprow');
+  hp.appendChild(H('div','ylab','THE HEAP &mdash; still carrying a seam'));
+  if(!MF.state.rockpile.length){
+    hp.appendChild(H('div','yempty','Empty. Anything you tip here half-broken lands on the heap, and it is still here when you come back for it.'));
+  } else {
+    var heap = E('div','heap');
+    MF.state.rockpile.forEach(function(o, idx){
+      var b = E('button','heaprock'); b.type='button';
+      b.setAttribute('data-heap', idx);
+      b.setAttribute('draggable','true');
+      b.appendChild(H('span','hv', MF.oreLabel(o)));
+      b.setAttribute('aria-label', MF.oreText(o) + ' — still rock. Put it back under the pick.');
+      b.title = 'Put it back under the pick';
+      /* ONE CLICK DOES IT, and the drag below does exactly the same thing.
+         A drag with no click path is a control half the users cannot reach. */
+      on(b,'click',function(){ MF.takeFromHeap(idx); });
+      MF.dragFromHeap(b, idx);
+      heap.appendChild(b);
+    });
+    hp.appendChild(heap);
+    hp.appendChild(H('div','yhint','Take one back under the pick — click it, or drag it onto the floor.'));
+  }
+  inner.appendChild(hp);
+
+  place.appendChild(inner);
+  box.appendChild(place);
 
   var gear = E('div','gearbox'); gear.style.marginTop='18px';
   gear.appendChild(H('h3',null,'On your belt'));
@@ -3582,7 +3720,7 @@ MF.paintYard = function(){
     d.appendChild(t);
     gear.appendChild(d);
   });
-  if(!any) gear.appendChild(H('div','hint','Empty. Tools are not handed out here — you forge them, from metal you pulled out yourself.'));
+  if(!any) gear.appendChild(H('div','hint','Empty. Tools are not handed out here — you forge them, from metal you broke out yourself.'));
   box.appendChild(gear);
 
   var toForge = E('button','btn primary'); toForge.type='button';
@@ -3593,6 +3731,81 @@ MF.paintYard = function(){
 
   box.appendChild(H('div','hint','<br>Nothing here is a mark. It is a record of what you have — and unlike a mark, you can spend it.'));
   host.appendChild(box);
+};
+
+/* off the heap and back under the pick. It goes through the cart, because the
+   cart is how anything reaches the anvil - one route in, not two. */
+MF.takeFromHeap = function(idx){
+  var ore = MF.state.rockpile[idx];
+  if(!ore) return;
+  MF.state.rockpile.splice(idx,1);
+  ore.id = 'heap-' + (MF._heapSeq = (MF._heapSeq||0)+1);
+  ore.layer = ore.layer || MF.state.layer;
+  ore.fresh = true;
+  MF.state.cart.push(ore);
+  MF.state.selected = ore;
+  MF.state.anvil = null;
+  MF.paintMine();
+  MF.flash('Off the heap and back under the pick.');
+  setTimeout(function(){ ore.fresh = false; }, 600);
+};
+
+/* DRAG IS THE SECOND WAY, NEVER THE ONLY WAY. Built on pointer events to match
+   the seam's drag-to-scan; HTML5 drag-and-drop is not used anywhere in this
+   file and its drop targets do not survive a repaint. A drag under a few
+   pixels is not a drag at all, so a click still lands. */
+MF.dragFromHeap = function(node, idx){
+  var moved = 0, startX = 0, startY = 0, ghost = null, live = false;
+  on(node,'pointerdown',function(e){
+    if(e.button) return;
+    live = true; moved = 0; startX = e.clientX; startY = e.clientY;
+    node.setPointerCapture && node.setPointerCapture(e.pointerId);
+  });
+  on(node,'pointermove',function(e){
+    if(!live) return;
+    moved = Math.max(moved, Math.abs(e.clientX-startX) + Math.abs(e.clientY-startY));
+    if(moved <= 5) return;
+    if(!ghost){
+      ghost = E('div','dragghost', node.textContent);
+      document.body.appendChild(ghost);
+      MF.markDropTargets(true);
+    }
+    ghost.style.left = (e.clientX + 12) + 'px';
+    ghost.style.top  = (e.clientY + 12) + 'px';
+    var over = MF.dropTargetAt(e.clientX, e.clientY);
+    ghost.setAttribute('data-over', over ? 'yes' : 'no');
+  });
+  ['pointerup','pointercancel'].forEach(function(ev){
+    on(node,ev,function(e){
+      if(!live) return;
+      live = false;
+      if(ghost){
+        var over = MF.dropTargetAt(e.clientX, e.clientY);
+        ghost.parentNode && ghost.parentNode.removeChild(ghost);
+        ghost = null;
+        MF.markDropTargets(false);
+        /* dropped on the floor: same act as the click. Dropped anywhere else:
+           nothing happens and the rock stays on the heap. */
+        if(over){ MF.takeFromHeap(idx); return; }
+      }
+    });
+  });
+};
+
+/* the floor lights up while something is in the air, so a drag has somewhere
+   it is visibly going rather than being guesswork */
+MF.markDropTargets = function(on_){
+  var host = MF._mine && MF._mine.mid;
+  var t = host && host.querySelector('.floorbox');
+  if(!t) return;
+  if(on_) t.setAttribute('data-drop','open'); else t.removeAttribute('data-drop');
+};
+MF.dropTargetAt = function(x, y){
+  var host = MF._mine && MF._mine.mid;
+  var t = host && host.querySelector('.floorbox');
+  if(!t) return null;
+  var b = t.getBoundingClientRect();
+  return (x>=b.left && x<=b.right && y>=b.top && y<=b.bottom) ? t : null;
 };
 
 /* =========================================================================
@@ -4177,7 +4390,7 @@ MF.validate = function(){
          the forge, and nothing about whether the reaction looks any good. */
   var kSaved = {mine:MF._mine, layer:MF.state.layer, face:MF.state.face, fl:MF.state.faceLayer,
                 insp:MF.state.inspecting, cart:MF.state.cart, sel:MF.state.selected,
-                bench:MF.state.anvil, brk:MF.state.breaking, scan:MF.state.scan,
+                anvil:MF.state.anvil, brk:MF.state.breaking, scan:MF.state.scan, heap:MF.state.rockpile,
                 knock:MF.knockRock};
   var kStage = document.createElement('div');
   kStage.style.cssText = 'position:fixed; left:-4000px; top:0; width:1100px';
@@ -4278,6 +4491,38 @@ MF.validate = function(){
     if(overScene.length)
       errs.push('overlay: ' + overScene.length + ' thing(s) painted over the buildings still take the click, first ' + overScene[0]);
 
+    /* THE YARD IS DRAWN NOW, and its scenery is painted UNDER the rocks rather
+       than over them - but it fills the whole panel, so if it were ever live to
+       the mouse it would sit between a student and the heap. There is no
+       control before it in document order, so the sweep is stated directly. */
+    MF.state.rockpile = [{kind:'poly',a:1,b:5,c:6}, {kind:'number',n:30}];
+    MF.paintMine();
+    var yardSvg = MF._mine.right.querySelector('.yardart svg');
+    chk('overlay');
+    if(!yardSvg){ errs.push('overlay: the yard drew no scenery to check'); }
+    else {
+      var overYard = [];
+      Array.prototype.forEach.call(yardSvg.querySelectorAll('*'), function(n){
+        chk('overlay');
+        if(getComputedStyle(n).pointerEvents !== 'none') overYard.push('<'+n.tagName+'>');
+      });
+      chk('overlay');
+      if(overYard.length)
+        errs.push('overlay: ' + overYard.length + ' piece(s) of yard scenery take the click, first ' + overYard[0]);
+      /* CONTROL: the same scenery, live to the mouse, must be caught */
+      chk('overlay');
+      var yv = yardSvg.querySelector('rect');
+      yv.style.pointerEvents = 'auto';
+      if(getComputedStyle(yv).pointerEvents === 'none')
+        errs.push('CONTROL: the yard sweep cannot see scenery that is live to the mouse');
+      yv.style.pointerEvents = '';
+    }
+    /* and a rock on the heap must be reachable and must take you back to it */
+    var hr = MF._mine.right.querySelector('.heaprock');
+    chk('overlay');
+    if(!hr) errs.push('overlay: the heap drew no rock to pick up');
+    MF.state.rockpile = [];
+
     /* CONTROL: put the pick back in front of the mouse and the sweep must say so */
     var kVictim = seamSvg.querySelector('.pickarmhost');
     chk('overlay');
@@ -4315,8 +4560,8 @@ MF.validate = function(){
   document.body.removeChild(kStage);
   MF._mine = kSaved.mine; MF.state.layer = kSaved.layer; MF.state.face = kSaved.face;
   MF.state.faceLayer = kSaved.fl; MF.state.inspecting = kSaved.insp; MF.state.cart = kSaved.cart;
-  MF.state.selected = kSaved.sel; MF.state.anvil = kSaved.bench; MF.state.breaking = kSaved.brk;
-  MF.state.scan = kSaved.scan;
+  MF.state.selected = kSaved.sel; MF.state.anvil = kSaved.anvil; MF.state.breaking = kSaved.brk;
+  MF.state.scan = kSaved.scan; MF.state.rockpile = kSaved.heap;
 
   /* 6. NOTHING ON SCREEN MAY HAVE A CEILING, A PERCENTAGE, OR A COMPARISON.
         This is a stated requirement, so it is checked mechanically rather
