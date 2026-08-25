@@ -49,17 +49,21 @@ What will not break further is **native metal** — a prime, or a polynomial no 
 
 **The lump is drawn on an anvil and you build the hammer head out of parts.** A **London-pattern anvil on a stump** — horn, step, polished face, hardy and pritchel holes, waisted body, feet, iron banding, a pair of tongs leaning on it — with the lump sitting on the face where the hammer lands and its expression cut into the stone.
 
-**You drag an `x` and a `#` out of the parts tray into the head.** Two sockets, either of which can be left empty:
+**The hammer stands upright over the work with its striking face pointing down at it** — haft vertical with a bound grip, a block head with the eye and its wedge, a flared bright face, a cross-peen off the back. It is part of the drawing, not a box floating over it, which is what let it become the shape a hammer actually is.
+
+**You type what to cut the head to**, in a bar under the picture: `( [ ] x + [ ] )`.
 
 | | |
 |---|---|
-| **x socket empty** | no x in what you are taking out — a plain metal |
-| **# socket empty** | no number on the end — something like `3x` |
-| **the sign** | a **± toggle** on each filled socket, green for plus and orange for minus |
+| **x-part empty** | a single x — `MF.readPickM`, and `x` / `-x` are read too |
+| **x-part `0`** | no x at all, so you are taking out a plain metal |
+| **number empty** | no number on the end, so something like `3x` |
 
-**A socket cannot be ambiguous** — either a tile is in it or it is not, and you can see which from across the room. That is why they exist: the head used to be two text boxes sharing one reader, an empty box meant nought in both, and clearing the x-part swung `6` instead of `(x + 6)`. It was reported as a maths error and it was an input error (`VERIFICATION.md` §47). The head also echoes **"the hammer is cut to (x + 6)"** under itself as you build it, and every refusal names the shape that actually landed. Drag and click both work, as everywhere else in the build.
+> A drag-a-tile-into-the-head version came and went. It made the head a wide plate carrying two sign toggles, two number boxes and two remove buttons — it stopped looking like a hammer and it overflowed the column. **What survived is the part that was the actual fix rather than the mechanism:** an empty x-part means **one**, not nought, and the bar echoes **"the hammer is cut to (x + 6)"** before you swing. Those are what stop a cleared box swinging `6` at a lump you meant to hit with `(x + 6)` — reported as a maths error, and it was an input error (`VERIFICATION.md` §47).
 
-**The swing is a true arc**: rotation about the hand 132px above the head, wind-up anti-clockwise, back down through the bottom of the arc, and a short drive into the face — **131px of horizontal travel and 166px of vertical**, measured by pausing the animation and stepping through it. The impact lands a comic burst, **THUD!** when the seam runs and **CLANG!** when it glances and the hammer rebounds, with the anvil shuddering and the new pieces held back on `animation-delay` so they arrive on the beat. Under `prefers-reduced-motion` the burst still reports the hit; it just does not perform.
+**The swing is a true arc, and it is slow enough to watch.** The hammer rests leaning back at −20°, winds up to −59° and **holds there for a beat**, then strikes through to +6° and rests on the face. **1300ms**, not the 640ms first cut, which was one blur with the burst over before you found it. Everything on the beat is timed to the same 1300ms and the same 56% — the anvil shudder, the rock squash, the burst and the new pieces all land together. Measured on the striking face by pausing the animation and stepping through it: it traces the arc and lands **on** the rock.
+
+The impact throws a comic burst — **THUD!** when the seam runs, **CLANG!** when it glances and the hammer comes straight back off the face. Under `prefers-reduced-motion` the burst still reports the hit; it just does not perform.
 
 ```
 60             -> 6 | 10  -> 2 | 3, 5 | 2

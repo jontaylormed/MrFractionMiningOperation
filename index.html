@@ -466,161 +466,112 @@ input[type=range]{width:100%; accent-color:var(--ore); height:44px}
    This is the same polished steel the yard's metal chips already pass on. */
 .cutbar .paren{font-family:var(--display); font-size:22px; color:#2A3138; padding:0 2px}
 
-/* overflow:VISIBLE. The wind-up sweeps the head up and to the left along the
-   arc - about 80px across and 34px up at −41° - and hidden overflow guillotined
-   it on a narrow column, which is where the swing is most worth seeing. */
+/* the whole anvil scene, hammer included, is one drawing now - the hammer used
+   to be a CSS box floating over the svg because it held the input boxes */
 .anvilstage{position:relative; width:100%; display:flex; flex-direction:column; align-items:center;
-  padding:56px 0 0; overflow:visible}
-.anvilsvg{width:100%; max-width:380px}
-.anvilsvg svg{display:block; width:100%; height:auto}
+  padding:0; overflow:visible}
+.anvilsvg{width:100%; max-width:340px}
+.anvilsvg svg{display:block; width:100%; height:auto; overflow:visible}
 .anvilsvg svg *{pointer-events:none}
 
-/* ---- THE HAMMER ----
-   THE PIVOT IS THE HAND, NOT THE HEAD. transform-origin sits 132px ABOVE the
-   head, where a fist would be on the end of the shaft, so a rotation sweeps
-   the head along a real arc. Translating it down the way the first version did
-   was a lift shaft, not a swing. */
-/* THE HEAD MUST FIT THE COLUMN. With both sockets filled it is two signs, two
-   number boxes, an x, two remove buttons and four brackets - wider than the
-   middle column, and with overflow:visible on the stage it hung off the left
-   edge to x = −20, where the x-socket's sign toggle could not be clicked at
-   all. It wraps now, and the boxes are cut to the smallest that still take a
-   two-digit coefficient. */
-.hammer{position:relative; z-index:3; margin-bottom:-14px; max-width:100%;
-  transform-origin:50% -132px; will-change:transform}
-.hplate{position:relative; display:flex; align-items:center; gap:3px; box-sizing:border-box; max-width:100%;
+/* ---- what you cut the head to ---- */
+.hrow{display:flex; align-items:center; justify-content:center; gap:9px; flex-wrap:wrap; margin-top:4px}
+.hlab{font-size:12px; letter-spacing:.06em; text-transform:uppercase; color:var(--lamp)}
+.hbox{display:inline-flex; align-items:center; gap:3px;
   background:linear-gradient(180deg,#E6ECF2 0%,#C4CED8 52%,#9DA9B5 100%);
-  border:3px solid #2A3138; border-radius:8px; padding:8px 13px;
-  box-shadow:inset 0 3px 0 rgba(255,255,255,.5), inset 0 -5px 0 rgba(0,0,0,.24), 0 4px 0 rgba(0,0,0,.4)}
-.hplate:before,.hplate:after{content:""; position:absolute; top:50%; width:8px; height:8px; margin-top:-4px;
-  border-radius:50%; background:radial-gradient(circle at 34% 34%,#F2F6F9,#4A545E)}
-.hplate:before{left:5px} .hplate:after{right:5px}
-.hplate[data-drop=open]{box-shadow:inset 0 3px 0 rgba(255,255,255,.5), 0 0 0 3px var(--lamp), 0 4px 0 rgba(0,0,0,.4)}
-.hboxes{display:flex; align-items:center; justify-content:center; flex-wrap:wrap; gap:3px; padding:0 7px; max-width:100%}
-/* the shaft, running up out of the head to the hand it pivots on */
-.hhandle{position:absolute; left:50%; bottom:100%; width:14px; height:118px; margin-left:-7px;
-  background:linear-gradient(90deg,#5A3D28 0 3px,#9A7350 42%,#6B4A32 76%,#4A3220);
-  border-radius:4px 4px 0 0}
-.hhandle:after{content:""; position:absolute; left:-3px; right:-3px; top:6px; height:22px;
-  border-radius:4px; background:repeating-linear-gradient(180deg,#3A2A1C 0 3px,#5A3D28 3px 7px)}
-
-/* ---- THE SOCKETS: either a part is in one or it is not ---- */
-.sock{display:flex; align-items:center; gap:3px; border-radius:6px; padding:3px 4px; min-height:44px}
-/* an OPAQUE light recess, not a translucent dark one. rgba(46,38,32,.14) put
-   the hint at 1.48:1 and the contrast sweep failed the build over it - a
-   measurer reads background-color, and a wash over steel is not one. */
-.sock.empty{border:2px dashed #6E7A86; background:#D9E1E8}
-.sock.filled{border:2px solid #2A3138; background:linear-gradient(180deg,#FFF6E3,#F0DFBE)}
-.sock[data-hot]{box-shadow:0 0 0 3px #8FE0C0}
-.sock .sockhint{font-family:var(--body); font-size:11px; letter-spacing:.02em; color:#2A3138; padding:0 3px}
-.sockadd{cursor:pointer; width:30px; min-height:30px; border-radius:6px; border:2px solid #4E5862;
-  background:#5E6A76; color:#FFF3DE; font-family:var(--display); font-size:17px; line-height:1}
-.sockadd:hover{background:#7E8A96; border-color:var(--lamp)}
-.sockadd:focus-visible,.sgn:focus-visible,.sockoff:focus-visible,.parttile:focus-visible{outline:3px solid var(--lamp); outline-offset:2px}
-/* the sign: a state you flip, not a character you retype */
-.sgn{cursor:pointer; width:32px; min-height:36px; border-radius:6px; border:2px solid #1F5C4F;
-  background:linear-gradient(180deg,#2E7D6B,#1F5C4F); color:#FFF; font-family:var(--display); font-size:20px; line-height:1}
-.sgn.neg{border-color:#A33E0B; background:linear-gradient(180deg,#E2600F,#A33E0B)}
-.sgn:hover{filter:brightness(1.12)}
-.sockval{width:46px; text-align:center; font-family:var(--display); font-size:18px;
-  padding:6px 4px; min-height:36px}
-.sock .sockx{font-family:var(--display); font-size:19px; color:#2A3138}
-.sockoff{cursor:pointer; width:24px; min-height:24px; border-radius:5px; border:2px solid #8A6A45;
-  background:#EADCC2; color:#5A4B3C; font-family:var(--body); font-size:13px; line-height:1; padding:0}
-.sockoff:hover{background:#FFF; border-color:var(--molten); color:#A33E0B}
-.hboxes .plus{font-family:var(--display); font-size:20px; color:#2A3138; padding:0 1px}
-
-/* ---- THE PARTS TRAY ---- */
-.parttray{display:flex; align-items:center; gap:8px; flex-wrap:wrap; margin-top:12px;
-  background:#1E1813; border:2px solid #4A3F34; border-radius:10px; padding:8px 11px}
-.parttray .traylab{font-family:var(--display); font-size:10px; letter-spacing:.11em; color:var(--lamp)}
-.parttile{cursor:grab; min-width:52px; min-height:44px; touch-action:none;
-  border:3px solid #2A3138; border-radius:8px; padding:5px 10px;
-  background:linear-gradient(180deg,#E6ECF2,#AEBAC6); color:#141B22;
-  font-family:var(--display); font-size:22px; line-height:1;
-  box-shadow:0 3px 0 rgba(0,0,0,.4)}
-.parttile .pf{pointer-events:none}
-.parttile:hover{filter:brightness(1.08); border-color:var(--lamp)}
-.parttile:active{cursor:grabbing; transform:translateY(2px); box-shadow:0 1px 0 rgba(0,0,0,.4)}
-.parttile.pk{background:linear-gradient(180deg,#F2DCA4,#C8A24B); color:#2E2208}
-.dragghost.part{font-family:var(--display); font-size:20px; padding:8px 14px;
-  background:linear-gradient(180deg,#E6ECF2,#AEBAC6); color:#141B22}
-
-.hecho{font-size:13px; color:#C9B695; margin-top:9px}
+  border:3px solid #2A3138; border-radius:8px; padding:6px 11px;
+  box-shadow:inset 0 3px 0 rgba(255,255,255,.5), inset 0 -4px 0 rgba(0,0,0,.22), 0 3px 0 rgba(0,0,0,.34)}
+.hbox input{width:62px; text-align:center; font-family:var(--display); font-size:19px;
+  padding:6px 5px; min-height:44px}
+.hbox .paren{font-family:var(--display); font-size:22px; color:#2A3138; padding:0 2px}
+.hecho{font-size:13px; color:#C9B695; margin-top:8px; text-align:center}
 .hecho b{font-family:var(--display); font-size:17px; color:#FFE9C4}
 .hecho .bad{color:#FFB37A}
 
-/* THE SWING, AND IT IS AN ARC.
-   Pure rotation about the hand 132px above the head, so the head travels a
-   circle: back to −46° for the wind-up, through to +15° at the beat, settle.
-   The first version translated it down and tilted it a few degrees, which is
-   the motion of a lift, not a hammer. */
-/* THE GEOMETRY, and the first version of this got it backwards. With the pivot
-   directly above the head, ZERO DEGREES IS THE LOWEST POINT of the arc - so
-   swinging "to +15°" lifted the head away from the anvil instead of driving it
-   in. The head rests level at 0° (readable, typeable, sitting over the rock),
-   winds up ANTI-clockwise along the arc, sweeps back down through the bottom,
-   and the last of the travel is a short drive straight into the face. */
+/* ---- THE SWING ----
+   The hammer is part of the drawing now, so it rotates about the HAND at
+   (176,10) in the scene's own coordinates - a real arc, not a box being
+   translated. It rests LEANING BACK at −20°, which it can do because the
+   input boxes are no longer riveted to the head and do not have to stay
+   level: a hammer held ready is not a hammer lying flat.
+
+   AND IT IS SLOW. 640ms was one blur and the burst was over before you had
+   found it. 1300ms, with the wind-up eased and HELD at the top for a beat of
+   anticipation, the strike quick, and the head resting on the face after it
+   lands. Everything else on the beat is timed to the same 1300ms and to the
+   same 56% - the impact - so the anvil shudder, the rock squash, the burst and
+   the new pieces all land together instead of drifting apart. */
 @keyframes hammerarc{
-  0%{transform:rotate(0deg) translateY(0)}
-  26%{transform:rotate(-38deg) translateY(-6px)}
-  33%{transform:rotate(-41deg) translateY(-6px)}
-  48%{transform:rotate(2deg) translateY(17px)}
-  57%{transform:rotate(0deg) translateY(11px)}
-  78%{transform:rotate(-11deg) translateY(0)}
-  100%{transform:rotate(0deg) translateY(0)}
+  0%{transform:rotate(-20deg)}
+  8%{transform:rotate(-25deg)}
+  30%{transform:rotate(-58deg)}
+  40%{transform:rotate(-59deg)}       /* held at the top */
+  56%{transform:rotate(6deg)}         /* THE STRIKE */
+  62%{transform:rotate(4deg)}
+  74%{transform:rotate(3deg)}         /* resting on the face */
+  88%{transform:rotate(-26deg)}
+  100%{transform:rotate(-20deg)}
 }
 @keyframes hammerbounce{
-  0%{transform:rotate(0deg) translateY(0)}
-  26%{transform:rotate(-38deg) translateY(-6px)}
-  33%{transform:rotate(-41deg) translateY(-6px)}
-  46%{transform:rotate(1deg) translateY(13px)}
-  58%{transform:rotate(-22deg) translateY(-10px)}   /* straight back off the face */
-  72%{transform:rotate(-3deg) translateY(2px)}
-  86%{transform:rotate(-8deg) translateY(0)}
-  100%{transform:rotate(0deg) translateY(0)}
+  0%{transform:rotate(-20deg)}
+  8%{transform:rotate(-25deg)}
+  30%{transform:rotate(-58deg)}
+  40%{transform:rotate(-59deg)}
+  55%{transform:rotate(5deg)}
+  63%{transform:rotate(-30deg)}       /* straight back off the face */
+  72%{transform:rotate(-8deg)}
+  82%{transform:rotate(-28deg)}
+  100%{transform:rotate(-20deg)}
 }
-.anvilstage[data-anim] .hammer{animation:hammerarc 640ms cubic-bezier(.42,0,.5,1) 1}
-.anvilstage[data-anim=glance] .hammer{animation-name:hammerbounce}
-/* the anvil takes it: a hard shudder on the beat, not before */
-@keyframes anvilhit{0%,38%{transform:translate(0,0)}
-  44%{transform:translate(-3px,3px)}52%{transform:translate(3px,-2px)}
-  60%{transform:translate(-2px,1px)}100%{transform:translate(0,0)}}
-.anvilstage[data-anim] .anvilsvg{animation:anvilhit 640ms ease-out 1}
-@keyframes rockcrack{0%,38%{transform:scale(1)}46%{transform:scale(.9,1.1)}58%{transform:scale(1.06,.94)}100%{transform:scale(1)}}
-.anvilstage[data-anim=hit] .anvilrock{transform-box:fill-box; transform-origin:center;
-  animation:rockcrack 640ms ease-out 1}
+.anvilstage[data-anim] .hammerswing{transform-origin:176px 10px;
+  animation:hammerarc 1300ms cubic-bezier(.36,0,.5,1) 1}
+.anvilstage[data-anim=glance] .hammerswing{animation-name:hammerbounce}
+/* the hammer stands leaning back when nothing is happening */
+.hammerswing{transform-origin:176px 10px; transform:rotate(-20deg)}
+/* the anvil takes it, on the beat and not before */
+@keyframes anvilhit{0%,54%{transform:translate(0,0)}
+  58%{transform:translate(-3px,3px)}64%{transform:translate(3px,-2px)}
+  70%{transform:translate(-2px,1px)}76%{transform:translate(1px,0)}100%{transform:translate(0,0)}}
+.anvilstage[data-anim] .anvilsvg{animation:anvilhit 1300ms ease-out 1}
+@keyframes rockcrack{0%,54%{transform:scale(1)}60%{transform:scale(.88,1.12)}
+  70%{transform:scale(1.07,.93)}82%{transform:scale(.98,1.02)}100%{transform:scale(1)}}
+.anvilstage[data-anim=hit] .anvilrock{transform-box:fill-box; transform-origin:center bottom;
+  animation:rockcrack 1300ms ease-out 1}
 
-/* THE BURST. Comic book: a jagged star and the word, both punched in on the
-   beat of the impact and gone a third of a second later. */
+/* THE BURST. Comic book: a jagged star and the word, punched in on the beat
+   and held long enough to read before it goes. */
 .thud{position:absolute; left:50%; top:46%; transform:translate(-50%,-50%);
   pointer-events:none; opacity:0; z-index:4}
-.thud .tstar{position:absolute; left:50%; top:50%; width:150px; height:150px; margin:-75px 0 0 -75px;
+.thud .tstar{position:absolute; left:50%; top:50%; width:168px; height:168px; margin:-84px 0 0 -84px;
   background:radial-gradient(circle at 50% 50%, #FFD27A 0 34%, #E8A33D 55%, #C96A1F 100%);
   clip-path:polygon(50% 0%,60% 22%,83% 12%,77% 35%,100% 40%,80% 55%,96% 74%,72% 71%,73% 96%,53% 80%,
                     38% 100%,33% 76%,10% 84%,17% 61%,0% 50%,20% 38%,7% 17%,31% 22%,34% 2%)}
-.thud .tword{position:relative; font-family:var(--display); font-size:34px; letter-spacing:.03em;
-  color:#FFF3DE; paint-order:stroke; -webkit-text-stroke:5px #3A2408; text-shadow:0 3px 0 #7A4A12}
+.thud .tword{position:relative; font-family:var(--display); font-size:38px; letter-spacing:.03em;
+  color:#FFF3DE; paint-order:stroke; -webkit-text-stroke:6px #3A2408; text-shadow:0 4px 0 #7A4A12}
 @keyframes thudpop{
-  0%,36%{opacity:0; transform:translate(-50%,-50%) scale(.2) rotate(-16deg)}
-  44%{opacity:1; transform:translate(-50%,-50%) scale(1.22) rotate(4deg)}
-  54%{opacity:1; transform:translate(-50%,-50%) scale(.98) rotate(-2deg)}
-  78%{opacity:1; transform:translate(-50%,-50%) scale(1) rotate(0deg)}
-  100%{opacity:0; transform:translate(-50%,-50%) scale(1.08) rotate(0deg)}
+  0%,52%{opacity:0; transform:translate(-50%,-50%) scale(.2) rotate(-16deg)}
+  58%{opacity:1; transform:translate(-50%,-50%) scale(1.26) rotate(5deg)}
+  64%{opacity:1; transform:translate(-50%,-50%) scale(.96) rotate(-3deg)}
+  70%{opacity:1; transform:translate(-50%,-50%) scale(1.04) rotate(1deg)}
+  86%{opacity:1; transform:translate(-50%,-50%) scale(1) rotate(0deg)}
+  100%{opacity:0; transform:translate(-50%,-50%) scale(1.1) rotate(0deg)}
 }
-.floorbox[data-anim] .thud{animation:thudpop 900ms cubic-bezier(.3,1.5,.5,1) 1}
-@keyframes starspin{from{transform:rotate(0)}to{transform:rotate(26deg)}}
-.floorbox[data-anim] .thud .tstar{animation:starspin 900ms ease-out 1}
+.floorbox[data-anim] .thud{animation:thudpop 1300ms cubic-bezier(.3,1.5,.5,1) 1}
+@keyframes starspin{0%,52%{transform:rotate(0)}100%{transform:rotate(30deg)}}
+.floorbox[data-anim] .thud .tstar{animation:starspin 1300ms ease-out 1}
 /* a glance is a smaller, colder ring of a word */
-.floorbox[data-anim=glance] .thud .tword{font-size:27px; color:#DCE6EE; -webkit-text-stroke:5px #26333D; text-shadow:0 3px 0 #46545F}
+.floorbox[data-anim=glance] .thud .tword{font-size:30px; color:#DCE6EE; -webkit-text-stroke:6px #26333D; text-shadow:0 4px 0 #46545F}
 .floorbox[data-anim=glance] .thud .tstar{background:radial-gradient(circle at 50% 50%, #E6EEF4 0 34%, #A9B8C4 55%, #6E7E8C 100%)}
 
-/* the pieces are held back so they arrive ON the beat, not before it */
-.piece.fresh{animation-delay:260ms; animation-fill-mode:backwards}
+/* the pieces are held back so they arrive ON the beat - 56% of 1300ms */
+.piece.fresh{animation-delay:728ms; animation-fill-mode:backwards}
+/* the lamp in the gallery band overhead */
+@keyframes galllamp{0%,100%{opacity:.85}42%{opacity:1}74%{opacity:.66}}
+.gallglow{animation:galllamp 4.6s ease-in-out infinite}
 
 @media (prefers-reduced-motion:reduce){
-  .anvilstage[data-anim] .hammer,.anvilstage[data-anim] .anvilsvg,
-  .anvilstage[data-anim] .anvilrock,.floorbox[data-anim] .thud .tstar{animation:none}
+  .anvilstage[data-anim] .hammerswing,.anvilstage[data-anim] .anvilsvg,
+  .anvilstage[data-anim] .anvilrock,.floorbox[data-anim] .thud .tstar,.gallglow{animation:none}
   /* the burst still reports the hit, it just does not perform */
   .floorbox[data-anim] .thud{animation:none; opacity:1; transform:translate(-50%,-50%)}
   .piece.fresh{animation-delay:0s}
@@ -3940,48 +3891,76 @@ MF.balanced = function(seed, list){
   return out;
 };
 
-/* THE BREAKING FLOOR IS A PLACE TOO. A stone block with an iron plate on it,
-   a sledge leaning against it, chips underfoot and a lamp hung on a timber -
-   the corner of the mine where rock is worked, drawn behind the pieces rather
-   than instead of them. Scenery: inert, and the `overlay` group says so. */
+/* THE FLOOR OF THE WORKING, behind the pieces and the belt.
+
+   REDRAWN FROM NOTHING. The first version put a second anvil, a sledge and a
+   lamp along the top of the floorbox - a whole competing scene, badly drawn,
+   directly above the properly drawn anvil below it. Two anvils on one screen,
+   and the crude one on top.
+
+   This is the ground and the wall of the gallery you are standing in: hewn
+   rock, a timber prop, a hanging lamp, dust. No focal objects at all, because
+   the focal objects are the pieces of rock lying on it. */
 MF.anvilArt = function(){
   var wrap = E('div','anvilart');
-  var W=300, VH=64;
-  var svg = S('svg',{viewBox:'0 0 '+W+' '+VH,'aria-hidden':'true',preserveAspectRatio:'xMinYMax slice'});
-  /* the timber the lamp hangs from */
-  svg.appendChild(S('rect',{x:0,y:8,width:W,height:6,fill:'#4A3F34'}));
-  svg.appendChild(S('rect',{x:34,y:8,width:6,height:20,fill:'#4A3F34'}));
-  svg.appendChild(S('circle',{class:'anvilglow',cx:'37',cy:'34',r:'13',fill:'rgba(232,163,61,.20)'}));
-  svg.appendChild(S('rect',{x:'32',y:'27',width:'11',height:'14',rx:'3',fill:'#E8A33D',stroke:'#8A6A2A','stroke-width':'2'}));
-  /* the block, and the iron plate it is worked on */
-  svg.appendChild(S('path',{d:'M196 62 l6 -26 l72 0 l6 26 Z',fill:'#5A4B3C'}));
-  svg.appendChild(S('rect',{x:'192',y:'30',width:'92',height:'8',rx:'2',fill:'#6E7A86'}));
-  /* the sledge leaning on it */
-  svg.appendChild(S('rect',{x:'166',y:'22',width:'7',height:'42',rx:'2',fill:'#8A6A45',transform:'rotate(11 169 44)'}));
-  svg.appendChild(S('rect',{x:'158',y:'18',width:'24',height:'11',rx:'2',fill:'#5A626A'}));
-  /* chips underfoot */
-  for(var c=0;c<11;c++)
-    svg.appendChild(S('path',{d:'M'+(58+c*19)+' '+(58-((c*7)%6))+' l6 -4 l4 5 Z', fill:'#6B5B48', opacity:'.7'}));
+  var W=320, VH=70;
+  var svg = S('svg',{viewBox:'0 0 '+W+' '+VH,'aria-hidden':'true',preserveAspectRatio:'xMidYMax slice'});
+  var defs = S('defs',{});
+  var g1 = S('linearGradient',{id:'gallw',x1:'0',y1:'0',x2:'0',y2:'1'});
+  g1.appendChild(S('stop',{offset:'0%','stop-color':'#2A2219'}));
+  g1.appendChild(S('stop',{offset:'100%','stop-color':'#443728'}));
+  defs.appendChild(g1); svg.appendChild(defs);
+  svg.appendChild(S('rect',{x:0,y:0,width:W,height:VH,fill:'url(#gallw)'}));
+
+  /* hewn rock: courses of chisel work, no two the same length */
+  for(var r=0;r<4;r++){
+    var y = 10 + r*15;
+    var d = 'M0 '+y;
+    for(var seg=0; seg<W; seg+=44) d += ' q22 '+((seg/44+r)%2?3:-3)+' 44 '+((seg/44+r)%3===0?2:-1);
+    svg.appendChild(S('path',{d:d,fill:'none',stroke:'#584835','stroke-width':(r%2?1.4:2.2),opacity:'.55'}));
+  }
+  for(var b=0;b<14;b++)
+    svg.appendChild(S('path',{d:'M'+(16+b*23)+' '+(12+((b*11)%40))+' l0 13',
+      stroke:'#584835','stroke-width':'1.6',opacity:'.4',fill:'none'}));
+
+  /* a timber prop holding the back up, at the left edge where nothing sits */
+  svg.appendChild(S('rect',{x:16,y:6,width:11,height:VH-6,fill:'#5A4432'}));
+  svg.appendChild(S('rect',{x:12,y:4,width:19,height:7,rx:2,fill:'#6B5335'}));
+  svg.appendChild(S('rect',{x:0,y:4,width:W,height:5,fill:'#4A3B2C',opacity:'.8'}));
+
+  /* the lamp on the cap-piece, and the pool it throws */
+  svg.appendChild(S('circle',{class:'gallglow',cx:'58',cy:'22',r:'20',fill:'rgba(232,163,61,.16)'}));
+  svg.appendChild(S('path',{d:'M54 9 l8 0 l3 5 l-14 0 Z',fill:'#5A626A'}));
+  svg.appendChild(S('rect',{x:'53',y:'13',width:'11',height:'13',rx:'3',fill:'#E8A33D',stroke:'#8A6A2A','stroke-width':'2'}));
+
+  /* dust in the light, and grit on the ground */
+  for(var d2=0; d2<16; d2++)
+    svg.appendChild(S('circle',{cx:String(24+d2*19), cy:String(20+((d2*17)%42)), r:String(1+(d2%3)*0.7),
+      fill:'#C8B89A', opacity:'.2'}));
+  svg.appendChild(S('path',{d:'M0 '+(VH-9)+' q80 -5 160 -1 q80 4 160 -2 L'+W+' '+VH+' L0 '+VH+' Z',fill:'#241D18'}));
+
   wrap.appendChild(svg);
   return wrap;
 };
 
-/* WHAT THE HEAD IS CUT TO, ECHOED UNDER IT. The line whose absence let a
+/* WHAT THE HAMMER IS CUT TO, echoed under it. The line whose absence let a
    cleared box swing 6 at a lump the student meant to hit with (x + 6). */
 MF.echoHammer = function(B){
   var echo = B && B._echo;
-  /* NO isConnected GUARD. paintBreak builds the whole bar detached and appends
-     it at the end, so the first call - the one that fills the line at rest -
-     runs while the node has no parent. Guarding on isConnected made the echo
-     blank until the student typed, which is exactly the state it exists to
-     explain. B._echo is replaced on every paint, so a stale one cannot linger. */
+  /* NO isConnected GUARD. paintBreak builds the bar detached and appends it at
+     the end, so the first call - the one that fills the line at rest - runs
+     while the node has no parent. B._echo is replaced on every paint. */
   if(!echo) return;
-  var TL = B.tiles || {x:{on:false},k:{on:false}};
-  if(!TL.x.on && !TL.k.on){
-    echo.innerHTML = 'the head is empty — drag a part into it';
+  var isNum = B._pieceIsNum;
+  /* NOTHING TYPED IS NOT THE SAME AS A SHAPE THAT COMES TO NOTHING. Read the
+     raw strings for emptiness: an empty x-part parses to 1, so testing the
+     PARSED values reported an untouched bar as "cut to (x)" - a shape nobody
+     had chosen, sitting there looking like a suggestion. */
+  if(String(B.raw.m).trim()==='' && String(B.raw.k).trim()===''){
+    echo.innerHTML = 'the head is empty — type what you are taking out';
     return;
   }
-  var m = MF.readPickM(B.raw.m), k = MF.readInt(B.raw.k);
+  var m = isNum ? 0 : MF.readPickM(B.raw.m), k = MF.readInt(B.raw.k);
   if(!isFinite(m) || !isFinite(k)){
     echo.innerHTML = '<span class="bad">that is not a whole number</span>';
     return;
@@ -3990,158 +3969,114 @@ MF.echoHammer = function(B){
     (m===0 ? num(k) : '(' + ingotHtml({m:m,k:k}) + ')') + '</b>';
 };
 
-/* DRAGGING A PART INTO THE HEAD. Pointer events, like every other drag in this
-   build; a movement under 5px is not a drag, so the click path still lands. */
-MF.dragPart = function(node, which, B){
-  var moved=0, sx=0, sy=0, ghost=null, live=false;
-  on(node,'pointerdown',function(e){
-    if(e.button) return;
-    live=true; moved=0; sx=e.clientX; sy=e.clientY;
-    node.setPointerCapture && node.setPointerCapture(e.pointerId);
-  });
-  on(node,'pointermove',function(e){
-    if(!live) return;
-    moved = Math.max(moved, Math.abs(e.clientX-sx)+Math.abs(e.clientY-sy));
-    if(moved <= 5) return;
-    if(!ghost){
-      ghost = E('div','dragghost part', which==='x' ? 'x' : '#');
-      document.body.appendChild(ghost);
-      MF.markSockets(true, which);
-    }
-    ghost.style.left = (e.clientX+12)+'px';
-    ghost.style.top  = (e.clientY+12)+'px';
-    ghost.setAttribute('data-over', MF.sockAt(e.clientX, e.clientY, which) ? 'yes' : 'no');
-  });
-  ['pointerup','pointercancel'].forEach(function(ev){
-    on(node,ev,function(e){
-      if(!live) return;
-      live=false;
-      if(!ghost) return;
-      var over = MF.sockAt(e.clientX, e.clientY, which);
-      ghost.parentNode && ghost.parentNode.removeChild(ghost); ghost=null;
-      MF.markSockets(false);
-      if(over){
-        B.tiles[which].on = true;
-        B.raw = {m: B.tiles.x.on ? ((B.tiles.x.neg?'-':'')+B.tiles.x.n) : '0',
-                 k: B.tiles.k.on ? ((B.tiles.k.neg?'-':'')+B.tiles.k.n) : '0'};
-        MF.paintMine();
-      }
-    });
-  });
-};
-/* the socket a part belongs in lights up while it is in the air; the whole
-   head is a target, so a drop anywhere on it lands in the right socket */
-MF.markSockets = function(on_, which){
-  var host = MF._mine && MF._mine.mid;
-  if(!host) return;
-  var plate = host.querySelector('.hplate');
-  if(plate){ if(on_) plate.setAttribute('data-drop','open'); else plate.removeAttribute('data-drop'); }
-  Array.prototype.forEach.call(host.querySelectorAll('.sock'), function(s){
-    if(!on_ || s.getAttribute('data-sock')!==which) s.removeAttribute('data-hot');
-    else s.setAttribute('data-hot','yes');
-  });
-};
-MF.sockAt = function(x, y, which){
-  var host = MF._mine && MF._mine.mid;
-  if(!host) return null;
-  /* the socket itself, or anywhere on the head - a socket is small and a
-     student aiming at a hammer should not have to hit a 40px box */
-  var target = host.querySelector('.sock[data-sock="'+which+'"]') || host.querySelector('.hplate');
-  var plate = host.querySelector('.hplate');
-  var hit = function(el){ if(!el) return false;
-    var b = el.getBoundingClientRect();
-    return x>=b.left && x<=b.right && y>=b.top && y<=b.bottom; };
-  return (hit(target) || hit(plate)) ? (target || plate) : null;
-};
+/* =========================================================================
+   THE ANVIL AND THE HAMMER.
 
-/* THE ANVIL, PROPERLY DRAWN. A London-pattern anvil on a stump: horn, step,
-   polished face, hardy and pritchel holes, waisted body, feet, and the block it
-   is bolted to. The first version was four flat shapes and read as a grey
-   doorstop. Everything here is scenery and inert - the `overlay` group says so.
+   A London-pattern anvil on a stump with the lump on its face, and an UPRIGHT
+   hammer standing over it - handle vertical, head square on the end of it,
+   and the flat striking face pointing straight down at the work. The head was
+   a wide horizontal plate before, because it had the input boxes in it; the
+   boxes are back under the picture where they belong, so the hammer can be
+   the shape a hammer is.
 
-   The lump sits ON the face where the hammer lands, with its expression cut
-   into it, so the thing on screen and the thing being hit are one object. */
+   Scenery, and inert: the `overlay` group asserts nothing in here takes a click.
+   ========================================================================= */
 MF.anvilScene = function(ore){
   var wrap = E('div','anvilsvg');
-  var W=340, VH=152;
+  var W=340, VH=232;
   var svg = S('svg',{viewBox:'0 0 '+W+' '+VH,'aria-hidden':'true'});
   var defs = S('defs',{});
-  function grad(id, stops, x2, y2){
-    var g = S('linearGradient',{id:id,x1:'0',y1:'0',x2:(x2||'0'),y2:(y2==null?'1':y2)});
+  function grad(id, stops){
+    var g = S('linearGradient',{id:id,x1:'0',y1:'0',x2:'0',y2:'1'});
+    stops.forEach(function(s){ g.appendChild(S('stop',{offset:s[0],'stop-color':s[1]})); });
+    defs.appendChild(g);
+  }
+  function gradX(id, stops){
+    var g = S('linearGradient',{id:id,x1:'0',y1:'0',x2:'1',y2:'0'});
     stops.forEach(function(s){ g.appendChild(S('stop',{offset:s[0],'stop-color':s[1]})); });
     defs.appendChild(g);
   }
   grad('anvFace',[['0%','#D6DEE5'],['38%','#9DA9B5'],['100%','#6E7A86']]);
   grad('anvBody',[['0%','#7E8A96'],['46%','#5E6A76'],['100%','#39424B']]);
-  grad('anvHorn',[['0%','#93A0AC'],['100%','#4E5862']]);
-  grad('stump',[['0%','#8A6A45'],['40%','#6B4A32'],['100%','#4A3524']]);
+  gradX('anvHorn',[['0%','#3E4750'],['70%','#93A0AC']]);
+  grad('stumpG',[['0%','#8A6A45'],['40%','#6B4A32'],['100%','#4A3524']]);
   grad('rockG',[['0%','#8A7358'],['58%','#6B5A47'],['100%','#463A2C']]);
+  gradX('headG',[['0%','#39424B'],['22%','#8A97A3'],['58%','#5E6A76'],['100%','#2E363D']]);
+  gradX('haftG',[['0%','#4A3220'],['30%','#A67C55'],['70%','#7A5636'],['100%','#3E2A1A']]);
   svg.appendChild(defs);
 
-  /* the floor under it, and the scale that comes off hot work */
-  svg.appendChild(S('ellipse',{cx:172,cy:146,rx:126,ry:8,fill:'#1B1511',opacity:'.5'}));
-
-  /* ---- the stump: end grain, iron banding, bolts ---- */
-  svg.appendChild(S('path',{d:'M104 122 h136 l-9 24 h-118 Z',fill:'url(#stump)',stroke:'#3A2A1C','stroke-width':'2'}));
+  /* ---- the ground, the stump, the anvil ---- */
+  svg.appendChild(S('ellipse',{cx:172,cy:226,rx:126,ry:8,fill:'#1B1511',opacity:'.5'}));
+  svg.appendChild(S('path',{d:'M104 202 h136 l-9 24 h-118 Z',fill:'url(#stumpG)',stroke:'#3A2A1C','stroke-width':'2'}));
   for(var gr=0; gr<5; gr++)
-    svg.appendChild(S('path',{d:'M'+(112+gr*5)+' 124 l-3 20',stroke:'#4A3524','stroke-width':'2',opacity:'.55',fill:'none'}));
-  svg.appendChild(S('rect',{x:104,y:128,width:136,height:5,fill:'#5A626A',opacity:'.85'}));
-  svg.appendChild(S('rect',{x:101,y:139,width:140,height:5,fill:'#5A626A',opacity:'.7'}));
-  [116,168,224].forEach(function(bx){
-    svg.appendChild(S('circle',{cx:bx,cy:130.5,r:'2.2',fill:'#8A9AA6'}));
-  });
+    svg.appendChild(S('path',{d:'M'+(112+gr*5)+' 204 l-3 20',stroke:'#4A3524','stroke-width':'2',opacity:'.55',fill:'none'}));
+  svg.appendChild(S('rect',{x:104,y:208,width:136,height:5,fill:'#5A626A',opacity:'.85'}));
+  svg.appendChild(S('rect',{x:101,y:219,width:140,height:5,fill:'#5A626A',opacity:'.7'}));
+  [116,168,224].forEach(function(bx){ svg.appendChild(S('circle',{cx:bx,cy:210.5,r:'2.2',fill:'#8A9AA6'})); });
 
-  /* ---- the anvil: feet, waist, body, step, horn, heel ---- */
-  svg.appendChild(S('path',{d:'M110 112 h124 l6 12 h-136 Z',fill:'#39424B'}));          /* base */
-  svg.appendChild(S('path',{d:'M138 92 h68 l14 22 h-96 Z',fill:'url(#anvBody)',stroke:'#2A3138','stroke-width':'2','stroke-linejoin':'round'}));  /* waist */
-  /* the body between face and waist */
-  svg.appendChild(S('path',{d:'M104 90 h136 l-16 6 h-104 Z',fill:'#4E5862'}));
-  /* the horn: a cone off the left, with its own light */
-  svg.appendChild(S('path',{d:'M104 76 q-32 2 -58 12 q26 8 58 8 Z',fill:'url(#anvHorn)',stroke:'#2A3138','stroke-width':'2','stroke-linejoin':'round'}));
-  /* the step, between horn and face */
-  svg.appendChild(S('rect',{x:100,y:82,width:14,height:9,fill:'#5E6A76',stroke:'#2A3138','stroke-width':'1.5'}));
-  /* the face, polished, with the heel at the right */
-  svg.appendChild(S('path',{d:'M112 74 h150 l0 16 h-150 Z',fill:'url(#anvFace)',stroke:'#2A3138','stroke-width':'2','stroke-linejoin':'round'}));
-  svg.appendChild(S('rect',{x:114,y:75.5,width:146,height:3,rx:1.5,fill:'#EDF2F6',opacity:'.75'}));  /* the shine */
-  /* hardy hole and pritchel, cut in the heel */
-  svg.appendChild(S('rect',{x:232,y:78,width:11,height:9,rx:1,fill:'#1B2126'}));
-  svg.appendChild(S('circle',{cx:252,cy:82,r:'3.4',fill:'#1B2126'}));
+  svg.appendChild(S('path',{d:'M110 192 h124 l6 12 h-136 Z',fill:'#39424B'}));
+  svg.appendChild(S('path',{d:'M138 172 h68 l14 22 h-96 Z',fill:'url(#anvBody)',stroke:'#2A3138','stroke-width':'2','stroke-linejoin':'round'}));
+  svg.appendChild(S('path',{d:'M104 170 h136 l-16 6 h-104 Z',fill:'#4E5862'}));
+  svg.appendChild(S('path',{d:'M104 156 q-32 2 -58 12 q26 8 58 8 Z',fill:'url(#anvHorn)',stroke:'#2A3138','stroke-width':'2','stroke-linejoin':'round'}));
+  svg.appendChild(S('rect',{x:100,y:162,width:14,height:9,fill:'#5E6A76',stroke:'#2A3138','stroke-width':'1.5'}));
+  svg.appendChild(S('path',{d:'M112 154 h150 l0 16 h-150 Z',fill:'url(#anvFace)',stroke:'#2A3138','stroke-width':'2','stroke-linejoin':'round'}));
+  svg.appendChild(S('rect',{x:114,y:155.5,width:146,height:3,rx:1.5,fill:'#EDF2F6',opacity:'.75'}));
+  svg.appendChild(S('rect',{x:232,y:158,width:11,height:9,rx:1,fill:'#1B2126'}));
+  svg.appendChild(S('circle',{cx:252,cy:162,r:'3.4',fill:'#1B2126'}));
 
-  /* a pair of tongs leaning on the stump, because a working anvil is never bare */
-  var tongs = S('g',{transform:'rotate(-16 268 108)'});
-  tongs.appendChild(S('rect',{x:266,y:96,width:5,height:50,rx:2,fill:'#6E7A86'}));
-  tongs.appendChild(S('rect',{x:272,y:96,width:5,height:50,rx:2,fill:'#5A626A'}));
-  tongs.appendChild(S('path',{d:'M264 100 q8 -12 16 0',fill:'none',stroke:'#8A9AA6','stroke-width':'4','stroke-linecap':'round'}));
+  var tongs = S('g',{transform:'rotate(-16 268 188)'});
+  tongs.appendChild(S('rect',{x:266,y:176,width:5,height:50,rx:2,fill:'#6E7A86'}));
+  tongs.appendChild(S('rect',{x:272,y:176,width:5,height:50,rx:2,fill:'#5A626A'}));
+  tongs.appendChild(S('path',{d:'M264 180 q8 -12 16 0',fill:'none',stroke:'#8A9AA6','stroke-width':'4','stroke-linecap':'round'}));
   svg.appendChild(tongs);
-
-  /* chips and scale scattered on the floor */
   for(var c=0;c<10;c++)
-    svg.appendChild(S('path',{d:'M'+(46+c*28)+' '+(142-((c*5)%5))+' l5 -3 l3 4 Z',
-      fill:(c%3?'#6B5B48':'#8A9AA6'), opacity:'.65'}));
+    svg.appendChild(S('path',{d:'M'+(46+c*28)+' '+(222-((c*5)%5))+' l5 -3 l3 4 Z',
+      fill:(c%3?'#6B5B48':'#8A9AA6'), opacity:'.6'}));
 
-  /* ---- THE LUMP, on the face, where the hammer lands ---- */
+  /* ---- THE LUMP, on the face where the hammer lands ---- */
   var g = S('g',{class:'anvilrock'});
-  g.appendChild(S('ellipse',{cx:186,cy:73,rx:56,ry:5,fill:'#1B2126',opacity:'.45'}));   /* its shadow on the face */
+  g.appendChild(S('ellipse',{cx:186,cy:153,rx:56,ry:5,fill:'#1B2126',opacity:'.45'}));
   g.appendChild(S('polygon',{
-    points:'140,32 176,20 214,26 234,44 228,64 190,72 148,68 130,50',
+    points:'140,112 176,100 214,106 234,124 228,144 190,152 148,148 130,130',
     fill:'url(#rockG)',stroke:'#2E2620','stroke-width':'3','stroke-linejoin':'round'}));
-  /* facets, so it reads as broken stone rather than a blob */
-  g.appendChild(S('path',{d:'M176 20 l-14 26 l-32 4',fill:'none',stroke:'#4A3F34','stroke-width':'2',opacity:'.8'}));
-  g.appendChild(S('path',{d:'M162 46 l28 26',fill:'none',stroke:'#4A3F34','stroke-width':'2',opacity:'.8'}));
-  g.appendChild(S('path',{d:'M162 46 l52 -19',fill:'none',stroke:'#5A4B3C','stroke-width':'2',opacity:'.7'}));
-  /* the ore vein running through it */
-  g.appendChild(S('path',{d:'M138 42 q26 -9 50 -3 q22 6 44 -4',fill:'none',stroke:'#C96A1F','stroke-width':'3.5','stroke-linecap':'round',opacity:'.9'}));
-  g.appendChild(S('circle',{cx:'156',cy:'34',r:'2.6',fill:'#F2DCA4',opacity:'.9'}));
-  var label = S('text',{x:'182',y:'54','text-anchor':'middle',
+  g.appendChild(S('path',{d:'M176 100 l-14 26 l-32 4',fill:'none',stroke:'#4A3F34','stroke-width':'2',opacity:'.8'}));
+  g.appendChild(S('path',{d:'M162 126 l28 26',fill:'none',stroke:'#4A3F34','stroke-width':'2',opacity:'.8'}));
+  g.appendChild(S('path',{d:'M162 126 l52 -19',fill:'none',stroke:'#5A4B3C','stroke-width':'2',opacity:'.7'}));
+  g.appendChild(S('path',{d:'M138 122 q26 -9 50 -3 q22 6 44 -4',fill:'none',stroke:'#C96A1F','stroke-width':'3.5','stroke-linecap':'round',opacity:'.9'}));
+  g.appendChild(S('circle',{cx:'156',cy:'114',r:'2.6',fill:'#F2DCA4',opacity:'.9'}));
+  var label = S('text',{x:'182',y:'134','text-anchor':'middle',
     'font-family':"'Black Han Sans','Arial Black',Impact,sans-serif",fill:'#FFF3DE',
     'paint-order':'stroke',stroke:'#241D18','stroke-width':'5','stroke-linejoin':'round'});
   label.textContent = MF.oreText(ore);
-  /* a loaded trinomial runs off the rock at full size, so it shrinks to fit
-     rather than hanging over the anvil */
   var chars = label.textContent.length;
   label.setAttribute('font-size', String(chars > 11 ? Math.max(11, 20 - (chars-11)*1.05) : 20));
   g.appendChild(label);
   svg.appendChild(g);
+
+  /* ---- THE HAMMER: upright, face down, standing over the work ----
+     The pivot is the hand at (176,10). Positioning lives on this outer mount;
+     the animation goes on the inner group, per MF.ANIM_TRANSFORM_CLASSES. */
+  var mount = S('g',{});
+  var ham = S('g',{class:'hammerswing'});
+  /* the haft, vertical, thicker at the butt with a bound grip */
+  ham.appendChild(S('path',{d:'M170 12 l12 0 l3 88 l-18 0 Z',fill:'url(#haftG)',stroke:'#2E1E10','stroke-width':'2','stroke-linejoin':'round'}));
+  for(var w=0; w<5; w++)
+    ham.appendChild(S('path',{d:'M'+(169-w*0.4)+' '+(18+w*7)+' l'+(14+w*0.8)+' 3',
+      stroke:'#3A2A1C','stroke-width':'2.4',opacity:'.75',fill:'none'}));
+  /* the head: a block square on the end of the haft, the face pointing DOWN */
+  ham.appendChild(S('path',{d:'M148 98 h56 l6 8 l0 14 l-6 8 h-56 l-6 -8 l0 -14 Z',
+    fill:'url(#headG)',stroke:'#1F262C','stroke-width':'2.5','stroke-linejoin':'round'}));
+  /* the eye, where the haft passes through, and the wedge in it */
+  ham.appendChild(S('rect',{x:167,y:100,width:18,height:8,rx:2,fill:'#2A3138'}));
+  ham.appendChild(S('rect',{x:170,y:101,width:12,height:3,rx:1,fill:'#8A6A45'}));
+  /* THE STRIKING FACE, flared and bright: the side that meets the anvil */
+  ham.appendChild(S('path',{class:'hface',d:'M140 122 h64 l-4 10 h-56 Z',fill:'#B9C4CE',stroke:'#1F262C','stroke-width':'2.5','stroke-linejoin':'round'}));
+  ham.appendChild(S('rect',{x:146,y:129,width:52,height:3,rx:1.5,fill:'#EDF2F6',opacity:'.8'}));
+  /* a cross-peen off the back, so it reads as a forging hammer and not a brick */
+  ham.appendChild(S('path',{d:'M204 102 l22 6 l0 8 l-22 6 Z',fill:'#4E5862',stroke:'#1F262C','stroke-width':'2.5','stroke-linejoin':'round'}));
+  ham.appendChild(S('path',{d:'M148 100 l0 26',stroke:'#B9C4CE','stroke-width':'2',opacity:'.5',fill:'none'}));
+  mount.appendChild(ham);
+  svg.appendChild(mount);
 
   wrap.appendChild(svg);
   return wrap;
@@ -4260,125 +4195,51 @@ MF.paintBreak = function(host, B){
        number is a swing that can never land */
     if(B.rawFor !== t.id){ B.raw = MF.pickDefault(t.ore); B.rawFor = t.id; }
 
-    /* ---- THE HAMMER, AND WHAT YOU BUILD ITS HEAD OUT OF ----
-       You drag an **x** and a **#** into the head, set the number, and flip the
-       sign. Two sockets, either of which can be left empty:
+    /* ---- THE HAMMER BAR: the picture, then the boxes ----
+       Back to typing it. The drag-a-tile-into-the-head version made the head a
+       wide plate that had to hold two sign toggles, two number boxes and two
+       remove buttons - it stopped looking like a hammer and it overflowed the
+       column. The boxes sit under the picture now and the hammer is the shape
+       a hammer is.
 
-         x socket empty  -> no x in what you are taking out (a plain metal)
-         # socket empty  -> no number on the end (something like 3x)
-
-       THAT IS WHY THE SOCKETS EXIST. The old head was two text boxes sharing
-       one reader, and an empty box meant nought in both - so clearing the
-       x-part swung 6 instead of (x + 6) and the refusal named a shape the
-       student had never typed. A socket cannot be ambiguous: either a tile is
-       in it or it is not, and you can see which from across the room. */
+       WHAT SURVIVED FROM THE TILES, because it was the actual fix and not the
+       mechanism: an empty x-part box means ONE, not nought (MF.readPickM), and
+       the bar echoes what the head is cut to before you swing it. Those are
+       what stop a cleared box swinging 6 at a lump you meant to hit with
+       (x + 6). */
     var cut = E('div','cutbar');
     cut.appendChild(H('div','cutlab','UNDER THE HAMMER'));
 
     var stage = E('div','anvilstage');
     if(B.anim) stage.setAttribute('data-anim', B.anim);
-    var isNum = t.ore.kind==='number';
-
-    /* the tiles are UI state; B.raw stays the one thing the swing reads, so
-       nothing downstream - swing, playthrough, the break and inplace groups -
-       has to know the head is built out of tiles now */
-    if(B.tilesFor !== t.id){
-      B.tiles = {x:{on:false, n:1, neg:false}, k:{on:false, n:2, neg:false}};
-      B.tilesFor = t.id;
-    }
-    var TL = B.tiles;
-    var sync = function(){
-      B.raw = {
-        m: TL.x.on ? ((TL.x.neg?'-':'') + TL.x.n) : '0',
-        k: TL.k.on ? ((TL.k.neg?'-':'') + TL.k.n) : '0'
-      };
-      B.rawFor = t.id;
-    };
-    sync();
-    var repaint = function(){ sync(); MF.paintMine(); };
-
-    var hammer = E('div','hammer');
-    var plate = E('div','hplate');
-    var head = E('div','hboxes');
-
-    /* one socket. Filled: sign toggle, the number, and a way to take it off. */
-    var socket = function(which){
-      var st2 = TL[which], isX = which==='x';
-      var sock = E('div','sock' + (st2.on?' filled':' empty'));
-      sock.setAttribute('data-sock', which);
-      if(!st2.on){
-        sock.appendChild(H('span','sockhint', isX ? 'drag x here' : 'drag # here'));
-        /* CLICK PLACES IT TOO. A drag with no click path is a control half the
-           users cannot reach - the same rule the heap and the belt follow. */
-        var add = E('button','sockadd', '+'); add.type='button';
-        add.setAttribute('aria-label', isX ? 'put an x into the hammer' : 'put a number into the hammer');
-        on(add,'click',function(){ st2.on = true; repaint(); });
-        sock.appendChild(add);
-        return sock;
-      }
-      /* THE SIGN, AS A THING YOU FLIP. Typing a minus in front of a number is
-         where sign errors live; this makes plus and minus a state you can see
-         and change without retyping anything. */
-      var sgn = E('button','sgn' + (st2.neg?' neg':'')); sgn.type='button';
-      sgn.textContent = st2.neg ? '−' : '+';
-      sgn.setAttribute('aria-label', (st2.neg?'minus':'plus') + ' — click to flip the sign');
-      sgn.title = 'Flip the sign';
-      on(sgn,'click',function(){ st2.neg = !st2.neg; repaint(); });
-      sock.appendChild(sgn);
-
-      var val = document.createElement('input');
-      val.type='text'; val.inputMode='numeric'; val.value = String(st2.n);
-      val.className = 'sockval';
-      val.setAttribute('aria-label', isX ? 'how many x' : 'the number');
-      on(val,'input',function(){
-        var v = MF.readInt(val.value);
-        st2.n = isFinite(v) ? Math.abs(v) : val.value;   /* the sign lives on the toggle */
-        sync(); MF.echoHammer(B);
-      });
-      on(val,'keydown',function(e){ if(e.key==='Enter'){ e.preventDefault(); MF.swing(B); } });
-      sock.appendChild(val);
-      if(isX) sock.appendChild(H('span','sockx','x'));
-
-      var off = E('button','sockoff','×'); off.type='button';
-      off.setAttribute('aria-label', isX ? 'take the x back out of the hammer' : 'take the number back out');
-      off.title = 'Take it out';
-      on(off,'click',function(){ st2.on = false; repaint(); });
-      sock.appendChild(off);
-      return sock;
-    };
-
-    head.appendChild(H('span','paren','('));
-    if(!isNum){
-      head.appendChild(socket('x'));
-      head.appendChild(H('span','plus','+'));
-    }
-    head.appendChild(socket('k'));
-    head.appendChild(H('span','paren',')'));
-    plate.appendChild(head);
-    hammer.appendChild(plate);
-    hammer.appendChild(E('div','hhandle'));
-    stage.appendChild(hammer);
     stage.appendChild(MF.anvilScene(t.ore));
     cut.appendChild(stage);
 
-    /* the tray you drag out of */
-    var tray = E('div','parttray');
-    tray.appendChild(H('span','traylab','PARTS'));
-    var mk = function(which, face, label){
-      if(which==='x' && isNum) return;
-      var tile = E('button','parttile p'+which); tile.type='button';
-      tile.setAttribute('data-part', which);
-      tile.setAttribute('draggable','true');
-      tile.appendChild(H('span','pf', face));
-      tile.setAttribute('aria-label', label);
-      tile.title = label;
-      on(tile,'click',function(){ TL[which].on = true; repaint(); });
-      MF.dragPart(tile, which, B);
-      tray.appendChild(tile);
-    };
-    mk('x','x','an x — drag it into the hammer, or click to drop it in');
-    mk('k','#','a number — drag it into the hammer, or click to drop it in');
-    cut.appendChild(tray);
+    var isNum = t.ore.kind==='number';
+    B._pieceIsNum = isNum;
+
+    var inner = E('div','hrow');
+    inner.appendChild(H('span','hlab','cut the head to'));
+    var box = E('div','hbox');
+    if(!isNum){
+      box.appendChild(H('span','paren','('));
+      var mi = document.createElement('input'); mi.type='text'; mi.inputMode='numeric';
+      mi.value = B.raw.m; mi.placeholder = '1';
+      mi.setAttribute('aria-label','how many x — leave it empty for a single x, or put 0 for a plain number');
+      on(mi,'input',function(){ B.raw.m = mi.value; MF.echoHammer(B); });
+      on(mi,'keydown',function(e){ if(e.key==='Enter'){ e.preventDefault(); MF.swing(B); } });
+      box.appendChild(mi);
+      box.appendChild(H('span','paren','x +'));
+    }
+    var ki = document.createElement('input'); ki.type='text'; ki.inputMode='numeric';
+    ki.value = B.raw.k; ki.placeholder = '0';
+    ki.setAttribute('aria-label', isNum ? 'the number you are taking out' : 'the number on the end');
+    on(ki,'input',function(){ B.raw.k = ki.value; MF.echoHammer(B); });
+    on(ki,'keydown',function(e){ if(e.key==='Enter'){ e.preventDefault(); MF.swing(B); } });
+    box.appendChild(ki);
+    if(!isNum) box.appendChild(H('span','paren',')'));
+    inner.appendChild(box);
+    cut.appendChild(inner);
 
     var echo = E('div','hecho');
     cut.appendChild(echo);
@@ -4386,8 +4247,8 @@ MF.paintBreak = function(host, B){
     MF.echoHammer(B);
 
     cut.appendChild(H('div','hint', isNum
-      ? 'Put a number in the hammer and bring it down.'
-      : 'An empty socket means that part is not there: no x makes it a plain metal, no number makes it something like 3x.'));
+      ? 'A whole number that runs through it.'
+      : 'An empty x-part is a single x. Put 0 there to take out a plain number instead.'));
 
     var swr = E('div','row'); swr.style.marginTop='10px';
     var sw = E('button','btn primary big','Bring the hammer down'); sw.type='button';
@@ -5682,7 +5543,7 @@ MF.validate = function(){
          This asserts the class: position on an outer mount, animate the inner. */
   MF.ANIM_TRANSFORM_CLASSES = ['sc-wheel','sc-sails','sc-cart','sc-smoke','sc-cloud','sc-bird',
                                'rm-fire','rm-bellows','rm-steam','rm-ladle','rm-stamp','pickarm',
-                               'ct-cart','ct-jolt','ct-wheel','sc-cartout'];
+                               'ct-cart','ct-jolt','ct-wheel','sc-cartout','hammerswing'];
   var animStage = document.createElement('div');
   animStage.style.cssText = 'position:absolute; left:-12000px; top:0; width:1100px';
   document.body.appendChild(animStage);
