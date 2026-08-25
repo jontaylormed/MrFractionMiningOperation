@@ -21,8 +21,8 @@
 | **File** | **one** — `index.html`, ~4,400 lines, fully self-contained |
 | **Screens** | **five** — surface, two workshops, the mine, the forge |
 | **Layers** | **five**, all reachable from the first screen, none gated on anything |
-| **Instruments** | **five**, all forged, none granted |
-| **Validation** | `MF.validate()` → **8,385 checks / 22 groups / 0 errors**, two controls that must fail, and do |
+| **Instruments** | **seven**, all made at the forge, none granted |
+| **Validation** | `MF.validate()` → **8,416 checks / 22 groups / 0 errors**, two controls that must fail, and do |
 
 > **A check is only as wide as the space it sweeps.** The `truthy` group reported 0 errors across 642 checks while **1,970 Decimal Dial states printed a falsehood**, because it tested each lump's original integer coefficients and never nudged `c` — the one thing the dial exists to do. It now sweeps every slider position the control can reach (3,287 checks). Ask of any green result: *what did it not look at?*
 | **Runtime** | Zero dependencies, no build step, no network requests, no storage, runs from `file://` |
@@ -88,13 +88,17 @@ The belt is **a leather strap with the instruments hanging in loops**, not a lis
 
 **What each instrument does, and the rule they all obey:**
 
-| | held to a lump, it says |
-|---|---|
-| **Lantern** | whether a seam still runs through it — so you know when a piece is worth another swing. Never says along what. |
-| **Core Drill** | every pair that could run through it, marked none |
-| **Exponent Rail** | where its x² can have come from — the two x-parts multiplied |
-| **Decimal Dial** | why nothing will come out, when nothing will |
-| **Deep Pick** | that it works at the seam, not on the floor |
+| | made by | held to a lump, it |
+|---|---|---|
+| **Lantern** | three primes | says whether a seam still runs through it — so you know when a piece is worth another swing. Never says along what. |
+| **Core Drill** | a matched pair | lists every pair that could run through it, and marks none |
+| **Exponent Rail** | two x-ingots | shows where its x² can have come from — the two x-parts multiplied |
+| **Decimal Dial** | any four metals | shows why nothing will come out, when nothing will |
+| **Deep Pick** | 2 x-ingots + a plain | says plainly that it works at the seam, not on the floor |
+| **Steel Pick** | a plain metal poured onto a bracket | rips the common metal out in one blow, and touches nothing else |
+| **Powered Auger** | two x-ingots, one loaded | reads what the x-part and the number *have* to divide before a seam can run; traces the division on a swing that lands |
+
+**The ladder buys reach and sight, never an answer.** The Steel Pick only takes the metal every term is already carrying — a move the student demonstrated at the forge to earn it — and the Auger narrows where to look without naming anything. The hand pick is free and always in your hands; the `nogate` group still walks every layer with an empty yard and no tools.
 
 > **An instrument may say what is there, never what to swing.** The `sheet` group asserts the Lantern's reading never contains the factorisation, with a control that prints it and must be caught. **The pair scanner is no longer free** — it is the Drill's reading now, the same move §10a made with the casting preview, and it also stopped the swing button falling below the fold.
 
