@@ -47,7 +47,7 @@ What will not break further is **native metal** — a prime, or a polynomial no 
 - **Assay** is a gate: `display:none` on stage 2 until the seam is called correctly. Verified on a freshly built, never-clicked, detached task.
 - **Break** is one swing at a time. You name **one** thing that is in the rock; the seam runs and the lump comes apart into that factor and the remainder, or the hammer glances off and the rock is described. **Both pieces land on the floor, and anything still carrying a seam goes back under the hammer.**
 
-**The lump is drawn on an anvil and you build the hammer head out of parts.** A **London-pattern anvil on a stump** — horn, step, polished face, hardy and pritchel holes, waisted body, feet, iron banding, a pair of tongs leaning on it — with the lump sitting on the face where the hammer lands and its expression cut into the stone.
+**The lump is drawn on an anvil.** A **London-pattern anvil on a stump** — horn, step, polished face, hardy and pritchel holes, waisted body, feet, iron banding, a pair of tongs leaning on it — with the lump sitting on the face where the hammer lands and its expression cut into the stone.
 
 **The hammer stands upright over the work with its striking face pointing down at it** — haft vertical with a bound grip, a block head with the eye and its wedge, a flared bright face, a cross-peen off the back. It is part of the drawing, not a box floating over it, which is what let it become the shape a hammer actually is.
 
@@ -61,7 +61,9 @@ What will not break further is **native metal** — a prime, or a polynomial no 
 
 > A drag-a-tile-into-the-head version came and went. It made the head a wide plate carrying two sign toggles, two number boxes and two remove buttons — it stopped looking like a hammer and it overflowed the column. **What survived is the part that was the actual fix rather than the mechanism:** an empty x-part means **one**, not nought, and the bar echoes **"the hammer is cut to (x + 6)"** before you swing. Those are what stop a cleared box swinging `6` at a lump you meant to hit with `(x + 6)` — reported as a maths error, and it was an input error (`VERIFICATION.md` §47).
 
-**The swing is a true arc, and it is slow enough to watch.** The hammer rests leaning back at −20°, winds up to −59° and **holds there for a beat**, then strikes through to +6° and rests on the face. **1300ms**, not the 640ms first cut, which was one blur with the burst over before you found it. Everything on the beat is timed to the same 1300ms and the same 56% — the anvil shudder, the rock squash, the burst and the new pieces all land together. Measured on the striking face by pausing the animation and stepping through it: it traces the arc and lands **on** the rock.
+**The swing is a true arc and it takes a full three seconds.** One move with four beats: the weight shifts, the hammer goes **up**, it hangs at the top, and then it comes down. It rests at **−62°** — held up and back, clear of the work — winds up to −84° over the first 1,380ms, then strikes through to +6° at 1,740ms and rests on the face before lifting. Everything on the beat shares the same 3000ms clock and the same 58%: the anvil shudder, the rock squash, the burst and the new pieces all land together.
+
+> **The resting angle used to cover the maths.** At −20° the head overlapped the expression cut into the ore by **49×10px**, and the expression is 11px tall — it was hiding the thing the student is there to read. Measured against the label’s own box, it clears from −55°; it rests at −62° with 7px to spare.
 
 The impact throws a comic burst — **THUD!** when the seam runs, **CLANG!** when it glances and the hammer comes straight back off the face. Under `prefers-reduced-motion` the burst still reports the hit; it just does not perform.
 

@@ -502,41 +502,50 @@ input[type=range]{width:100%; accent-color:var(--ore); height:44px}
    same 56% - the impact - so the anvil shudder, the rock squash, the burst and
    the new pieces all land together instead of drifting apart. */
 @keyframes hammerarc{
-  0%{transform:rotate(-20deg)}
-  8%{transform:rotate(-25deg)}
-  30%{transform:rotate(-58deg)}
-  40%{transform:rotate(-59deg)}       /* held at the top */
-  56%{transform:rotate(6deg)}         /* THE STRIKE */
+  0%{transform:rotate(-62deg)}
+  5%{transform:rotate(-57deg)}        /* the weight shifts before it lifts */
+  36%{transform:rotate(-82deg)}       /* THE UPSWING, slow and deliberate */
+  46%{transform:rotate(-84deg)}       /* held at the top */
+  58%{transform:rotate(6deg)}         /* THE STRIKE */
   62%{transform:rotate(4deg)}
   74%{transform:rotate(3deg)}         /* resting on the face */
-  88%{transform:rotate(-26deg)}
-  100%{transform:rotate(-20deg)}
+  88%{transform:rotate(-46deg)}
+  100%{transform:rotate(-62deg)}
 }
 @keyframes hammerbounce{
-  0%{transform:rotate(-20deg)}
-  8%{transform:rotate(-25deg)}
-  30%{transform:rotate(-58deg)}
-  40%{transform:rotate(-59deg)}
-  55%{transform:rotate(5deg)}
-  63%{transform:rotate(-30deg)}       /* straight back off the face */
-  72%{transform:rotate(-8deg)}
-  82%{transform:rotate(-28deg)}
-  100%{transform:rotate(-20deg)}
+  0%{transform:rotate(-62deg)}
+  5%{transform:rotate(-57deg)}
+  36%{transform:rotate(-82deg)}
+  46%{transform:rotate(-84deg)}
+  57%{transform:rotate(5deg)}
+  64%{transform:rotate(-34deg)}       /* straight back off the face */
+  72%{transform:rotate(-12deg)}
+  82%{transform:rotate(-44deg)}
+  100%{transform:rotate(-62deg)}
 }
+/* A FULL THREE SECONDS, and it is one move with four beats in it: the weight
+   shifts, the hammer goes UP, it hangs at the top, and then it comes down.
+   1300ms had no upswing worth the name and the burst was gone before you had
+   found it. */
 .anvilstage[data-anim] .hammerswing{transform-origin:176px 10px;
-  animation:hammerarc 1300ms cubic-bezier(.36,0,.5,1) 1}
+  animation:hammerarc 3000ms cubic-bezier(.34,0,.48,1) 1}
 .anvilstage[data-anim=glance] .hammerswing{animation-name:hammerbounce}
-/* the hammer stands leaning back when nothing is happening */
-.hammerswing{transform-origin:176px 10px; transform:rotate(-20deg)}
+/* AT REST IT IS HELD UP AND BACK, CLEAR OF THE WORK. At −20° the head covered
+   the expression cut into the ore by 49x10px - and the expression is 11px tall,
+   so it was covering the thing the student is there to read. Measured against
+   the label's own box: it clears from −55°, and this rests at −62°. */
+.hammerswing{transform-origin:176px 10px; transform:rotate(-62deg)}
 /* the anvil takes it, on the beat and not before */
-@keyframes anvilhit{0%,54%{transform:translate(0,0)}
-  58%{transform:translate(-3px,3px)}64%{transform:translate(3px,-2px)}
-  70%{transform:translate(-2px,1px)}76%{transform:translate(1px,0)}100%{transform:translate(0,0)}}
-.anvilstage[data-anim] .anvilsvg{animation:anvilhit 1300ms ease-out 1}
-@keyframes rockcrack{0%,54%{transform:scale(1)}60%{transform:scale(.88,1.12)}
+/* everything on the beat shares the 3000ms clock and the same 58%, so the
+   shudder, the squash, the burst and the pieces land together */
+@keyframes anvilhit{0%,56%{transform:translate(0,0)}
+  60%{transform:translate(-3px,3px)}66%{transform:translate(3px,-2px)}
+  72%{transform:translate(-2px,1px)}78%{transform:translate(1px,0)}100%{transform:translate(0,0)}}
+.anvilstage[data-anim] .anvilsvg{animation:anvilhit 3000ms ease-out 1}
+@keyframes rockcrack{0%,56%{transform:scale(1)}62%{transform:scale(.88,1.12)}
   70%{transform:scale(1.07,.93)}82%{transform:scale(.98,1.02)}100%{transform:scale(1)}}
 .anvilstage[data-anim=hit] .anvilrock{transform-box:fill-box; transform-origin:center bottom;
-  animation:rockcrack 1300ms ease-out 1}
+  animation:rockcrack 3000ms ease-out 1}
 
 /* THE BURST. Comic book: a jagged star and the word, punched in on the beat
    and held long enough to read before it goes. */
@@ -549,22 +558,25 @@ input[type=range]{width:100%; accent-color:var(--ore); height:44px}
 .thud .tword{position:relative; font-family:var(--display); font-size:38px; letter-spacing:.03em;
   color:#FFF3DE; paint-order:stroke; -webkit-text-stroke:6px #3A2408; text-shadow:0 4px 0 #7A4A12}
 @keyframes thudpop{
-  0%,52%{opacity:0; transform:translate(-50%,-50%) scale(.2) rotate(-16deg)}
-  58%{opacity:1; transform:translate(-50%,-50%) scale(1.26) rotate(5deg)}
-  64%{opacity:1; transform:translate(-50%,-50%) scale(.96) rotate(-3deg)}
-  70%{opacity:1; transform:translate(-50%,-50%) scale(1.04) rotate(1deg)}
-  86%{opacity:1; transform:translate(-50%,-50%) scale(1) rotate(0deg)}
+  0%,56%{opacity:0; transform:translate(-50%,-50%) scale(.2) rotate(-16deg)}
+  61%{opacity:1; transform:translate(-50%,-50%) scale(1.26) rotate(5deg)}
+  66%{opacity:1; transform:translate(-50%,-50%) scale(.96) rotate(-3deg)}
+  71%{opacity:1; transform:translate(-50%,-50%) scale(1.04) rotate(1deg)}
+  90%{opacity:1; transform:translate(-50%,-50%) scale(1) rotate(0deg)}
   100%{opacity:0; transform:translate(-50%,-50%) scale(1.1) rotate(0deg)}
 }
-.floorbox[data-anim] .thud{animation:thudpop 1300ms cubic-bezier(.3,1.5,.5,1) 1}
-@keyframes starspin{0%,52%{transform:rotate(0)}100%{transform:rotate(30deg)}}
-.floorbox[data-anim] .thud .tstar{animation:starspin 1300ms ease-out 1}
+.floorbox[data-anim] .thud{animation:thudpop 3000ms cubic-bezier(.3,1.5,.5,1) 1}
+@keyframes starspin{0%,56%{transform:rotate(0)}100%{transform:rotate(26deg)}}
+.floorbox[data-anim] .thud .tstar{animation:starspin 3000ms ease-out 1}
 /* a glance is a smaller, colder ring of a word */
 .floorbox[data-anim=glance] .thud .tword{font-size:30px; color:#DCE6EE; -webkit-text-stroke:6px #26333D; text-shadow:0 4px 0 #46545F}
 .floorbox[data-anim=glance] .thud .tstar{background:radial-gradient(circle at 50% 50%, #E6EEF4 0 34%, #A9B8C4 55%, #6E7E8C 100%)}
 
-/* the pieces are held back so they arrive ON the beat - 56% of 1300ms */
-.piece.fresh{animation-delay:728ms; animation-fill-mode:backwards}
+/* the pieces are held back so they arrive ON the beat - 58% of 3000ms.
+   `backwards` is what holds them invisible through the delay, so the timeout
+   in MF.swing that strips .fresh has to outlast delay + duration or they pop
+   into view mid-upswing, before the hammer has landed. */
+.piece.fresh{animation-delay:1740ms; animation-fill-mode:backwards}
 /* the lamp in the gallery band overhead */
 @keyframes galllamp{0%,100%{opacity:.85}42%{opacity:1}74%{opacity:.66}}
 .gallglow{animation:galllamp 4.6s ease-in-out infinite}
@@ -4332,7 +4344,11 @@ MF.swing = function(B){
      is built out of animation-delay instead: the hammer falls, the burst lands
      at 260ms, and the new pieces are held back to arrive with it. */
   MF.paintMine();
-  setTimeout(function(){ a.fresh=false; b2.fresh=false; }, 900);
+  /* 2500ms, not 900: .piece.fresh is delayed to 1740ms (the beat) and runs for
+     420ms, and it is animation-fill-mode:backwards that keeps the piece
+     invisible until then. Strip the class early and the piece appears at 900ms
+     - mid-upswing, before the hammer has come down on it. */
+  setTimeout(function(){ a.fresh=false; b2.fresh=false; }, 2500);
 };
 
 /* THE AUGER'S TRACE: the division, after it has run. Not a hint - the swing
