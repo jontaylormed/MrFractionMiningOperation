@@ -22,7 +22,7 @@
 | **Screens** | **five** — surface, the Stamp Mill, the Casting Shed, the mine, the forge |
 | **Layers** | **five**, all reachable from the first screen, none gated on anything |
 | **Instruments** | **seven**, all made at the forge, none granted |
-| **Validation** | `MF.validate()` → **8,494 checks / 24 groups / 0 errors**, two controls that must fail, and do |
+| **Validation** | `MF.validate()` → **8,500 checks / 24 groups / 0 errors**, two controls that must fail, and do |
 
 > **A check is only as wide as the space it sweeps.** The `truthy` group reported 0 errors across 642 checks while **1,970 Decimal Dial states printed a falsehood**, because it tested each lump's original integer coefficients and never nudged `c` — the one thing the dial exists to do. It now sweeps every slider position the control can reach (3,287 checks). Ask of any green result: *what did it not look at?*
 | **Runtime** | Zero dependencies, no build step, no network requests, no storage, runs from `file://` |
@@ -65,7 +65,7 @@ What will not break further is **native metal** — a prime, or a polynomial no 
 
 > **The resting angle used to cover the maths.** At −20° the head overlapped the expression cut into the ore by **49×10px**, and the expression is 11px tall — it was hiding the thing the student is there to read. Measured against the label’s own box, it clears from −55°; it rests at −62° with 7px to spare.
 
-The impact throws a comic burst — **THUD!** when the seam runs, **CLANG!** when it glances and the hammer comes straight back off the face. Under `prefers-reduced-motion` the burst still reports the hit; it just does not perform.
+The impact throws a comic burst — **THUD!** when the seam runs, **CLANG!** when it glances and the hammer comes straight back off the face — **at the anvil, where the blow is**. On the **finishing blow** the hammer bar has gone, so the anvil is drawn once more with the piece that was struck, the hammer comes down on it, and **the last piece shatters and leaves the anvil bare**: there is nothing left to work, and ore still lying there would say the opposite. Under `prefers-reduced-motion` the burst still reports the hit and the last piece is still gone; neither performs.
 
 ```
 60             -> 6 | 10  -> 2 | 3, 5 | 2

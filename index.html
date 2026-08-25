@@ -546,6 +546,19 @@ input[type=range]{width:100%; accent-color:var(--ore); height:44px}
   70%{transform:scale(1.07,.93)}82%{transform:scale(.98,1.02)}100%{transform:scale(1)}}
 .anvilstage[data-anim=hit] .anvilrock{transform-box:fill-box; transform-origin:center bottom;
   animation:rockcrack 3000ms ease-out 1}
+/* THE FINISHING BLOW LEAVES THE ANVIL BARE. The last piece squashes, blows
+   apart and is gone, and `forwards` keeps it gone - there is nothing left to
+   work, and an anvil with ore still on it says the opposite.
+   Specificity beats the rockcrack rule above rather than relying on order. */
+@keyframes rockgone{
+  0%,56%{opacity:1; transform:scale(1)}
+  62%{opacity:1; transform:scale(.84,1.16)}
+  68%{opacity:.85; transform:scale(1.3,.66)}
+  76%{opacity:.3; transform:scale(1.6,.42)}
+  84%,100%{opacity:0; transform:scale(1.9,.3)}
+}
+.anvilstage[data-anim=hit] .anvilrock.shatter{transform-box:fill-box; transform-origin:center bottom;
+  animation:rockgone 3000ms ease-out 1 forwards}
 
 /* THE BURST. Comic book: a jagged star and the word, punched in on the beat
    and held long enough to read before it goes. */
@@ -586,6 +599,8 @@ input[type=range]{width:100%; accent-color:var(--ore); height:44px}
 @media (prefers-reduced-motion:reduce){
   .anvilstage[data-anim] .hammerswing,.anvilstage[data-anim] .anvilsvg,
   .anvilstage[data-anim] .anvilrock,.anvilstage[data-anim] .thud .tstar,.gallglow{animation:none}
+  /* the last piece is still GONE, it just does not perform going */
+  .anvilstage[data-anim=hit] .anvilrock.shatter{animation:none; opacity:0}
   /* the burst still reports the hit, it just does not perform */
   .anvilstage[data-anim] .thud{animation:none; opacity:1; transform:translate(-50%,-50%)}
   .piece.fresh{animation-delay:0s}
@@ -4003,7 +4018,7 @@ MF.echoHammer = function(B){
 
    Scenery, and inert: the `overlay` group asserts nothing in here takes a click.
    ========================================================================= */
-MF.anvilScene = function(ore){
+MF.anvilScene = function(ore, opts){
   var wrap = E('div','anvilsvg');
   var W=340, VH=232;
   var svg = S('svg',{viewBox:'0 0 '+W+' '+VH,'aria-hidden':'true'});
@@ -4055,8 +4070,12 @@ MF.anvilScene = function(ore){
     svg.appendChild(S('path',{d:'M'+(46+c*28)+' '+(222-((c*5)%5))+' l5 -3 l3 4 Z',
       fill:(c%3?'#6B5B48':'#8A9AA6'), opacity:'.6'}));
 
-  /* ---- THE LUMP, on the face where the hammer lands ---- */
-  var g = S('g',{class:'anvilrock'});
+  /* ---- THE LUMP, on the face where the hammer lands ----
+     `shatter` is the finishing blow: the last piece breaks up under the hammer
+     and LEAVES THE ANVIL BARE. Drawing it still sitting there afterwards said
+     there was ore left to work when there was none - the whole point of that
+     blow is that the lump is finished. */
+  var g = S('g',{class:'anvilrock' + (opts && opts.shatter ? ' shatter' : '')});
   g.appendChild(S('ellipse',{cx:186,cy:153,rx:56,ry:5,fill:'#1B2126',opacity:'.45'}));
   g.appendChild(S('polygon',{
     points:'140,112 176,100 214,106 234,124 228,144 190,152 148,148 130,130',
@@ -4212,7 +4231,7 @@ MF.paintBreak = function(host, B){
     if(anim && B.last && B.last.struck){
       var endStage = E('div','anvilstage done');
       endStage.setAttribute('data-anim', anim);
-      endStage.appendChild(MF.anvilScene(B.last.struck));
+      endStage.appendChild(MF.anvilScene(B.last.struck, {shatter:true}));
       endStage.appendChild(MF.thudBurst(anim));
       host.appendChild(endStage);
     }
@@ -6113,6 +6132,17 @@ MF.validate = function(){
       chk('swing');
       if(m2.querySelector('.floorbox .thud'))
         errs.push('swing: ' + t[0] + ' — a burst is drawn in the floorbox, away from the blow');
+      /* THE FINISHING BLOW MUST LEAVE THE ANVIL BARE, and only that one. If
+         there is ore still lying on it when every piece is native, the picture
+         says there is work left when there is none. */
+      var finished = MF.state.anvil.floor.every(function(pc){ return MF.isNative(pc.ore); });
+      var rk = stg.querySelector('.anvilrock');
+      chk('swing');
+      if(finished && !(rk && rk.classList.contains('shatter')))
+        errs.push('swing: ' + t[0] + ' finished the lump and left ore sitting on the anvil');
+      chk('swing');
+      if(!finished && rk && rk.classList.contains('shatter'))
+        errs.push('swing: ' + t[0] + ' cleared the anvil while there is still rock to break');
     });
     /* CONTROL: put the two-readers bug back and the check must say so */
     chk('swing');
