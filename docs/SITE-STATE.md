@@ -19,7 +19,7 @@
 | | |
 |---|---|
 | **File** | **one** — `index.html`, ~4,400 lines, fully self-contained |
-| **Screens** | **five** — surface, two workshops, the mine, the forge |
+| **Screens** | **five** — surface, the Stamp Mill, the Casting Shed, the mine, the forge |
 | **Layers** | **five**, all reachable from the first screen, none gated on anything |
 | **Instruments** | **seven**, all made at the forge, none granted |
 | **Validation** | `MF.validate()` → **8,416 checks / 22 groups / 0 errors**, two controls that must fail, and do |
@@ -55,6 +55,14 @@ What will not break further is **native metal** — a prime, or a polynomial no 
 That is the payoff: prime factorisation and polynomial factoring are not two methods sharing a word, they are **one repeated act**.
 
 - **There are two correctness signals, one per place, and both are physical.** In the mine the rock came apart or it did not; in the forge the casting is sound or it is scrap, naming which term disagrees. Neither is a mark, and `MF.breakOff` multiplies every split back together before handing it over.
+
+## The Stamp Mill, and the two teaching rooms
+
+The **Smelting House is the Stamp Mill** — the mine does not smelt any more, and a stamp mill is the real building that breaks ore. Its room is a **battery of five iron stamps** in a timber frame, lifted by cams on a shaft and dropped into mortar boxes, falling out of step with each other. That machine *is* the workshop's lesson standing in the corner: big things come apart into smaller ones, over and over, until what is left will not come apart.
+
+The **Casting Shed** is unchanged — it still teaches the mold, which is still the forge's move.
+
+> The `doors` group hardcoded `/Smelt/i` for this building. It moved with the name **deliberately** rather than being quietly deleted, and it is `/Stamp|Mill|Crush|Break/i` now — proved by renaming the door to "The Tea Room" and watching it fire.
 
 ## The seam
 

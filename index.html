@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Mr Factor's Mining Operation</title>
-<meta name="description" content="Mine ore, smelt it into pure metals, pour it back into a mold. Factoring and prime factorisation as one act.">
+<meta name="description" content="Break ore apart until what is left will not break, then pour that metal into a mold and craft a tool. Factoring and prime factorisation as one act.">
 <style>
 /* =========================================================================
    MR FACTOR'S MINING OPERATION - v1, the Ore Cart
@@ -341,8 +341,17 @@ input[type=range]{width:100%; accent-color:var(--ore); height:44px}
 /* ---- the breaking floor: rock on one side of a swing, metal on the other.
        A piece must SAY which it is without being read - rock is dark and
        knocked about, native metal is a cast bar with a lit edge. ---- */
-.floorbox{background:linear-gradient(180deg,#3A3129,#241D18); border:3px solid var(--rock-3);
+.floorbox{position:relative; overflow:hidden;
+  background:linear-gradient(180deg,#3A3129,#241D18); border:3px solid var(--rock-3);
   border-radius:14px; padding:14px; color:#F0E2C8}
+/* the corner of the mine this happens in, drawn along the top and inert */
+.anvilart{position:absolute; left:0; right:0; top:0; height:64px; pointer-events:none; opacity:.55}
+.anvilart svg{display:block; width:100%; height:64px}
+.anvilart svg *{pointer-events:none}
+@keyframes anvillamp{0%,100%{opacity:.82}40%{opacity:1}75%{opacity:.66}}
+.anvilglow{animation:anvillamp 3.8s ease-in-out infinite}
+@media (prefers-reduced-motion:reduce){ .anvilglow{animation:none} }
+.floorbox > *{position:relative; z-index:1}
 .floorbox h4{color:#FFE9C4; font-size:16px; margin-bottom:9px}
 .pieces{display:flex; gap:10px; flex-wrap:wrap; align-items:stretch}
 .piece{display:flex; flex-direction:column; gap:2px; align-items:center; cursor:pointer;
@@ -590,12 +599,16 @@ input[type=range]{width:100%; accent-color:var(--ore); height:44px}
 @keyframes firelick{0%,100%{transform:scaleY(1) translateY(0); opacity:.92}50%{transform:scaleY(1.18) translateY(-3px); opacity:1}}
 @keyframes quenchsteam{0%{transform:translateY(0) scale(.5); opacity:.5}100%{transform:translateY(-42px) scale(1.5); opacity:0}}
 @keyframes ladletip{0%,100%{transform:rotate(0deg)}50%{transform:rotate(-16deg)}}
-@keyframes scalesway{0%,100%{transform:rotate(-3deg)}50%{transform:rotate(3deg)}}
+@keyframes stampfall{0%,44%{transform:translateY(-26px)}62%{transform:translateY(0)}70%{transform:translateY(-3px)}100%{transform:translateY(-26px)}}
 .rm-fire{transform-origin:50% 100%; animation:firelick 1.6s ease-in-out infinite}
 .rm-bellows{transform-origin:0% 50%; animation:bellowspush 3.4s ease-in-out infinite}
 .rm-steam{animation:quenchsteam 3.2s ease-out infinite}
 .rm-ladle{transform-origin:74% 30%; animation:ladletip 6s ease-in-out infinite}
-.rm-scale{transform-origin:50% 6%; animation:scalesway 5s ease-in-out infinite}
+/* the battery does not fall in unison - a stamp mill is five hammers out of
+   step with each other, which is the whole sound of the thing */
+.rm-stamp{animation:stampfall 1.15s cubic-bezier(.4,0,.7,1) infinite}
+.rm-stamp.s1{animation-delay:.23s} .rm-stamp.s2{animation-delay:.46s}
+.rm-stamp.s3{animation-delay:.69s} .rm-stamp.s4{animation-delay:.92s}
 
 /* ---- the surface scene ---- */
 .scene{position:relative; border:3px solid var(--rock-3); border-radius:16px; overflow:hidden;
@@ -624,7 +637,7 @@ input[type=range]{width:100%; accent-color:var(--ore); height:44px}
    default, not the element - so "center" meant the centre of a 900x420 scene,
    hundreds of units away, and every rotating piece swung around a point
    outside itself. fill-box makes the origin mean what it says. */
-.sc-wheel,.sc-sails,.rm-scale,.rm-ladle,.rm-bellows,.rm-fire,.pickarm{transform-box:fill-box}
+.sc-wheel,.sc-sails,.rm-ladle,.rm-bellows,.rm-fire,.pickarm{transform-box:fill-box}
 @keyframes sailspin{to{transform:rotate(360deg)}}
 .sc-sails{transform-origin:center; animation:sailspin 13s linear infinite}
 @keyframes wheelspin{to{transform:rotate(360deg)}}
@@ -1631,7 +1644,7 @@ MF.paintNav = function(){
   var nav = q('#nav'); clear(nav);
   /* the same names the buildings carry on the surface - a door, its room and
      its nav entry disagreeing is how a place stops feeling like one place */
-  [['home','Surface'],['workshop-ore','Smelting House'],['workshop-mold','Casting Shed'],['mine','The Mine'],['forge','The Forge']]
+  [['home','Surface'],['workshop-ore','Stamp Mill'],['workshop-mold','Casting Shed'],['mine','The Mine'],['forge','The Forge']]
   .forEach(function(item){
     var b = E('button','navbtn', item[1]); b.type='button';
     if(MF.state.screen===item[0]) b.setAttribute('aria-current','page');
@@ -1641,7 +1654,7 @@ MF.paintNav = function(){
 };
 
 /* ---------- LOAD SCREEN ---------- */
-MF.TICKER = ['opening the shaft','lighting the lamps','testing the crucible','warming the forge','stacking the cart','the rock is ready'];
+MF.TICKER = ['opening the shaft','lighting the lamps','starting the stamps','warming the forge','stacking the cart','the rock is ready'];
 MF.loadScreen = function(){
   q('#load-art').appendChild(MF.art(88));
   var fill = q('#loadbar-fill'), tick = q('#loadticker'), btn = q('#enter-btn');
@@ -1836,7 +1849,7 @@ MF.surfaceScene = function(){
     puff.style.animationDelay = (-(k*1.5))+'s';
     sm.appendChild(puff);
   });
-  nameplate(sm, 66, 54, 'Smelting House');
+  nameplate(sm, 66, 54, 'The Stamp Mill');
   sm.appendChild(S('rect',{x:'14',y:'92',width:'32',height:'32',rx:'3',fill:'#E2600F',opacity:'.9',class:'sc-lamp'}));
   sm.appendChild(S('rect',{x:'56',y:'96',width:'24',height:'24',rx:'3',fill:'#3A2A1C'}));
   sm.appendChild(S('rect',{x:'92',y:'98',width:'26',height:'38',rx:'2',fill:'#4A3524'}));
@@ -2038,7 +2051,7 @@ MF.surfaceScene = function(){
     svg.appendChild(g);
   }
   /* targets only - each building carries its own nameplate now */
-  hot(222,220,152,132,'The Smelting House','workshop-ore');
+  hot(222,220,152,132,'The Stamp Mill','workshop-ore');
   hot(392,240,134,116,'The Casting Shed','workshop-mold');
   hot(552,236,134,120,'The Forge','forge');
   /* THE WHOLE BLUFF, NOT A BOX UNDER IT. The mine is drawn at translate(742,214)
@@ -2094,7 +2107,7 @@ MF.roomScene = function(kind){
 
   var pal = {
     foundry:{wall:'#6E5C49', wall2:'#4E4033', floor:'#3E3328', beam:'#5A4938'},
-    assay:  {wall:'#54606B', wall2:'#3A434C', floor:'#2E353C', beam:'#46505A'},
+    stamps: {wall:'#6E5C49', wall2:'#463A2C', floor:'#38301F', beam:'#5A4938'},
     /* the forge floor was #241C15, which sat against a near-black wall foot and
        read as one dead band across the bottom of the room */
     forge:  {wall:'#4A3A2E', wall2:'#2E241C', floor:'#3E3226', beam:'#5A4638'}
@@ -2138,37 +2151,48 @@ MF.roomScene = function(kind){
     });
   }
 
-  if(kind==='assay'){
-    /* shelves of samples, a balance, a lamp over the bench */
-    [46,92].forEach(function(y){
-      R(110,y,260,8,pal.beam);
-      for(var i=0;i<6;i++){
-        var x = 120+i*42;
-        R(x,y-24,26,24,i%2?'#8A9AA6':'#6E7B87',{rx:'3'});
-        S('circle',{});
-        svg.appendChild(S('circle',{cx:String(x+13),cy:String(y-30),r:'6',fill:'#C8A24B',opacity:'.85'}));
-      }
-    });
-    /* the balance, swaying. Positioning on an OUTER mount, animation on the
-       inner group - see MF.ANIM_TRANSFORM_CLASSES. */
-    var scMount = S('g',{transform:'translate(560,40)'});
-    var sc = S('g',{class:'rm-scale'});
-    sc.appendChild(S('rect',{x:'-2',y:'0',width:'6',height:'96',fill:'#6E7B87'}));
-    sc.appendChild(S('rect',{x:'-64',y:'0',width:'132',height:'6',rx:'3',fill:'#8A9AA6'}));
-    [-58,50].forEach(function(x){
-      sc.appendChild(S('line',{x1:String(x+4),y1:'6',x2:String(x+4),y2:'30',stroke:'#6E7B87','stroke-width':'2'}));
-      sc.appendChild(S('path',{d:'M'+x+' 30 l18 0 l-3 14 l-12 0 Z',fill:'#AEBAC6'}));
-    });
-    scMount.appendChild(sc); svg.appendChild(scMount);
-    R(520,136,180,28,pal.beam,{rx:'3'});
-    /* drawers */
-    R(740,96,120,68,'#46505A',{rx:'4'});
-    [0,1,2].forEach(function(i){
-      R(748,104+i*21,104,16,'#5E6A76',{rx:'2'});
-      svg.appendChild(S('circle',{cx:'800',cy:String(112+i*21),r:'3',fill:'#C8A24B'}));
-    });
-    lantern(svg, 440, 40, 1.1, 16);
-    P('M432 22 l16 0 l6 -14 l-28 0 Z','#3A434C');
+  if(kind==='stamps'){
+    /* A STAMP BATTERY - the machine that breaks ore, and the reason this room
+       is called what it is. Five iron stamps in a timber frame, lifted by cams
+       on a shaft and dropped into mortar boxes. It is the workshop's whole
+       lesson standing in the corner: big things come apart into smaller ones,
+       over and over, until what is left will not come apart. */
+    R(70,26,560,10,pal.beam);                       /* the head frame */
+    R(70,150,560,12,pal.beam);
+    R(70,26,12,136,pal.beam); R(618,26,12,136,pal.beam);
+    /* the cam shaft that lifts them */
+    R(86,52,528,7,'#5E6A76');
+    /* the mortar boxes the stamps fall into, and the ore heaped in them */
+    for(var sb=0; sb<5; sb++){
+      var bx = 100 + sb*106;
+      R(bx,126,72,26,'#46505A',{rx:'3'});
+      P('M'+(bx+8)+' 126 q12 -11 26 -3 q14 -8 28 3 Z','#6E5C49');
+    }
+    /* the stamps themselves. Positioning on an OUTER mount, animation on the
+       inner group - MF.ANIM_TRANSFORM_CLASSES, and the animmount group will
+       fail the build if that is ever done the other way round. */
+    for(var st2=0; st2<5; st2++){
+      var sx = 100 + st2*106;
+      var mount = S('g',{transform:'translate('+(sx+28)+',0)'});
+      var stamp = S('g',{class:'rm-stamp s'+st2});
+      stamp.appendChild(S('rect',{x:'-5',y:'34',width:'11',height:'78',fill:'#8A9AA6'}));   /* the stem */
+      stamp.appendChild(S('rect',{x:'-13',y:'58',width:'27',height:'11',rx:'2',fill:'#5E6A76'})); /* the tappet the cam catches */
+      stamp.appendChild(S('rect',{x:'-16',y:'106',width:'33',height:'22',rx:'3',fill:'#3E464E',stroke:'#242B31','stroke-width':'2'})); /* the shoe */
+      mount.appendChild(stamp);
+      svg.appendChild(mount);
+    }
+    /* dust hanging in the light, because a stamp mill is never clean */
+    for(var d2=0; d2<9; d2++)
+      svg.appendChild(S('circle',{cx:String(96+d2*62), cy:String(112+((d2*23)%26)), r:String(2+(d2%3)),
+        fill:'#C8B89A', opacity:'.28'}));
+    /* the ore chute feeding them, and a barrow of rock waiting its turn */
+    P('M636 60 l70 0 l-16 40 l-38 0 Z',pal.beam);
+    R(690,96,120,58,'#46505A',{rx:'4'});
+    P('M700 96 q18 -16 38 -5 q20 -12 40 5 Z','#6E5C49');
+    svg.appendChild(S('circle',{cx:'716',cy:'160',r:'11',fill:'#3A3129',stroke:'#6E7A86','stroke-width':'2'}));
+    svg.appendChild(S('circle',{cx:'788',cy:'160',r:'11',fill:'#3A3129',stroke:'#6E7A86','stroke-width':'2'}));
+    lantern(svg, 660, 30, 1.1, 16);
+    P('M652 12 l16 0 l6 -14 l-28 0 Z','#3A2E22');
   }
 
   if(kind==='forge'){
@@ -2249,9 +2273,9 @@ MF.SCREENS.home = function(host){
     'Pour metals into a mold and watch one formed object come out. This is the distributive property, and it is the move you will use to check every single smelt.',
     'Open the mold', function(){ MF.go('workshop-mold'); }));
 
-  cards.appendChild(MF.card('The Smelting House', 'PLAY, NO QUESTIONS',
+  cards.appendChild(MF.card('The Stamp Mill', 'PLAY, NO QUESTIONS',
     'Take any number apart. See why two miners cutting at different places reach the same metals, and what it means for a lump to be already pure.',
-    'Open the bench', function(){ MF.go('workshop-ore'); }));
+    'Into the mill', function(){ MF.go('workshop-ore'); }));
 
   cards.appendChild(MF.card('The Mine', 'THE ORE CART',
     'Dig as deep as you like and fill your cart — you never have to smelt anything to go deeper. Then work a lump when you feel like it.',
@@ -2408,10 +2432,10 @@ MF.jump = function(label, screen){
    ========================================================================= */
 MF.SCREENS['workshop-ore'] = function(host){
   var st = {n:72, cutA:null, cutB:null};
-  host.appendChild(MF.roomScene('assay'));
-  host.appendChild(H('h2',null,'The Smelting House'));
-  host.appendChild(H('p','lede','Smelting <b>separates</b>. Ore goes into the crucible and comes out as the metals that were always in it. ' +
-    'Some lumps come out unchanged — nothing separates, because they are already an element. Those are <b>ingots</b>. ' +
+  host.appendChild(MF.roomScene('stamps'));
+  host.appendChild(H('h2',null,'The Stamp Mill'));
+  host.appendChild(H('p','lede','The stamps <b>break ore apart</b>, and they keep going until what is left will not break. ' +
+    'Some lumps come out of here unchanged — nothing came off them, because they are already an element. Those are <b>native metal</b>. ' +
     'In numbers we call them primes; further down the mine you will meet polynomial ones, and they are the same thing.'));
 
   var panel = E('div','panel light');
@@ -2421,12 +2445,12 @@ MF.SCREENS['workshop-ore'] = function(host){
   w.appendChild(H('div','hint','Ore on the bench'));
   var val=H('div','eq', num(st.n)); w.appendChild(val);
   var r=document.createElement('input');
-  r.type='range'; r.min=2; r.max=144; r.step=1; r.value=st.n; r.setAttribute('aria-label','Number to smelt');
+  r.type='range'; r.min=2; r.max=144; r.step=1; r.value=st.n; r.setAttribute('aria-label','Number to break up');
   w.appendChild(r); row.appendChild(w);
   var w2=E('div'); w2.style.flex='0 0 auto';
   w2.appendChild(H('div','hint','or type one'));
   var box=document.createElement('input'); box.type='number'; box.min=2; box.max=9999; box.value=st.n;
-  box.setAttribute('aria-label','Type a number to smelt'); box.style.width='120px';
+  box.setAttribute('aria-label','Type a number to break up'); box.style.width='120px';
   w2.appendChild(box); row.appendChild(w2);
   panel.appendChild(row);
   var out = E('div'); panel.appendChild(out);
@@ -2774,7 +2798,7 @@ MF.paintShaft = function(){
   var host = clear(MF._mine.left);
   var box = E('div','shaft');
   box.appendChild(H('h3',null,'The Shaft'));
-  box.appendChild(H('div','hint','Go as deep as you like. You never have to smelt anything to descend — fill the cart and work it whenever you feel like it.'));
+  box.appendChild(H('div','hint','Go as deep as you like. You never have to break anything to descend — fill the cart and work it whenever you feel like it.'));
 
   /* the drawn shaft on the left, the layer buttons on the right */
   var body = E('div','shaftbody');
@@ -3532,6 +3556,32 @@ MF.balanced = function(seed, list){
   return out;
 };
 
+/* THE BREAKING FLOOR IS A PLACE TOO. A stone block with an iron plate on it,
+   a sledge leaning against it, chips underfoot and a lamp hung on a timber -
+   the corner of the mine where rock is worked, drawn behind the pieces rather
+   than instead of them. Scenery: inert, and the `overlay` group says so. */
+MF.anvilArt = function(){
+  var wrap = E('div','anvilart');
+  var W=300, VH=64;
+  var svg = S('svg',{viewBox:'0 0 '+W+' '+VH,'aria-hidden':'true',preserveAspectRatio:'xMinYMax slice'});
+  /* the timber the lamp hangs from */
+  svg.appendChild(S('rect',{x:0,y:8,width:W,height:6,fill:'#4A3F34'}));
+  svg.appendChild(S('rect',{x:34,y:8,width:6,height:20,fill:'#4A3F34'}));
+  svg.appendChild(S('circle',{class:'anvilglow',cx:'37',cy:'34',r:'13',fill:'rgba(232,163,61,.20)'}));
+  svg.appendChild(S('rect',{x:'32',y:'27',width:'11',height:'14',rx:'3',fill:'#E8A33D',stroke:'#8A6A2A','stroke-width':'2'}));
+  /* the block, and the iron plate it is worked on */
+  svg.appendChild(S('path',{d:'M196 62 l6 -26 l72 0 l6 26 Z',fill:'#5A4B3C'}));
+  svg.appendChild(S('rect',{x:'192',y:'30',width:'92',height:'8',rx:'2',fill:'#6E7A86'}));
+  /* the sledge leaning on it */
+  svg.appendChild(S('rect',{x:'166',y:'22',width:'7',height:'42',rx:'2',fill:'#8A6A45',transform:'rotate(11 169 44)'}));
+  svg.appendChild(S('rect',{x:'158',y:'18',width:'24',height:'11',rx:'2',fill:'#5A626A'}));
+  /* chips underfoot */
+  for(var c=0;c<11;c++)
+    svg.appendChild(S('path',{d:'M'+(58+c*19)+' '+(58-((c*7)%6))+' l6 -4 l4 5 Z', fill:'#6B5B48', opacity:'.7'}));
+  wrap.appendChild(svg);
+  return wrap;
+};
+
 /* what the pick is cut to by default, for the shape of lump under it */
 MF.pickDefault = function(ore){
   return (ore.kind==='number') ? {m:'0', k:'2'} : {m:'1', k:'0'};
@@ -3554,6 +3604,7 @@ MF.paintBreak = function(host, B){
 
   /* ---- the floor: every piece this lump has come apart into ---- */
   var fl = E('div','floorbox');
+  fl.appendChild(MF.anvilArt());
   fl.appendChild(H('h4',null, pieces.length===1 ? 'On the anvil' : 'On the floor'));
   var rowf = E('div','pieces');
   pieces.forEach(function(p, idx){
@@ -3833,7 +3884,7 @@ MF.paintDial = function(host, B){
   var ore = B.ore;
   var d = E('div','panel'); d.style.background='#fff';
   d.appendChild(H('div','panel-tag','DECIMAL DIAL'));
-  d.appendChild(H('p','hint','Nudge the last number off the whole numbers and watch what happens to the seam. The smelter never breaks — the <em>search</em> does.'));
+  d.appendChild(H('p','hint','Nudge the last number off the whole numbers and watch what happens to the seam. The rock never changes — the <em>search</em> does.'));
   var off = 0;
   var readout = E('div'); d.appendChild(readout);
   var r = document.createElement('input');
@@ -4701,10 +4752,14 @@ MF.validate = function(){
     chk('doors');
     if(!MF.SCREENS[scr]) errs.push('doors: the building labelled "' + doors[scr] + '" opens "' + scr + '", which is not a screen');
   });
-  /* the smelting house must open the workshop about SMELTING, not the mold -
-     these were wired to each other's screens */
+  /* the ore workshop must open the room about BREAKING ORE APART, not the mold
+     - these were once wired to each other's screens. The test was /Smelt/i
+       while the building was the Smelting House; the mine does not smelt any
+       more (§11) and the building is the Stamp Mill, so the assertion moves
+       with the name deliberately rather than being quietly deleted. */
   chk('doors');
-  if(!/Smelt/i.test(doors['workshop-ore']||'')) errs.push('doors: the ore workshop is behind "' + doors['workshop-ore'] + '", which does not read as smelting');
+  if(!/Stamp|Mill|Crush|Break/i.test(doors['workshop-ore']||''))
+    errs.push('doors: the ore workshop is behind "' + doors['workshop-ore'] + '", which does not read as a place ore is broken up');
   chk('doors');
   if(!/Cast|Mold/i.test(doors['workshop-mold']||'')) errs.push('doors: the mold workshop is behind "' + doors['workshop-mold'] + '", which does not read as casting');
 
@@ -4840,7 +4895,7 @@ MF.validate = function(){
          vanished from its room entirely. Twice it was fixed as an instance.
          This asserts the class: position on an outer mount, animate the inner. */
   MF.ANIM_TRANSFORM_CLASSES = ['sc-wheel','sc-sails','sc-cart','sc-smoke','sc-cloud','sc-bird',
-                               'rm-fire','rm-bellows','rm-steam','rm-ladle','rm-scale','pickarm',
+                               'rm-fire','rm-bellows','rm-steam','rm-ladle','rm-stamp','pickarm',
                                'ct-cart','ct-jolt','ct-wheel','sc-cartout'];
   var animStage = document.createElement('div');
   animStage.style.cssText = 'position:absolute; left:-12000px; top:0; width:1100px';
@@ -4853,7 +4908,7 @@ MF.validate = function(){
   var animSubjects = [];
   [['surface', function(){ return MF.surfaceScene(); }],
    ['foundry', function(){ return MF.roomScene('foundry'); }],
-   ['assay',   function(){ return MF.roomScene('assay'); }],
+   ['stamps',  function(){ return MF.roomScene('stamps'); }],
    ['forge',   function(){ return MF.roomScene('forge'); }],
    ['carttrack', function(){ return MF.cartTrack(); }]].forEach(function(pair){
     chk('animmount');

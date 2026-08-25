@@ -530,3 +530,21 @@ Rule 41 is about output nobody read. **This is about output that was never produ
 - **State it as a class, not per element.** `.scene svg *{pointer-events:none}` with `.scene .hot, .scene .hot *{pointer-events:auto}` — and the same shape for `.face svg` and `.rock`. Patching the pick would have left Mr Factor and the portal, and the next decoration would have re-added it.
 - **Sweep what is painted after a control, and only that.** Anything painted behind cannot intercept, so checking it is denominator padding. The `overlay` group sweeps 56.
 - **A hotspot should be the graphic.** The mine's was a `152×100` box starting 54 units below the top of the bluff — the arch, the timber head and the nameplate were all outside it, and a good half of what it did cover was sky and ground. **Do not size a target to the room you have; size it to the thing the student is aiming at.**
+
+## 44. Rename the assertion with the thing, or delete it and know that you did
+
+The mine stopped smelting (`MINE-SPEC.md` §11) and the Smelting House became the Stamp Mill. One check had the old name compiled into it:
+
+> ```js
+> if(!/Smelt/i.test(doors['workshop-ore'])) errs.push('… does not read as smelting');
+> ```
+>
+> It existed because the two workshops had once been **wired to each other's screens**, and it was the only thing standing between that fault and shipping again.
+
+A rename gives you three options and only one of them is honest. **Delete the check** and the fault it caught can come back silently. **Loosen it to nothing** — `/./` — and it passes forever while measuring nothing, which is §41's whole subject. **Move it with the name**: `/Stamp|Mill|Crush|Break/i`, and then *prove the moved one still bites* by renaming the door to something absurd and watching it fire.
+
+**The rules.**
+
+- **A check that hardcodes a name is coupled to that name.** When you rename, grep for the string in the instruments before you grep for it in the copy — the copy is visible and the assertion is not.
+- **After moving an assertion, reintroduce the fault it was written for.** "It still passes" is not evidence; it is the same evidence a deleted check gives you. The Tea Room test took ten seconds.
+- **The same applies to a class registry.** `MF.ANIM_TRANSFORM_CLASSES` lost `rm-scale` and gained `rm-stamp` in the same edit that replaced the balance with a stamp battery. A new animated part that is not in that list is not checked, and nothing anywhere says so — so the registry is updated in the same commit as the part, and the new entry is proved by planting a transform on it.
