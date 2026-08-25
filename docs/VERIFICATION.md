@@ -566,3 +566,19 @@ The same shape had already been fixed once on the mine, where the probe delibera
 - **Ask it of every screen you add a mode to.** A panel that only appears after a click is invisible to any check that never clicks.
 
 > **And a hazard in the instrument itself.** Probing this build from the browser console with `var S = document.getElementById('screen')` **overwrites the page's own `S()` SVG helper**, and every scene builder then throws `S is not a function`. The build's graceful failure text — *"This screen did not build. That is a fault in the mine, not in you."* — is what appeared, and it reads exactly like a real defect. This is §35 again, from a new direction: **the probe damaged the subject.** Scope everything in an IIFE, and never take a bare global name in a page whose helpers are `S`, `E`, `H`, `q` and `on`.
+
+## 46. Re-entering a screen to update it throws the page back to the top
+
+Every control in the forge called `MF.go('forge')` to refresh itself. `MF.go` is the *navigation* function: it clears `#screen`, rebuilds it, moves focus, **restarts the arrival wipe and scrolls to the top**. So dropping one metal in a slot threw the page back to the masthead and replayed the arrival animation. Choosing two metals and pouring meant four jumps. The user's word for it was "very very jerky".
+
+The mine had never had this, because the mine repaints its three columns in place (`MF.paintMine`). The forge was written later and reached for the nearest thing that worked.
+
+**The rules.**
+
+- **Navigation and repaint are different verbs.** If a control changes what is on the screen you are already on, repaint the region — never re-enter the screen. A repaint that scrolls, refocuses or replays an entrance animation is a navigation wearing a repaint's name.
+- **Scroll only when the answer would otherwise be unseen**, and then `block:'nearest'`. The pour still nudges the casting into view if it lands below the fold; that is one deliberate movement, not a jump on every click.
+- **Guard the repaint on `isConnected`.** `MF._forge` outlives a navigation away from the forge, and painting into a detached column is §35's silent failure.
+
+> **The check for this was written wrong first, and only reintroducing the fault found it.** The first version compared the grid node before and after a click — but `MF.go` rebuilds `#screen`, and the probe mounts somewhere else entirely, so a re-entry left the probe's grid untouched and the check passed. It **watches `MF.go` itself** now: neuter it for the duration of a click and record anything that reaches for it. Proved by wiring the forge's metal buttons back the old way — *"dropping a metal called MF.go(\"forge\")"*.
+>
+> Two of the reintroductions in between were also wrong and worth naming, because both looked like the check failing: one guarded on `MF.state.screen === 'forge'`, which is never true inside `validate()`; the other stubbed `MF.paintForge` to call `MF.go`, which **recursed infinitely** — `go` → `SCREENS.forge` → `paintForge` → `go` — and hung the renderer. **Reintroduce a fault at the layer that had it.** This one lived in the handlers, not the painter.

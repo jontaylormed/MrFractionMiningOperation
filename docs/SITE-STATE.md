@@ -22,7 +22,7 @@
 | **Screens** | **five** — surface, the Stamp Mill, the Casting Shed, the mine, the forge |
 | **Layers** | **five**, all reachable from the first screen, none gated on anything |
 | **Instruments** | **seven**, all made at the forge, none granted |
-| **Validation** | `MF.validate()` → **8,415 checks / 22 groups / 0 errors**, two controls that must fail, and do |
+| **Validation** | `MF.validate()` → **8,415 checks / 23 groups / 0 errors**, two controls that must fail, and do |
 
 > **A check is only as wide as the space it sweeps.** The `truthy` group reported 0 errors across 642 checks while **1,970 Decimal Dial states printed a falsehood**, because it tested each lump's original integer coefficients and never nudged `c` — the one thing the dial exists to do. It now sweeps every slider position the control can reach (3,287 checks). Ask of any green result: *what did it not look at?*
 | **Runtime** | Zero dependencies, no build step, no network requests, no storage, runs from `file://` |
@@ -90,6 +90,8 @@ The yard takes **both**. Metal broken all the way down to an element goes on **t
 
 The belt is **a leather strap with the instruments hanging in loops**, not a list of cards. You take one off it and use it.
 
+**The belt hangs inside the floorbox, directly above the pieces it acts on.** It was in the yard column on the far side of the page, so the drag crossed the whole screen — and under 1080px the columns stack, so it was a *scroll* away, and you cannot scroll while you are holding something. The furthest drag is now **94px**, and the belt and every piece are on screen together at 1280px and at 760px. There is exactly one belt: a second copy in the yard column would be the one a student reached for, and it was the far one.
+
 **Every piece on the breaking floor has a slot.** Drag a tool onto the piece, or open its slot and choose — both routes reach the same place, because a drag with no click path is a control half the users cannot reach. The slot lights up with whatever is in it and keeps showing it, and a panel rises with that instrument's reading.
 
 **The panel is a real dialog:** `role="dialog"`, `aria-modal`, focus moved in, **Tab trapped**, Escape closes, focus handed back to the slot it came from, and nothing left in the DOM — a scrim left behind covers the page and makes every control dead, which is §43's fault class page-wide. One function builds it for all three routes (tool-on-lump, tool explained off the belt, empty slot); three copies of the focus wiring was three chances to lose the trap.
@@ -121,6 +123,8 @@ The belt is **a leather strap with the instruments hanging in loops**, not a lis
 **The heap is drawn here and is deliberately not spendable.** The forge takes native metal; rock still carrying a seam is no use until it has been broken. It is not a button, because a control that looks live and refuses is worse than a thing that plainly is not one — and seeing it sitting there unusable is what sends a student back down. That is the sink working.
 
 On one column the **work comes first** and the seven-item board follows it, the same rule the mine follows — verified stacked at 760px with the yard above the board.
+
+**The forge repaints in place.** Every click in it used to call `MF.go('forge')`, which rebuilds the screen, moves focus, restarts the arrival wipe and scrolls to the top — so dropping one metal threw the page back to the masthead, and choosing metals and pouring meant four jumps. `MF.paintForge()` now repaints the two columns only, guarded on `isConnected` exactly as `paintMine` is. The one scroll left is the casting after a pour, `block:'nearest'`, and only when it lands below the fold. Verified across seven interactions from a page parked at 420px: none moved it.
 
 > **A denominator that had been silently wrong:** the `contrast` group mounted the forge **cold**, so the crucible, the filled and empty slots and the not-on-the-rack warning were never measured. It now mounts it with a mold open and something in it. Verified by counting the probe's contents rather than trusting the total, which went *down* — the cold plate left the sweep as the mold entered it.
 

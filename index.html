@@ -572,6 +572,13 @@ input[type=range]{width:100%; accent-color:var(--ore); height:44px}
   border-top:2px dashed rgba(255,220,170,.32)}
 .beltstrap.bare{padding:11px}
 .beltempty{font-size:13px; font-style:italic; color:#E8D6BC}
+/* the belt hanging on the breaking floor: it sits INSIDE the dark floorbox,
+   so its labels are set for that ground rather than for cream */
+.gearbox.atwork{margin:0 0 11px}
+.gearbox.atwork .beltlab{font-family:var(--display); font-size:10px; letter-spacing:.11em;
+  color:var(--lamp); margin-bottom:4px}
+.gearbox.atwork .beltnote{font-size:12px; color:#C9B695; margin-top:6px}
+.gearbox.atwork .beltstrap{margin-top:0}
 .beltloop{position:relative; padding-top:7px}
 /* the loop the tool hangs in */
 .beltloop:before{content:""; position:absolute; left:50%; top:-6px; width:15px; height:15px; margin-left:-7px;
@@ -2657,15 +2664,30 @@ MF.SCREENS.forge = function(host){
   var colL = E('div'), colR = E('div');
   grid.appendChild(colL); grid.appendChild(colR);
   host.appendChild(grid);
-
-  MF.paintOrders(colL, st);
-  MF.paintForgeYard(colR, st);
-  MF.paintCraft(colR, st);
+  MF._forge = {left:colL, right:colR};
+  MF.paintForge();
 
   var back = E('div','row'); back.style.marginTop='14px';
   back.appendChild(MF.jump('Back to the mine &rarr;','mine'));
   back.appendChild(MF.jump('Out to the surface &rarr;','home'));
   host.appendChild(back);
+};
+
+/* THE FORGE REPAINTS IN PLACE. Every click in here used to call MF.go('forge')
+   - which rebuilds the whole screen, moves focus, RESTARTS THE ARRIVAL WIPE and
+   scrolls to the top. Dropping one metal in a slot threw the page back to the
+   masthead and played the arriving animation again, so choosing three metals
+   meant three jumps and the pour meant a fourth. Same shape as paintMine, and
+   the same isConnected guard: MF._forge outlives a navigation away from the
+   forge, and painting into a detached column is the silent-failure class that
+   already cost a review cycle (VERIFICATION s35). */
+MF.paintForge = function(){
+  if(!MF._forge || !MF._forge.right || !MF._forge.right.isConnected) return;
+  var st = MF.state.forge;
+  MF.paintOrders(clear(MF._forge.left), st);
+  var r = clear(MF._forge.right);
+  MF.paintForgeYard(r, st);
+  MF.paintCraft(r, st);
 };
 
 /* ---------- the left column: what can be made ---------- */
@@ -2693,7 +2715,7 @@ MF.paintOrders = function(host, st){
     on(b,'click',function(){
       if(made){ MF.explainTool(key, b); return; }
       st.picked = key; st.slots = []; st.result = null;
-      MF.go('forge');
+      MF.paintForge();
     });
     box.appendChild(b);
   });
@@ -2739,12 +2761,12 @@ MF.paintForgeYard = function(host, st){
         on(b,'click',function(){
           /* NOT A DEAD CONTROL WHEN NOTHING IS OPEN. It says what is missing
              instead of doing nothing, which is how the old chips behaved. */
-          if(used){ st.note = 'That one is already in the mold. Click it in the slot to take it back out.'; MF.go('forge'); return; }
-          if(!open){ st.note = 'Pick an order from the board on the left first, and the mold will open.'; MF.go('forge'); return; }
-          if(st.slots.length >= want){ st.note = 'The mold is full. Take something out of a slot if you want to change it.'; MF.go('forge'); return; }
+          if(used){ st.note = 'That one is already in the mold. Click it in the slot to take it back out.'; MF.paintForge(); return; }
+          if(!open){ st.note = 'Pick an order from the board on the left first, and the mold will open.'; MF.paintForge(); return; }
+          if(st.slots.length >= want){ st.note = 'The mold is full. Take something out of a slot if you want to change it.'; MF.paintForge(); return; }
           st.slots.push({yardIdx:e.idx, key:e.key, ingot:e.ingot});
           st.note = null;
-          MF.go('forge');
+          MF.paintForge();
         });
         row.appendChild(b);
       });
@@ -2826,7 +2848,7 @@ MF.paintCraft = function(host, st){
         chip.appendChild(document.createTextNode(ingotText(got.ingot)));
         chip.title='Take it back out';
         chip.setAttribute('aria-label', ingotText(got.ingot) + ' is in the mold. Take it back out.');
-        on(chip,'click',function(){ st.slots.splice(idx,1); st.note=null; MF.go('forge'); });
+        on(chip,'click',function(){ st.slots.splice(idx,1); st.note=null; MF.paintForge(); });
         slotRow.appendChild(chip);
       } else {
         var empty = H('div','slot moldslot','<span style="opacity:.6">empty</span>');
@@ -2880,14 +2902,21 @@ MF.forgePour = function(st){
     MF.spendFromYard(st.slots.map(function(s){ return s.key; }));
     MF.state.tools[st.picked] = {forged:true};
     var keep = E('button','btn primary','Hang it on your belt'); keep.type='button';
-    on(keep,'click',function(){ st.picked=null; st.slots=[]; st.result=null; MF.go('forge'); });
+    on(keep,'click',function(){ st.picked=null; st.slots=[]; st.result=null; MF.paintForge(); });
     box.appendChild(keep);
   } else {
     var again = E('button','btn','Rake it out and try again'); again.type='button';
-    on(again,'click',function(){ st.slots=[]; st.result=null; MF.go('forge'); });
+    on(again,'click',function(){ st.slots=[]; st.result=null; MF.paintForge(); });
     box.appendChild(again);
   }
-  MF.go('forge');
+  MF.paintForge();
+  /* THE ONE SCROLL WORTH DOING, and only when it is needed. The casting is the
+     answer to the pour; if it lands below the fold the student poured and saw
+     nothing. `nearest` moves the page as little as it can, so it is a nudge
+     rather than the jump to the masthead this screen used to do on every
+     single click. */
+  if(box.isConnected && box.getBoundingClientRect().bottom > window.innerHeight)
+    box.scrollIntoView({block:'nearest', behavior:'smooth'});
 };
 
 /* What makes a part sound. Each tool demands the move it will later assist. */
@@ -3605,19 +3634,11 @@ MF.paintAnvil = function(host){
   var bench = E('div','bench');
   bench.appendChild(H('div','panel-tag','THE BREAKING FLOOR'));
 
-  /* the rack: the instruments are objects lying where you work, not a list in
-     a sidebar. Empty racks say what they are for. */
-  var rack = E('div','toolrack');
-  rack.appendChild(H('span','rk','to hand'));
-  var anyTool = false;
-  Object.keys(MF.TOOLS).forEach(function(k){
-    if(!MF.hasTool(k)) return;
-    anyTool = true;
-    rack.appendChild(H('span','tl','<span class="ic">'+MF.TOOLS[k].ic+'</span>'+MF.TOOLS[k].nm));
-  });
-  if(!anyTool) rack.appendChild(H('span','empty','a bare pick — the forge is where the rest come from'));
-  bench.appendChild(rack);
-
+  /* NO TOOL RACK HERE ANY MORE. This was an inert list of names, and the real
+     belt was in the far right column - so dragging a tool onto a lump meant
+     crossing the whole page, and on a narrow screen it meant scrolling, which
+     you cannot do mid-drag. The belt now hangs inside the floorbox itself,
+     directly above the pieces it acts on. */
   bench.appendChild(H('div','eq', MF.oreLabel(ore)));
 
   var strip = E('div','stepstrip');
@@ -3781,6 +3802,11 @@ MF.paintBreak = function(host, B){
   var fl = E('div','floorbox');
   fl.appendChild(MF.anvilArt());
   fl.appendChild(H('h4',null, pieces.length===1 ? 'On the anvil' : 'On the floor'));
+  /* THE BELT HANGS HERE, inside the floorbox and directly above the pieces.
+     It used to live in the yard column on the far side of the page: the drag
+     crossed the whole screen, and under 1080px the columns stack so it was a
+     scroll away - and you cannot scroll while you are holding something. */
+  MF.paintBelt(fl, true);
   var rowf = E('div','pieces');
   pieces.forEach(function(p, idx){
     var nat = MF.isNative(p.ore);
@@ -4261,10 +4287,13 @@ MF.closeTool = function(){
    them. It replaces a list of cards in a sidebar, which described the tools
    without ever letting you pick one up.
    ========================================================================= */
-MF.paintBelt = function(host){
+/* `atWork` is the belt hanging on the breaking floor, where it is actually
+   used: no outer heading, dark labels for the dark box it sits in, and one
+   short line of instruction instead of a card's worth. */
+MF.paintBelt = function(host, atWork){
   var owned = Object.keys(MF.TOOLS).filter(MF.hasTool);
-  var box = E('div','gearbox');
-  box.appendChild(H('h3',null,'On your belt'));
+  var box = E('div', atWork ? 'gearbox atwork' : 'gearbox');
+  box.appendChild(atWork ? H('div','beltlab','ON YOUR BELT') : H('h3',null,'On your belt'));
 
   if(!owned.length){
     var bare = E('div','beltstrap bare');
@@ -4274,7 +4303,9 @@ MF.paintBelt = function(host){
     return;
   }
 
-  box.appendChild(H('div','hint','Drag one onto a piece of rock, or open a slot on the floor and choose it.'));
+  box.appendChild(H('div', atWork ? 'beltnote' : 'hint',
+    atWork ? 'Drag one onto a piece below, or open its slot and choose.'
+           : 'Drag one onto a piece of rock, or open a slot on the floor and choose it.'));
   var strap = E('div','beltstrap');
   owned.forEach(function(k){
     var t = MF.TOOLS[k];
@@ -4546,7 +4577,9 @@ MF.paintYard = function(){
   place.appendChild(inner);
   box.appendChild(place);
 
-  MF.paintBelt(box);
+  /* THE BELT IS NOT DRAWN TWICE. It hangs on the breaking floor now, beside
+     the rock it acts on - a second copy over here would be the one a student
+     reached for, and it is the far one. */
 
   var toForge = E('button','btn primary'); toForge.type='button';
   toForge.textContent = 'Haul the metal to the forge';
@@ -5216,6 +5249,83 @@ MF.validate = function(){
   MF.state.selected=cSaved.sel; MF.state.anvil=cSaved.bench; MF._mine=cSaved.mine;
   MF.state.layer=cSaved.layer; MF.state.face=cSaved.face; MF.state.faceLayer=cSaved.fl;
   MF.state.forge=cSaved.forge;
+
+  /* 5l. WORKING A SCREEN MUST NOT RE-ENTER IT.
+
+         Every click in the forge used to call MF.go('forge'), which rebuilds
+         the whole screen, moves focus, restarts the arrival wipe and scrolls
+         to the top. Dropping one metal in a slot threw the page back to the
+         masthead; choosing three and pouring meant four jumps.
+
+         ASSERTED BY WATCHING MF.go ITSELF, and the first version of this check
+         could not have caught the bug it was written for: it compared the grid
+         node before and after a click, but MF.go rebuilds `#screen` and the
+         probe mounts somewhere else entirely - so a re-entry left the probe's
+         grid untouched and the check passed. It was only found by trying to
+         reintroduce the fault and watching nothing happen. A control that
+         cannot fail is the thing this file is about (s41).
+
+         READ THE DENOMINATOR: this covers the forge's own controls. It says
+         nothing about the mine, which has repainted in place since it was
+         written, and nothing about how far anything scrolls. */
+  var ipSaved = {forge:MF.state.forge, yard:MF.state.yard, tools:MF.state.tools, mine:MF._forge};
+  var ipStage = document.createElement('div');
+  ipStage.style.cssText = 'position:fixed; left:-6000px; top:0; width:1100px';
+  document.body.appendChild(ipStage);
+  try {
+    MF.state.tools = {};
+    MF.state.yard = {};
+    [{m:0,k:2},{m:0,k:3},{m:2,k:3},{m:1,k:-1}].forEach(MF.addToYard);
+    MF.state.forge = {slots:[], picked:null};
+    MF.SCREENS.forge(ipStage);
+    var ipGrid = ipStage.querySelector('.forgegrid');
+    chk('inplace');
+    if(!ipGrid){ errs.push('inplace: the forge drew no grid to work in'); }
+    else {
+      var ipClick = function(el){ el.dispatchEvent(new MouseEvent('click',{bubbles:true})); };
+      var ipFind = function(sel, re){
+        return [].slice.call(ipStage.querySelectorAll(sel)).filter(function(n){
+          return !re || re.test(n.textContent); })[0];
+      };
+      /* neuter MF.go for the duration and record anything that reaches for it */
+      var ipReal = MF.go, ipWent = [];
+      var ipWatch = function(label, act){
+        ipWent = [];
+        MF.go = function(n){ ipWent.push(n); };
+        try { act(); } catch(e){ errs.push('inplace: ' + label + ' threw: ' + e.message); }
+        MF.go = ipReal;
+        chk('inplace');
+        if(ipWent.length)
+          errs.push('inplace: ' + label + ' called MF.go("' + ipWent[0] + '") — that rebuilds the whole screen, scrolls to the top, moves focus and replays the arrival wipe');
+        chk('inplace');
+        if(ipStage.querySelector('.forgegrid') !== ipGrid || !ipGrid.isConnected)
+          errs.push('inplace: ' + label + ' replaced the forge grid instead of repainting into it');
+      };
+      ipWatch('picking an order',   function(){ ipClick(ipFind('.order[data-order="auger"]')); });
+      ipWatch('dropping a metal',   function(){ var m = ipFind('.metalbtn', /2x \+ 3/); if(m) ipClick(m); });
+      ipWatch('taking it back out', function(){ var c = ipFind('.crucible .ingot'); if(c) ipClick(c); });
+
+      /* CONTROL: a handler that re-enters the screen must be caught. Wired the
+         way the forge's own controls were until this commit. */
+      chk('inplace');
+      var ipBait = E('button','x'); ipBait.type='button';
+      on(ipBait,'click',function(){ MF.go('forge'); });
+      ipStage.appendChild(ipBait);
+      ipWent = [];
+      MF.go = function(n){ ipWent.push(n); };
+      ipClick(ipBait);
+      MF.go = ipReal;
+      if(!ipWent.length)
+        errs.push('CONTROL: the in-place check cannot see a control that re-enters the screen');
+      ipStage.removeChild(ipBait);
+    }
+  } catch(e){
+    chk('inplace');
+    errs.push('inplace: the forge threw while being worked: ' + e.message);
+  }
+  document.body.removeChild(ipStage);
+  MF.state.forge = ipSaved.forge; MF.state.yard = ipSaved.yard; MF.state.tools = ipSaved.tools;
+  MF._forge = ipSaved.mine;
 
   /* 5k. THE INSTRUMENT PANEL, AND THE RULE THAT MAKES INSTRUMENTS LEGITIMATE.
 
