@@ -212,6 +212,69 @@ input[type=range]{width:100%; accent-color:var(--ore); height:44px}
    thing that plainly is not one */
 .heaprock.cold{cursor:default; opacity:.72}
 
+/* ---- THE MOLD, SEEN FROM ABOVE ----
+   Cut when the order is taken, so you can see the shape and where the metal
+   has to run before you own any. On the pour it fills, and the maths resolves
+   over the top of the metal: what went in, what it makes, which two run
+   together, and the one thing left. ---- */
+.moldwrap{border:3px solid #241C15; border-radius:12px; overflow:hidden; margin:10px 0 12px;
+  background:#241A12}
+.moldwrap svg{display:block; width:100%; height:auto}
+.moldwrap svg *{pointer-events:none}
+/* an unpoured mold is cold: no metal, no crucible, no numbers */
+.moldwrap .mdflow,.moldwrap .mdglint,.moldwrap .mdstream,.moldwrap .mdcru,.moldwrap .mdnum{opacity:0}
+.moldwrap[data-pour] .mdcru{opacity:1}
+
+/* THE METAL RUNS IN FROM THE BASIN. scaleX from the left edge of the block, so
+   it sweeps basin -> runner -> cavity in the order a real pour fills them. */
+@keyframes mdflow{ from{transform:scaleX(0)} to{transform:scaleX(1)} }
+/* `both`, not `backwards forwards`. Two fill-mode keywords is a parse error
+   and the browser throws away the WHOLE animation shorthand - the metal simply
+   never flowed, with nothing in the console to say why. */
+.moldwrap[data-pour] .mdflow{opacity:1; transform-origin:40px 0; transform-box:view-box;
+  animation:mdflow 1500ms cubic-bezier(.42,0,.72,1) .35s both}
+@keyframes mdglint{ 0%{transform:translateX(0); opacity:.55} 100%{transform:translateX(300px); opacity:0} }
+.moldwrap[data-pour] .mdglint{transform-box:view-box;
+  animation:mdglint 1500ms cubic-bezier(.42,0,.72,1) .35s backwards}
+@keyframes mdstream{ 0%{opacity:0} 12%{opacity:1} 74%{opacity:1} 100%{opacity:0} }
+.moldwrap[data-pour] .mdstream{animation:mdstream 2000ms linear .1s backwards}
+@keyframes mdcru{ 0%{transform:rotate(0)} 16%{transform:rotate(-26deg)} 74%{transform:rotate(-26deg)} 100%{transform:rotate(0)} }
+.moldwrap[data-pour] .mdcru{transform-origin:118px 40px; transform-box:view-box;
+  animation:mdcru 2200ms cubic-bezier(.4,0,.4,1) 1}
+
+/* THE NUMBERS SIT IN THE METAL. Transparent, so the liquid shows through them
+   - they are in the casting, not printed on a picture of one. */
+.mdnum{opacity:0; paint-order:stroke; stroke:#FFE9A8; stroke-width:4px; stroke-linejoin:round}
+@keyframes mdin{ 0%{opacity:0; transform:translateY(6px)} 100%{opacity:.62; transform:translateY(0)} }
+.moldwrap[data-pour] .mdin{transform-box:fill-box;
+  animation:mdin 420ms ease-out 1.5s forwards}
+@keyframes mdterm{ 0%{opacity:0; transform:scale(.6)} 60%{opacity:.7; transform:scale(1.12)} 100%{opacity:.62; transform:scale(1)} }
+.moldwrap[data-pour] .mdterm{transform-box:fill-box; transform-origin:center;
+  animation:mdterm 380ms cubic-bezier(.3,1.5,.5,1) forwards}
+/* the two middles slide together and go, and the one they make takes their place */
+@keyframes mdmidgo{ 0%{opacity:.62} 100%{opacity:0} }
+.moldwrap[data-pour] .mdmid{animation:mdterm 380ms cubic-bezier(.3,1.5,.5,1) forwards,
+  mdmidgo 300ms ease-in 2.95s forwards}
+@keyframes mdmerged{ 0%{opacity:0; transform:scale(.7)} 100%{opacity:.72; transform:scale(1)} }
+.moldwrap[data-pour] .mdmerged{transform-box:fill-box; transform-origin:center;
+  animation:mdmerged 420ms cubic-bezier(.3,1.5,.5,1) 3.1s forwards}
+@keyframes mdsingle{ 0%{opacity:0; transform:scale(.72)} 70%{opacity:.85; transform:scale(1.08)} 100%{opacity:.8; transform:scale(1)} }
+.moldwrap[data-pour] .mdsingle{transform-box:fill-box; transform-origin:center;
+  animation:mdsingle 560ms cubic-bezier(.3,1.5,.5,1) 3.7s forwards}
+/* scrap: the metal in the shape goes dull rather than bright */
+.moldwrap[data-pour=scrap] .mdflow{filter:saturate(.4) brightness(.72)}
+
+@media (prefers-reduced-motion:reduce){
+  .moldwrap[data-pour] .mdflow,.moldwrap[data-pour] .mdglint,.moldwrap[data-pour] .mdstream,
+  .moldwrap[data-pour] .mdcru,.moldwrap[data-pour] .mdnum{animation:none}
+  /* the casting is still full and the maths is still there; it just arrives */
+  .moldwrap[data-pour] .mdflow{opacity:1; transform:none}
+  .moldwrap[data-pour] .mdstream{opacity:0}
+  .moldwrap[data-pour] .mdnum{opacity:.62}
+  .moldwrap[data-pour] .mdmid{opacity:0}
+  .moldwrap[data-pour] .mdsingle{opacity:.8}
+}
+
 .craft{margin-top:16px}
 .crafthead{display:flex; gap:9px; align-items:center; font-family:var(--display); font-size:20px; margin-bottom:6px}
 .crafthead .ci{font-size:24px}
@@ -3241,6 +3304,10 @@ MF.paintCraft = function(host, st){
   tgt.appendChild(H('div','cfwhy', t.forge));
   box.appendChild(tgt);
 
+  /* THE SHAPE IS CUT THE MOMENT THE ORDER IS TAKEN. You can see what you are
+     making, and where the metal has to go, before you have any of it. */
+  box.appendChild(MF.moldScene(st.picked, null));
+
   var want = MF.slotsWanted(t);
   var cru = E('div','crucible');
   cru.appendChild(H('h4',null,'What is going in'));
@@ -3287,20 +3354,194 @@ MF.paintCraft = function(host, st){
   host.appendChild(box);
 };
 
+/* =========================================================================
+   THE MOLD, SEEN FROM ABOVE.
+
+   You are standing over the sand with the crucible in your hands. The tool's
+   own SILHOUETTE is cut into the block to a depth, the metal runs in through
+   the basin and along the runner, and it fills the shape.
+
+   And the metal is the BACKGROUND FOR THE MATHS. As the cavity fills, what you
+   poured resolves over the top of it: the products appear, the two middle ones
+   run together, and what is left is one expression. That is the whole lesson
+   of the forge told with almost no words - the metals go in separate and the
+   object comes out single.
+   ========================================================================= */
+
+/* top-down silhouettes, each drawn inside 0..150 x 0..96 */
+MF.TOOL_SIL = {
+  pick:    'M4 44 q32 -14 64 -10 l0 -16 l14 0 l0 16 q34 -4 64 10 q-30 14 -64 10 l0 16 l-14 0 l0 -16 q-32 4 -64 -10 Z',
+  steel:   'M16 30 l38 0 l0 -14 l20 0 l0 14 l44 0 q16 14 0 30 l-44 0 l0 14 l-20 0 l0 -14 l-38 0 q-14 -14 0 -30 Z',
+  lantern: 'M50 10 q24 -10 48 0 l-8 14 l10 0 q10 16 10 32 q0 22 -12 34 l-46 0 q-12 -12 -12 -34 q0 -16 10 -32 l10 0 Z',
+  dial:    'M74 4 a44 44 0 1 1 -0.2 0 Z',
+  shifter: 'M6 38 l138 0 l0 22 l-138 0 Z M24 22 l12 0 l0 16 l-12 0 Z M56 22 l12 0 l0 16 l-12 0 Z ' +
+           'M88 22 l12 0 l0 16 l-12 0 Z M120 22 l12 0 l0 16 l-12 0 Z',
+  drill:   'M62 2 l24 0 l0 20 l-24 0 Z M56 22 l36 0 q12 18 -4 28 q-16 10 -2 24 q12 12 -4 20 l-16 0 ' +
+           'q-16 -8 -4 -20 q14 -14 -2 -24 q-16 -10 -4 -28 Z',
+  auger:   'M60 2 l28 0 l0 14 l-28 0 Z M34 16 l80 0 q-10 18 -34 20 q24 4 34 22 q-10 18 -34 20 ' +
+           'q24 4 30 16 l-72 0 q6 -12 30 -16 q-24 -2 -34 -20 q10 -18 34 -22 q-24 -2 -34 -20 Z'
+};
+
+/* WHAT THE POUR HAS TO SHOW, and nothing more: what went in, the products it
+   makes, which two run together, and the one thing left. */
+MF.moldMaths = function(ingots, prod){
+  var out = {
+    into: ingots.map(function(g){ return (g.m===0) ? num(g.k) : '(' + ingotText(g) + ')'; }),
+    terms: [], merge: null, single: null
+  };
+  if(prod.overflow){ out.single = 'over'; return out; }
+  out.single = quadText(prod.a, prod.b, prod.c);
+  /* all plain metal: the numbers themselves are the products */
+  if(ingots.every(function(g){ return g.m===0; })){
+    out.terms = ingots.map(function(g){ return {t:num(g.k), mid:false}; });
+    return out;
+  }
+  /* two brackets: the four corners, and the two middles that run together */
+  if(ingots.length===2){
+    var g1=ingots[0], g2=ingots[1];
+    var sq=g1.m*g2.m, mA=g1.m*g2.k, mB=g1.k*g2.m, kk=g1.k*g2.k;
+    if(sq) out.terms.push({t:(sq===1?'x²':num(sq)+'x²'), mid:false});
+    /* ONLY TWO MIDDLES RUN TOGETHER. A plain metal poured over a bracket makes
+       just one - 3 onto (x + 4) gives 3x and 12, and nothing merges - so
+       pushing both corners regardless printed a phantom "0" term and then
+       "merged" it with the real one. Two, and only two, is a merge. */
+    var mids = [];
+    if(mA) mids.push(mA);
+    if(mB) mids.push(mB);
+    if(mids.length === 2){
+      out.terms.push({t:xt2(mA), mid:true});
+      out.terms.push({t:xt2(mB), mid:true});
+      out.merge = (mA + mB) === 0 ? '0' : xt2(mA + mB);   /* '0' is a twin seam cancelling */
+    } else if(mids.length === 1){
+      out.terms.push({t:xt2(mids[0]), mid:false});
+    }
+    if(kk) out.terms.push({t:num(kk), mid:false});
+    return out;
+  }
+  out.terms = [{t:out.single, mid:false}];
+  return out;
+};
+
+MF.moldScene = function(key, pour){
+  var t = MF.TOOLS[key];
+  var wrap = E('div','moldwrap');
+  if(pour) wrap.setAttribute('data-pour', pour.ok ? 'sound' : 'scrap');
+  var W=380, VH=252;
+  var svg = S('svg',{viewBox:'0 0 '+W+' '+VH, role:'img',
+    'aria-label': pour
+      ? ('Seen from above: molten metal running into a mold cut to the shape of ' + t.nm +
+         ', and the factors resolving into ' + (pour.maths ? pour.maths.single : ''))
+      : ('Seen from above: a mold cut to the shape of ' + t.nm + ', waiting for metal.')});
+  var defs = S('defs',{});
+  function grad(id, stops, horiz){
+    var g = S('linearGradient',{id:id,x1:'0',y1:'0',x2:(horiz?'1':'0'),y2:(horiz?'0':'1')});
+    stops.forEach(function(s){ g.appendChild(S('stop',{offset:s[0],'stop-color':s[1]})); });
+    defs.appendChild(g);
+  }
+  var uid = 'md' + key;
+  grad(uid+'bench',[['0%','#4A3524'],['100%','#241A12']]);
+  grad(uid+'sand', [['0%','#CBBBA0'],['52%','#AC9B80'],['100%','#8A7A66']]);
+  grad(uid+'hot',  [['0%','#FFF3C4'],['22%','#FFC24A'],['58%','#E2600F'],['100%','#A33E0B']], true);
+  svg.appendChild(defs);
+
+  /* the bench you are leaning over */
+  svg.appendChild(S('rect',{x:0,y:0,width:W,height:VH,fill:'url(#'+uid+'bench)'}));
+  for(var gn=0; gn<9; gn++)
+    svg.appendChild(S('path',{d:'M0 '+(14+gn*28)+' q120 '+((gn%2)?5:-5)+' 380 '+((gn%3)?3:-3),
+      fill:'none',stroke:'#1B130D','stroke-width':'2',opacity:'.35'}));
+
+  /* the block of sand, rammed and struck off flat */
+  svg.appendChild(S('rect',{x:24,y:54,width:332,height:178,rx:10,fill:'url(#'+uid+'sand)',
+    stroke:'#6E6053','stroke-width':'3'}));
+  for(var sp=0; sp<90; sp++)
+    svg.appendChild(S('circle',{cx:String(32+((sp*97)%316)), cy:String(62+((sp*53)%162)),
+      r:String(0.7+((sp*7)%3)*0.5), fill:'#6E6053', opacity:'.28'}));
+
+  /* ---- THE CAVITY: the tool's own shape, cut to a depth ----
+     Drawn three times - a dark floor offset down and right, the walls between,
+     and the lip on top - which is what makes a hole read as a hole from
+     directly above. */
+  var silPath = MF.TOOL_SIL[key] || MF.TOOL_SIL.pick;
+  var cav = S('g',{transform:'translate(158,100)'});
+  cav.appendChild(S('path',{d:silPath, fill:'#5A4B3C', transform:'translate(7,7)', opacity:'.85'}));
+  cav.appendChild(S('path',{d:silPath, fill:'#3A3129'}));
+  cav.appendChild(S('path',{d:silPath, fill:'none', stroke:'#D6C6A8','stroke-width':'2.5', opacity:'.55'}));
+  svg.appendChild(cav);
+
+  /* the pouring basin and the runner that feeds the shape */
+  svg.appendChild(S('circle',{cx:70,cy:100,r:26,fill:'#5A4B3C'}));
+  svg.appendChild(S('circle',{cx:70,cy:100,r:19,fill:'#3A3129'}));
+  svg.appendChild(S('path',{d:'M84 84 L186 140 L186 162 L84 116 Z',fill:'#3A3129'}));
+  svg.appendChild(S('path',{d:'M84 84 L186 140',fill:'none',stroke:'#D6C6A8','stroke-width':'2',opacity:'.4'}));
+
+  /* ---- THE METAL, clipped to basin + runner + cavity ---- */
+  var clip = S('clipPath',{id:uid+'cav'});
+  clip.appendChild(S('circle',{cx:70,cy:100,r:19}));
+  clip.appendChild(S('path',{d:'M84 84 L186 140 L186 162 L84 116 Z'}));
+  clip.appendChild(S('path',{d:silPath, transform:'translate(158,100)'}));
+  defs.appendChild(clip);
+  var metal = S('g',{'clip-path':'url(#'+uid+'cav)'});
+  var flow = S('rect',{class:'mdflow', x:40,y:40,width:320,height:180,fill:'url(#'+uid+'hot)'});
+  metal.appendChild(flow);
+  metal.appendChild(S('rect',{class:'mdglint', x:40,y:40,width:44,height:180,fill:'#FFF6D8',opacity:'.55'}));
+  svg.appendChild(metal);
+
+  /* the crucible in your hands at the top of the frame, tipping */
+  var cru = S('g',{class:'mdcru'});
+  cru.appendChild(S('path',{d:'M12 6 q56 -18 108 0 q-8 44 -54 46 q-46 -2 -54 -46 Z',fill:'#5A626A',stroke:'#2A3138','stroke-width':'3'}));
+  cru.appendChild(S('path',{d:'M22 12 q46 -13 88 0 q-6 32 -44 34 q-38 -2 -44 -34 Z',fill:'#E2600F'}));
+  cru.appendChild(S('path',{d:'M28 16 q40 -10 76 0 q-6 24 -38 26 q-32 -2 -38 -26 Z',fill:'#FFC24A',opacity:'.9'}));
+  cru.appendChild(S('path',{d:'M8 30 q-14 8 -4 22 l14 -8 Z',fill:'#5A626A',stroke:'#2A3138','stroke-width':'2.5'}));
+  svg.appendChild(S('g',{transform:'translate(6,-6)'})).appendChild(cru);
+  /* the stream, falling into the basin */
+  svg.appendChild(S('path',{class:'mdstream', d:'M18 46 q16 26 44 46 q10 8 12 12 l-16 6 q-10 -10 -20 -18 q-28 -22 -34 -40 Z',
+    fill:'url(#'+uid+'hot)'}));
+
+  /* ---- THE MATHS, over the metal ---- */
+  if(pour && pour.maths){
+    var m = pour.maths;
+    var txt = function(x,y,s,cls,size){
+      var n = S('text',{x:String(x),y:String(y),'text-anchor':'middle',
+        'font-family':"'Black Han Sans','Arial Black',Impact,sans-serif",
+        'font-size':String(size||21), class:cls, fill:'#3A1B06'});
+      n.style.color = '#3A1B06';
+      n.textContent = s;
+      return n;
+    };
+    /* what went in */
+    svg.appendChild(txt(233, 126, m.into.join(''), 'mdnum mdin', 20));
+    /* the products it makes, spread across the shape */
+    var n2 = m.terms.length, span = 150, x0 = 233 - span/2;
+    m.terms.forEach(function(tm, i){
+      var x = n2===1 ? 233 : (x0 + i*(span/(n2-1)));
+      var el = txt(x, 168, tm.t, 'mdnum mdterm' + (tm.mid?' mdmid':''), 19);
+      el.style.animationDelay = (1.95 + i*0.16) + 's';
+      svg.appendChild(el);
+    });
+    /* the two middles run together into one */
+    if(m.merge) svg.appendChild(txt(233, 168, m.merge, 'mdnum mdmerged', 19));
+    /* and what is left is a single thing */
+    svg.appendChild(txt(233, 206, m.single, 'mdnum mdsingle', 25));
+  }
+
+  wrap.appendChild(svg);
+  return wrap;
+};
+
 MF.forgePour = function(st){
   var t = MF.TOOLS[st.picked];
   var ingots = st.slots.map(function(s){ return s.ingot; });
   var prod = ingotProduct(ingots);
   var sound = MF.forgeJudge(t, ingots, prod);
 
+  /* THE POUR IS THE PICTURE, NOT THE PARAGRAPH. What you poured, what it makes
+     and what it comes to are all shown over the metal as it fills the shape -
+     so the three lines that used to say the same thing in words are gone. What
+     is left in words is the verdict, which is the one thing a picture of a
+     casting cannot say for itself. */
   var box = E('div','casting castingwrap ' + (sound.ok?'clean':'deformed'));
-  box.appendChild(H('h4',null, sound.ok ? 'The part came out sound.' : 'It came out scrap.'));
-  /* joined with a dot: three plain metals ran together as "22 2" and an
-     x-ingot printed as a bare "(x)" beside them, which read as nonsense */
-  box.appendChild(H('div','eq sm','you poured ' + ingots.map(function(g){
-    return (g.m===0) ? num(g.k) : '(' + linear(g.m,g.k) + ')'; }).join(' &middot; ')));
-  box.appendChild(H('div','eq sm','the mold formed <b>' +
-    (prod.overflow ? 'something of degree ' + prod.degree : quad(prod.a,prod.b,prod.c)) + '</b>'));
+  box.appendChild(MF.moldScene(st.picked, {ok:sound.ok, maths:MF.moldMaths(ingots, prod)}));
+  box.appendChild(H('h4',null, sound.ok ? 'Sound.' : 'Scrap.'));
   box.appendChild(H('p',null, sound.why));
   st.result = box;
 
@@ -3341,16 +3582,19 @@ MF.forgeJudge = function(t, ingots, prod){
   if(prod.overflow)
     return {ok:false, why:'That is more metal than the mold holds — it has run over the sides. ' +
       'The order is for <b>' + MF.castText(t) + '</b>, and what you poured is bigger than that.'};
+  /* AS FEW WORDS AS THE VERDICT NEEDS. The pour shows what went in, what it
+     makes and what it comes to, over the metal - so the prose that used to
+     re-say all of it in a paragraph is gone. What is left is the part a
+     picture of a casting cannot say: whether it is the ordered part, and if
+     not, which term missed. */
   if(prod.a===want.a && prod.b===want.b && prod.c===want.c)
-    return {ok:true, why:'That is <b>' + MF.castText(t) + '</b>, exactly. Those metals were the ones in it — ' +
-      'and finding which metals multiply to a named object is the same work as taking one apart, run the other way.'};
+    return {ok:true, why:'The metals that multiply to it were the metals in it.'};
 
   var off = [];
-  if(prod.a!==want.a) off.push('the x² came out <b>' + num(prod.a) + '</b> and the order wants <b>' + num(want.a) + '</b>');
-  if(prod.b!==want.b) off.push('the middle came out <b>' + num(prod.b) + '</b> and the order wants <b>' + num(want.b) + '</b>');
-  if(prod.c!==want.c) off.push('the plain number came out <b>' + num(prod.c) + '</b> and the order wants <b>' + num(want.c) + '</b>');
-  return {ok:false, why:'The mold was cut for <b>' + MF.castText(t) + '</b> and this came out <b>' +
-    quad(prod.a,prod.b,prod.c) + '</b>. Where it missed: ' + off.join('; ') + '.'};
+  if(prod.a!==want.a) off.push('x²&nbsp;<b>' + num(prod.a) + '</b>, wanted <b>' + num(want.a) + '</b>');
+  if(prod.b!==want.b) off.push('middle&nbsp;<b>' + num(prod.b) + '</b>, wanted <b>' + num(want.b) + '</b>');
+  if(prod.c!==want.c) off.push('end&nbsp;<b>' + num(prod.c) + '</b>, wanted <b>' + num(want.c) + '</b>');
+  return {ok:false, why:'Missed: ' + off.join(' &middot; ') + '.'};
 };
 
 /* =========================================================================
@@ -5572,6 +5816,66 @@ MF.validate = function(){
     if(!/miss|over the sides/i.test(bad2.why))
       errs.push('forge: "' + t.nm + '" rejected a near miss without saying where it missed');
   });
+
+  /* 5o. THE MOLD TEACHES, SO THE MOLD MUST BE TRUE.
+         The pour shows the maths over the metal: what went in, the products it
+         makes, which two run together, and the one thing left. Every one of
+         those is a claim, and a picture that quietly says 3(x + 4) makes a
+         nought is worse than no picture. Checked against the engine rather
+         than against itself. */
+  MF.toolOrder().forEach(function(key){
+    var t = MF.TOOLS[key];
+    var set = MF.castableFrom(t.cast, t.slots, MF.yardList());
+    if(!set) return;                       /* the reachability check above owns this */
+    var ings = set.map(function(e){ return e.ingot; });
+    var mm = MF.moldMaths(ings, ingotProduct(ings));
+    chk('mold');
+    if(mm.single !== quadText(t.cast.a, t.cast.b, t.cast.c))
+      errs.push('mold: pouring "' + t.nm + '" shows it coming to ' + mm.single + ', and the order is ' + quadText(t.cast.a,t.cast.b,t.cast.c));
+    /* NO TERM MAY BE NOTHING. A nought on the sand is a product that does not
+       exist, and it is what a phantom middle looks like. */
+    mm.terms.forEach(function(tm){
+      chk('mold');
+      if(tm.t === '0' || tm.t === '')
+        errs.push('mold: pouring "' + t.nm + '" shows a term that is nothing at all');
+    });
+    /* the terms must actually add up to the casting */
+    chk('mold');
+    var mSq=0, mX=0, mK=0;
+    mm.terms.forEach(function(tm){
+      var s = tm.t;
+      if(/x²$/.test(s))      mSq += (s==='x²' ? 1 : (s==='−x²' ? -1 : parseInt(s.replace(/[−–]/g,'-'),10)));
+      else if(/x$/.test(s))  mX  += (s==='x' ? 1 : (s==='−x' ? -1 : parseInt(s.replace(/[−–]/g,'-'),10)));
+      else                   mK  += parseInt(s.replace(/[−–]/g,'-'),10);
+    });
+    /* three plain metals are shown as themselves, and multiply rather than add */
+    var allPlain = ings.every(function(g){ return g.m===0; });
+    if(!allPlain && (mSq !== t.cast.a || mX !== t.cast.b || mK !== t.cast.c))
+      errs.push('mold: the products shown for "' + t.nm + '" come to ' + quadText(mSq,mX,mK) +
+                ', and the casting is ' + quadText(t.cast.a,t.cast.b,t.cast.c));
+    /* a merge is two things becoming one, or it is not a merge */
+    chk('mold');
+    var midCount = mm.terms.filter(function(tm){ return tm.mid; }).length;
+    if(mm.merge !== null && midCount !== 2)
+      errs.push('mold: "' + t.nm + '" runs ' + midCount + ' term(s) together, and a merge takes two');
+    chk('mold');
+    if(mm.merge === null && midCount)
+      errs.push('mold: "' + t.nm + '" marks ' + midCount + ' term(s) as running together and then never runs them');
+    /* and the shape it is cut to must exist */
+    chk('mold');
+    if(!MF.TOOL_SIL[key]) errs.push('mold: there is no silhouette to cut the mold for "' + t.nm + '"');
+  });
+  /* CONTROL: a mold that shows the wrong total must be caught */
+  chk('mold');
+  var mReal = MF.moldMaths;
+  MF.moldMaths = function(ings, prod){ var r = mReal(ings, prod); r.single = 'x + 1'; return r; };
+  var mSet = MF.castableFrom(MF.TOOLS.auger.cast, MF.TOOLS.auger.slots, MF.yardList());
+  if(mSet){
+    var mIng = mSet.map(function(e){ return e.ingot; });
+    if(MF.moldMaths(mIng, ingotProduct(mIng)).single === quadText(6,7,-3))
+      errs.push('CONTROL: the mold check cannot see a pour that shows the wrong casting');
+  }
+  MF.moldMaths = mReal;
 
   /* a correct forge SPENDS its metal - exactly what went in, and no more */
   chk('forge');

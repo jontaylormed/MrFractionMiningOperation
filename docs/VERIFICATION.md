@@ -682,3 +682,21 @@ The day cycle was supposed to brighten every lamp on the site after dark. It did
 - **Assert the property, not the plumbing:** two scenes built two minutes apart must open two minutes apart. Controls: return `0` from the sync (caught), and — the more interesting one — sync every scene to a *fixed* dawn, which is plumbing that runs and still restarts the day. Both fire.
 
 > **And it broke the instrument that measures the day.** With a delay in play, an animation's progress is `(currentTime − delay) / duration`, so the `surface` group's "stop the clock at noon" set the phase wrong by exactly the page's own offset. Worse, `ms + delay` is **negative** whenever the page is further into its day than the sample point — and a negative `currentTime` sits in the *delay phase*, where `fill:none` means **no keyframe applies at all**. The dawn sky read as its base `0` and the check reported that dawn was not showing at dawn. The fix is to add the delay back and wrap into `[0, duration)`, which is sound because these loop forever: phase *p* and *p + duration* are the same picture.
+
+## 53. Two fill-mode keywords throw away the whole animation
+
+The metal did not flow into the mold. Everything else did — the crucible tipped, the stream fell, the numbers resolved — and the one thing the pour is *about* simply never happened.
+
+> ```css
+> animation: mdflow 1500ms cubic-bezier(.42,0,.72,1) .35s backwards forwards;
+> ```
+>
+> `animation-fill-mode` takes **one** of `none | forwards | backwards | both`. Two keywords is a parse error, and a browser discards the **entire shorthand** — not the bad component, the whole declaration. No console warning, no partial effect, nothing in the computed style to look at unless you go asking.
+
+It was caught by `getAnimations().length > 0` on the element, which returned `0` while the CSS sat there looking perfectly reasonable.
+
+**The rules.**
+
+- **`both`, not `backwards forwards`.** If you want a value held before *and* after, it has one name.
+- **Assert that an animation is RUNNING, not that the rule exists.** Reading the stylesheet, or the class, or the `data-` attribute would all have passed. `getAnimations()` is the only thing that knows.
+- **A silent CSS parse failure looks exactly like a missing feature.** When an effect is simply absent with no error anywhere, suspect the declaration before the logic.
