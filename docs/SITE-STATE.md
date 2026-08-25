@@ -22,7 +22,7 @@
 | **Screens** | **five** — surface, the Stamp Mill, the Casting Shed, the mine, the forge |
 | **Layers** | **five**, all reachable from the first screen, none gated on anything |
 | **Instruments** | **seven**, all made at the forge, none granted |
-| **Validation** | `MF.validate()` → **8,552 checks / 25 groups / 0 errors**, two controls that must fail, and do |
+| **Validation** | `MF.validate()` → **8,554 checks / 25 groups / 0 errors**, two controls that must fail, and do |
 
 > **A check is only as wide as the space it sweeps.** The `truthy` group reported 0 errors across 642 checks while **1,970 Decimal Dial states printed a falsehood**, because it tested each lump's original integer coefficients and never nudged `c` — the one thing the dial exists to do. It now sweeps every slider position the control can reach (3,287 checks). Ask of any green result: *what did it not look at?*
 | **Runtime** | Zero dependencies, no build step, no network requests, no storage, runs from `file://` |
@@ -86,7 +86,7 @@ The **Casting Shed** is unchanged — it still teaches the mold, which is still 
 
 ## The surface, and the day that turns over it
 
-**A full day takes four minutes**, on one clock, and every part of it is a phase of the same turn:
+**A full day takes four minutes**, on one clock **belonging to the session rather than to the scene**, and every part of it is a phase of the same turn:
 
 | | | |
 |---|---|---|
@@ -96,6 +96,8 @@ The **Casting Shed** is unchanged — it still teaches the mold, which is still 
 | **180s** | midnight | moon overhead, stars out, the whole site goes dark |
 
 The sky is **four tinted sheets cross-fading** over the base gradient — you cannot animate the stops of a gradient, so you fade whole skies instead. The sun and the moon ride **one circle whose centre sits on the horizon** at `(450,310)`, which is what puts each of them up for exactly half the turn; drop the centre lower and the sun is only out for a third of the day. They rise and set **behind the hills**, which are drawn after them. Night falls on the **whole site**, not just the sky — the darkening rect is appended last, over the buildings and the cart, because a night sky above a daylit yard reads as a mistake. Windows and lanterns only earn their light after dark.
+
+**The day does not restart when you come back to it.** `MF.go` rebuilds a screen from nothing on every arrival and a CSS animation starts at zero, so the surface used to open at dawn every time — mine, forge, surface, and the sun was back on the eastern hills whatever the session clock said. One start time is taken when the file loads (`MF._dayT0`), and `MF.syncDay` gives every part of the sky a **negative `animation-delay`** equal to how far through the four minutes we are, which drops it into the cycle already running. No timers, nothing to keep in sync, and it is correct even for a scene built and never mounted.
 
 Under `prefers-reduced-motion` the day stops at noon rather than flickering through four skies.
 

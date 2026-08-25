@@ -668,3 +668,17 @@ The day cycle was supposed to brighten every lamp on the site after dark. It did
 - **Assert the conflict is absent as a class**, not the instance: `.sc-lamp.sc-lit, .sc-lamp.sc-glow` must match nothing. Proved by re-merging the classes onto one element — 9 lights caught.
 
 > **And the level check had the same shape of bug inside it.** It stopped the sky's animations, sampled the lamps at "noon" and "midnight", and reported `0.72 -> 0.72` — because **the lamps were never added to the set it paused**, so they carried on in real time and both samples read the same moment. It blamed the lights for a fault in the instrument. **A check that stops a clock must stop every hand on it.**
+
+## 52. A rebuilt screen is a new screen, and its animations start at zero
+
+`MF.go` clears `#screen` and builds the whole thing again on every arrival. That is what makes navigation cheap and it is why the mine repaints in place (§46) — but it also means **every CSS animation on that screen restarts from zero**. The four-minute day therefore began again at dawn every time a student came back to the surface: mine, forge, surface, and the sun was on the eastern hills whatever the session clock said.
+
+> **The day belongs to the session, not to the scene.** One start time is taken when the file loads, and every part of the sky is given a **negative `animation-delay`** equal to how far through the cycle we are, which drops it into a turn already running. No timer, nothing to keep in step, and it is right even for a scene that is built and never mounted.
+
+**The rules.**
+
+- **Anything continuous across navigation cannot live in a rebuilt subtree's animation start.** Ask of any long-running animation: *what happens when this screen is torn down and remade?*
+- **Negative `animation-delay` is the whole mechanism.** It needs no clock of its own and cannot drift, because the browser is doing the timing either way.
+- **Assert the property, not the plumbing:** two scenes built two minutes apart must open two minutes apart. Controls: return `0` from the sync (caught), and — the more interesting one — sync every scene to a *fixed* dawn, which is plumbing that runs and still restarts the day. Both fire.
+
+> **And it broke the instrument that measures the day.** With a delay in play, an animation's progress is `(currentTime − delay) / duration`, so the `surface` group's "stop the clock at noon" set the phase wrong by exactly the page's own offset. Worse, `ms + delay` is **negative** whenever the page is further into its day than the sample point — and a negative `currentTime` sits in the *delay phase*, where `fill:none` means **no keyframe applies at all**. The dawn sky read as its base `0` and the check reported that dawn was not showing at dawn. The fix is to add the delay back and wrap into `[0, duration)`, which is sound because these loop forever: phase *p* and *p + duration* are the same picture.

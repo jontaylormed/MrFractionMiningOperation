@@ -2527,8 +2527,37 @@ MF.surfaceScene = function(){
      daylit yard reads as a mistake. Inert like everything else in here. */
   svg.appendChild(S('rect',{class:'sc-night', x:0,y:0,width:W,height:VH,fill:'#0B1226'}));
 
+  MF.syncDay(svg);
   wrap.appendChild(svg);
   return wrap;
+};
+
+/* =========================================================================
+   ONE DAY, NOT ONE PER VISIT.
+
+   MF.go rebuilds a screen from nothing every time you arrive, so every trip
+   back to the surface handed the sky a brand new set of CSS animations - and a
+   CSS animation starts at zero. The day restarted at dawn each time: mine,
+   forge, surface, and the sun was back on the eastern hills whatever the
+   clock said.
+
+   The day belongs to the SESSION, not to the scene. One start time is taken
+   when the file loads, and every part of the sky is given a NEGATIVE
+   animation-delay equal to however far through the four minutes we are - which
+   drops it into the cycle already running. No timers, nothing to keep in sync,
+   and it is correct even for a scene built and never mounted.
+   ========================================================================= */
+MF.DAY_MS = 240000;
+MF._dayT0 = Date.now();
+MF.dayOffset = function(){ return (Date.now() - MF._dayT0) % MF.DAY_MS; };
+MF.DAY_PARTS = '.sc-sky,.sc-sun,.sc-moon,.sc-stars,.sc-night,.sc-lit,.sc-glow';
+MF.syncDay = function(root){
+  if(!root) return 0;
+  var off = MF.dayOffset();
+  Array.prototype.forEach.call(root.querySelectorAll(MF.DAY_PARTS), function(el){
+    el.style.animationDelay = (-off) + 'ms';
+  });
+  return off;
 };
 
 /* =========================================================================
@@ -5890,7 +5919,24 @@ MF.validate = function(){
           if(an.effect.getTiming().duration !== 240000)
             errs.push('surface: a part of the day runs for ' + an.effect.getTiming().duration + 'ms, not the four minutes the rest of it takes');
         });
-        var sAt = function(ms){ sAnims.forEach(function(an){ an.pause(); an.currentTime = ms; }); };
+        /* ADD THE DELAY BACK. Every part of the sky now carries a NEGATIVE
+           animation-delay so the day picks up where the session left it, and
+           progress is (currentTime − delay) / duration — so setting
+           currentTime to the wanted moment alone lands somewhere else
+           entirely, by exactly however far through the day the page is. */
+        var sAt = function(ms){
+          sAnims.forEach(function(an){
+            an.pause();
+            var t = an.effect.getTiming(), d = t.delay || 0, dur = t.duration;
+            /* AND WRAP IT BACK INTO RANGE. ms + delay is negative whenever the
+               page is more than `ms` into its day, and a negative currentTime
+               sits in the DELAY phase, where fill:none means none of the
+               keyframes apply at all - the dawn sky reads as its base 0 and
+               the check reports that dawn is not showing at dawn. These loop
+               forever, so phase p and p + duration are the same picture. */
+            an.currentTime = ((ms + d) % dur + dur) % dur;
+          });
+        };
         var sUp = function(el){
           var b = el.getBoundingClientRect(), s = sSvg.getBoundingClientRect();
           return ((b.y + b.height/2) - s.y) / s.height * 420 < 300;      /* above the horizon */
@@ -5958,6 +6004,35 @@ MF.validate = function(){
         if(sMidGlow <= sNoonGlow + 0.1)
           errs.push('surface: the light they cast is no stronger at midnight than at noon (' +
             sNoonGlow.toFixed(2) + ' -> ' + sMidGlow.toFixed(2) + ')');
+
+        /* ---- THE DAY BELONGS TO THE SESSION, NOT TO THE SCENE ----
+               MF.go rebuilds a screen from nothing on every arrival, and a CSS
+               animation starts at zero - so the day restarted at dawn every
+               time a student came back to the surface from the mine or the
+               forge. Two scenes built at two different points in the day must
+               come out at two different points in the day. */
+        var sT0 = MF._dayT0;
+        var sPhaseOf = function(atMs){
+          MF._dayT0 = Date.now() - atMs;
+          var probe = document.createElement('div');
+          probe.style.cssText = 'position:absolute; left:-12000px; top:0; width:900px';
+          document.body.appendChild(probe);
+          probe.appendChild(MF.surfaceScene());
+          var el = probe.querySelector('.sc-sun');
+          var d = el ? (el.getAnimations()[0] || {effect:{getTiming:function(){return {delay:0};}}}) : null;
+          var delay = d ? (d.effect.getTiming().delay || 0) : 0;
+          document.body.removeChild(probe);
+          return -delay;                       /* how far into the day it was dropped */
+        };
+        chk('surface');
+        var sDawnAt = sPhaseOf(0), sDuskAt = sPhaseOf(120000);
+        MF._dayT0 = sT0;
+        if(Math.abs(sDuskAt - sDawnAt - 120000) > 2000)
+          errs.push('surface: the day restarts when the surface is rebuilt — a scene made two minutes later opened at ' +
+            Math.round(sDawnAt/1000) + 's and ' + Math.round(sDuskAt/1000) + 's, and they should be two minutes apart');
+        chk('surface');
+        if(sDawnAt !== 0 && sDuskAt !== 0 && sDawnAt === sDuskAt)
+          errs.push('surface: every rebuild of the surface opens at the same moment of the day');
 
         /* ---- THE FORGE HAS TWO CHIMNEYS ---- */
         var sFg = [].slice.call(sSvg.querySelectorAll('g')).filter(function(g){
