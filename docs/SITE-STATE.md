@@ -22,7 +22,7 @@
 | **Screens** | **five** — surface, the Stamp Mill, the Casting Shed, the mine, the forge |
 | **Layers** | **five**, all reachable from the first screen, none gated on anything |
 | **Instruments** | **seven**, all made at the forge, none granted |
-| **Validation** | `MF.validate()` → **8,415 checks / 23 groups / 0 errors**, two controls that must fail, and do |
+| **Validation** | `MF.validate()` → **8,466 checks / 23 groups / 0 errors**, two controls that must fail, and do |
 
 > **A check is only as wide as the space it sweeps.** The `truthy` group reported 0 errors across 642 checks while **1,970 Decimal Dial states printed a falsehood**, because it tested each lump's original integer coefficients and never nudged `c` — the one thing the dial exists to do. It now sweeps every slider position the control can reach (3,287 checks). Ask of any green result: *what did it not look at?*
 | **Runtime** | Zero dependencies, no build step, no network requests, no storage, runs from `file://` |
@@ -96,17 +96,25 @@ The belt is **a leather strap with the instruments hanging in loops**, not a lis
 
 **The panel is a real dialog:** `role="dialog"`, `aria-modal`, focus moved in, **Tab trapped**, Escape closes, focus handed back to the slot it came from, and nothing left in the DOM — a scrim left behind covers the page and makes every control dead, which is §43's fault class page-wide. One function builds it for all three routes (tool-on-lump, tool explained off the belt, empty slot); three copies of the focus wiring was three chances to lose the trap.
 
-**What each instrument does, and the rule they all obey:**
+**Every order names one exact object, and the objects climb with the tool.**
 
-| | made by | held to a lump, it |
-|---|---|---|
-| **Lantern** | three primes | says whether a seam still runs through it — so you know when a piece is worth another swing. Never says along what. |
-| **Core Drill** | a matched pair | lists every pair that could run through it, and marks none |
-| **Exponent Rail** | two x-ingots | shows where its x² can have come from — the two x-parts multiplied |
-| **Decimal Dial** | any four metals | shows why nothing will come out, when nothing will |
-| **Deep Pick** | 2 x-ingots + a plain | says plainly that it works at the seam, not on the floor |
-| **Steel Pick** | a plain metal poured onto a bracket | rips the common metal out in one blow, and touches nothing else |
-| **Powered Auger** | two x-ingots, one loaded | reads what the x-part and the number *have* to divide before a seam can run; traces the division on a swing that lands |
+The board used to ask for a *shape* — "three pure ingots", "any four metals at all" — and any three primes filled it. That taught nothing about what a factorisation is, because there was no particular thing to hit: 2·3·5 and 7·11·13 were both accepted. An order now names one object and the casting must come out as **that object, exactly**. Finding which metals multiply to `6x² + 7x − 3` *is* factoring, run backwards, with a definite answer.
+
+`rank` runs 1–7, ordered by how much the instrument does for you when you are getting metal out of rock, and the object it is cast from gets harder in step:
+
+| rank | tool | cast | from | held to a lump, it |
+|---|---|---|---|---|
+| 1 | **Deep Pick** | `12` | 2 · 2 · 3 | says plainly that it works at the seam, not on the floor |
+| 2 | **Pit Lantern** | `30` | 2 · 3 · 5 | says whether a seam still runs through it. Never says along what. |
+| 3 | **Steel Pick** | `3x + 12` | 3 · (x+4) | rips the common metal out in one blow, and touches nothing else |
+| 4 | **Decimal Dial** | `x² + 3x + 2` | (x+1)(x+2) | shows why nothing will come out, when nothing will |
+| 5 | **Exponent Rail** | `x² + 8x + 16` | (x+4)(x+4) | shows where its x² can have come from |
+| 6 | **Core Drill** | `x² − 25` | (x+5)(x−5) | lists every pair that could run through it, and marks none |
+| 7 | **Powered Auger** | `6x² + 7x − 3` | (2x+3)(3x−1) | reads what the x-part and the number *have* to divide before a seam can run; traces the division on a swing that lands |
+
+Plain numbers → a metal spread over a bracket → two brackets → a square → a twin seam → loaded at both ends. **The target is on the order card and again, large, on the open mold**, and a casting that misses is described term by term — *"the x² came out 2 and the order wants 6"* — exactly as the mine describes a pick that glanced off.
+
+> **A precise target can become an unreachable one, so it is checked.** The `forge` group (44) stocks a yard from 70 real smelts and asserts, for every order: some set of metals on it casts the object; those metals are judged sound; **one metal nudged by one is not**; and the rejection says where it missed. It also asserts the ranks run 1..7 with no ties and that no two orders are cut for the same object — a board that claims an escalation has to have one. Controls: an unreachable target, duplicate targets, tied ranks, a judge that accepts anything, and a judge that rejects without explaining — all five caught.
 
 **The ladder buys reach and sight, never an answer.** The Steel Pick only takes the metal every term is already carrying — a move the student demonstrated at the forge to earn it — and the Auger narrows where to look without naming anything. The hand pick is free and always in your hands; the `nogate` group still walks every layer with an empty yard and no tools.
 

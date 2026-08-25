@@ -213,3 +213,37 @@ The yard now has **a heap and a rack**. Metal broken all the way down goes on th
 ### 11e. Still out
 
 Everything §8 excludes, unchanged — the guided route, the fully open face, the four challenge shafts. **Also out:** any second way of checking a factorisation in the mine. The rock is the only judge there.
+
+---
+
+## 12. Amendment, 2026-08-24 — every order names one exact object
+
+> **The user's words:** *"The tools need a precise target answer that increases with difficulty per increase in tool usefulness in extracting. This [is so] the student knows what exactly simplifying the factors means."*
+
+§10a made each tool *forged by demonstrating the move it then assists with*. That was right about **which** move and silent about **what**, so the board asked for shapes — "three pure ingots", "any two ingots that carry an x", "any four metals at all". Any three primes filled the Lantern. A student could satisfy every requirement on the board without ever hitting a particular object, which is precisely the thing a factorisation is.
+
+### 12a. The rule
+
+**An order names one object. The casting must come out as that object, exactly.** There is one judgement in the forge now, where there were seven shape predicates, and a miss is described term by term rather than by which rule it broke.
+
+### 12b. The ladder, and what it teaches
+
+`rank` runs 1–7 by how much the instrument does for you when you are getting metal out of rock; the object climbs with it:
+
+| | tool | cast | from |
+|---|---|---|---|
+| 1 | Deep Pick | `12` | 2 · 2 · 3 — plain numbers, one repeated |
+| 2 | Pit Lantern | `30` | 2 · 3 · 5 — three different primes |
+| 3 | Steel Pick | `3x + 12` | 3 · (x+4) — a metal spread over a bracket |
+| 4 | Decimal Dial | `x² + 3x + 2` | (x+1)(x+2) — two brackets, one apart |
+| 5 | Exponent Rail | `x² + 8x + 16` | (x+4)(x+4) — a square |
+| 6 | Core Drill | `x² − 25` | (x+5)(x−5) — a twin seam |
+| 7 | Powered Auger | `6x² + 7x − 3` | (2x+3)(3x−1) — loaded at both ends |
+
+**Why this is the answer to the question the user asked.** *Simplifying the factors* is not "break it into smaller things" — it is landing on **one determinate set**. Hunting the metals that multiply to a named object is the same work as taking that object apart, done in the direction where the answer is checkable at a glance. The mine teaches it forwards; the forge now teaches it backwards, against a target.
+
+### 12c. What this costs, and the check that pays it
+
+A precise target can be an **unreachable** one. The `forge` group stocks a yard from 70 real smelts and asserts, per order, that some set of metals on it casts the object, that those metals are judged sound, that one metal nudged by one is **not**, and that the rejection says where it missed. It also asserts the ranks run 1..n with no ties and that no two orders share a target.
+
+**Still binding:** a tool assists, it never gates (§10a). Nothing on the board is required to work any layer.

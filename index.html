@@ -219,6 +219,17 @@ input[type=range]{width:100%; accent-color:var(--ore); height:44px}
   background:var(--paper-3); border:2px dashed var(--tan); border-radius:12px;
   padding:20px; text-align:center; margin-bottom:12px}
 .moldslot{min-width:78px; text-align:center}
+/* the object the mold is cut for: the question, at the size of a question */
+.castfor{background:linear-gradient(180deg,#FFF6E3,#FBEBCB); border:3px solid var(--lamp);
+  border-radius:12px; padding:12px 15px 13px; margin-bottom:12px}
+/* #8F6410 measured 4.46:1 against the plate and the sweep failed the build by
+   four hundredths. #7F570B is 5.98:1. */
+.castfor .cflab{font-family:var(--display); font-size:11px; letter-spacing:.11em; color:#7F570B}
+.castfor .cfeq{font-family:var(--display); font-size:clamp(26px,4.4vw,38px); color:#4A3410; line-height:1.1; margin:2px 0 5px}
+.castfor .cfwhy{font-size:14px; color:#5A4B2A}
+/* the target on an order card, so the board reads as seven objects to make */
+.order .ocast{font-size:12px; color:#FFE0A8; font-family:var(--display); letter-spacing:.02em}
+.order.made .ocast{color:#A8D8C4}
 
 /* the shaft / layers */
 .shaft{position:sticky; top:12px}
@@ -1436,60 +1447,90 @@ MF.state = {
    A student who has forged nothing can still walk to the deepest layer and
    work it. It is harder without the instruments. It is never forbidden.
    ========================================================================= */
+/* ---- EVERY ORDER NAMES THE EXACT OBJECT ITS MOLD IS CUT FOR.
+
+     The board used to ask for a SHAPE - "three pure ingots", "any four metals
+     at all" - and any three primes filled it. That taught nothing about what a
+     factorisation is, because there was no particular thing to hit: a student
+     could pour 2·3·5 or 7·11·13 and the mold accepted both.
+
+     An order now names one object and the casting must come out as that
+     object, exactly. Finding which metals multiply to 6x² + 7x − 3 IS
+     factoring, run backwards and with a definite answer - and a casting that
+     misses shows WHICH term it missed by.
+
+     THE TARGETS CLIMB WITH THE TOOL. `rank` runs 1 to 7, ordered by how much
+     the instrument does for you when you are getting metal out of rock, and
+     the object it is cast from gets harder in step:
+
+       1 Deep Pick     12              2 · 2 · 3         plain numbers, one repeated
+       2 Pit Lantern   30              2 · 3 · 5         three different primes
+       3 Steel Pick    3x + 12         3 · (x + 4)       a metal spread over a bracket
+       4 Decimal Dial  x² + 3x + 2     (x+1)(x+2)        two brackets, one apart
+       5 Exponent Rail x² + 8x + 16    (x+4)(x+4)        a square: both x-parts the same
+       6 Core Drill    x² − 25         (x+5)(x−5)        a twin seam: the middle cancels
+       7 Powered Auger 6x² + 7x − 3    (2x+3)(3x−1)      loaded: both ends constrained
+
+     The `forge` group asserts every one of these is castable from metal a yard
+     built out of 70 real smelts actually holds, so a precise target can never
+     become an unreachable one. ---- */
 MF.TOOLS = {
+  pick: {
+    rank:1, ic:'&#9935;', nm:'The Deep Pick', order:'a heavier pick head',
+    ds:'Brings up three lumps a swing instead of one.',
+    cast:{a:0,b:0,c:12}, slots:3,
+    forge:'Cast <b>12</b> out of pure metal. Three plain ingots, and one of them turns up twice.',
+    teaches:'distribution over plain numbers'
+  },
   lantern: {
-    ic:'&#128367;', nm:'The Lantern', order:'a pit lantern for the lower workings',
+    rank:2, ic:'&#128367;', nm:'The Lantern', order:'a pit lantern for the lower workings',
     ds:'Hold it to a lump and it tells you whether a seam still runs through it — so you know when a piece is worth another swing, and when it is an element. It never says along what.',
-    forge:'Three pure ingots, poured together. Primes multiplied is distribution at its plainest.',
-    need:{kind:'primes', count:3},
+    cast:{a:0,b:0,c:30}, slots:3,
+    forge:'Cast <b>30</b> out of pure metal. Three different primes, and only one set of three will do it.',
     teaches:'distribution'
   },
+  steel: {
+    rank:3, ic:'&#128296;', nm:'The Steel Pick', order:'a steel head for the common seam',
+    ds:'Rips the common metal out of a lump in one blow, without you naming it. It only ever takes the metal every term is carrying — the rest of the rock is still yours to break.',
+    cast:{a:0,b:3,c:12}, slots:2,
+    forge:'Cast <b>3x + 12</b>. One plain metal spread over one bracket — and spreading a common metal is the move this head then runs backwards.',
+    teaches:'the common factor'
+  },
+  dial: {
+    rank:4, ic:'&#128207;', nm:'The Decimal Dial', order:'a fine-adjust dial for the bench',
+    ds:'Nudges a lump off the whole numbers so you can watch the seam vanish — why nothing will come out, when nothing will.',
+    cast:{a:1,b:3,c:2}, slots:2,
+    forge:'Cast <b>x² + 3x + 2</b>. Two brackets one apart — nudge either number off a whole and the seam stops being whole, which is the whole of what the dial is for.',
+    teaches:'integers and decimals'
+  },
   shifter: {
-    ic:'&#8646;', nm:'The Shifter', order:'a gear shifter for the winding house',
+    rank:5, ic:'&#8646;', nm:'The Shifter', order:'a gear shifter for the winding house',
     ds:'Held to a lump it shows where its x² can have come from — the two x-parts multiplied, which is the only place an x² ever comes from.',
-    forge:'Two ingots that carry an x. Pour them and watch where the x² comes from.',
-    need:{kind:'xIngots', count:2},
+    cast:{a:1,b:8,c:16}, slots:2,
+    forge:'Cast <b>x² + 8x + 16</b>. The same bracket twice, so there is no doubt at all where the x² came from.',
     teaches:'exponents'
   },
   drill: {
-    ic:'&#9881;', nm:'The Drill', order:'a core drill for the assay office',
+    rank:6, ic:'&#9881;', nm:'The Drill', order:'a core drill for the assay office',
     ds:'Takes a core out of a lump and reads every pair that could run through it. It lists them all and marks none.',
-    forge:'A matched pair — (x + k) and (x − k). You forge it by casting a twin seam.',
-    need:{kind:'matchedPair', count:2},
+    cast:{a:1,b:0,c:-25}, slots:2,
+    forge:'Cast <b>x² − 25</b>. Two brackets with opposite numbers, so the middle cancels itself out and a twin seam is what comes off the mold.',
     teaches:'patterns'
   },
-  pick: {
-    ic:'&#9935;', nm:'The Deep Pick', order:'a heavier pick head',
-    ds:'Brings up three lumps a swing instead of one.',
-    forge:'Any two ingots that carry an x, and one plain metal.',
-    need:{kind:'mixed', count:3},
-    teaches:null
-  },
-  dial: {
-    ic:'&#128207;', nm:'The Decimal Dial', order:'a fine-adjust dial for the bench',
-    ds:'Nudges a lump off the whole numbers so you can watch the seam vanish — why nothing will come out, when nothing will.',
-    forge:'Any four metals at all — the dial is fiddly, not fussy.',
-    need:{kind:'any', count:4},
-    teaches:'integers and decimals'
-  },
-  /* ---- THE LADDER. A better pick buys REACH or SIGHT, never an answer.
-         The hand pick is free and always in your hands; nothing below it is
-         required to work any layer. ---- */
-  steel: {
-    ic:'&#128296;', nm:'The Steel Pick', order:'a steel head for the common seam',
-    ds:'Rips the common metal out of a lump in one blow, without you naming it. It only ever takes the metal every term is carrying — the rest of the rock is still yours to break.',
-    forge:'A plain metal poured onto an ingot that carries an x — 3 onto (x + 4) casts 3x + 12. Spreading a common metal over a bracket is the move this pick then runs backwards.',
-    need:{kind:'sharedPour', count:2},
-    teaches:'the common factor'
-  },
   auger: {
-    ic:'&#128295;', nm:'The Powered Auger', order:'a powered auger for the loaded ore',
+    rank:7, ic:'&#128295;', nm:'The Powered Auger', order:'a powered auger for the loaded ore',
     ds:'Shows how a seam has to run before you drive it: what the x-part you take out must divide, and what the number must divide. On a swing that lands it traces the division out.',
-    forge:'Two ingots that carry an x, at least one of them loaded — (2x + 3) and (x − 1). Casting a loaded lump on purpose is what earns the tool that takes one apart.',
-    need:{kind:'loadedPair', count:2},
+    cast:{a:6,b:7,c:-3}, slots:2,
+    forge:'Cast <b>6x² + 7x − 3</b>. Both ends are pinned: the x-parts have to multiply to 6 and the numbers to −3, and only one pairing also makes the middle come to 7.',
     teaches:'loaded trinomials'
   }
 };
+/* the board reads in ladder order, so the escalation is visible rather than
+   something a student has to notice */
+MF.toolOrder = function(){
+  return Object.keys(MF.TOOLS).sort(function(a,b){ return MF.TOOLS[a].rank - MF.TOOLS[b].rank; });
+};
+MF.castText = function(t){ return quad(t.cast.a, t.cast.b, t.cast.c); };
 MF.hasTool = function(k){ return !!MF.state.tools[k]; };
 
 /* =========================================================================
@@ -2607,34 +2648,36 @@ MF.cutTree = function(n, pair, title){
    "2 of 3 metals" - that is an X-out-of-Y, which philosophy 2.5a forbids and
    MF.validate's no-grades check would (correctly) fail the build over.
    ========================================================================= */
+/* CAN THE RACK ACTUALLY CAST THE THING? Not "does it hold two x-ingots" - does
+   it hold a set of exactly `slots` metals whose product IS the target. The old
+   version answered a question about shapes, so it said yes to a yard that
+   could not make the object and the student found out at the pour.
+
+   An irreducible polynomial in the yard is stored with m:0,k:0 and a label -
+   it multiplies to nothing - so it is not a candidate for any mold. */
+MF.castableFrom = function(target, slots, have){
+  var pool = have.filter(function(e){ return !(e.ingot.m===0 && e.ingot.k===0); });
+  var found = null;
+  (function walk(start, chosen){
+    if(found) return;
+    if(chosen.length === slots){
+      var p = ingotProduct(chosen.map(function(e){ return e.ingot; }));
+      if(!p.overflow && p.a===target.a && p.b===target.b && p.c===target.c) found = chosen.slice();
+      return;
+    }
+    /* prune: more metals still needed than the pool has left */
+    if(pool.length - start < slots - chosen.length) return;
+    for(var i=start; i<pool.length && !found; i++){
+      chosen.push(pool[i]);
+      walk(i+1, chosen);
+      chosen.pop();
+    }
+  })(0, []);
+  return found;
+};
 MF.toolReady = function(key){
-  var t = MF.TOOLS[key], have = MF.yardList();
-  var need = t.need;
-  if(need.kind==='primes')      return have.filter(function(e){ return isPlainMetal(e.ingot); }).length >= need.count;
-  if(need.kind==='xIngots')     return have.filter(function(e){ return isXMetal(e.ingot); }).length >= need.count;
-  if(need.kind==='any')         return have.length >= need.count;
-  if(need.kind==='mixed')       return have.filter(function(e){ return isXMetal(e.ingot); }).length >= 2 &&
-                                       have.filter(function(e){ return isPlainMetal(e.ingot); }).length >= 1;
-  if(need.kind==='matchedPair'){
-    return have.some(function(a){
-      return isXMetal(a.ingot) && a.ingot.k!==0 && have.some(function(b){
-        return b!==a && b.ingot.m===a.ingot.m && b.ingot.k===-a.ingot.k;
-      });
-    });
-  }
-  /* a plain metal and an x-ingot that will actually leave a common metal
-     behind: pouring 1 onto anything spreads nothing */
-  if(need.kind==='sharedPour'){
-    return have.some(function(a){
-      return isPlainMetal(a.ingot) && Math.abs(a.ingot.k) > 1;
-    }) && have.some(function(b){ return isXMetal(b.ingot); });
-  }
-  /* two x-ingots, at least one of them loaded */
-  if(need.kind==='loadedPair'){
-    var xs = have.filter(function(e){ return isXMetal(e.ingot); });
-    return xs.length >= 2 && xs.some(function(e){ return Math.abs(e.ingot.m) > 1; });
-  }
-  return false;
+  var t = MF.TOOLS[key];
+  return !!MF.castableFrom(t.cast, t.slots, MF.yardList());
 };
 
 /* =========================================================================
@@ -2694,9 +2737,9 @@ MF.paintForge = function(){
 MF.paintOrders = function(host, st){
   var box = E('div','orderboard');
   box.appendChild(H('h3',null,'The Order Board'));
-  box.appendChild(H('div','hint','Every tool here is made by doing the very thing it then helps you with. Nothing on this board is required.'));
+  box.appendChild(H('div','hint','Each order is cut for <b>one exact object</b>. Find the metals that multiply to it and the part comes out sound. They get harder down the board, and so do the tools.'));
 
-  Object.keys(MF.TOOLS).forEach(function(key){
+  MF.toolOrder().forEach(function(key){
     var t = MF.TOOLS[key], made = MF.hasTool(key), ready = MF.toolReady(key);
     var b = E('button','order' + (made?' made':(ready?' ready':' short')));
     b.type = 'button';
@@ -2705,9 +2748,12 @@ MF.paintOrders = function(host, st){
     b.appendChild(H('span','oic', t.ic));
     var txt = E('span','otx');
     txt.appendChild(H('span','onm', t.nm));
-    txt.appendChild(H('span','ost', made ? 'in your hands' : (ready ? 'you have the metal' : 'needs more metal')));
+    /* THE TARGET IS ON THE CARD. An order that only names a tool tells a
+       student nothing about what they are being asked to make. */
+    txt.appendChild(H('span','ocast', 'cast <b>' + MF.castText(t) + '</b>'));
+    txt.appendChild(H('span','ost', made ? 'in your hands' : (ready ? 'you have the metal' : 'not on the rack yet')));
     b.appendChild(txt);
-    b.setAttribute('aria-label', t.nm + ' — ' + (made ? 'already made and on your belt' :
+    b.setAttribute('aria-label', t.nm + ', cast from ' + quadText(t.cast.a,t.cast.b,t.cast.c) + ' — ' + (made ? 'already made and on your belt' :
       (ready ? 'you have the metal for this. Open the mold.' : 'you do not have the metal for this yet. Open the mold to see what it wants.')));
     /* EVERY ORDER OPENS. A disabled button is a dead control that explains
        nothing; an open mold can say what it is waiting for, which is the
@@ -2802,7 +2848,7 @@ MF.paintForgeYard = function(host, st){
 
 /* how many slots an order's mold has. This used to special-case matchedPair to
    2 - which its own `count` already says, and every other order's does too. */
-MF.slotsWanted = function(t){ return t.need.count; };
+MF.slotsWanted = function(t){ return t.slots; };
 
 /* ---------- the right column, below: the mold ---------- */
 MF.paintCraft = function(host, st){
@@ -2833,7 +2879,13 @@ MF.paintCraft = function(host, st){
     return;
   }
 
-  box.appendChild(H('p','hint','<b>' + t.forge + '</b>'));
+  /* THE TARGET, LARGE AND ON SCREEN THE WHOLE TIME. It is the question being
+     asked, and asking it in a hint under the heading made it scenery. */
+  var tgt = E('div','castfor');
+  tgt.appendChild(H('div','cflab','THIS MOLD IS CUT FOR'));
+  tgt.appendChild(H('div','cfeq', MF.castText(t)));
+  tgt.appendChild(H('div','cfwhy', t.forge));
+  box.appendChild(tgt);
 
   var want = MF.slotsWanted(t);
   var cru = E('div','crucible');
@@ -2866,8 +2918,8 @@ MF.paintCraft = function(host, st){
      the button and said "not enough metal yet", which named nothing you could
      go and look for. */
   if(!MF.toolReady(st.picked) && st.slots.length < want){
-    box.appendChild(H('div','note warn','<b>Not on the rack yet.</b> ' + t.forge +
-      ' Nothing is locked — break more ore and the metal comes back here.'));
+    box.appendChild(H('div','note warn','<b>The rack cannot make ' + MF.castText(t) + ' yet.</b> ' +
+      'No ' + want + ' metals on it multiply to that. Nothing is locked — break more ore and what comes out is racked here.'));
   }
 
   var full = st.slots.length === want;
@@ -2919,62 +2971,32 @@ MF.forgePour = function(st){
     box.scrollIntoView({block:'nearest', behavior:'smooth'});
 };
 
-/* What makes a part sound. Each tool demands the move it will later assist. */
-MF.forgeJudge = function(t, ingots, prod){
-  var kind = t.need.kind;
-  if(prod.overflow) return {ok:false, why:'That is more metal than the mold holds — it has run over the sides.'};
+/* WHAT MAKES A PART SOUND, and there is now exactly one rule: the casting is
+   the object the order named, or it is not.
 
-  if(kind==='primes'){
-    var allPlainPrime = ingots.every(function(g){ return isPlainMetal(g) && isPrime(g.k); });
-    if(!allPlainPrime) return {ok:false, why:'A lantern is cast from pure metal only. Something in there still had an x in it, or was not prime.'};
-    return {ok:true, why:'Three primes multiplied into one number — that is distribution with nothing hidden in it. ' +
-      'The lantern will show you the same move happening when there are x’s involved.'};
-  }
-  if(kind==='xIngots'){
-    if(!ingots.every(isXMetal)) return {ok:false, why:'The shifter needs two ingots that both carry an x. A plain number will not turn the gear.'};
-    if(prod.a===0) return {ok:false, why:'No x² came out of that, so there is nothing for a shifter to shift.'};
-    return {ok:true, why:'The two x’s met and made x². That is the whole of what the shifter watches for you from now on.'};
-  }
-  if(kind==='matchedPair'){
-    var g1=ingots[0], g2=ingots[1];
-    var matched = isXMetal(g1) && isXMetal(g2) && g1.m===g2.m && g1.k===-g2.k && g1.k!==0;
-    if(!matched) return {ok:false, why:'A core drill needs a matched pair — the same x-part, and opposite numbers, like (x + 5) and (x − 5).'};
-    if(prod.b!==0) return {ok:false, why:'There is still a middle term in that casting, so the pair was not truly matched.'};
-    return {ok:true, why:'The middle term cancelled itself out and left two squares with a minus between them. ' +
-      'That is a twin seam, and you just made one on purpose.'};
-  }
-  if(kind==='mixed'){
-    if(ingots.filter(isXMetal).length < 2 || ingots.filter(isPlainMetal).length < 1)
-      return {ok:false, why:'A pick head wants two x-carrying ingots and one plain metal for the weight.'};
-    return {ok:true, why:'Heavy enough to bring up three lumps a swing.'};
-  }
-  /* THE STEEL PICK is earned by spreading a common metal over a bracket -
-     which is the move it then runs backwards. The casting has to actually
-     carry that metal in every term, or nothing was spread. */
-  if(kind==='sharedPour'){
-    var plains = ingots.filter(isPlainMetal), xs2 = ingots.filter(isXMetal);
-    if(plains.length < 1 || xs2.length < 1)
-      return {ok:false, why:'A steel head is cast from a plain metal poured onto an ingot that carries an x. There is not one of each in there.'};
-    if(plains.some(function(g){ return Math.abs(g.k) <= 1; }))
-      return {ok:false, why:'One and minus one spread nothing. Pour a metal that is actually worth something over the bracket.'};
-    var gg = gcdAll([prod.a, prod.b, prod.c]) || 1;
-    if(Math.abs(gg) <= 1)
-      return {ok:false, why:'That casting has no metal running through every term, so nothing was spread over anything.'};
-    return {ok:true, why:'One metal, spread across every term of the bracket — ' + num(Math.abs(gg)) +
-      ' is now in all of it. Running that backwards is exactly what this head does when it rips a common metal out of a lump.'};
-  }
-  /* THE POWERED AUGER is earned by casting a LOADED lump on purpose. */
-  if(kind==='loadedPair'){
-    if(ingots.length < 2 || !ingots.every(isXMetal))
-      return {ok:false, why:'The auger is cast from two ingots that both carry an x. A plain metal will not drive it.'};
-    if(!ingots.some(function(g){ return Math.abs(g.m) > 1; }))
-      return {ok:false, why:'Both of those have a single x in front. Nothing loaded came out, so there is nothing here for an auger to be cut for.'};
-    if(prod.a === 0)
-      return {ok:false, why:'No x² came out of that at all.'};
-    return {ok:true, why:'An x² of ' + num(prod.a) + ' — that is a loaded lump, and you made one on purpose. ' +
-      'The auger is cut for exactly this: it reads what the x-part and the number have to divide before a seam can run.'};
-  }
-  return {ok:true, why:'It holds its shape.'};
+   This replaced seven bespoke shape predicates - "all plain and prime", "two
+   ingots that both carry an x", "the same x-part and opposite numbers". Each
+   was a different idea of correctness, none of them was the thing a
+   factorisation actually is, and a student could satisfy every one of them
+   without ever hitting a particular object.
+
+   A miss is DESCRIBED, term by term, exactly as the mine describes a pick that
+   glanced off: which part came out wrong and what the order wanted there. */
+MF.forgeJudge = function(t, ingots, prod){
+  var want = t.cast;
+  if(prod.overflow)
+    return {ok:false, why:'That is more metal than the mold holds — it has run over the sides. ' +
+      'The order is for <b>' + MF.castText(t) + '</b>, and what you poured is bigger than that.'};
+  if(prod.a===want.a && prod.b===want.b && prod.c===want.c)
+    return {ok:true, why:'That is <b>' + MF.castText(t) + '</b>, exactly. Those metals were the ones in it — ' +
+      'and finding which metals multiply to a named object is the same work as taking one apart, run the other way.'};
+
+  var off = [];
+  if(prod.a!==want.a) off.push('the x² came out <b>' + num(prod.a) + '</b> and the order wants <b>' + num(want.a) + '</b>');
+  if(prod.b!==want.b) off.push('the middle came out <b>' + num(prod.b) + '</b> and the order wants <b>' + num(want.b) + '</b>');
+  if(prod.c!==want.c) off.push('the plain number came out <b>' + num(prod.c) + '</b> and the order wants <b>' + num(want.c) + '</b>');
+  return {ok:false, why:'The mold was cut for <b>' + MF.castText(t) + '</b> and this came out <b>' +
+    quad(prod.a,prod.b,prod.c) + '</b>. Where it missed: ' + off.join('; ') + '.'};
 };
 
 /* =========================================================================
@@ -4291,7 +4313,7 @@ MF.closeTool = function(){
    used: no outer heading, dark labels for the dark box it sits in, and one
    short line of instruction instead of a card's worth. */
 MF.paintBelt = function(host, atWork){
-  var owned = Object.keys(MF.TOOLS).filter(MF.hasTool);
+  var owned = MF.toolOrder().filter(MF.hasTool);
   var box = E('div', atWork ? 'gearbox atwork' : 'gearbox');
   box.appendChild(atWork ? H('div','beltlab','ON YOUR BELT') : H('h3',null,'On your belt'));
 
@@ -4420,7 +4442,7 @@ MF.openSlot = function(pieceId, opener){
   var p = null;
   B.floor.forEach(function(pc){ if(pc.id===pieceId) p = pc; });
   if(!p) return;
-  var owned = Object.keys(MF.TOOLS).filter(MF.hasTool);
+  var owned = MF.toolOrder().filter(MF.hasTool);
   MF._openSheet({
     label: 'Choose an instrument to hold to ' + MF.oreText(p.ore),
     icon: '&#128269;', title: 'The slot', sub: 'on <b>' + MF.oreLabel(p.ore) + '</b>',
@@ -4876,27 +4898,58 @@ MF.validate = function(){
     if(!MF.toolReady(key)) errs.push('forge: "'+MF.TOOLS[key].nm+'" is not forgeable from 70 real smelts - an unreachable order');
   });
 
-  /* a correct forge spends its metal; a wrong one does not and stays scrap */
-  chk('forge');
-  var beforeCount = MF.yardList().length;
-  var threePrimes = MF.yardList().filter(function(e){ return isPlainMetal(e.ingot) && isPrime(e.ingot.k); }).slice(0,3);
-  if(threePrimes.length===3){
-    var verdict = MF.forgeJudge(MF.TOOLS.lantern, threePrimes.map(function(e){ return e.ingot; }),
-                                ingotProduct(threePrimes.map(function(e){ return e.ingot; })));
-    if(!verdict.ok) errs.push('forge: three genuine primes were judged unsound for the Lantern');
-    MF.spendFromYard(threePrimes.map(function(e){ return e.key; }));
-    if(MF.yardList().length !== beforeCount-3) errs.push('forge: spending three metals did not remove exactly three from the yard');
-  } else { errs.push('forge: could not find three primes in a yard built from 70 smelts'); }
+  /* EVERY ORDER'S TARGET MUST BE HITTABLE, AND ONLY BY HITTING IT.
+     For each tool: the metals the yard actually offers must cast the object,
+     that casting must be judged sound, and a near miss must not be. The near
+     miss is built by nudging ONE metal by one, so it is the mistake a student
+     really makes rather than a straw man. */
+  MF.toolOrder().forEach(function(key){
+    var t = MF.TOOLS[key];
+    var set = MF.castableFrom(t.cast, t.slots, MF.yardList());
+    chk('forge');
+    if(!set){ errs.push('forge: nothing on a yard from 70 real smelts casts ' + quadText(t.cast.a,t.cast.b,t.cast.c) + ' for "' + t.nm + '"'); return; }
+    var ings = set.map(function(e){ return e.ingot; });
+    chk('forge');
+    var good = MF.forgeJudge(t, ings, ingotProduct(ings));
+    if(!good.ok) errs.push('forge: the metals that DO cast ' + quadText(t.cast.a,t.cast.b,t.cast.c) + ' were judged unsound for "' + t.nm + '"');
+    /* one metal out by one, which is the miss that actually happens */
+    var near = ings.slice();
+    near[0] = {m:near[0].m, k:near[0].k + 1};
+    chk('forge');
+    var bad2 = MF.forgeJudge(t, near, ingotProduct(near));
+    if(bad2.ok) errs.push('forge: "' + t.nm + '" accepted a casting that is not ' + quadText(t.cast.a,t.cast.b,t.cast.c));
+    chk('forge');
+    if(!/miss|over the sides/i.test(bad2.why))
+      errs.push('forge: "' + t.nm + '" rejected a near miss without saying where it missed');
+  });
 
+  /* a correct forge SPENDS its metal - exactly what went in, and no more */
   chk('forge');
-  var wrong = MF.forgeJudge(MF.TOOLS.lantern, [{m:1,k:2},{m:0,k:3},{m:0,k:5}], ingotProduct([{m:1,k:2},{m:0,k:3},{m:0,k:5}]));
-  if(wrong.ok) errs.push('forge: an x-carrying ingot was accepted into a Lantern, which is cast from pure metal only');
+  var lanternSet = MF.castableFrom(MF.TOOLS.lantern.cast, MF.TOOLS.lantern.slots, MF.yardList());
+  var beforeCount = MF.yardList().length;
+  if(!lanternSet){ errs.push('forge: the yard could not cast 30 for the Lantern'); }
+  else {
+    MF.spendFromYard(lanternSet.map(function(e){ return e.key; }));
+    if(MF.yardList().length !== beforeCount - MF.TOOLS.lantern.slots)
+      errs.push('forge: spending the Lantern\'s metal did not remove exactly ' + MF.TOOLS.lantern.slots + ' from the yard');
+  }
+
+  /* THE TARGETS MUST CLIMB. The whole point of the ladder is that a tool which
+     does more for you costs a harder object, so the ranks must be a straight
+     1..n with no ties - a board that says otherwise is telling the student the
+     escalation is real when it is not. */
+  var ranks = MF.toolOrder().map(function(k){ return MF.TOOLS[k].rank; });
   chk('forge');
-  var mismatched = MF.forgeJudge(MF.TOOLS.drill, [{m:1,k:5},{m:1,k:4}], ingotProduct([{m:1,k:5},{m:1,k:4}]));
-  if(mismatched.ok) errs.push('forge: (x+5)(x+4) was accepted as a matched pair for the Drill');
-  chk('forge');
-  var matched = MF.forgeJudge(MF.TOOLS.drill, [{m:1,k:5},{m:1,k:-5}], ingotProduct([{m:1,k:5},{m:1,k:-5}]));
-  if(!matched.ok) errs.push('forge: (x+5)(x-5) was rejected as a matched pair for the Drill');
+  if(ranks.join(',') !== ranks.map(function(_,i){ return i+1; }).join(','))
+    errs.push('forge: the ladder ranks are ' + ranks.join(',') + ' - they must run 1..' + ranks.length + ' with no ties or gaps');
+  /* and every target must be a genuinely different object */
+  var seen = {};
+  MF.toolOrder().forEach(function(k){
+    var t = MF.TOOLS[k], sig = t.cast.a+'|'+t.cast.b+'|'+t.cast.c;
+    chk('forge');
+    if(seen[sig]) errs.push('forge: "' + t.nm + '" and "' + seen[sig] + '" are cut for the same object');
+    seen[sig] = t.nm;
+  });
 
   /* 5j. EVERY SCREEN MUST ACTUALLY BUILD.
          Three screens - both workshops and the forge - threw a ReferenceError
