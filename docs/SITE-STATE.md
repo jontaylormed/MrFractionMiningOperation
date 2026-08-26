@@ -22,7 +22,7 @@
 | **Screens** | **five** — surface, the Stamp Mill, the Casting Shed, the mine, the forge |
 | **Layers** | **five**, all reachable from the first screen, none gated on anything |
 | **Instruments** | **seven**, all made at the forge, none granted |
-| **Validation** | `MF.validate()` → **8,614 checks / 26 groups / 0 errors**, two controls that must fail, and do |
+| **Validation** | `MF.validate()` → **8,615 checks / 26 groups / 0 errors**, two controls that must fail, and do |
 
 > **A check is only as wide as the space it sweeps.** The `truthy` group reported 0 errors across 642 checks while **1,970 Decimal Dial states printed a falsehood**, because it tested each lump's original integer coefficients and never nudged `c` — the one thing the dial exists to do. It now sweeps every slider position the control can reach (3,287 checks). Ask of any green result: *what did it not look at?*
 | **Runtime** | Zero dependencies, no build step, no network requests, no storage, runs from `file://` |
@@ -174,23 +174,29 @@ Plain numbers → a metal spread over a bracket → two brackets → a square �
 
 ## The pour, seen from above
 
-**You are standing over the sand with the crucible in your hands.** The mold is drawn **top-down**: a block of rammed sand, a pouring basin, a runner, and the tool's own **silhouette cut into it to a depth** — a dark floor offset from the walls, which is what makes a hole read as a hole from directly above. **The shape is cut the moment the order is taken**, so you can see what you are making and where the metal has to go before you own any of it.
+**You are standing over the sand, looking down at the mold.** Metal runs down an **iron trough**, off the lip, into the pouring basin, along the runner and into the shape — in that order, because that is the order a real pour fills them.
 
-On the pour, the crucible tips, the stream falls into the basin, and the metal runs basin → runner → cavity in that order. **And the metal is the background for the maths.** Over the liquid, in transparent numerals, the factors resolve into one structure:
+**The cavity is the tool's own icon, blacked out.** Not a silhouette drawn to look like it: the same glyph the order board, the belt and every panel use, rendered large and knocked to black with `filter:brightness(0)` — which is what a shape cut into sand looks like from directly overhead, and which means the hole and the thing on your belt can never be two different shapes. **It is cut the moment the order is taken**, so you can see what you are making before you own any metal.
+
+**As the pour front crosses the shape it reveals the tool** — colour and edges coming up out of the black, left to right, at the speed of the metal. One growing rect clips the molten pool and the coloured glyph together, so the reveal *is* the metal arriving. Verified sweeping 0 → 270px.
+
+**And the liquid is the background for the maths**, with the operations written out:
 
 ```
-(2x + 3)(3x − 1)          ← what went in
-6x²   −2x   +9x   −3      ← the products it makes, one at a time
-        ↘   ↙
-6x²      +7x       −3     ← the two middles run together
-6x² + 7x − 3              ← one thing
+(2x + 3) × (3x − 1)                      ← what went in
+2x × 3x    2x × −1    3 × 3x    3 × −1   ← where each product comes from
+   6x²       −2x        9x        −3
+              −2x + 9x = 7x             ← the two middles run together
+              = 6x² + 7x − 3            ← one thing
 ```
 
-That is the whole lesson of the forge told with **almost no words**: the metals go in separate and the object comes out single. The Core Drill's pour is the best of them — its two middles cancel to **0** in front of you, which is what a twin seam *is*.
+That is the whole lesson of the forge told with **almost no words**: the metals go in separate and the object comes out single. The Core Drill's pour is the best of them — `−5x + 5x = 0` in front of you, which is what a twin seam *is*.
 
 The prose that used to re-say all of this in a paragraph is gone. What is left is the verdict — **"Sound."** or **"Scrap."** — plus, on a miss, which term missed and by how much: *"Missed: x² 2, wanted 6 · middle 5, wanted 7 · end 3, wanted −3."*
 
-> **The `mold` group (60) checks that the picture is true**, against the engine rather than against itself: what the pour shows it coming to must be the order's own casting; **no term may be nothing at all** (a nought on the sand is a product that does not exist); the products shown must add up to the casting; a merge must take **exactly two** terms, and terms marked as merging must actually merge; and every order must have a silhouette to cut. Controls: a phantom `0` term (7 errors), a merge with nothing to merge (4), products that do not add up (1), a missing silhouette (1), and a pour that shows the wrong casting.
+> **The `mold` group (67) checks that the picture is true**, against the engine rather than against itself: what the pour shows it coming to must be the order’s own casting; **no term may be nothing at all** (a nought on the sand is a product that does not exist); the products shown must add up to the casting; a merge must take **exactly two** terms, and terms marked as merging must actually merge; **the cavity must be cut to the tool’s own icon**; and there must be something to reveal as the metal crosses it. Controls: a phantom `0` term (7 errors), a merge with nothing to merge (4), products that do not add up (1), a cavity cut to the wrong shape (7), nothing to reveal (7), and a pour that shows the wrong casting.
+
+> **A pictograph is a picture, and `color` does not draw it.** The contrast sweep failed the build over the blacked-out cavity at 1.08:1 — real arithmetic about nothing you can see, since a colour emoji carries its own colour table and the property being measured touches not one pixel of it. `MF._measureContrast` skips an element only when it has **no word character at all** and is pictographic, so a label with an icon *in* it is still measured. Proved: `invisible words` and `🔧 invisible with an icon` are both still caught; a bare `🔧` is not.
 
 ## The forge: orders on the left, the yard and the mold on the right
 

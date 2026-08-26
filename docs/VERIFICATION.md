@@ -700,3 +700,17 @@ It was caught by `getAnimations().length > 0` on the element, which returned `0`
 - **`both`, not `backwards forwards`.** If you want a value held before *and* after, it has one name.
 - **Assert that an animation is RUNNING, not that the rule exists.** Reading the stylesheet, or the class, or the `data-` attribute would all have passed. `getAnimations()` is the only thing that knows.
 - **A silent CSS parse failure looks exactly like a missing feature.** When an effect is simply absent with no error anywhere, suspect the declaration before the logic.
+
+## 54. A pictograph is a picture, and `color` does not draw it
+
+The contrast sweep failed the build over the mold's cavity — a tool icon, deliberately knocked to black — at **1.08:1**.
+
+> A colour emoji **carries its own colour table**. The `color` property the sweep measures does not touch one pixel of it. The reading was real arithmetic about nothing you can see, on a shape whose whole job is to be a black hole in sand.
+
+`MF._measureContrast` skips an element only when it has **no word character at all** *and* is pictographic. A label with an icon in it is still measured, which is the case that matters: `🔧 invisible with an icon` is caught, a bare `🔧` is not.
+
+**The rules.**
+
+- **Widening an exclusion is weakening a check, so prove the check still bites.** The control here is not "does the emoji stop failing" — it is `.castfor .cfeq{color:#FDF8F0}`, real unreadable text on the same screen, which still fires at 1.02:1.
+- **Draw the line at "has any word character", not at "starts with an emoji".** The narrow rule keeps every mixed label in the sweep; the broad one would have quietly dropped every button with an icon on it.
+- **And prefer removing the second source of truth to measuring it.** The cavity used to be seven hand-drawn silhouettes — a second description of what each tool looks like, free to drift from the icon. It is the icon now, and the `mold` group asserts they are the same character.
