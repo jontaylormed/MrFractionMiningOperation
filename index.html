@@ -936,7 +936,8 @@ ol.ssteps li.open::marker{color:var(--vein)}
    THE TRANSLATION TABLE. Two columns that mean the same thing, and a third
    that proves it.
    ========================================================================= */
-table.rosetta{border-collapse:collapse; width:100%; font-size:15px; margin-top:10px; display:block; overflow-x:auto}
+.tablescroll{overflow-x:auto; margin-top:10px; max-width:100%}
+table.rosetta{border-collapse:collapse; width:100%; min-width:440px; font-size:15px}
 table.rosetta th{font-family:var(--display); font-weight:400; font-size:12px; letter-spacing:.06em; text-transform:uppercase;
   color:var(--ore-t); text-align:left; padding:6px 16px 6px 0; border-bottom:2px solid var(--rule); white-space:nowrap}
 table.rosetta td{padding:9px 16px 9px 0; border-bottom:1px solid var(--rule); vertical-align:top}
@@ -959,6 +960,103 @@ table.rosetta td.rx{font-family:var(--display); font-size:16px; color:var(--ink)
 .sdtool{font-size:13px; color:var(--ink-soft)}
 .sdbody{padding:0 15px 13px}
 .sdbody .lesson{margin-top:0}
+
+/* =========================================================================
+   THE CASTING SHED'S THREE WORKSHOPS.
+   ========================================================================= */
+.shedcards{margin-top:16px}
+.shedcard{display:flex; flex-direction:column}
+.shedic{font-size:38px; line-height:1; margin:6px 0 2px}
+.shedic.sm{font-size:26px; margin:0 9px 0 0; display:inline-block; vertical-align:-2px}
+.shedcard .why{flex:1 1 auto}
+.backbtn{margin-bottom:10px}
+.shedfoot{border-top:2px solid var(--rule); padding-top:14px}
+
+/* the moving illustration at the head of each workshop */
+.shedart{border:3px solid var(--rock-3); border-radius:14px; overflow:hidden; background:#2E2620; margin:0 0 14px}
+/* EVERY WORD ON AN ILLUSTRATION IS HTML, pinned over the drawing in
+   percentages so it rides the SVG at any width. SVG <text> would paint with
+   `fill` while the contrast sweep reads `color` — real arithmetic about
+   nothing you can see, and it failed this build at 1.06:1 ten times over
+   before the words came out of the drawing. The labels are inert; the picture
+   underneath is inert too. */
+.shedart{position:relative}
+.shedart svg{display:block; width:100%; height:auto}
+.shedlabs{position:absolute; inset:0; pointer-events:none}
+.shedlab{position:absolute; transform:translate(-50%,-50%); white-space:nowrap;
+  font-family:var(--display); font-size:clamp(12px,1.9vw,18px); color:#E4D5BB; line-height:1}
+.shedlab.dim{color:#C9B695; font-size:clamp(10px,1.4vw,13px)}
+.shedlab.head{font-size:clamp(10px,1.4vw,13px); letter-spacing:.09em}
+.shedlab.lamp{color:#E8A33D}
+.shedlab.veinlt{color:#8FD3BF}
+/* this one sits on the poured bar, so it carries the bar's own ground with it
+   rather than being measured against the dark room behind it */
+.shedlab.ongold{color:#2E2208; background:#C8A24B; padding:2px 7px; border-radius:5px}
+
+/* THE TRANSFORM RULE (VERIFICATION §38): every one of these classes is
+   animated with a CSS transform, so not one of them may carry a transform
+   ATTRIBUTE - the animation replaces it rather than composing with it, and
+   the piece drifts off its mount. Each sits inside a placed <g>, and
+   MF.ANIM_TRANSFORM_CLASSES lists them all so animmount fails the build if
+   that is ever done the other way round. */
+@keyframes sarun{0%{transform:translateX(0); opacity:0}
+  10%{opacity:1} 62%{transform:translateX(152px); opacity:1} 76%,100%{transform:translateX(152px); opacity:0}}
+@keyframes safill{0%,8%{transform:scaleY(0)} 62%,100%{transform:scaleY(1)}}
+@keyframes salift{0%,58%{transform:translateY(14px); opacity:0}
+  72%{transform:translateY(0); opacity:1} 100%{transform:translateY(0); opacity:1}}
+@keyframes sajoin{0%{transform:translateX(0); opacity:.15}
+  50%{transform:translateX(92px); opacity:1} 100%{transform:translateX(0); opacity:.15}}
+@keyframes saclimb{0%{transform:translate(0,0)} 100%{transform:translate(480px,-119px)}}
+
+.sa-run{animation:sarun 3.6s ease-in infinite}
+.sa-run.r1{animation-delay:.45s}
+.sa-fill{transform-origin:0% 100%; animation:safill 3.6s ease-out infinite}
+.sa-lift{animation:salift 3.6s ease-out infinite}
+.sa-join{animation:sajoin 3.1s ease-in-out infinite}
+.sa-join.j1{animation-delay:.5s}
+.sa-join.j2{animation-delay:1s}
+.sa-climb{animation:saclimb 7s steps(6, end) infinite}
+
+/* UNDER REDUCED MOTION EACH ILLUSTRATION MUST STILL READ. The global rule
+   collapses every duration to .001s, which lands each animation on its LAST
+   keyframe - and for .sa-run that frame is opacity:0, so the metal running
+   down the channels would simply not be there. A still frame of a good
+   illustration should be a diagram, so the frames are stated: the metal is
+   in the channels, the mold is full, the object is out, the pairs are lit,
+   and the lamp is at the top of the ladder. */
+@media (prefers-reduced-motion:reduce){
+  .sa-run,.sa-fill,.sa-lift,.sa-join,.sa-climb{animation:none !important}
+  .sa-run{transform:translateX(120px); opacity:1}
+  .sa-fill{transform:scaleY(1)}
+  .sa-lift{transform:translateY(0); opacity:1}
+  .sa-join{transform:translateX(46px); opacity:1}
+  .sa-climb{transform:translate(480px,-119px)}
+}
+
+/* =========================================================================
+   THE QUESTIONS. Described, never marked - so there is no "right" styling
+   and no "wrong" styling, only a chosen one and a description under it.
+   ========================================================================= */
+.asks{background:var(--paper-2); border:3px solid var(--tan); border-radius:14px; padding:16px 18px; margin:16px 0}
+.asks .askslab{font-family:var(--display); font-size:11px; letter-spacing:.12em; color:var(--ore-t)}
+.asks .askslede{font-size:14px; color:var(--ink-soft); max-width:64ch; margin:3px 0 4px}
+.ask{background:#fff; border:2px solid var(--rule); border-radius:12px; padding:13px 15px; margin-top:12px}
+.ask .qn{font-size:16px; color:var(--ink); display:flex; gap:9px; align-items:baseline}
+.ask .qt{flex:1 1 auto; min-width:0}
+.ask .qi{flex:0 0 auto; font-family:var(--display); font-size:13px; color:#FFF7EA;
+  background:var(--ore-t); border-radius:50%; width:24px; height:24px; line-height:24px; text-align:center}
+.ask .qsub{font-size:13px; color:var(--ink-soft); margin:5px 0 0 33px}
+.qopts{display:flex; gap:9px; flex-wrap:wrap; margin:11px 0 0 33px}
+.qopt{cursor:pointer; background:#FFFCF6; border:2px solid var(--tan); border-radius:11px;
+  padding:11px 15px; min-height:44px; font-family:var(--display); font-size:17px; color:var(--ink)}
+.qopt:hover{border-color:var(--ore); background:#FFF6EA}
+/* CHOSEN, NOT CORRECT. The only thing this says is which one you picked. */
+.qopt[data-chosen=yes]{border-color:var(--ore-t); background:#FFF1DF; box-shadow:inset 0 0 0 2px var(--ore-t)}
+.ask .qout{margin-left:33px}
+.ask .nsrow{margin:11px 0 0 33px}
+@media (max-width:560px){
+  .ask .qsub, .qopts, .ask .qout, .ask .nsrow{margin-left:0}
+}
 
 /* =========================================================================
    THE WORLD. Everything below exists to make the page feel like a PLACE.
@@ -2497,7 +2595,12 @@ MF.paintNav = function(){
   [['home','Surface'],['workshop-ore','Stamp Mill'],['workshop-mold','Casting Shed'],['mine','The Mine'],['forge','The Forge']]
   .forEach(function(item){
     var b = E('button','navbtn', item[1]); b.type='button';
-    if(MF.state.screen===item[0]) b.setAttribute('aria-current','page');
+    /* A WORKSHOP KEEPS ITS BUILDING LIT. The three Casting Shed workshops are
+       pages of that building, not places of their own, and a nav with nothing
+       marked reads as "you are nowhere". */
+    var here = MF.state.screen === item[0] ||
+               (item[0]==='workshop-mold' && /^shed-/.test(MF.state.screen||''));
+    if(here) b.setAttribute('aria-current','page');
     on(b,'click',function(){ MF.go(item[0]); });
     nav.appendChild(b);
   });
@@ -3441,7 +3544,14 @@ MF.paintRosetta = function(host){
     tr.appendChild(H('td','rx', ex));
     tbl.appendChild(tr);
   });
-  box.appendChild(tbl);
+  /* THE TABLE SCROLLS INSIDE A WRAPPER, not by being display:block itself.
+     A <table> forced to display:block still leaks its min-content width to
+     the page in this engine - 450px of row inside a 344px column - so the
+     whole page scrolled sideways at 380px. The wrapper is the scroll
+     container and the table stays a table. */
+  var scroller = E('div','tablescroll');
+  scroller.appendChild(tbl);
+  box.appendChild(scroller);
   box.appendChild(H('div','note good','<b>The row that matters most is “native metal”.</b> ' +
     'A prime and a polynomial that nothing separates are not <em>like</em> each other. They are the same object: something already refined, ' +
     'which breaking cannot take further. That is why <b>72</b> and <b>x² − 5x + 6</b> are one job and not two.'));
@@ -3475,22 +3585,378 @@ MF.paintSchemaIndex = function(host){
   return box;
 };
 
-/* =========================================================================
-   WORKSHOP 1 - THE CASTING SHED. The mold, and the learning hub.
 
-   It still teaches the mold, which is still the forge's move. What is new is
-   everything under it: the translation table from every mining word to the
-   mathematics it stands for, and all seven methods readable whether or not
-   you own the tool. A student who learns "the seam runs" and never learns
-   that a seam is a FACTOR has learned a game.
+/* =========================================================================
+   FOLLOW-UP QUESTIONS, AND NOT ONE OF THEM IS MARKED.
+
+   A workshop that shows you a thing and never asks you anything lets you
+   leave believing you followed it. These ask - and then DESCRIBE what the
+   answer you gave would mean about the rock, which is the same move the mine
+   makes when a hammer glances off and the same move the forge makes when a
+   casting misses. There is no tally, no "correct", no second attempt counter,
+   and nothing that goes up or down. The `nogrades` group would fail the build
+   over any of those, which is that check doing its job.
+
+   TWO KINDS, and both end in the same place:
+
+   - `pick`  - a recognition question. Every option carries its own `says`, so
+               choosing the one the mathematics does not support gets a
+               description of THAT lump rather than a buzzer. `true_` marks
+               which option the maths actually supports, and it exists for the
+               `quiz` group to verify against the engine - it is never used to
+               style a button or print a verdict.
+
+   - `type`  - an expression typed into the engine. It goes to MF.breakOff or
+               ingotProduct, exactly as the forge's practice does, so the
+               thing answering is the thing the anvil swings through. One
+               engine, one description, no second opinion to drift.
+
+   `check(m,k)` returns {ok, why} and is the workshop's own words for what the
+   engine just said. Engine first, wording second - never the reverse.
    ========================================================================= */
+MF.paintQuestions = function(host, o){
+  var box = E('div','asks');
+  box.appendChild(H('div','askslab', o.lab || 'BEFORE YOU GO'));
+  box.appendChild(H('p','askslede', o.lede ||
+    'Nothing here is kept and nothing here is marked. They are here because answering one is how you find out whether you followed it.'));
+
+  o.list.forEach(function(qn, qi){
+    var card = E('div','ask');
+    /* THE QUESTION TEXT GETS ITS OWN SPAN. .qn is a flex row so the number
+       badge sits beside the text - and a flex container turns every inline
+       <b> in the question into a SEPARATE FLEX ITEM, which then refuses to
+       wrap and walks off the right of the page. Two flex items, and the
+       wrapping happens inside the second one where it belongs. */
+    var qnRow = E('div','qn');
+    qnRow.appendChild(H('span','qi', String(qi+1)));
+    qnRow.appendChild(H('span','qt', qn.q));
+    card.appendChild(qnRow);
+    if(qn.sub) card.appendChild(H('div','qsub', qn.sub));
+    var out = E('div','qout');
+
+    if(qn.kind === 'type'){
+      var isNum = !!qn.plain;
+      var row = E('div','nsrow');
+      var bx = E('div','hbox');
+      var mi = null;
+      if(!isNum){
+        bx.appendChild(H('span','paren','('));
+        mi = document.createElement('input'); mi.type='text'; mi.inputMode='numeric'; mi.placeholder='1';
+        mi.setAttribute('aria-label','how many x — leave it empty for a single x, or put 0 for a plain number');
+        bx.appendChild(mi);
+        bx.appendChild(H('span','paren','x +'));
+      }
+      var ki = document.createElement('input'); ki.type='text'; ki.inputMode='numeric'; ki.placeholder='0';
+      ki.setAttribute('aria-label', isNum ? 'the number' : 'the number on the end');
+      bx.appendChild(ki);
+      if(!isNum) bx.appendChild(H('span','paren',')'));
+      row.appendChild(bx);
+      var go = E('button','btn primary', qn.cta || 'Try it'); go.type='button';
+      on(go,'click',function(){
+        var m = isNum ? 0 : MF.readPickM(mi.value);
+        var k = MF.readInt(ki.value);
+        clear(out);
+        if(!isFinite(m) || !isFinite(k) || isNaN(m) || isNaN(k)){
+          out.appendChild(H('div','note','That is not a whole number, so there is nothing to try yet.'));
+          return;
+        }
+        var got = qn.check(m, k);
+        out.appendChild(H('div','note' + (got.ok ? ' good' : ''), got.why));
+      });
+      on(ki,'keydown',function(e){ if(e.key==='Enter'){ e.preventDefault(); go.click(); } });
+      row.appendChild(go);
+      card.appendChild(row);
+    } else {
+      var opts = E('div','qopts');
+      qn.options.forEach(function(op, oi){
+        var b = E('button','qopt'); b.type='button';
+        b.innerHTML = op.label;
+        b.setAttribute('aria-label', 'Choose ' + (op.a11y || op.label.replace(/<[^>]+>/g,'')));
+        on(b,'click',function(){
+          Array.prototype.forEach.call(opts.children, function(n){ n.removeAttribute('data-chosen'); });
+          b.setAttribute('data-chosen','yes');
+          clear(out);
+          /* THE DESCRIPTION IS OF THE LUMP, NOT OF THE STUDENT. Every option
+             has one, so there is no shape of answer that gets a buzzer. */
+          out.appendChild(H('div','note' + (op.holds ? ' good' : ''), '<b>You chose ' +
+            op.label.replace(/<[^>]+>/g,'') + '.</b> ' + op.says));
+        });
+        opts.appendChild(b);
+      });
+      card.appendChild(opts);
+    }
+    card.appendChild(out);
+    box.appendChild(card);
+  });
+  host.appendChild(box);
+  return box;
+};
+/* =========================================================================
+   THE THREE ILLUSTRATIONS, AND THEY MOVE.
+
+   One per workshop, and each one is a drawing of the idea rather than a
+   decoration beside it: the mold fills and one object comes out; the two
+   columns of words trade places; the seven methods climb a ladder against ore
+   that gets harder.
+
+   NOT ONE WORD IS IN THE SVG. This is the rule roomScene already carries and
+   this function broke on its first pass: SVG <text> paints with `fill` and
+   inherits the CSS `color` property, so a contrast sweep measures a property
+   that touches none of its pixels and reports a failure that is real
+   arithmetic about nothing you can see. Ten of them, at 1.06:1. The drawing
+   is shapes; every label is an HTML span pinned over it in percentages, which
+   is measurable, selectable, and translatable by a browser.
+
+   THE TRANSFORM RULE (VERIFICATION §38, and the animmount group enforces it):
+   a CSS transform animation REPLACES the SVG transform attribute rather than
+   composing with it. So anything both placed and animated is a placed <g>
+   with an animated <g> INSIDE it. Every class below is in
+   MF.ANIM_TRANSFORM_CLASSES, so the check fails the build if that is ever
+   done the other way round.
+
+   And under prefers-reduced-motion each one stops on a frame that still
+   reads - the metal in the channels, the mold full, the object out - because
+   a still frame of a good illustration is a diagram.
+   ========================================================================= */
+MF.shedArt = function(kind){
+  var wrap = E('div','shedart');
+  var W = 620, VH = 200;
+  var svg = S('svg',{viewBox:'0 0 '+W+' '+VH, preserveAspectRatio:'xMidYMid meet','aria-hidden':'true'});
+  var labs = E('div','shedlabs');
+  function R(x,y,w,h,f,extra){ var n=S('rect',{x:x,y:y,width:w,height:h,fill:f});
+    if(extra) for(var k in extra) n.setAttribute(k,extra[k]); svg.appendChild(n); return n; }
+  /* a word goes HERE, in HTML, pinned over the drawing in percentages */
+  function L(x, y, html, cls){
+    var n = H('span','shedlab' + (cls?' '+cls:''), html);
+    n.style.left = ((x/W)*100).toFixed(2) + '%';
+    n.style.top  = ((y/VH)*100).toFixed(2) + '%';
+    labs.appendChild(n); return n;
+  }
+
+  var defs = S('defs',{});
+  var mg = S('linearGradient',{id:'sa'+kind+'m',x1:'0',y1:'0',x2:'0',y2:'1'});
+  [['0%','#FFD873'],['52%','#E2600F'],['100%','#A8380A']].forEach(function(s){
+    mg.appendChild(S('stop',{offset:s[0],'stop-color':s[1]})); });
+  defs.appendChild(mg);
+  svg.appendChild(defs);
+  R(0,0,W,VH,'#2E2620');
+
+  /* ---------------- THE MOLD: metals in separate, one object out ---------- */
+  if(kind === 'mold'){
+    wrap.setAttribute('role','img');
+    wrap.setAttribute('aria-label','Two metals run down separate channels into one mold, which fills; a single formed bar is lifted out of it.');
+    [[70,44,'x + 2'],[70,110,'x + 3']].forEach(function(ch, i){
+      R(ch[0]-14, ch[1]-20, 172, 40, '#3E3328', {rx:'7', stroke:'#5A4938','stroke-width':'3'});
+      L(ch[0]+72, ch[1], ch[2]);
+      /* the drop of metal, travelling. Placed group outside, animated inside. */
+      var seat = S('g',{transform:'translate('+(ch[0]+8)+','+ch[1]+')'});
+      var run = S('g',{class:'sa-run r'+i});
+      run.appendChild(S('circle',{cx:'0',cy:'0',r:'11',fill:'url(#sa'+kind+'m)'}));
+      run.appendChild(S('circle',{cx:'0',cy:'0',r:'5',fill:'#FFF3C4',opacity:'.85'}));
+      seat.appendChild(run);
+      svg.appendChild(seat);
+    });
+    /* the mold itself, filling */
+    R(300,34,150,132,'#241D18',{rx:'10',stroke:'#6B5B48','stroke-width':'4'});
+    var fillSeat = S('g',{transform:'translate(304,38)'});
+    var fill = S('g',{class:'sa-fill'});
+    fill.appendChild(S('rect',{x:'0',y:'0',width:'142',height:'124',rx:'7',fill:'url(#sa'+kind+'m)'}));
+    fillSeat.appendChild(fill);
+    svg.appendChild(fillSeat);
+    L(375,150,'the mold','dim');
+    /* and one formed object leaving it */
+    var outSeat = S('g',{transform:'translate(470,64)'});
+    var outg = S('g',{class:'sa-lift'});
+    outg.appendChild(S('rect',{x:'0',y:'0',width:'128',height:'54',rx:'8',fill:'#C8A24B',stroke:'#8A6A2A','stroke-width':'3'}));
+    outSeat.appendChild(outg);
+    svg.appendChild(outSeat);
+    L(534,91,'x&sup2; + 5x + 6','ongold');
+    L(534,142,'one formed object','dim');
+  }
+
+  /* ------------- THE WORDS: two columns that mean the same thing --------- */
+  if(kind === 'words'){
+    wrap.setAttribute('role','img');
+    wrap.setAttribute('aria-label','Two columns of words facing each other — mining words on the left, mathematical terms on the right — with a light travelling along the bar that joins each pair.');
+    L(150,26,'IN THE MINE','head lamp');
+    L(470,26,'IN THE MATHS','head veinlt');
+    [['ore','an expression'],['a seam','a factor'],['native metal','a prime']].forEach(function(pr, i){
+      var y = 68 + i*44;
+      R(30,y-21,240,38,'#3E3328',{rx:'7'});
+      R(370,y-21,220,38,'#26332F',{rx:'7'});
+      L(150,y,pr[0]);
+      L(480,y,pr[1],'veinlt');
+      R(272,y-3,96,6,'#5A4938',{rx:'3'});
+      var seat = S('g',{transform:'translate(274,'+y+')'});
+      var spark = S('g',{class:'sa-join j'+i});
+      spark.appendChild(S('circle',{cx:'0',cy:'0',r:'8',fill:'#FFD873',opacity:'.35'}));
+      spark.appendChild(S('circle',{cx:'0',cy:'0',r:'4',fill:'#FFF3C4'}));
+      seat.appendChild(spark);
+      svg.appendChild(seat);
+    });
+    L(310,190,'the same object, twice','dim');
+  }
+
+  /* ------------- THE METHODS: seven rungs against harder ore ------------- */
+  if(kind === 'methods'){
+    wrap.setAttribute('role','img');
+    wrap.setAttribute('aria-label','A ladder of seven rungs climbing to the right against a row of lumps of ore that grow larger, with a lamp climbing the rungs.');
+    for(var o=0; o<7; o++){
+      var ox = 58 + o*80, sz = 15 + o*4;
+      svg.appendChild(S('path',{d:'M'+(ox-sz)+' 178 l'+(sz*0.5)+' '+(-sz)+' l'+sz+' 0 l'+(sz*0.5)+' '+sz+' Z',
+        fill:'#6B5B48', stroke:'#4A3F34','stroke-width':'2'}));
+    }
+    for(var r2=0; r2<7; r2++){
+      var rx = 58 + r2*80, ry = 150 - r2*17;
+      R(rx-30, ry, 60, 7, '#8A6A2A', {rx:'3'});
+      R(rx-30, ry, 60, 7, 'none', {stroke:'#C8A24B','stroke-width':'2',rx:'3'});
+    }
+    var lseat = S('g',{transform:'translate(58,142)'});
+    var climb = S('g',{class:'sa-climb'});
+    climb.appendChild(S('circle',{cx:'0',cy:'0',r:'21',fill:'#FFD873',opacity:'.22'}));
+    climb.appendChild(S('circle',{cx:'0',cy:'0',r:'11',fill:'#FFE9A8'}));
+    climb.appendChild(S('rect',{x:'-7',y:'-20',width:'14',height:'8',rx:'2',fill:'#8A9AA6'}));
+    lseat.appendChild(climb);
+    svg.appendChild(lseat);
+    L(310,26,'one method a rung, and the ore gets harder in step','dim');
+  }
+
+  svg.setAttribute('width','100%'); svg.removeAttribute('height');
+  wrap.appendChild(svg);
+  wrap.appendChild(labs);
+  return wrap;
+};
+
+/* =========================================================================
+   THE CASTING SHED, AND IT IS AN INTRODUCTION NOW.
+
+   It used to be one long page: the mold player, then the translation table,
+   then seven folded methods. Three separate lessons stacked in a column, and
+   the third one was a screen and a half below the fold. They are three
+   workshops now, each with its own page, its own moving illustration and its
+   own questions - and this screen is the way in, which is the one job it
+   keeps.
+
+   THE SHED ITSELF STILL EXPLAINS THE MOLD. An introduction that only lists
+   doors is a menu; this one says what the building is for before it offers
+   the three ways further in.
+   ========================================================================= */
+
+/* THE FACTS THE QUESTIONS ARE BUILT ON, stated once and verified against the
+   engine by the `quiz` group. A described-not-marked question can quietly
+   describe the wrong thing and nothing on screen contradicts it, because
+   there is no verdict to disagree with - so the claim under each option is
+   written here as an engine call rather than as a sentence. */
+MF.QUIZ_CLAIMS = [
+  {what:'x² + 4 is native metal',            want:true,
+   holds:function(){ return MF.isNative({kind:'poly',a:1,b:0,c:4}); }},
+  {what:'x² − 9 still comes apart',          want:false,
+   holds:function(){ return MF.isNative({kind:'poly',a:1,b:0,c:-9}); }},
+  {what:'x² − 9 is a twin seam',             want:true,
+   holds:function(){ return MF.smeltPoly(1,0,-9).kind === 'twin'; }},
+  {what:'2x + 6 carries a common metal',     want:true,
+   holds:function(){ return MF.commonMetal({kind:'poly',a:0,b:2,c:6}) === 2; }},
+  {what:'6x² + 7x − 3 is loaded ore',        want:true,
+   holds:function(){ return MF.smeltPoly(6,7,-3).kind === 'loaded'; }},
+  {what:'6, 7 and −3 share no common metal', want:false,
+   holds:function(){ return !!MF.commonMetal({kind:'poly',a:6,b:7,c:-3}); }},
+  {what:'6x² + 7x − 3 has no middle term',   want:false,
+   holds:function(){ return MF.smeltPoly(6,7,-3).b === 0; }},
+  {what:'4(x + 3) pours to 4x + 12',         want:true,
+   holds:function(){ var p = ingotProduct([{m:0,k:4},{m:1,k:3}]); return p.a===0 && p.b===4 && p.c===12; }},
+  {what:'the GCF of 18x + 24 is 6',          want:true,
+   holds:function(){ return MF.commonMetal({kind:'poly',a:0,b:18,c:24}) === 6; }},
+  {what:'3 also divides 18x + 24, and is smaller', want:true,
+   holds:function(){ return 18 % 3 === 0 && 24 % 3 === 0 && 3 < MF.commonMetal({kind:'poly',a:0,b:18,c:24}); }},
+  {what:'(x − 2) comes out of x² − 5x + 6',  want:true,
+   holds:function(){ return MF.breakOff({kind:'poly',a:1,b:-5,c:6},{m:1,k:-2}).ok; }},
+  {what:'2 comes out of 2x² + 10x + 12',     want:true,
+   holds:function(){ return MF.breakOff({kind:'poly',a:2,b:10,c:12},{m:0,k:2}).ok; }},
+  {what:'x² + 4 is the same kind of object as a prime', want:true,
+   holds:function(){ return MF.isNative({kind:'poly',a:1,b:0,c:4}) && MF.isNative({kind:'number',n:7}); }}
+];
+
+MF.SHED = [
+  {key:'shed-mold',    ic:'&#127981;', nm:'The Mold',
+   tag:'THE FORGE&rsquo;S MOVE',
+   why:'Pour two metals in and <b>one formed object</b> comes out. That is distributing, and it is the move every check you make runs on.'},
+  {key:'shed-words',   ic:'&#128220;', nm:'The Words',
+   tag:'MINING &rarr; MATHEMATICS',
+   why:'Every word this place uses is a real mathematical thing with a real name. <b>A seam is a factor.</b> Learn one column and you have learned half of it.'},
+  {key:'shed-methods', ic:'&#128296;', nm:'The Methods',
+   tag:'SEVEN WAYS UP TO A LUMP',
+   why:'The box method, factoring by grouping, pulling out the GCF. <b>Each instrument is one of them</b>, and the method is the part worth having.'}
+];
+
 MF.SCREENS['workshop-mold'] = function(host){
-  var st = {a:3, b:4, c:5, mode:'num'};
   host.appendChild(MF.roomScene('foundry'));
   host.appendChild(H('h2',null,'The Casting Shed'));
-  host.appendChild(H('p','lede','Molten metal goes into a mold and <b>one formed object</b> comes out. ' +
+  host.appendChild(H('p','lede','<b>This is the room where things are explained.</b> Nothing in here is dug, broken or spent — ' +
+    'it is three short workshops and a place to come back to when a word in the mine stops making sense.'));
+  host.appendChild(H('p','lede','The shed is named for what it does: molten metal goes into a mold and <b>one formed object</b> comes out. ' +
     'The shape is decided by what you poured — you never choose it. Cutting the mold in two does not change how much metal is in there; ' +
-    'it only lets you describe the same object twice. That is the whole distributive property, and every check you make in the mine is this move.'));
+    'it only lets you describe the same object twice. That is the whole distributive property, and the mine runs it backwards all day.'));
+
+  var cards = E('div','cards shedcards');
+  MF.SHED.forEach(function(w){
+    var c = E('div','card shedcard');
+    c.appendChild(H('div','tagline-pill', w.tag));
+    c.appendChild(H('div','shedic', w.ic));
+    c.appendChild(H('h3',null, w.nm));
+    c.appendChild(H('div','why', w.why));
+    var b = E('button','btn primary go','Into ' + w.nm.replace(/^The /,'the ')); b.type='button';
+    b.setAttribute('aria-label','Open the workshop: ' + w.nm);
+    on(b,'click',function(){ MF.go(w.key); });
+    c.appendChild(b);
+    cards.appendChild(c);
+  });
+  host.appendChild(cards);
+
+  host.appendChild(H('p','hint','Nothing in here is marked, timed or stored, and none of it is required. ' +
+    'You can walk into the mine having read none of it — the `nogate` rule holds everywhere.'));
+
+  var go = E('div','row'); go.style.marginTop='14px';
+  go.appendChild(MF.jump('Take some ore apart &rarr;','workshop-ore'));
+  go.appendChild(MF.jump('Into the mine &rarr;','mine'));
+  go.appendChild(MF.jump('To the forge &rarr;','forge'));
+  go.appendChild(MF.jump('Out to the surface &rarr;','home'));
+  host.appendChild(go);
+};
+
+/* the head every workshop page wears, and the way back out of it. One
+   function, because three copies of a back link is three chances for one of
+   them to strand a student in a room with no door. */
+MF.shedHead = function(host, key){
+  var w = null;
+  MF.SHED.forEach(function(s){ if(s.key===key) w = s; });
+  var back = E('button','btn backbtn','&larr; The Casting Shed'); back.type='button';
+  back.innerHTML = '&larr; The Casting Shed';
+  on(back,'click',function(){ MF.go('workshop-mold'); });
+  host.appendChild(back);
+  host.appendChild(H('h2',null,'<span class="shedic sm">' + w.ic + '</span>' + w.nm));
+  return w;
+};
+MF.shedFoot = function(host, key){
+  var row = E('div','row shedfoot'); row.style.marginTop='16px';
+  MF.SHED.forEach(function(s){
+    if(s.key===key) return;
+    var b = E('button','btn', s.nm + ' &rarr;'); b.type='button';
+    b.innerHTML = s.ic + ' ' + s.nm + ' &rarr;';
+    on(b,'click',function(){ MF.go(s.key); });
+    row.appendChild(b);
+  });
+  row.appendChild(MF.jump('Into the mine &rarr;','mine'));
+  host.appendChild(row);
+};
+
+/* ---------------- WORKSHOP 1: THE MOLD ---------------- */
+MF.SCREENS['shed-mold'] = function(host){
+  var st = {a:3, b:4, c:5, mode:'num'};
+  MF.shedHead(host, 'shed-mold');
+  host.appendChild(MF.shedArt('mold'));
+  host.appendChild(H('p','lede','Two metals go in <b>separate</b> and one object comes out <b>single</b>. ' +
+    'The mold does not choose the shape — the metals do. And because the result is determined, running it backwards has a definite answer, ' +
+    'which is the whole reason the mine is possible at all.'));
 
   var panel = E('div','panel light');
   panel.appendChild(H('div','panel-tag play','PLAY &mdash; NOTHING TO ANSWER'));
@@ -3508,7 +3974,10 @@ MF.SCREENS['workshop-mold'] = function(host){
   slider('a','Depth of the mold (a)',1,9);
   var bw = slider('b','First part (b)',1,9);
   slider('c','Second part (c)',1,9);
-  var mw = E('div'); mw.style.flex='0 0 auto';
+  /* 1 1 180px, NOT 0 0 auto. Held at its natural width this pair of buttons
+     could not shrink and ran 28px off the right of a 320px screen - caught by
+     the  group, which exists because that is invisible in the source. */
+  var mw = E('div'); mw.style.flex='1 1 180px'; mw.style.minWidth='0';
   mw.appendChild(H('div','hint','What is in the mold'));
   var seg = E('div','row');
   [['num','plain metal'],['x','metal with an x in it']].forEach(function(m){
@@ -3524,18 +3993,43 @@ MF.SCREENS['workshop-mold'] = function(host){
     'you will have the casting and be hunting for the metals that made it.'));
   host.appendChild(panel);
 
-  /* ---- THE HUB. Below the mold, because the mold is still what this room is
-     for and a wall of reading above it would bury the one thing you can play
-     with. ---- */
-  MF.paintRosetta(host);
-  MF.paintSchemaIndex(host);
+  MF.paintQuestions(host, {list:[
+    {kind:'pick',
+     q:'A mold of depth <b>4</b> is cut into a part of width <b>x</b> and a part of width <b>3</b>. What comes out?',
+     sub:'The two parts are still one casting. Nothing is added by cutting the mold.',
+     options:[
+       {label:'4x + 12', holds:true,
+        says:'Both parts get the full depth. 4 × x is 4x and 4 × 3 is 12, and the casting is the two of them together.'},
+       {label:'4x + 3',
+        says:'That gives the depth to the first part and not the second. The mold is 4 deep <em>all the way across</em> — the 3 sits in metal 4 deep too, so it comes out 12.'},
+       {label:'7x',
+        says:'That adds the depth to a width instead of multiplying them. 4 and x are two sides of the same rectangle, not two things stacked end to end.'}
+     ]},
+    {kind:'pick',
+     q:'Why can you never <b>choose</b> which shape comes out of the mold?',
+     options:[
+       {label:'Because the metals decide it', holds:true,
+        says:'Distribution has a determined result. Once you know what went in there is exactly one thing that can come out — which is why running it backwards has a definite answer to hunt for.'},
+       {label:'Because the forge only owns one mold',
+        says:'There are seven molds on the board, one per order. The constraint is not how many molds exist — it is that what comes out follows from what went in.'},
+       {label:'Because you have not forged the right tool yet',
+        says:'No tool anywhere on this site changes what a pour comes to. A tool assists; it never gates and it never alters the arithmetic.'}
+     ]},
+    {kind:'type', plain:false,
+     q:'Now run it <b>backwards</b>, which is the mine\'s direction. <b>2x&sup2; + 10x + 12</b> came out of a mold. Name <b>one</b> of the metals that went in.',
+     sub:'An empty x-box means a single x. Put 0 in it to name a plain metal instead.',
+     cta:'Pour it back',
+     check:function(m,k){
+       var got = MF.breakOff({kind:'poly',a:2,b:10,c:12}, {m:m, k:k});
+       return got.ok
+         ? {ok:true, why:'<b>That went in.</b> <b>' + MF.oreLabel(got.left) + '</b> and <b>' + MF.oreLabel(got.right) +
+            '</b> multiply back to it — and there is more than one right first answer here, because 2 · (x + 2) · (x + 3) has three metals in it.'}
+         : {ok:false, why:'<b>' + got.why + '</b> Nothing is lost. The same engine the anvil swings through just answered that, and it is describing the rock, not you.'};
+     }}
+  ]});
 
-  var go = E('div','row'); go.style.marginTop='14px';
-  go.appendChild(MF.jump('Take some ore apart &rarr;','workshop-ore'));
-  go.appendChild(MF.jump('Into the mine &rarr;','mine'));
-  go.appendChild(MF.jump('To the forge &rarr;','forge'));
-  go.appendChild(MF.jump('Out to the surface &rarr;','home'));
-  host.appendChild(go);
+  MF.shedFoot(host, 'shed-mold');
+
   function draw(){
     var a=st.a,b=st.b,c=st.c,isX=(st.mode==='x');
     bw.style.display = isX?'none':'';
@@ -3559,6 +4053,127 @@ MF.SCREENS['workshop-mold'] = function(host){
         ' <span class="op">=</span> '+num(a*(b+c));
   }
   draw();
+};
+
+/* ---------------- WORKSHOP 2: THE WORDS ---------------- */
+MF.SCREENS['shed-words'] = function(host){
+  MF.shedHead(host, 'shed-words');
+  host.appendChild(MF.shedArt('words'));
+  host.appendChild(H('p','lede','A metaphor is a way in until it becomes a private language, and then it is a wall. ' +
+    'Everything on the left is what this place calls a thing. Everything on the right is what a textbook, a teacher and an exam paper call ' +
+    '<b>the same thing</b>. They are not similar. They are the same object under two names.'));
+  MF.paintRosetta(host);
+
+  MF.paintQuestions(host, {list:[
+    {kind:'pick',
+     q:'Which of these is <b>already native metal</b>?',
+     sub:'Native metal is the mine\'s word. The maths word is on the table above.',
+     options:[
+       {label:'x&sup2; + 4', holds:true,
+        says:'Nothing whole comes out of it. It is an <b>irreducible polynomial</b> — the same kind of object as a prime, already an element, not a lump that failed to break.'},
+       {label:'x&sup2; &minus; 9',
+        says:'That one still comes apart. Two squares with a minus and no middle term is a <b>twin seam</b> — a difference of two squares — and it runs at (x + 3) and (x − 3).'},
+       {label:'2x + 6',
+        says:'Every term there is carrying a 2, so a seam runs through it. Pull the <b>common factor</b> out and you get 2(x + 3).'}
+     ]},
+    {kind:'pick',
+     q:'In the mine you <b>break</b> ore and at the forge you <b>pour</b> metal. Which pair of real names is that?',
+     options:[
+       {label:'factoring, and distributing', holds:true,
+        says:'That is the whole split, and it is why the two acts live in two buildings. Breaking takes one thing into its factors; pouring takes factors into one thing.'},
+       {label:'simplifying, and solving',
+        says:'Neither is solving — nothing on this site has an equals sign with an unknown to find. And "simplifying" does not say which direction you are going, which is exactly the thing the two buildings keep separate.'},
+       {label:'dividing, and multiplying',
+        says:'Closer than it looks, and not quite. One swing <em>is</em> a division, but factoring is the whole repeated act of breaking until nothing comes apart — and distributing is multiplying <em>across a bracket</em>, which is the part that needs its own name.'}
+     ]},
+    {kind:'pick',
+     q:'A lump is described as <b>loaded ore</b>. What does that tell you about it?',
+     options:[
+       {label:'Something sits in front of the x&sup2;', holds:true,
+        says:'That is <b>ax² + bx + c with a ≠ 1</b>. Both ends are pinned — the x-parts must multiply to a and the numbers to c — which is the situation factoring by grouping was invented for.'},
+       {label:'It is too heavy to break',
+        says:'Nothing in the mine is too heavy to break. "Loaded" is about the shape of the expression, not about difficulty — and a loaded lump can be easier than a plain one.'},
+       {label:'It has more than three terms',
+        says:'It has exactly three. Splitting the middle term to <em>make</em> four is a step <em>inside</em> the grouping method, not a description of what you started with.'}
+     ]},
+    {kind:'type', plain:true,
+     q:'The table says <b>the common metal</b> is <b>the greatest common factor</b>. Type the common metal of <b>18x + 24</b>.',
+     sub:'Put the plain number in the box.',
+     cta:'Pull it out',
+     check:function(m,k){
+       var ore = {kind:'poly',a:0,b:18,c:24};
+       var g = MF.commonMetal(ore);
+       var got = MF.breakOff(ore, {m:0, k:k});
+       if(got.ok && k === g)
+         return {ok:true, why:'<b>' + num(g) + ' is the greatest of them.</b> ' + MF.oreLabel(ore) + ' = ' + num(g) +
+           '(' + quad(0, 18/g, 24/g) + '), and nothing bigger divides both.'};
+       if(got.ok)
+         return {ok:false, why:'<b>' + num(k) + ' does run through both</b> — the seam is real and the hammer would land. But it is not the <em>greatest</em> one: ' +
+           num(g) + ' also divides both, and taking ' + num(k) + ' leaves ' + MF.oreLabel(got.right) + ' still carrying a seam.'};
+       return {ok:false, why:'<b>' + got.why + '</b> Look at what 18 and 24 both divide by.'};
+     }}
+  ]});
+
+  MF.shedFoot(host, 'shed-words');
+};
+
+/* ---------------- WORKSHOP 3: THE METHODS ---------------- */
+MF.SCREENS['shed-methods'] = function(host){
+  MF.shedHead(host, 'shed-methods');
+  host.appendChild(MF.shedArt('methods'));
+  host.appendChild(H('p','lede','Seven instruments hang at the forge, and each one carries <b>a method</b> — the box method, factoring by grouping, ' +
+    'pulling out the GCF. The instrument is a convenience. <b>The method is the part worth having</b>, and it works in a notebook with no tool at all, ' +
+    'which is why every one of them is readable here whether or not you own it.'));
+  host.appendChild(H('div','note','<b>A tool shows part of a factorisation and never all of it.</b> ' +
+    'The lantern lights one side and prints a <span class="qm">?</span> for the other; the drill lists every pair and marks none. ' +
+    'Whatever you name goes to the hammer, and the rock is what answers.'));
+  MF.paintSchemaIndex(host);
+
+  MF.paintQuestions(host, {list:[
+    {kind:'pick',
+     q:'You are holding <b>6x&sup2; + 7x &minus; 3</b>. Which method is cut for it?',
+     options:[
+       {label:'Factoring by grouping', holds:true,
+        says:'Something sits in front of the x², so both ends are pinned. Multiply a·c to get −18, find the pair that multiplies to −18 and adds to 7, split the middle into those two, and group.'},
+       {label:'The difference of two squares',
+        says:'That one needs no middle term and both ends square. This lump has a middle of 7x, so there is nothing for the two middles to cancel.'},
+       {label:'Pulling out the common factor',
+        says:'Always worth trying first — but 6, 7 and −3 share nothing but 1, so there is no common metal here to lift out. It is still the right first question to ask.'}
+     ]},
+    {kind:'pick',
+     q:'In the <b>box method</b>, why are the two sides forced once you place the x&sup2; and the number on the end?',
+     options:[
+       {label:'An x&sup2; can only come from two x-parts multiplied', holds:true,
+        says:'And the plain number on the end can only come from the two numbers multiplied. Two opposite corners therefore pin both sides, and the other two corners have to add to the middle — that is the whole check.'},
+       {label:'Because a box always has four equal corners',
+        says:'The four corners are four different products and are rarely equal. What makes the box work is <em>where each product can have come from</em>, not that they match.'},
+       {label:'Because the middle term is always the sum of the sides',
+        says:'The middle is the sum of the two <em>crossed</em> corners, not of the sides. Adding the sides would mix a length with an area.'}
+     ]},
+    {kind:'pick',
+     q:'The lantern lights <b>one</b> side and prints a <span class="qm">?</span> for the other. Why not light both?',
+     options:[
+       {label:'Because the second side is the work', holds:true,
+        says:'Once one side is out, the other is exactly what is left — so lighting one is a foothold and lighting both is doing the thing you came here to do. A tool shows part, never all.'},
+       {label:'Because the lantern is not bright enough yet',
+        says:'Nothing on this site gets stronger with use, and there is no upgrade that lights the second side. The limit is deliberate, not a level.'},
+       {label:'So that you have to buy a better tool',
+        says:'Nothing is bought and nothing is locked. Every layer works with an empty belt — the tools only make what is already there easier to see.'}
+     ]},
+    {kind:'type', plain:false,
+     q:'Run <b>the pair hunt</b> yourself. <b>x&sup2; &minus; 5x + 6</b>: find the two numbers that multiply to 6 and add to &minus;5, then name <b>one</b> bracket.',
+     sub:'An empty x-box means a single x.',
+     cta:'Name a side',
+     check:function(m,k){
+       var got = MF.breakOff({kind:'poly',a:1,b:-5,c:6}, {m:m, k:k});
+       return got.ok
+         ? {ok:true, why:'<b>The pair was −2 and −3.</b> They multiply to 6 and add to −5, so the brackets are (x − 2) and (x − 3) — and <b>' +
+            MF.oreLabel(got.left) + '</b> is one of them.'}
+         : {ok:false, why:'<b>' + got.why + '</b> Two numbers that multiply to <b>6</b>: 1 and 6, 2 and 3, −1 and −6, −2 and −3. Which pair adds to <b>−5</b>?'};
+     }}
+  ]});
+
+  MF.shedFoot(host, 'shed-methods');
 };
 MF.jump = function(label, screen){
   var b = E('button','btn', label.replace(/&rarr;/g,'→')); b.type='button';
@@ -6839,7 +7454,8 @@ MF.validate = function(){
          This asserts the class: position on an outer mount, animate the inner. */
   MF.ANIM_TRANSFORM_CLASSES = ['sc-wheel','sc-sails','sc-cart','sc-smoke','sc-cloud','sc-bird',
                                'rm-fire','rm-bellows','rm-steam','rm-ladle','rm-stamp','pickarm',
-                               'ct-cart','ct-jolt','ct-wheel','sc-cartout','hammerswing','sc-sun','sc-moon'];
+                               'ct-cart','ct-jolt','ct-wheel','sc-cartout','hammerswing','sc-sun','sc-moon',
+                               'sa-run','sa-fill','sa-lift','sa-join','sa-climb'];
   var animStage = document.createElement('div');
   animStage.style.cssText = 'position:absolute; left:-12000px; top:0; width:1100px';
   document.body.appendChild(animStage);
@@ -7162,7 +7778,11 @@ MF.validate = function(){
     else { var cr = MF.smeltPoly(cl.a,cl.b,cl.c); if(cr.ingots) cr.ingots.forEach(function(g){ if(!(g.m===0&&g.k===0)) MF.addToYard({m:g.m,k:g.k}); }); }
   }
   var contrastFails = [];
-  ['home','workshop-mold','workshop-ore','forge','forge-poured','toolsheet','mine'].forEach(function(scr){
+  /* THE SCREEN LIST IS ENUMERATED TOO, plus the two states that are not
+     screens at all: a POURED forge and the tool panel. Typing the list by
+     hand is how the three Casting Shed workshops would have shipped
+     unmeasured. */
+  Object.keys(MF.SCREENS).concat(['forge-poured','toolsheet']).forEach(function(scr){
     stage.innerHTML='';
     var probe = document.createElement('div');
     stage.appendChild(probe);
@@ -7863,11 +8483,184 @@ MF.validate = function(){
   if(scBadRow.holds(scBadRow.ore))
     errs.push('CONTROL: the rosetta check cannot see a row whose example contradicts its own term');
 
+
+  /* 5l. THE FOLLOW-UP QUESTIONS.
+
+         A question that describes rather than marks has a failure mode a
+         graded one does not: it can quietly describe the WRONG THING and
+         nothing on screen contradicts it, because there is no verdict to
+         disagree with. So the option each question is built around as the one
+         the mathematics supports is checked AGAINST THE ENGINE, and every
+         other option has to be one the engine does NOT support - a question
+         with two true answers is a question that teaches a falsehood
+         whichever way it is answered.
+
+         Every option must also carry its own description. An option with
+         nothing to say when you pick it is a dead control, which is the fault
+         class §43 keeps finding in other forms.
+
+         READ THE DENOMINATOR: this checks the shape of every question and the
+         truth of every claim it can express as an engine call. It cannot tell
+         you whether a question is WORTH ASKING or whether its wording is
+         clear - that is a human reading, and it has not happened. */
+  var qzScreens = ['shed-mold','shed-words','shed-methods'];
+  var qzSeen = 0;
+  qzScreens.forEach(function(scr){
+    chk('quiz');
+    var probe = document.createElement('div');
+    try { MF.SCREENS[scr](probe); }
+    catch(e){ errs.push('quiz: screen ' + scr + ' threw while building: ' + e.message); return; }
+    var asks = probe.querySelectorAll('.ask');
+    chk('quiz');
+    if(!asks.length){ errs.push('quiz: the workshop "' + scr + '" asks nothing at all'); return; }
+    qzSeen += asks.length;
+    Array.prototype.forEach.call(asks, function(card){
+      var opts = card.querySelectorAll('.qopt');
+      var typed = card.querySelectorAll('.hbox input');
+      chk('quiz');
+      if(!opts.length && !typed.length)
+        errs.push('quiz: a question on "' + scr + '" has nothing to answer it with');
+      /* every option must be answerable and must say something back */
+      Array.prototype.forEach.call(opts, function(b){
+        chk('quiz');
+        b.click();
+        var said = (card.querySelector('.qout')||{}).textContent || '';
+        if(said.replace(/\s+/g,' ').trim().length < 40)
+          errs.push('quiz: choosing "' + b.textContent + '" on ' + scr + ' said almost nothing (' + said.length + ' chars)');
+      });
+      /* a typed question must answer, and must answer differently to a right
+         and a wrong entry - one that says the same thing to both is not
+         wired to the engine at all */
+      if(typed.length){
+        chk('quiz');
+        var ins = card.querySelectorAll('.hbox input');
+        var btn = card.querySelector('.nsrow button');
+        var said = {};
+        [['1','-3'],['9','9']].forEach(function(pairv, pi){
+          if(ins.length > 1){ ins[0].value = pairv[0]; ins[1].value = pairv[1]; }
+          else { ins[0].value = pi ? '5' : '6'; }
+          btn.click();
+          said[pi] = ((card.querySelector('.qout')||{}).textContent||'').replace(/\s+/g,' ').trim();
+        });
+        if(!said[0] || !said[1]) errs.push('quiz: a typed question on ' + scr + ' answered nothing');
+        else if(said[0] === said[1])
+          errs.push('quiz: a typed question on ' + scr + ' says the same thing to two different answers — it is not asking the engine');
+      }
+    });
+  });
+  chk('quiz');
+  if(qzSeen < 9) errs.push('quiz: only ' + qzSeen + ' questions across the three workshops');
+
+  /* EVERY QUESTION'S TRUE OPTION IS TRUE, AND EVERY OTHER ONE IS NOT.
+     Declared once, next to the questions, and verified here against the
+     engine rather than against the sentence beside it. */
+  MF.QUIZ_CLAIMS.forEach(function(cl){
+    chk('quiz');
+    var got;
+    try { got = !!cl.holds(); } catch(e){ got = false; }
+    if(got !== cl.want)
+      errs.push('quiz: "' + cl.what + '" is ' + got + ' and the question is built on it being ' + cl.want);
+  });
+  /* CONTROL: a claim that contradicts the engine must be caught */
+  chk('quiz');
+  if(MF.smeltPoly(1,0,4).kind !== 'pure' || MF.smeltPoly(1,0,-9).kind === 'pure')
+    errs.push('CONTROL: the quiz claim check cannot tell an element from a lump that comes apart');
+  chk('quiz');
+  var qzBad = {what:'x² − 9 is native metal', want:true, holds:function(){ return MF.isNative({kind:'poly',a:1,b:0,c:-9}); }};
+  if(qzBad.holds() === qzBad.want)
+    errs.push('CONTROL: the quiz claim check cannot see an option that the engine contradicts');
+
+
+  /* 5m. NOTHING MAY WALK OFF THE RIGHT OF A NARROW SCREEN.
+
+        `SITE-STATE` has claimed "no horizontal page scroll, verified down to
+        279px" since the seam shipped, and it was a claim nobody could re-run:
+        it was made by hand once, in a preview pane, on the screens that
+        existed that day. The three Casting Shed workshops broke it the moment
+        they were written and every other group stayed green - 0 errors while
+        the page scrolled 155px sideways at 380px.
+
+        TWO FAULTS, AND NEITHER LOOKED LIKE A LAYOUT BUG IN THE SOURCE:
+
+        - `.qn` is a flex row, so every inline <b> inside a question became a
+          SEPARATE FLEX ITEM. Flex items do not wrap the way words do, so the
+          question walked off the edge instead of breaking onto a second line.
+          Nothing about `<b>one</b>` looks like a layout hazard until it is
+          inside a flex container.
+        - a <table> forced to `display:block` to make it scroll still leaks
+          its min-content width to the page. The scroll container has to be a
+          wrapper around it, not the table itself.
+
+        So it is measured instead: every screen in the registry, mounted at a
+        real 320px, and nothing inside may cross the right edge.
+
+        READ THE DENOMINATOR: one width, and only the right edge. It says
+        nothing about the left edge, nothing about vertical clipping, nothing
+        about whether a thing is legible once it fits, and nothing about the
+        dialogs - those are appended to document.body and are swept for
+        contrast, not for width. */
+  var lyStage = document.createElement('div');
+  lyStage.style.cssText = 'position:fixed; left:-9000px; top:0; width:320px; overflow:visible';
+  document.body.appendChild(lyStage);
+  var lySaved = {mine:MF._mine, forge:MF._forge, screen:MF.state.screen};
+  var lyWidest = 0;
+  Object.keys(MF.SCREENS).forEach(function(scr){
+    chk('layout');
+    var probe = document.createElement('div');
+    lyStage.innerHTML = '';
+    lyStage.appendChild(probe);
+    try { MF._mine = null; MF.SCREENS[scr](probe); }
+    catch(e){ errs.push('layout: screen ' + scr + ' threw while building narrow: ' + e.message); return; }
+    var edge = probe.getBoundingClientRect().right;
+    var worst = null, worstBy = 0;
+    probe.querySelectorAll('*').forEach(function(n){
+      var b = n.getBoundingClientRect();
+      if(b.width <= 0) return;
+      /* a scroll container is ALLOWED to hold something wider than itself -
+         that is what it is for. Only content that escapes to the page counts. */
+      var p = n.parentElement, clipped = false;
+      while(p && p !== probe){
+        var ov = getComputedStyle(p).overflowX;
+        if(ov === 'auto' || ov === 'scroll' || ov === 'hidden'){ clipped = true; break; }
+        p = p.parentElement;
+      }
+      if(clipped) return;
+      var by = b.right - edge;
+      if(by > worstBy){ worstBy = by; worst = n; }
+    });
+    if(worstBy > 1){
+      lyWidest = Math.max(lyWidest, worstBy);
+      errs.push('layout: on "' + scr + '" at 320px, <' + worst.tagName.toLowerCase() +
+        ' class="' + String(worst.className && worst.className.baseVal !== undefined ? worst.className.baseVal : worst.className || '') +
+        '"> runs ' + Math.round(worstBy) + 'px off the right edge — "' +
+        (worst.textContent||'').trim().slice(0,30) + '"');
+    }
+  });
+  /* CONTROL: plant something that cannot wrap and confirm the sweep sees it */
+  chk('layout');
+  var lyProbe = document.createElement('div');
+  lyStage.innerHTML = '';
+  lyStage.appendChild(lyProbe);
+  lyProbe.appendChild(H('div', null, '<span style="white-space:nowrap; display:inline-block">' +
+    'a line of text that cannot wrap and is far wider than three hundred and twenty pixels' + '</span>'));
+  var lyEdge = lyProbe.getBoundingClientRect().right, lyCaught = false;
+  lyProbe.querySelectorAll('*').forEach(function(n){
+    if(n.getBoundingClientRect().right > lyEdge + 1) lyCaught = true;
+  });
+  if(!lyCaught) errs.push('CONTROL: the layout sweep cannot see text running off the right edge');
+  document.body.removeChild(lyStage);
+  MF._mine = lySaved.mine; MF._forge = lySaved.forge;
+
   /* 6. NOTHING ON SCREEN MAY HAVE A CEILING, A PERCENTAGE, OR A COMPARISON.
         This is a stated requirement, so it is checked mechanically rather
         than trusted (philosophy 2.5a). */
   var banned = /(\d+\s*(?:%|percent))|(\b\d+\s*(?:out of|\/)\s*\d+\b)|\b(score|scored|grade|graded|accuracy|rank|ranked|leaderboard|streak|correct answers)\b/i;
-  ['home','workshop-mold','workshop-ore','mine','forge'].forEach(function(name){
+  /* ENUMERATED FROM THE REGISTRY, NOT WRITTEN OUT. The list used to be five
+     names typed by hand, so the three workshop pages added to the Casting
+     Shed would have been outside this sweep from the moment they existed and
+     nothing would have said so. A screen that exists is a screen a student
+     can reach; the `screens` group already enumerates for the same reason. */
+  Object.keys(MF.SCREENS).forEach(function(name){
     chk('nogrades');
     var probe = document.createElement('div');
     try { MF.SCREENS[name](probe); } catch(e){ errs.push('nogrades: screen '+name+' threw: '+e.message); return; }

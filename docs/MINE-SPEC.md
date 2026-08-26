@@ -336,3 +336,65 @@ own the tool, and a way into every other room.
 
 Everything §8 excludes, unchanged. **Also still out:** any second judge in the mine.
 A panel that marked an answer would be exactly the thing §11e forbids.
+
+---
+
+## 14. Amendment, 2026-08-25 — the Casting Shed is an introduction, and the lessons are three rooms
+
+> **The user's words:** *"The Casting Shed needs an introduction page. Then three
+> buttons to link to different workshops. And each workshop gets its own page, an
+> animated illustration, and follow-up questions for understanding."*
+
+§13e made the Casting Shed the learning hub by stacking three lessons in one column —
+the mold player, then the translation table, then seven folded methods. That is three
+lessons on one page, and the third was a screen and a half below the fold.
+
+### 14a. The Shed introduces; the workshops teach
+
+`workshop-mold` is now an **introduction**: what the building is for, what a mold
+does, and three cards. It still explains distribution in prose, because an
+introduction that only lists doors is a menu.
+
+| button | screen | what it teaches |
+|---|---|---|
+| **The Mold** | `shed-mold` | distributing — the slider player, and running it backwards |
+| **The Words** | `shed-words` | the translation table, mining word → mathematical term |
+| **The Methods** | `shed-methods` | the seven schemas, readable without the tools |
+
+The Stamp Mill stays its own building on the surface. The three workshops are **pages
+of the Casting Shed, not places of their own** — they carry a back link, the nav keeps
+the Casting Shed lit while you are in one, and each ends with the other two plus a way
+into the mine.
+
+### 14b. Each workshop opens with a moving illustration
+
+One per room, and each is a drawing of the idea rather than decoration beside it: two
+metals running into a mold that fills and yields one bar; two columns of words with a
+light travelling the bar that joins each pair; a lamp climbing seven rungs against ore
+that grows. Under `prefers-reduced-motion` each stops on a frame that still reads.
+
+**Not one word is inside the SVG.** `roomScene` already carried that rule and this
+function broke it on its first pass: SVG `<text>` paints with `fill` and inherits the
+CSS `color` the contrast sweep measures, so ten labels failed at 1.06:1 — real
+arithmetic about nothing you can see. Every label is an HTML span pinned over the
+drawing in percentages.
+
+### 14c. Follow-up questions, and not one of them is marked
+
+Three or four per workshop: recognition questions where **every option carries its own
+description**, so choosing the one the mathematics does not support gets a description
+of *that lump* rather than a buzzer — plus one typed question per room that goes to
+`MF.breakOff` or `ingotProduct`, the same engine the anvil swings through. There is no
+tally, no "correct", no attempt counter and nothing that goes up or down.
+
+> **A described question can quietly describe the wrong thing**, because there is no
+> verdict on screen to contradict it. So the fact under each option is written in
+> `MF.QUIZ_CLAIMS` as an **engine call**, and the `quiz` group verifies every one of
+> them. It also clicks every option and asserts it says something back, and drives each
+> typed question with a right and a wrong answer to prove it is wired to the engine at
+> all rather than printing the same sentence to both.
+
+### 14d. Still out
+
+Everything §8 excludes, unchanged. No workshop gates anything, and nothing in the
+Casting Shed is required before any layer of the mine.

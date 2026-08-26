@@ -772,3 +772,43 @@ the table was 684×1359 and nothing overflowed anything.
 - **Measure geometry from the DOM before believing a screenshot of it.** This is the
   second time on this project that the pixels have been the less reliable instrument
   (`SITE-STATE`, 2026-08-24), and both times the DOM settled it in one read.
+
+## 57. A flex container turns every inline tag into an item that will not wrap
+
+Three new workshop pages shipped with the page scrolling **155px sideways at 380px**,
+and every one of thirty check groups was green over them.
+
+Two faults, and neither looks like a layout hazard in the source:
+
+> `.qn` is `display:flex` so a numbered badge can sit beside the question. A flex
+> container makes each child a **flex item** — and `<b>one</b>` inside the question
+> text is a child. Flex items do not wrap the way words do, so the question walked off
+> the right edge instead of breaking onto a second line. Nothing about `<b>one</b>`
+> reads as dangerous.
+
+> A `<table>` given `display:block` so that `overflow-x:auto` would scroll it **still
+> leaks its min-content width to the page** — 450px of row inside a 344px column. The
+> scroll container has to be a wrapper *around* the table, not the table itself.
+
+Both were invisible to every existing group, because contrast measures colour, `quiz`
+measures behaviour, and nothing measured **width**. `SITE-STATE` had asserted "no
+horizontal page scroll, verified down to 279px" since the seam shipped — a claim made
+by hand, once, on the screens that existed that day, and unrunnable ever since.
+
+The new **`layout`** group mounts every screen in the registry at a real 320px and
+asserts nothing crosses the right edge. It skips anything inside a scroll container,
+because a scroll container is *allowed* to hold something wider than itself — that is
+what it is for. Control: nowrap text far wider than the stage.
+
+**The rules.**
+
+- **A hand-made claim about geometry decays the moment a screen is added.** If a
+  document asserts it, a group should measure it, or the sentence is a fossil.
+- **Watch what `display:flex` does to the markup you pass through `innerHTML`.** Give
+  the text one wrapper of its own; then there are two items and the wrapping happens
+  where it belongs.
+- **Make the wrapper scroll, not the table.** `display:block` on a table changes what
+  it is without moving where its width comes from.
+- **A false green is the expensive kind.** Thirty groups and 9,500 checks said nothing
+  while the page scrolled sideways; the fix was one more group, not more checks in the
+  ones that already existed.

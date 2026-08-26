@@ -18,11 +18,11 @@
 
 | | |
 |---|---|
-| **File** | **one** — `index.html`, ~7,500 lines, fully self-contained |
-| **Screens** | **five** — surface, the Stamp Mill, the Casting Shed, the mine, the forge |
+| **File** | **one** — `index.html`, ~8,800 lines, fully self-contained |
+| **Screens** | **eight** — surface, the Stamp Mill, the Casting Shed and its three workshops, the mine, the forge |
 | **Layers** | **five**, all reachable from the first screen, none gated on anything |
 | **Instruments** | **seven**, all made at the forge, none granted |
-| **Validation** | `MF.validate()` → **9,307 checks / 28 groups / 0 errors**, two controls that must fail, and do |
+| **Validation** | `MF.validate()` → **9,509 checks / 30 groups / 0 errors**, two controls that must fail, and do |
 
 > **A check is only as wide as the space it sweeps.** The `truthy` group reported 0 errors across 642 checks while **1,970 Decimal Dial states printed a falsehood**, because it tested each lump's original integer coefficients and never nudged `c` — the one thing the dial exists to do. It now sweeps every slider position the control can reach (3,287 checks). Ask of any green result: *what did it not look at?*
 | **Runtime** | Zero dependencies, no build step, no network requests, no storage, runs from `file://` |
@@ -80,13 +80,21 @@ That is the payoff: prime factorisation and polynomial factoring are not two met
 
 The **Smelting House is the Stamp Mill** — the mine does not smelt any more, and a stamp mill is the real building that breaks ore. Its room is a **battery of five iron stamps** in a timber frame, lifted by cams on a shaft and dropped into mortar boxes, falling out of step with each other. That machine *is* the workshop's lesson standing in the corner: big things come apart into smaller ones, over and over, until what is left will not come apart.
 
-The **Casting Shed still teaches the mold**, which is still the forge's move — and it is now **the learning hub**, which is where a student goes to find out what any of the words mean.
+The **Casting Shed is an introduction, and behind it are three workshops.** It used to be one page with three lessons stacked down it, and the third was a screen and a half below the fold.
 
-Under the mold player: a **translation table**, every mining word against the term a textbook uses, because a student who learns *"the seam runs"* and never learns that a seam is **a factor** has learned a game rather than algebra. Ten rows — ore→an expression, a seam→a factor, breaking→factoring, **native metal→a prime, or an irreducible polynomial**, a twin seam→a difference of two squares, the common metal→the GCF, loaded ore→`ax² + bx + c` with `a ≠ 1`, the assay→recognising the form, the pour→the distributive property, sound-or-scrap→checking by multiplying back.
+The Shed itself says what the building is for and what a mold does — an introduction that only lists doors is a menu — and then offers three cards. The three are **pages of the Casting Shed, not places of their own**: each carries a back link, the nav keeps the Casting Shed lit while you are in one, and each ends with the other two and a way into the mine.
 
-**Every row's worked example is generated from the engine, not typed.** A row carries `show(ore)` and `holds(ore)`, and the `rosetta` group (32) asserts the claim rather than the sentence: `x² − 25` really does classify `twin`, `3x + 12` really does carry a common metal of 3, `x² + 4` really does come back `pure`. Controls: a row whose example contradicts its own term, and the prime↔irreducible row removed from the table — both caught. The native-metal row gets its own note under the table, because it is the one this whole site exists for.
+| | teaches | its illustration |
+|---|---|---|
+| **The Mold** | distributing — the slider player, and one question that runs it backwards | two metals run down separate channels into a mold that fills, and one bar is lifted out |
+| **The Words** | the translation table, mining word → mathematical term | two columns facing each other, a light travelling the bar that joins each pair |
+| **The Methods** | the seven schemas, readable whether or not you own the tool | a lamp climbing seven rungs against ore that grows |
 
-Then **all seven methods, readable whether or not you own the tool**, each with its name, why it works and a practice to try — folded shut until wanted. Not gated: a lesson you have to earn is a lesson locked away from the student who needs it most. And four ways out instead of two: the Stamp Mill, the mine, the forge, the surface.
+**Not one word is inside those SVGs.** `roomScene` has carried that rule since the rooms shipped and `shedArt` broke it on its first pass: SVG `<text>` paints with `fill` and inherits the CSS `color` a contrast sweep measures, so **ten labels failed at 1.06:1** — real arithmetic about nothing you can see. Every label is an HTML span pinned over the drawing in percentages, which is measurable, selectable and translatable. Under `prefers-reduced-motion` each illustration stops on a frame that still reads, stated explicitly, because the global rule collapses every duration to .001s and lands each animation on its **last** keyframe — which for the running metal is `opacity:0`.
+
+**Every workshop ends with questions, and not one of them is marked.** Three or four each: recognition questions where **every option carries its own description**, so choosing the one the mathematics does not support gets a description of *that lump* rather than a buzzer — plus one typed question per room that goes to `MF.breakOff` or `ingotProduct`. The Words' typed question has three answers rather than two: 6 is the greatest, **3 divides both and is not the greatest** — *"the seam is real and the hammer would land, but 6 also divides both"* — and 5 glances off.
+
+> **The `quiz` group (60) exists because a described question can quietly describe the wrong thing**, with no verdict on screen to contradict it. The fact under each option is written in `MF.QUIZ_CLAIMS` as an **engine call** and verified; every option is clicked and must say something back; every typed question is driven with a right and a wrong answer and must not print the same sentence to both. Controls: a claim the engine contradicts, an option with nothing to say, a typed question not wired to the engine, and a workshop that asks nothing — all four caught.
 
 > The building **keeps its name**. The `doors` assertion `/Cast|Mold/` did not move, unlike the Stamp Mill's, because nothing about what this room is called changed.
 
@@ -258,13 +266,21 @@ Metals are **spent** here — this is the yard's sink. Forging *is* distributing
 - **The picture shows what is GIVEN.** Where a question is being asked, sides are dashed slots holding `?`.
 - **Described, never graded** — and now **spendable**. No percentages, no accuracy, no X-out-of-Y, no ranks, nothing with a ceiling, nothing that goes down. Requirements are drawn as slots, never counted.
 
+
+## Nothing walks off the right of a narrow screen, and it is measured now
+
+- Contrast across every screen in the registry plus a **poured** forge and the **tool panel**: **905 elements** measured against real gradient backdrops, 0 failures.
+- **Zero interactive elements under 44px.**
+- **No horizontal page scroll**, and this is the first build where that is a *check* rather than a sentence. The `layout` group (9) mounts **every screen in the registry** at a real 320px and asserts nothing crosses the right edge, skipping anything inside a scroll container because a scroll container is allowed to hold something wider than itself. Control: nowrap text far wider than the stage.
+
+> **It was a fossil before that.** This file had claimed "verified down to a 279px viewport" since the seam shipped — made by hand, once, on the screens that existed that day. The three new workshops broke it immediately and **all thirty groups stayed green over 155px of sideways scroll**, because contrast measures colour, `quiz` measures behaviour, and nothing measured width. Two causes, neither of which looks like a layout hazard in the source: a `display:flex` question row turned every inline `<b>` into a flex item that would not wrap, and a `<table>` given `display:block` still leaked its min-content width to the page (`VERIFICATION.md` §57).
+
 ## Measured, with ambient animations explicitly paused
 
 `document.getAnimations().length` is **never 0** on this page — the dust and lamp are infinite, which is the ambient life §1 asks for. The settle step is `getAnimations().forEach(a => a.pause())`, and every figure below was taken after it.
 
-- Contrast across all five layers and all five screens: **205 elements measured against real gradient backdrops, 0 failures.**
-- **Zero interactive elements under 44px.**
-- No horizontal page scroll; verified down to a 279px viewport.
+- The settle step is `getAnimations().forEach(a => a.pause())`, and **that is a hazard as well as a tool**: run immediately after `MF.go` it freezes `main.arriving` mid-wipe, and a screenshot of a page caught halfway through arriving is indistinguishable from a clipped layout (`VERIFICATION.md` §56). Pause the ambient ones; **finish** the transitional ones.
+- Every illustration is asserted to be **actually running** when mounted, not merely to carry the rule — `getAnimations({subtree:true})` on each of the three, all in `playState:'running'`.
 
 ## What is NOT true, and must not be assumed
 
@@ -302,7 +318,6 @@ construct the scenes in a bare array literal, so a throwing builder **killed
 `MF.validate` outright** rather than reporting. An instrument that dies on the
 defect it exists to catch is worse than a silent one: the crash reads as the
 tool being broken.
-
 
 **The forge phase.** The reward moment was invisible — a successful pour set the tool, and the `&& !hasTool` guard then stopped painting the mold that held the casting. The Shifter's rail was built at paint time and showed the slot values from *before* the student typed. The layer-1 depth line measured 3.82:1 — it passed on the four dark layers and failed on the lightest rock.
 
