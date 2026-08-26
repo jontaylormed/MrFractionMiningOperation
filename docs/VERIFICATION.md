@@ -863,3 +863,55 @@ took them back down.
 - **A picture is not the work.** The mold, the anvil and the room banners are all
   `width:100%` drawings, and every one of them is a candidate for pushing the controls
   off the screen the moment the column gets wide.
+
+## 59. Four of the seven tool icons are not colour emoji, and the pour was black on black
+
+The pour was supposed to reveal the tool in its own colours as the metal crossed it.
+The user reported that nothing changed colour at all, and they were exactly right.
+
+`.mdcut` is the glyph blacked out with `brightness(0)`. `.mdlive` was **the same
+glyph again, unfiltered**, on the assumption that a tool icon is a colour emoji.
+
+> Drawn to a canvas with `fillStyle = '#000'`, a colour emoji ignores the fill and
+> keeps its own palette; a monochrome glyph obeys it. Four of the seven obeyed:
+> **⛏ 🕯 ⇆ ⚙ all measured mean chroma 0.0.** The reveal was painting black over
+> black. The three that *are* colour emoji measured pale grey-lilac — barely a
+> change either.
+
+So the colour could not come from the glyph. The glyph is an **alpha mask** now and
+the metal is painted through it: the silhouette is still the tool's own shape, and
+what fills it is a molten gradient that owes the font nothing. Three layers through
+that one mask — molten, then red fading in, then steel — so the casting goes hot,
+red, and cold while the maths is still being read over it.
+
+**And the check that passed it was asking the wrong question.** It asserted the
+reveal contained *nothing but a `<text>`*, which was true and was the defect. It now
+requires every child of the reveal to be **masked**, which catches both faults at
+once: a masked child cannot paint outside the silhouette (the old translucent sheet)
+and a mask means the colour comes from a fill rather than from the font. Controls:
+the bare glyph put back, an unmasked panel, a mask cut to the wrong tool, and a flat
+fill instead of a gradient — all four caught.
+
+### The instrument was wrong twice before it was right
+
+Verifying this needed pixels, and the Browser pane was not compositing frames, so
+screenshots were unavailable. Rasterising the SVG through a `data:` URL worked — but:
+
+> **A serialised SVG carries no stylesheet.** Every frame sampled identically because
+> `.mdrevrect`'s geometry, `.mdred`'s opacity and `.mdcut`'s filter all live in the
+> page's CSS and none of it survives `XMLSerializer`. The reading was "nothing ever
+> changes", which is precisely the bug being investigated — a false confirmation.
+
+The fix is to walk the live tree and the clone in parallel and bake `getComputedStyle`
+onto the clone before serialising. Then the frames differ: cut `r−b 34` → molten `74`
+→ red `66` → steel `31`.
+
+**The rules.**
+
+- **Never assume a glyph carries colour.** `brightness(0)` will blacken anything; only
+  a colour font has anything to reveal. One `canvas` read settles it per glyph.
+- **A check that describes the implementation instead of the property passes the bug.**
+  "Contains only a `<text>`" was a description of the code. "Every child is masked" is
+  the property that makes the picture true.
+- **When you rasterise for measurement, bake the computed styles first** — or you are
+  measuring an unstyled document and calling it the page.

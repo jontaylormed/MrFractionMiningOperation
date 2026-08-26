@@ -22,7 +22,7 @@
 | **Screens** | **eight** — surface, the Stamp Mill, the Casting Shed and its three workshops, the mine, the forge |
 | **Layers** | **five**, all reachable from the first screen, none gated on anything |
 | **Instruments** | **seven**, all made at the forge, none granted |
-| **Validation** | `MF.validate()` → **9,544 checks / 31 groups / 0 errors**, two controls that must fail, and do |
+| **Validation** | `MF.validate()` → **9,558 checks / 31 groups / 0 errors**, two controls that must fail, and do |
 
 > **A check is only as wide as the space it sweeps.** The `truthy` group reported 0 errors across 642 checks while **1,970 Decimal Dial states printed a falsehood**, because it tested each lump's original integer coefficients and never nudged `c` — the one thing the dial exists to do. It now sweeps every slider position the control can reach (3,287 checks). Ask of any green result: *what did it not look at?*
 | **Runtime** | Zero dependencies, no build step, no network requests, no storage, runs from `file://` |
@@ -220,9 +220,16 @@ Plain numbers → a metal spread over a bracket → two brackets → a square �
 
 **The cavity is the tool's own icon, blacked out.** Not a silhouette drawn to look like it: the same glyph the order board, the belt and every panel use, rendered large and knocked to black with `filter:brightness(0)` — which is what a shape cut into sand looks like from directly overhead, and which means the hole and the thing on your belt can never be two different shapes. **It is cut the moment the order is taken**, so you can see what you are making before you own any metal.
 
-**The metal rises in the cavity, and the black outline fills.** A clip rect rests empty on the **floor** of the glyph and grows upward — `y` walking 261 → 111 while `height` grows 0 → 150 — so the tool's own colour comes up out of the black from the bottom, which is what a mold filling from underneath actually looks like. The black cut stays underneath the whole time, so what a student watches is an outline turning into metal.
+**The metal rises in the cavity, and the black outline fills with molten metal.** A clip rect rests empty on the **floor** of the glyph and grows upward — `y` walking 261 → 111 while `height` grows 0 → 150 — so the metal comes up from the bottom, which is what a mold filling from underneath actually looks like. The black cut stays underneath the whole time.
 
-> **It used to be a wipe with a sheet over it.** The reveal grew left to right and carried a translucent orange panel 212×172 across the *whole cavity area* alongside the glyph — and what that looked like was a transparent sheet dropped over the sand rather than metal arriving in a shape. The panel is gone and nothing replaced it: the sand around the tool stays sand. The `mold` group (81) asserts that the reveal holds **nothing but the glyph**, and that the cavity starts empty so there is something to watch arrive. Controls: the panel reintroduced, and a cavity that starts already filled — both caught.
+**What fills it is a molten gradient, not the glyph's own colours** — and that distinction is the whole reason the pour works at all. The reveal used to paint the tool's glyph again, unfiltered, on the assumption that a tool icon is a colour emoji. **Four of the seven are not:** ⛏ 🕯 ⇆ ⚙ are monochrome text glyphs and measure mean chroma 0.0, so the "coloured" copy came out black over a black cut and the pour changed nothing a student could see. The glyph is an **alpha mask** now and the metal is painted through it: the silhouette is the tool's own shape, and the colour owes the font nothing.
+
+**And then it cools, in three beats.** Molten at 2.45s, red fully in by 3.65s and held for three quarters of a second, steel from 4.4s — hot, dull red, cold grey, while the maths is still being read over it. Sampled inside the silhouette: warmth `r−b` **34 (cut) → 74 (molten) → 66 (red) → 31 (steel)**. Under `prefers-reduced-motion` the casting is simply cold, which is what a finished one is.
+
+> **It used to be a wipe with a sheet over it.** The reveal grew left to right and carried a translucent orange panel 212×172 across the *whole cavity area* — a transparent sheet dropped over the sand rather than metal arriving in a shape. The panel is gone and nothing replaced it: the sand around the tool stays sand.
+
+> **The `mold` group (95) asserts the property, not the implementation.** It used to require the reveal to hold *nothing but a `<text>`* — which was true, and was the defect. Every child of the reveal must now be **masked**, which catches both faults at once: a masked child cannot paint outside the silhouette, and a mask means the colour comes from a fill rather than from whatever palette the font happens to carry. It also asserts the mask is cut from the tool's **own icon** and that the metal is filled with a gradient. Controls: the bare glyph put back, an unmasked panel, a mask cut to the wrong tool, a flat fill — all four caught.
+
 
 **And the liquid is the background for the maths**, with the operations written out:
 

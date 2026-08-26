@@ -234,6 +234,26 @@ input[type=range]{width:100%; accent-color:var(--ore); height:44px}
 .mdcutshadow{filter:brightness(0); opacity:.4; transform:translate(7px,8px); transform-box:view-box}
 /* and the same glyph in its own colours, shown only where the metal has run */
 .mdlive{filter:drop-shadow(0 0 7px rgba(255,190,90,.75))}
+/* THE THREE STATES OF THE METAL, all painted through the tool's own alpha mask
+   so not one of them can put a pixel outside the silhouette. Hot underneath;
+   red and steel fade in over it as the casting cools. */
+.mdhot{}
+.mdred{opacity:0}
+.mdsteel{opacity:0}
+@keyframes mdcoolred{ from{opacity:0} to{opacity:.94} }
+@keyframes mdcoolsteel{ from{opacity:0} to{opacity:.97} }
+/* THE THREE BEATS. The fill lands at 2.45s; the red is fully in by 3.65s and
+   holds for three quarters of a second before the steel starts at 4.4s. They
+   used to overlap, which turned a casting going off the boil into one muddy
+   fade with no red in it at all. */
+.moldwrap[data-pour] .mdred{animation:mdcoolred 1200ms ease-in 2.45s both}
+.moldwrap[data-pour] .mdsteel{animation:mdcoolsteel 2200ms ease-in 4.4s both}
+/* and the heat-glow round it dies with the colour */
+@keyframes mdglowdown{
+  0%{filter:drop-shadow(0 0 12px rgba(255,190,90,.95))}
+  55%{filter:drop-shadow(0 0 7px rgba(226,96,15,.5))}
+  100%{filter:drop-shadow(0 0 2px rgba(90,101,112,.35))} }
+.moldwrap[data-pour] .mdlive{animation:mdglowdown 3000ms ease-in 2.45s both}
 
 /* nothing is hot until it is poured */
 .moldwrap .mdtrough,.moldwrap .mdstream,.moldwrap .mdrun,.moldwrap .mdnum{opacity:0}
@@ -279,7 +299,11 @@ input[type=range]{width:100%; accent-color:var(--ore); height:44px}
 /* scrap: the metal in the shape goes dull, and the tool never quite comes up */
 .moldwrap[data-pour=scrap] .mdrun,
 .moldwrap[data-pour=scrap] .mdstream,.moldwrap[data-pour=scrap] .mdtrough{filter:saturate(.35) brightness(.7)}
-.moldwrap[data-pour=scrap] .mdlive{filter:saturate(.2) brightness(.55)}
+/* SCRAP GOES ON THE ANCESTOR, not on .mdlive - that element now carries an
+   animated filter of its own, and a static rule cannot beat an animation.
+   Nested filters compose, so the whole reveal is dulled and the cooling still
+   runs underneath it. */
+.moldwrap[data-pour=scrap] .mdreveal{filter:saturate(.22) brightness(.6)}
 
 @media (prefers-reduced-motion:reduce){
   .moldwrap[data-pour] .mdtrough,.moldwrap[data-pour] .mdstream,.moldwrap[data-pour] .mdrun,
@@ -290,6 +314,10 @@ input[type=range]{width:100%; accent-color:var(--ore); height:44px}
   /* the cavity is FULL, not half filled and not wiped part way across */
   .moldwrap[data-pour] .mdrevrect{ y:111px; height:150px }
   .moldwrap[data-pour] .mdnum{opacity:.66}
+  /* a finished casting is a COLD one */
+  .moldwrap[data-pour] .mdred{animation:none; opacity:.94}
+  .moldwrap[data-pour] .mdsteel{animation:none; opacity:.97}
+  .moldwrap[data-pour] .mdlive{animation:none}
   .moldwrap[data-pour] .mdmid{opacity:0}
   .moldwrap[data-pour] .mdsingle{opacity:.84}
 }
@@ -4906,8 +4934,41 @@ MF.moldScene = function(key, pour){
   var rc = S('clipPath',{id:uid+'rev'});
   rc.appendChild(S('rect',{class:'mdrevrect', x:120, y:261, width:270, height:0}));
   defs.appendChild(rc);
+
+  /* ---- WHAT FILLS IT IS MOLTEN METAL, NOT THE GLYPH'S OWN COLOURS ----
+
+     The reveal used to show the same glyph again unfiltered, on the assumption
+     that a tool icon is a colour emoji. FOUR OF THE SEVEN ARE NOT: the pick,
+     the lantern, the shifter and the drill are monochrome text glyphs, so the
+     "coloured" copy rendered BLACK - the pour painted black over black and
+     nothing on screen changed at all. The three that are colour emoji are pale
+     grey-lilac, which is barely a change either. Measured, on a canvas: mean
+     chroma 0.0 for four of them.
+
+     So the colour cannot come from the glyph. The glyph becomes an ALPHA MASK
+     and the metal is painted through it - the silhouette is the tool's own
+     shape, and what fills it is a molten gradient that owes the emoji nothing.
+     Sampled: rgb(230,178,97) against a cut at rgb(39,37,32).
+
+     AND THEN IT COOLS. Three layers through the one mask - molten, then a deep
+     red fading in, then steel - so the casting goes hot, dull red, and finally
+     cold grey while the maths is still being read over it. That is the order a
+     real casting goes through, and it is the difference between a picture that
+     arrives and one that is alive for a moment. */
+  var toolMask = S('mask',{id:uid+'tool', maskUnits:'userSpaceOnUse', x:'0', y:'0', width:String(W), height:String(VH)});
+  toolMask.setAttribute('style','mask-type:alpha');
+  toolMask.appendChild(glyph('mdmaskglyph'));
+  defs.appendChild(toolMask);
+  grad(uid+'cool', [['0%','#E8563C'],['48%','#B8321A'],['100%','#7A2410']]);
+  grad(uid+'steel',[['0%','#C4CED8'],['52%','#8A96A2'],['100%','#5A6570']]);
+
   var rev = S('g',{class:'mdreveal','clip-path':'url(#'+uid+'rev)'});
-  rev.appendChild(glyph('mdlive'));
+  var melt = S('g',{class:'mdlive', mask:'url(#'+uid+'tool)'});
+  /* one box each, all clipped to the tool by the mask above */
+  melt.appendChild(S('rect',{class:'mdhot',   x:150,y:96,width:212,height:180,fill:'url(#'+uid+'hot)'}));
+  melt.appendChild(S('rect',{class:'mdred',   x:150,y:96,width:212,height:180,fill:'url(#'+uid+'cool)'}));
+  melt.appendChild(S('rect',{class:'mdsteel', x:150,y:96,width:212,height:180,fill:'url(#'+uid+'steel)'}));
+  rev.appendChild(melt);
   svg.appendChild(rev);
 
   /* ---- THE MATHS, over the metal, with the operations written out ---- */
@@ -7405,21 +7466,39 @@ MF.validate = function(){
     chk('mold');
     if(mScene.querySelectorAll('.mdlive').length !== 1)
       errs.push('mold: "' + t.nm + '" has nothing to reveal as the metal crosses it');
-    /* NOTHING MAY SHEET OVER THE SAND. The reveal used to carry a translucent
-       orange panel across the whole cavity area alongside the glyph, and what
-       that looked like was a transparent sheet dropped over the mold rather
-       than metal arriving in a shape. The cut, its shadow and the coloured
-       glyph are the only things allowed inside the reveal. */
+    /* NOTHING MAY SHEET OVER THE SAND, AND THE METAL MAY NOT BE THE GLYPH.
+
+       Two faults, one assertion, and the second is the one that shipped: the
+       reveal used to paint the tool's own glyph on the assumption that a tool
+       icon is a colour emoji. FOUR OF THE SEVEN ARE MONOCHROME text glyphs, so
+       the "coloured" copy came out black over a black cut and the pour changed
+       nothing a student could see. Every child of the reveal must therefore be
+       MASKED - a masked child cannot paint outside the silhouette (the sheet
+       fault) and a mask means the colour is coming from a fill rather than
+       from whatever palette the font happens to carry (the black-on-black
+       fault). A bare <text> in here is the defect itself. */
     chk('mold');
     var mRev = mScene.querySelector('.mdreveal');
     if(!mRev){ errs.push('mold: "' + t.nm + '" has no reveal at all'); }
     else {
-      var mStray = [].slice.call(mRev.children).filter(function(n){
-        return n.tagName.toLowerCase() !== 'text';
-      });
+      var mStray = [].slice.call(mRev.children).filter(function(n){ return !n.getAttribute('mask'); });
       if(mStray.length)
-        errs.push('mold: the reveal for "' + t.nm + '" carries a <' + mStray[0].tagName.toLowerCase() +
-                  '> as well as the tool — anything but the glyph in there tints the sand around the shape');
+        errs.push('mold: the reveal for "' + t.nm + '" carries an unmasked <' + mStray[0].tagName.toLowerCase() +
+                  '> — it can paint outside the tool, and if it is the glyph it paints black on black');
+      /* and the metal must actually be metal-coloured */
+      chk('mold');
+      var mFill = mRev.querySelector('[fill^="url("]');
+      if(!mFill)
+        errs.push('mold: nothing in the reveal for "' + t.nm + '" is filled with a gradient — ' +
+                  'the casting has no colour of its own and depends on the glyph, which is monochrome for four of the seven tools');
+      /* the mask has to be cut from the TOOL, or the fill is the wrong shape */
+      chk('mold');
+      var mMelt = mRev.querySelector('[mask]');
+      var mMaskId = mMelt && mMelt.getAttribute('mask').replace(/^url\(#|\)$/g,'');
+      var mMask = mMaskId && mScene.querySelector('mask[id="' + mMaskId + '"]');
+      var mMaskGlyph = mMask && mMask.querySelector('text');
+      if(!mMaskGlyph || mMaskGlyph.textContent !== MF.iconChar(t.ic))
+        errs.push('mold: the metal for "' + t.nm + '" is poured through a mask that is not the tool\'s own icon');
     }
     /* AND THE FILL RISES, AND ENDS FULL. A clip rect resting empty on the floor
        of the glyph and growing upward is what "the outline fills in" means; a
