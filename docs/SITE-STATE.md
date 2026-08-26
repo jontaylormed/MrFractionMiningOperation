@@ -18,11 +18,11 @@
 
 | | |
 |---|---|
-| **File** | **one** — `index.html`, ~8,800 lines, fully self-contained |
+| **File** | **one** — `index.html`, ~9,000 lines, fully self-contained |
 | **Screens** | **eight** — surface, the Stamp Mill, the Casting Shed and its three workshops, the mine, the forge |
 | **Layers** | **five**, all reachable from the first screen, none gated on anything |
 | **Instruments** | **seven**, all made at the forge, none granted |
-| **Validation** | `MF.validate()` → **9,509 checks / 30 groups / 0 errors**, two controls that must fail, and do |
+| **Validation** | `MF.validate()` → **9,544 checks / 31 groups / 0 errors**, two controls that must fail, and do |
 
 > **A check is only as wide as the space it sweeps.** The `truthy` group reported 0 errors across 642 checks while **1,970 Decimal Dial states printed a falsehood**, because it tested each lump's original integer coefficients and never nudged `c` — the one thing the dial exists to do. It now sweeps every slider position the control can reach (3,287 checks). Ask of any green result: *what did it not look at?*
 | **Runtime** | Zero dependencies, no build step, no network requests, no storage, runs from `file://` |
@@ -119,18 +119,26 @@ Under `prefers-reduced-motion` the day stops at noon rather than flickering thro
 
 **The windmill's bottom windows no longer touch its door.** They ended at y=174, which is exactly where the door's arch begins, and sat over the doorway's own width — two openings sharing an edge read as one hole in the wall. They are at y=148 now, ending seven clear of the arch, and spread either side of the doorway.
 
-**Every light on the site answers the clock** — eighteen of them, in two ranges, because a lamp and the light it throws are not the same thing:
+**Every light on the site answers the clock** — **twenty-three** of them, in two ranges, because a lamp and the light it throws are not the same thing:
 
 | | |
 |---|---|
-| **`sc-lit`** | the *source* — lantern glass, a furnace mouth, a lit window. Never goes out, only gets stronger: **0.56 at noon → 0.99 at midnight**. |
-| **`sc-glow`** | the light *cast* — a halo, a pool on the ground. All but invisible by day, unmistakable after dark: **0.06 → 0.70**. |
+| **`sc-lit`** | the *source* — lantern glass, a furnace mouth, a lit window. Never goes out, only gets stronger: **0.36 at noon → 0.99 at midnight**. |
+| **`sc-glow`** | the light *cast* — a halo, a pool on the ground. All but nothing by day, unmistakable after dark: **0.03 → 0.92**. |
+
+**And every named source is wired, including two that never were.** The windmill's four windows, **both** of the Stamp Mill's, **both** of the Casting Shed's, the furnace, the lanterns, and — for the first time — **the miner's helmet lamp**. The helmet was the one light a student identifies with and the only one on the site that never changed; the second window on each workshop was a dead rect that stayed dark through midnight while the one beside it burned. `MF.art` takes an options argument for it, and **only the surface instance asks**: `MF.syncDay` runs on that scene alone, so a lit Mr Factor anywhere else would animate the day from dawn whatever the session clock said.
+
+> **THE NIGHT WAS CANCELLING THE LIGHTS, and turning them up could not fix it.** `.sc-night` is a `mix-blend-mode:multiply` rect over the whole site, so it took every lamp down with the hillside — raising the keyframes made the sources brighter and the scene no more legible. The halos are painted **after** the night rect, in a `screen`-blended layer that can only ever *add*. The night still falls on the whole operation; the lights now cut holes in it. One list of `[x, y, radius]` in scene coordinates, written beside the source each belongs to.
+
+**The furnace is built like a lantern now.** It was an orange arch the same colour as the wall it was cut into, with a flat ellipse on the ground — the brightest thing on the site drawn as the dimmest. It has a dark mouth behind it so the fire has something to be brighter *than*, a flickering body, a white-hot core, and a wide halo in the light layer.
 
 > **The level goes on a wrapper, not on the flickering shape.** `.sc-lamp` already animates opacity at 3.2s, and **two animations cannot share one property**: the later rule wins outright and the other silently does nothing. `.sc-lamp` is declared below the level classes, so it was cancelling the day/night level on **five of the nine lamps** — every one a student would call a lamp — and nothing said a word. Nested, the two opacities multiply.
 
+> **No source may be capped below full, either.** A window pinned at `opacity:.55` can never be brighter than half lit however far the ramp climbs, which left the level only the top half of its range — the windmill's windows shipped that way. The `surface` group (58) asserts it, along with a floor on how many sources are wired at all, so a light added to the scene and left off the clock fails the build. Controls: the helmet unwired, and a window pinned back to .55 — both caught.
+
 **The forge has two chimneys** — the tall one off the hearth and a squatter one off the second fire, each smoking on its own delay — and its walls are **coursed rubble stone**: offset joints, dressed quoins down both corners, a heavy sill course, pantiles on the roof, and a pool of furnace light on the ground outside.
 
-> **The `surface` group (47) checks all of it**, and it has to run on a **live, mounted** scene: a detached svg has no running animations and `getBBox` on one returns zeroes, so a probe-built check would have passed for exactly the wrong reason. It asserts no window's box meets the door's; that every part of the day runs for the same 240,000ms; that the sun is up at noon and under at midnight with the moon opposite; that each sky owns its phase; that **no light carries both the flicker and a level**; that the lamps and their cast light are **measurably brighter at midnight**; and that the forge smokes from two flues. Controls: the windows back where they shipped (2 errors), one part of the day on a 90s clock (2), the sun stopped (1), the flicker/level conflict restored (10), lights that never brighten (2), the forge back to one chimney (1).
+> **The `surface` group (58) checks all of it**, and it has to run on a **live, mounted** scene: a detached svg has no running animations and `getBBox` on one returns zeroes, so a probe-built check would have passed for exactly the wrong reason. It asserts no window's box meets the door's; that every part of the day runs for the same 240,000ms; that the sun is up at noon and under at midnight with the moon opposite; that each sky owns its phase; that **no light carries both the flicker and a level**; that the lamps and their cast light are **measurably brighter at midnight**; and that the forge smokes from two flues. Controls: the windows back where they shipped (2 errors), one part of the day on a 90s clock (2), the sun stopped (1), the flicker/level conflict restored (10), lights that never brighten (2), the forge back to one chimney (1).
 
 ## The seam
 
@@ -158,7 +166,9 @@ The yard takes **both**. Metal broken all the way down to an element goes on **t
 
 The belt is **a leather strap with the instruments hanging in loops**, not a list of cards. You take one off it and use it.
 
-**The belt hangs inside the floorbox, directly above the pieces it acts on.** It was in the yard column on the far side of the page, so the drag crossed the whole screen — and under 1080px the columns stack, so it was a *scroll* away, and you cannot scroll while you are holding something. The furthest drag is now **94px**, and the belt and every piece are on screen together at 1280px and at 760px. There is exactly one belt: a second copy in the yard column would be the one a student reached for, and it was the far one.
+**The belt hangs inside the floorbox, directly above the pieces it acts on.** It was in the yard column on the far side of the page, so the drag crossed the whole screen — and under 1080px the columns stack, so it was a *scroll* away, and you cannot scroll while you are holding something. The furthest drag is now **94px**. There is exactly one belt: a second copy in the yard column would be the one a student reached for, and it was the far one.
+
+**And the belt, the pieces and the swing are on one screen together — 794px, measured.** The anvil-and-hammer stage is the tallest thing on the bench and it used to sit *between* the pieces and the boxes you type into, so a swing meant scrolling back up to see what you were hitting. The order is the order of the work now: choose a piece, cut the head, **swing** — and the blow plays out underneath the button that fired it. `.anvilsvg` is capped at 260px rather than 340. The three-second arc and every one of its beats is untouched; only the picture moved.
 
 **Every piece on the breaking floor has a slot.** Drag a tool onto the piece, or open its slot and choose — both routes reach the same place, because a drag with no click path is a control half the users cannot reach. The slot lights up with whatever is in it and keeps showing it, and a panel rises with that instrument's reading.
 
@@ -210,7 +220,9 @@ Plain numbers → a metal spread over a bracket → two brackets → a square �
 
 **The cavity is the tool's own icon, blacked out.** Not a silhouette drawn to look like it: the same glyph the order board, the belt and every panel use, rendered large and knocked to black with `filter:brightness(0)` — which is what a shape cut into sand looks like from directly overhead, and which means the hole and the thing on your belt can never be two different shapes. **It is cut the moment the order is taken**, so you can see what you are making before you own any metal.
 
-**As the pour front crosses the shape it reveals the tool** — colour and edges coming up out of the black, left to right, at the speed of the metal. One growing rect clips the molten pool and the coloured glyph together, so the reveal *is* the metal arriving. Verified sweeping 0 → 270px.
+**The metal rises in the cavity, and the black outline fills.** A clip rect rests empty on the **floor** of the glyph and grows upward — `y` walking 261 → 111 while `height` grows 0 → 150 — so the tool's own colour comes up out of the black from the bottom, which is what a mold filling from underneath actually looks like. The black cut stays underneath the whole time, so what a student watches is an outline turning into metal.
+
+> **It used to be a wipe with a sheet over it.** The reveal grew left to right and carried a translucent orange panel 212×172 across the *whole cavity area* alongside the glyph — and what that looked like was a transparent sheet dropped over the sand rather than metal arriving in a shape. The panel is gone and nothing replaced it: the sand around the tool stays sand. The `mold` group (81) asserts that the reveal holds **nothing but the glyph**, and that the cavity starts empty so there is something to watch arrive. Controls: the panel reintroduced, and a cavity that starts already filled — both caught.
 
 **And the liquid is the background for the maths**, with the operations written out:
 
@@ -230,17 +242,17 @@ The prose that used to re-say all of this in a paragraph is gone. What is left i
 
 > **A pictograph is a picture, and `color` does not draw it.** The contrast sweep failed the build over the blacked-out cavity at 1.08:1 — real arithmetic about nothing you can see, since a colour emoji carries its own colour table and the property being measured touches not one pixel of it. `MF._measureContrast` skips an element only when it has **no word character at all** and is pictographic, so a label with an icon *in* it is still measured. Proved: `invisible words` and `🔧 invisible with an icon` are both still caught; a bare `🔧` is not.
 
-## The forge: orders on the left, the yard and the mold on the right
+## The forge: orders on the left, one work cluster on the right
 
-**The yard is on screen from the moment you walk in.** It used to appear only *inside* the mold, after an order had already been chosen — so a student picked a tool with no idea what metal they were holding and found out afterwards. What you own is the whole reason one order is possible and another is not, so it sits beside the board while you choose.
+**The metal you own is beside the mold you are filling.** It used to be a yard panel above the craft floor, and before that it appeared only *inside* the mold after an order was chosen — so a student picked a tool with no idea what they were holding. It is neither now: the rack is part of the craft floor.
 
-- **Left — the order board.** Seven orders as cards on a board, each showing whether it is in your hands, whether you have the metal, or whether it needs more. **Every one opens**, including the ones you cannot fill: a disabled button explains nothing, and an open mold can say what it is waiting for, which is what sends you back down the shaft knowing what to look for. Clicking one you have already made explains it instead of remaking it.
-- **Right, top — the yard**, drawn as the same place it is in the mine. Metal on the rack is **clickable and goes straight into the mold**; metal already in the mold greys out on the rack. Clicking a metal with no order open says so rather than doing nothing.
-- **Right, below — the craft floor.** The mold, its slots, the pour, and the casting. Cold and plainly labelled until an order is picked.
+- **Left — the order board.** Seven orders as cards, each showing whether it is in your hands, whether you have the metal, or whether it needs more. **Every one opens**, including the ones you cannot fill: a disabled button explains nothing, and an open mold can say what it is waiting for. Clicking one you have already made explains it instead of remaking it. It stays `position:sticky`, so the target does not scroll away.
+- **Right — the craft floor, in one run:** the target large, the mold seen from above, the slots, **the rack**, the pour. Metal on the rack is clickable and goes straight into a slot; metal already in the mold greys out; clicking a metal with no order open says so rather than doing nothing.
+- **Right, below — the heap**, drawn as the yard it is.
 
-**The heap is drawn here and is deliberately not spendable.** The forge takes native metal; rock still carrying a seam is no use until it has been broken. It is not a button, because a control that looks live and refuses is worse than a thing that plainly is not one — and seeing it sitting there unusable is what sends a student back down. That is the sink working.
+**The heap is deliberately not spendable.** The forge takes native metal; rock still carrying a seam is no use until it has been broken. It is not a button, because a control that looks live and refuses is worse than a thing that plainly is not one — and seeing it sitting there unusable is what sends a student back down. That is the sink working, and it works just as well underneath the mold as it did above it.
 
-On one column the **work comes first** and the seven-item board follows it, the same rule the mine follows — verified stacked at 760px with the yard above the board.
+On one column the **work comes first** and the seven-item board follows it, the same rule the mine follows — verified stacked at 760px.
 
 **The forge repaints in place.** Every click in it used to call `MF.go('forge')`, which rebuilds the screen, moves focus, restarts the arrival wipe and scrolls to the top — so dropping one metal threw the page back to the masthead, and choosing metals and pouring meant four jumps. `MF.paintForge()` now repaints the two columns only, guarded on `isConnected` exactly as `paintMine` is. The one scroll left is the casting after a pour, `block:'nearest'`, and only when it lands below the fold. Verified across seven interactions from a page parked at 420px: none moved it.
 
@@ -266,6 +278,21 @@ Metals are **spent** here — this is the yard's sink. Forging *is* distributing
 - **The picture shows what is GIVEN.** Where a question is being asked, sides are dashed slots holding `?`.
 - **Described, never graded** — and now **spendable**. No percentages, no accuracy, no X-out-of-Y, no ranks, nothing with a ceiling, nothing that goes down. Requirements are drawn as slots, never counted.
 
+
+
+## The work fits on one screen, and that is measured
+
+**The user's requirement, and it is the first one in this project about *reaching* the work rather than about the work:** *"less hurdles in our UI design for students that will easily give up on a site that makes them scroll or click too many unnecessary buttons."*
+
+**The forge is one cluster now.** Target → the mold picture → the slots → **the rack** → the pour, with nothing between any two of them. The rack used to be a panel of its own *above* the craft floor with the heap between it and the mold, so a three-metal order meant five scroll moves, none of which was mathematics. The heap and the drawn yard are still there, underneath, unspendable and deliberately not a button — §11d untouched.
+
+**The pour arms on FULL and never on CORRECT.** It is disabled while a slot is empty and goes bright, armed and **focused** on the drop that fills the mold — without moving the page (`preventScroll`). A wrong set of metals looks exactly like a right one, because lighting it only for a correct set would hand over the answer before the pour and leave the casting with nothing to say (`MINE-SPEC` §15a).
+
+**In the mine the picture went below the controls.** The belt was already beside the pieces; what separated them from the swing was the anvil-and-hammer stage, the tallest thing on the bench. The order is the order of the work now — choose a piece, cut the head, swing — and the blow plays out *underneath the button that fired it*. The arc is untouched. Belt to swing: **794px**.
+
+> **The `reach` group (12)** mounts both clusters at 1280px and at 380px and fails if either runs past one 800px screen; it also asserts the craft floor's order (slots, then rack, then pour), that the swing sits above the anvil picture, and that **filling the mold hands focus to the pour**. Controls: a cluster taller than a screen, a rack above the slots, the anvil picture back on top, and a pour that never takes focus — all caught.
+
+> **It found two things on its first runs.** The craft floor measured **1399px** from target to pour, because the mold is a 400×300 drawing at `width:100%` and grew to fill a wide column — `.moldwrap` is capped at 430px now, and *the number came from the check rather than from someone squinting at a screenshot*. And the pour's `focus()` was called before the panel was mounted, so it did nothing and said nothing: a control that looked wired and silently was not (`VERIFICATION.md` §58).
 
 ## Nothing walks off the right of a narrow screen, and it is measured now
 

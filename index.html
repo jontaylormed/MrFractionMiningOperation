@@ -218,8 +218,13 @@ input[type=range]{width:100%; accent-color:var(--ore); height:44px}
    the basin and along the runner, and as the pour front crosses the shape it
    REVEALS the icon: colour and edges coming up out of the black at the speed
    of the metal. ---- */
-.moldwrap{border:3px solid #241C15; border-radius:12px; overflow:hidden; margin:10px 0 12px;
-  background:#241A12}
+/* CAPPED, because the picture is not the work. The mold is a 400x300 drawing
+   with width:100%, so on a wide screen it grew to fill the column and pushed
+   1399px between the target and the pour button - the `reach` group caught it
+   and named the number. It is a picture of what you are making; it does not
+   need to be bigger than the thing you are making it with. */
+.moldwrap{border:3px solid #241C15; border-radius:12px; overflow:hidden; margin:10px auto 12px;
+  background:#241A12; max-width:430px}
 .moldwrap svg{display:block; width:100%; height:auto}
 .moldwrap svg *{pointer-events:none}
 
@@ -231,8 +236,8 @@ input[type=range]{width:100%; accent-color:var(--ore); height:44px}
 .mdlive{filter:drop-shadow(0 0 7px rgba(255,190,90,.75))}
 
 /* nothing is hot until it is poured */
-.moldwrap .mdtrough,.moldwrap .mdstream,.moldwrap .mdrun,.moldwrap .mdpool,.moldwrap .mdnum{opacity:0}
-.moldwrap .mdrevrect{width:0}
+.moldwrap .mdtrough,.moldwrap .mdstream,.moldwrap .mdrun,.moldwrap .mdnum{opacity:0}
+.moldwrap .mdrevrect{ y:261px; height:0 }
 
 @keyframes mdtrough{ 0%{opacity:0} 8%{opacity:1} 82%{opacity:1} 100%{opacity:0} }
 .moldwrap[data-pour] .mdtrough{animation:mdtrough 2600ms linear 0s backwards}
@@ -241,12 +246,16 @@ input[type=range]{width:100%; accent-color:var(--ore); height:44px}
 @keyframes mdrun{ 0%{opacity:0} 100%{opacity:1} }
 .moldwrap[data-pour] .mdrun{animation:mdrun 500ms linear .5s both}
 
-/* THE POUR FRONT. One rect grows left to right; it clips the pool and the
-   coloured icon together, so the reveal IS the metal arriving. */
-@keyframes mdrev{ from{width:0} to{width:270px} }
+/* THE METAL RISES IN THE CAVITY. One rect anchored on the floor of the glyph
+   grows UPWARD, clipping the coloured icon - so the black outline fills with
+   metal from the bottom instead of a picture being wiped across it.
+
+   There is no pool any more. It was a translucent orange panel laid over the
+   whole cavity area, and what it looked like was a transparent sheet dropped
+   over the sand rather than metal arriving in a shape. The sand around the
+   tool stays sand. */
+@keyframes mdrev{ from{ y:261px; height:0 } to{ y:111px; height:150px } }
 .moldwrap[data-pour] .mdrevrect{animation:mdrev 1700ms cubic-bezier(.4,0,.7,1) .75s both}
-@keyframes mdpool{ 0%{opacity:0} 100%{opacity:.5} }
-.moldwrap[data-pour] .mdpool{animation:mdpool 600ms linear .75s both}
 
 /* THE NUMBERS SIT IN THE METAL. Transparent, so the liquid shows through, with
    a light stroke behind them so they hold up over sand as well as over metal. */
@@ -268,22 +277,33 @@ input[type=range]{width:100%; accent-color:var(--ore); height:44px}
 .moldwrap[data-pour] .mdsingle{transform-box:fill-box; transform-origin:center;
   animation:mdsingle 560ms cubic-bezier(.3,1.5,.5,1) 3.8s forwards}
 /* scrap: the metal in the shape goes dull, and the tool never quite comes up */
-.moldwrap[data-pour=scrap] .mdrun,.moldwrap[data-pour=scrap] .mdpool,
+.moldwrap[data-pour=scrap] .mdrun,
 .moldwrap[data-pour=scrap] .mdstream,.moldwrap[data-pour=scrap] .mdtrough{filter:saturate(.35) brightness(.7)}
 .moldwrap[data-pour=scrap] .mdlive{filter:saturate(.2) brightness(.55)}
 
 @media (prefers-reduced-motion:reduce){
   .moldwrap[data-pour] .mdtrough,.moldwrap[data-pour] .mdstream,.moldwrap[data-pour] .mdrun,
-  .moldwrap[data-pour] .mdpool,.moldwrap[data-pour] .mdrevrect,.moldwrap[data-pour] .mdnum{animation:none}
+  .moldwrap[data-pour] .mdrevrect,.moldwrap[data-pour] .mdnum{animation:none}
   /* the casting is full, the tool is up, and the maths is there; it arrives */
   .moldwrap[data-pour] .mdrun,.moldwrap[data-pour] .mdtrough{opacity:1}
   .moldwrap[data-pour] .mdstream{opacity:0}
-  .moldwrap[data-pour] .mdpool{opacity:.5}
-  .moldwrap[data-pour] .mdrevrect{width:270px}
+  /* the cavity is FULL, not half filled and not wiped part way across */
+  .moldwrap[data-pour] .mdrevrect{ y:111px; height:150px }
   .moldwrap[data-pour] .mdnum{opacity:.66}
   .moldwrap[data-pour] .mdmid{opacity:0}
   .moldwrap[data-pour] .mdsingle{opacity:.84}
 }
+/* THE POUR, ARMED. It sits directly under the rack, so the next thing to do
+   after the last metal drops is the next thing on screen. `data-armed` says
+   only that the mold is FULL - never that the metals are right, which is the
+   casting's to say and nothing else's. */
+.pourrow{margin-top:12px; align-items:center}
+.pourbtn{transition:box-shadow .18s ease, transform .18s ease}
+.pourbtn[data-armed]{box-shadow:0 0 0 4px rgba(232,163,61,.5), 0 5px 0 rgba(0,0,0,.3)}
+.pourbtn[data-armed]:focus-visible{box-shadow:0 0 0 4px var(--lamp), 0 0 0 8px rgba(232,163,61,.35), 0 5px 0 rgba(0,0,0,.3)}
+@media (prefers-reduced-motion:reduce){ .pourbtn{transition:none} }
+/* the rack, inside the craft floor rather than in a panel of its own */
+.craft .shelfrow{margin-top:13px}
 .craft{margin-top:16px}
 .crafthead{display:flex; gap:9px; align-items:center; font-family:var(--display); font-size:20px; margin-bottom:6px}
 .crafthead .ci{font-size:24px}
@@ -542,7 +562,11 @@ input[type=range]{width:100%; accent-color:var(--ore); height:44px}
    to be a CSS box floating over the svg because it held the input boxes */
 .anvilstage{position:relative; width:100%; display:flex; flex-direction:column; align-items:center;
   padding:0; overflow:visible}
-.anvilsvg{width:100%; max-width:340px}
+/* 260, not 340. The stage is the tallest thing on the bench and it sits below
+   the swing button now; at 340 it still pushed the belt and the pieces off the
+   top of a laptop screen when the blow landed. The `reach` group is what says
+   whether this number is small enough. */
+.anvilsvg{width:100%; max-width:260px}
 .anvilsvg svg{display:block; width:100%; height:auto; overflow:visible}
 .anvilsvg svg *{pointer-events:none}
 
@@ -1143,17 +1167,27 @@ table.rosetta td.rx{font-family:var(--display); font-size:16px; color:var(--ink)
    level on five of the nine lights - every one of the ones a student would
    call a lamp. Nested, the two opacities multiply, which is what "flickering,
    and brighter after dark" actually means. */
-@keyframes lampsup{ 0%{opacity:.72} 22%{opacity:.55} 46%{opacity:.66} 62%{opacity:.86} 76%{opacity:1} 90%{opacity:1} 100%{opacity:.72} }
+/* THE RANGE IS THE EFFECT. At .55 -> 1 the sources moved by less than half a
+   stop and midnight read as dusk with the lamps on. A source now falls to a
+   third of full at noon and burns flat out from dusk to dawn, so the change
+   between the two ends of the day is a change in what kind of place this is. */
+@keyframes lampsup{ 0%{opacity:.78} 22%{opacity:.34} 46%{opacity:.52} 62%{opacity:.9} 76%{opacity:1} 90%{opacity:1} 100%{opacity:.78} }
 .sc-lit{animation:lampsup 240s linear infinite}
-@keyframes glowup{ 0%{opacity:.18} 22%{opacity:.05} 46%{opacity:.14} 62%{opacity:.4} 76%{opacity:.72} 90%{opacity:.66} 100%{opacity:.18} }
+@keyframes glowup{ 0%{opacity:.3} 22%{opacity:.02} 46%{opacity:.1} 62%{opacity:.56} 76%{opacity:.95} 90%{opacity:.88} 100%{opacity:.3} }
 .sc-glow{animation:glowup 240s linear infinite}
+/* SCREEN, so a light can only ADD. The night rect is a multiply blend over the
+   whole site and it was taking the lamps down with the hillside - the one
+   thing that must not happen after dark. This layer is painted after it and
+   can never darken a pixel. */
+.sc-lightlayer{mix-blend-mode:screen; pointer-events:none}
 @media (prefers-reduced-motion:reduce){
   /* the day stops at noon rather than flickering through four skies */
   .sc-sky,.sc-stars,.sc-night,.sc-sun,.sc-moon,.sc-lit,.sc-glow{animation:none}
   .sc-skyNoon{opacity:1}
   .sc-moon{opacity:0}
-  .sc-lit{opacity:.55}
-  .sc-glow{opacity:.05}
+  .sc-lit{opacity:.34}
+  .sc-glow{opacity:.02}
+  .sc-lightlayer{opacity:.02}
 }
 
 /* ---- the surface scene ---- */
@@ -1837,11 +1871,21 @@ MF.rawOre = function(layer, rng){
 /* =========================================================================
    MR FACTOR
    ========================================================================= */
-MF.art = function(size){
+/* opts.lit is asked for ONLY by the miner standing on the surface. MF.art draws
+   every Mr Factor on the site - the load screen, the hero, every speech bubble -
+   and MF.syncDay runs on the surface svg alone, so a lit avatar anywhere else
+   would animate the day from dawn whatever the session clock said. */
+MF.art = function(size, opts){
   var s = S('svg',{viewBox:'0 0 100 122', width:size, height:Math.round(size*1.22),
     role:'img','aria-label':'Mr Factor, a miner with a helmet lamp and a pick'});
   function p(d,fill){ s.appendChild(S('path',{d:d, fill:fill})); }
-  s.appendChild(S('ellipse',{cx:50,cy:20,rx:34,ry:17,fill:'#E8A33D',opacity:'0.20'}));
+  var lamp = (opts && opts.lit);
+  /* THE HALO THE HELMET LAMP THROWS. Cast light, so it rides sc-glow: all but
+     invisible at noon and unmistakable after dark. It was pinned at 0.20 and
+     never moved, which made the one light a student identifies with the only
+     one on the site that did not answer the clock. */
+  var halo = S('ellipse',{cx:50,cy:20,rx:34,ry:17,fill:'#E8A33D',opacity:lamp?'0.62':'0.20'});
+  s.appendChild(lamp ? lit(halo,'sc-glow') : halo);
   p('M74 40 L92 104 L85 107 L67 43 Z', '#8A6A45');
   p('M62 34 q14 -9 28 -1 q-13 4 -14 12 q-6 -9 -14 -11 Z', '#7C838A');
   p('M28 108 h16 v10 H24 q0 -10 4 -10 Z', '#3A3129');
@@ -1859,7 +1903,10 @@ MF.art = function(size){
   s.appendChild(S('circle',{cx:'57',cy:'29',r:'2.4',fill:'#2A2119'}));
   p('M31 26 q3 -20 19 -20 q16 0 19 20 Z', '#C96A1F');
   s.appendChild(S('rect',{x:'27',y:'25',width:'46',height:'6',rx:'3',fill:'#A5520F'}));
-  s.appendChild(S('circle',{cx:'50',cy:'12',r:'5.4',fill:'#FFE4A8',stroke:'#8F4712','stroke-width':'2'}));
+  /* the lamp glass itself: a SOURCE, so sc-lit - it never goes out, it only
+     gets stronger. */
+  var glass = S('circle',{cx:'50',cy:'12',r:'5.4',fill:'#FFE4A8',stroke:'#8F4712','stroke-width':'2'});
+  s.appendChild(lamp ? lit(glass) : glass);
   return s;
 };
 MF.says = function(html, size){
@@ -2817,7 +2864,10 @@ MF.surfaceScene = function(){
      at this height and clear of the doorway on both sides. */
   [ [40,92],[64,92],[30,148],[66,148] ].forEach(function(w){
     wm.appendChild(S('rect',{x:String(w[0]),y:String(w[1]),width:'12',height:'14',rx:'2',fill:'#3A3129'}));
-    wm.appendChild(S('rect',{x:String(w[0]+2),y:String(w[1]+2),width:'8',height:'10',rx:'1',fill:'#FFE9A8',opacity:'.55',class:'sc-lit'}));
+    /* FULL STRENGTH GLASS, and the day cycle does the dimming. Pinned at .55
+       the window could never get brighter than half lit, so the ramp had only
+       the top half of its range to work in and midnight looked like dusk. */
+    wm.appendChild(S('rect',{x:String(w[0]+2),y:String(w[1]+2),width:'8',height:'10',rx:'1',fill:'#FFE9A8',class:'sc-lit'}));
   });
   /* cap and hub */
   wm.appendChild(S('path',{d:'M26 58 q28 -34 56 0 Z',fill:'#6B4A32'}));
@@ -2873,9 +2923,15 @@ MF.surfaceScene = function(){
     sm.appendChild(puff);
   });
   nameplate(sm, 66, 54, 'The Stamp Mill');
+  /* THE STAMP MILL'S WINDOWS - both of them. The second was a dead brown rect
+     that stayed dark through midnight while the one beside it burned, which
+     reads as a broken window rather than as an unlit room. The tall opening on
+     the end is the DOOR and is left dark deliberately. */
+  sm.appendChild(S('rect',{x:'12',y:'90',width:'36',height:'36',rx:'3',fill:'#2A1E14'}));
   sm.appendChild(lit(S('rect',{x:'14',y:'92',width:'32',height:'32',rx:'3',fill:'#E2600F',opacity:'.9',class:'sc-lamp'})));
-  sm.appendChild(S('rect',{x:'56',y:'96',width:'24',height:'24',rx:'3',fill:'#3A2A1C'}));
-  sm.appendChild(S('rect',{x:'92',y:'98',width:'26',height:'38',rx:'2',fill:'#4A3524'}));
+  sm.appendChild(S('rect',{x:'54',y:'94',width:'28',height:'28',rx:'3',fill:'#2A1E14'}));
+  sm.appendChild(lit(S('rect',{x:'56',y:'96',width:'24',height:'24',rx:'3',fill:'#FFC46A',class:'sc-lamp'})));
+  sm.appendChild(S('rect',{x:'92',y:'98',width:'26',height:'38',rx:'2',fill:'#4A3524'}));   /* the door */
   svg.appendChild(sm);
 
   /* ---- THE CASTING SHED -> the mold workshop. Ingots stacked outside. ---- */
@@ -2884,9 +2940,13 @@ MF.surfaceScene = function(){
   cs.appendChild(S('path',{d:'M-8 34 L59 4 L126 34 Z',fill:'#4A5560'}));
   cs.appendChild(S('rect',{x:'-10',y:'30',width:'138',height:'7',rx:'2',fill:'#3E4750'}));
   nameplate(cs, 59, 44, 'Casting Shed');
+  /* BOTH THE SHED'S WINDOWS BURN. The second was slate-coloured and never lit;
+     the tall one on the end is the door and stays dark. */
+  cs.appendChild(S('rect',{x:'10',y:'78',width:'28',height:'28',rx:'2',fill:'#1E262C'}));
   cs.appendChild(lit(S('rect',{x:'12',y:'80',width:'24',height:'24',rx:'2',fill:'#FFE9A8',class:'sc-lamp'})));
-  cs.appendChild(S('rect',{x:'46',y:'80',width:'24',height:'24',rx:'3',fill:'#2E3840'}));
-  cs.appendChild(S('rect',{x:'84',y:'78',width:'26',height:'38',rx:'2',fill:'#3E4750'}));
+  cs.appendChild(S('rect',{x:'44',y:'78',width:'28',height:'28',rx:'2',fill:'#1E262C'}));
+  cs.appendChild(lit(S('rect',{x:'46',y:'80',width:'24',height:'24',rx:'3',fill:'#FFD68A',class:'sc-lamp'})));
+  cs.appendChild(S('rect',{x:'84',y:'78',width:'26',height:'38',rx:'2',fill:'#3E4750'}));   /* the door */
   /* a stack of finished ingots by the door */
   [[0,0],[13,0],[6,-9]].forEach(function(p){
     cs.appendChild(S('rect',{x:String(122+p[0]),y:String(104+p[1]),width:'15',height:'8',rx:'2',
@@ -2953,10 +3013,16 @@ MF.surfaceScene = function(){
     });
   });
 
-  /* the furnace mouth burning inside, and the light it throws on the ground */
-  fg.appendChild(S('ellipse',{cx:'58',cy:'120',rx:'52',ry:'13',fill:'#E2600F',opacity:'.6',class:'sc-glow'}));
+  /* THE FURNACE MOUTH, BUILT LIKE A LANTERN. It used to be an orange arch the
+     same colour as the wall it was cut into, with a flat ellipse on the ground
+     - the brightest thing on the site drawn as the dimmest. It has a dark
+     mouth behind it now so the fire has something to be brighter THAN, a
+     flickering body, and a white-hot core; the halo it throws lives in the
+     light layer above the night, with the lanterns. */
+  fg.appendChild(S('path',{d:'M32 112 q0 -33 26 -33 q26 0 26 33 Z',fill:'#1B1008'}));
   fg.appendChild(lit(S('path',{d:'M34 112 q0 -30 24 -30 q24 0 24 30 Z',fill:'#E2600F',class:'sc-lamp'})));
-  fg.appendChild(S('path',{d:'M40 112 q0 -21 18 -21 q18 0 18 21 Z',fill:'#FFB347',opacity:'.85',class:'sc-lit'}));
+  fg.appendChild(lit(S('path',{d:'M40 112 q0 -21 18 -21 q18 0 18 21 Z',fill:'#FFB347',class:'sc-lamp'})));
+  fg.appendChild(lit(S('path',{d:'M47 112 q0 -12 11 -12 q11 0 11 12 Z',fill:'#FFF0C4',class:'sc-lamp'})));
   /* a door, so the building can be walked into rather than only looked at */
   fg.appendChild(S('rect',{x:'94',y:'76',width:'24',height:'46',rx:'2',fill:'#3A2A1C'}));
   fg.appendChild(S('rect',{x:'96',y:'78',width:'20',height:'42',rx:'2',fill:'#6B4A32'}));
@@ -3129,8 +3195,10 @@ MF.surfaceScene = function(){
      sky and ground rather than mine. */
   hot(712,244,162,132,'Into the Mine','mine');
 
-  /* Mr Factor, standing on the surface */
-  var mf = MF.art(74);
+  /* Mr Factor, standing on the surface - and the ONE instance whose helmet
+     lamp answers the day/night clock, because this is the only scene
+     MF.syncDay runs over. */
+  var mf = MF.art(74, {lit:true});
   mf.setAttribute('x','322'); mf.setAttribute('y','290');
   mf.removeAttribute('width'); mf.removeAttribute('height');
   mf.setAttribute('width','74'); mf.setAttribute('height','90');
@@ -3155,6 +3223,59 @@ MF.surfaceScene = function(){
      over the buildings, the cart and the ground - a night sky above a
      daylit yard reads as a mistake. Inert like everything else in here. */
   svg.appendChild(S('rect',{class:'sc-night', x:0,y:0,width:W,height:VH,fill:'#0B1226'}));
+
+  /* ---- THE LIGHTS PUNCH THROUGH THE NIGHT ----
+
+     `.sc-night` is a multiply blend laid over the whole site, and multiply
+     darkens EVERYTHING under it - the lit windows and the furnace along with
+     the hillside. So at midnight the lamps went down with the rest of the
+     scene and the contrast between a lit window and the wall around it barely
+     moved. Turning the lamps up could not fix it: they were being multiplied
+     back down again immediately afterwards.
+
+     This layer is drawn AFTER the night rect and blends with `screen`, which
+     can only ever ADD light. Each halo sits at the absolute position of a real
+     source, rides `sc-glow` so it is nothing at noon, and at midnight it is
+     the brightest thing on the site. The night still falls on the whole
+     operation; the lights now cut holes in it.
+
+     ONE LIST, so a halo cannot drift away from the thing it belongs to: every
+     entry is [x, y, radius] in scene coordinates, and each is written next to
+     the source it lights. */
+  var lightLayer = S('g',{class:'sc-glow sc-lightlayer'});
+  var nightGlow = S('radialGradient',{id:'nightglow'});
+  nightGlow.appendChild(S('stop',{offset:'0%','stop-color':'#FFE1A0','stop-opacity':'.95'}));
+  nightGlow.appendChild(S('stop',{offset:'42%','stop-color':'#F5B25C','stop-opacity':'.42'}));
+  nightGlow.appendChild(S('stop',{offset:'100%','stop-color':'#E2600F','stop-opacity':'0'}));
+  defs.appendChild(nightGlow);
+  var forgeGlow = S('radialGradient',{id:'forgeglow'});
+  forgeGlow.appendChild(S('stop',{offset:'0%','stop-color':'#FFD08A','stop-opacity':'.98'}));
+  forgeGlow.appendChild(S('stop',{offset:'38%','stop-color':'#E2600F','stop-opacity':'.55'}));
+  forgeGlow.appendChild(S('stop',{offset:'100%','stop-color':'#A8380A','stop-opacity':'0'}));
+  defs.appendChild(forgeGlow);
+  [
+    /* the windmill's four windows - group at translate(112,132) */
+    [158,231,34],[182,231,34],[148,287,34],[184,287,34],
+    /* the Stamp Mill's two - group at translate(232,214) */
+    [262,322,40],[302,324,40],
+    /* the Casting Shed's two - group at translate(400,236) */
+    [424,328,38],[458,328,38],
+    /* the two lanterns on the site */
+    [750,314,44],[540,296,42],
+    /* Mr Factor's helmet lamp, at the top of a 74x90 figure placed at 322,290 */
+    [359,300,34]
+  ].forEach(function(p){
+    lightLayer.appendChild(S('circle',{cx:String(p[0]),cy:String(p[1]),r:String(p[2]),
+      fill:'url(#nightglow)'}));
+  });
+  /* THE FORGE IS THE BRIGHTEST THING ON THE SITE, and it was the dimmest -
+     a flat ellipse on the ground and a mouth the same colour as the wall. It
+     is built like the lanterns now: a wide halo, a hot core, and a pool thrown
+     forward onto the ground. The furnace of a forge should be visible from the
+     other end of the valley. */
+  lightLayer.appendChild(S('circle',{cx:'618',cy:'342',r:'74',fill:'url(#forgeglow)'}));
+  lightLayer.appendChild(S('ellipse',{cx:'618',cy:'352',rx:'62',ry:'17',fill:'url(#forgeglow)'}));
+  svg.appendChild(lightLayer);
 
   MF.syncDay(svg);
   wrap.appendChild(svg);
@@ -4366,8 +4487,11 @@ MF.paintForge = function(){
   var st = MF.state.forge;
   MF.paintOrders(clear(MF._forge.left), st);
   var r = clear(MF._forge.right);
-  MF.paintForgeYard(r, st);
+  /* THE WORK FIRST, THE SINK UNDER IT. The rack used to be a panel of its own
+     above this, with the heap between it and the mold; the rack now lives
+     inside the craft floor and only the unspendable rock is left below. */
   MF.paintCraft(r, st);
+  MF.paintHeap(r, st);
 };
 
 /* ---------- the left column: what can be made ---------- */
@@ -4397,7 +4521,7 @@ MF.paintOrders = function(host, st){
        thing that sends you back down the shaft knowing what to look for. */
     on(b,'click',function(){
       if(made){ MF.explainTool(key, b); return; }
-      st.picked = key; st.slots = []; st.result = null;
+      st.picked = key; st.slots = []; st.result = null; st.justFilled = false;
       MF.paintForge();
     });
     box.appendChild(b);
@@ -4405,62 +4529,88 @@ MF.paintOrders = function(host, st){
   host.appendChild(box);
 };
 
-/* ---------- the right column, top: what you are holding ---------- */
-MF.paintForgeYard = function(host, st){
-  var box = E('div','panel'); box.style.marginTop='0';
-  box.appendChild(H('div','panel-tag','THE YARD'));
+/* ---------- THE RACK, and it is drawn INSIDE the craft floor ----------
 
+   It used to be a yard panel of its own, above the craft floor and below the
+   room banner, with the heap between it and the mold. So filling a mold meant
+   reading the target, scrolling up to the rack, clicking a metal, scrolling
+   back down to see the slot, and repeating - and the pour button was below all
+   of it again. Five moves for a three-metal order, none of which is the
+   mathematics.
+
+   It sits under the slots now, and the pour button sits under it, so target,
+   mold, slots, metals and pour are one cluster with nothing in between. The
+   behaviour is unchanged: click a metal to drop it in, spent metals grey out,
+   and clicking one with no order open SAYS SO rather than doing nothing. */
+MF.paintRack = function(host, st){
   var open = !!st.picked && !st.result;
   var want = open ? MF.slotsWanted(MF.TOOLS[st.picked]) : 0;
 
-  var place = E('div','yardplace');
-  place.appendChild(MF.yardScene());
-  var inner = E('div','yardin');
-
-  /* ---- the rack: what the forge can actually spend ---- */
   var rk = E('div','shelfrow');
   rk.appendChild(H('div','ylab','THE RACK &mdash; native metal, and the forge spends this'));
   var have = MF.yardList();
   if(!have.length){
     rk.appendChild(H('div','yempty','Bare. Break a lump all the way down in the mine and the metal is racked here.'));
-  } else {
-    var rack = E('div','rack');
-    [['plain metal', function(g){ return g.m===0; }],
-     ['metal with an x in it', function(g){ return g.m!==0; }]].forEach(function(grp){
-      var these = have.filter(function(e){ return grp[1](e.ingot); });
-      if(!these.length) return;
-      var shelf = E('div','shelf');
-      shelf.appendChild(H('div','sh', grp[0]));
-      var row = E('div','metalrow');
-      these.forEach(function(e){
-        var used = st.slots.some(function(s){ return s.yardIdx===e.idx; });
-        var b = E('button','metalbtn' + (isPlainMetal(e.ingot)?' pure':'') + (used?' spent':''));
-        b.type='button';
-        b.setAttribute('data-metal', e.idx);
-        b.appendChild(H('span','ml', e.ingot.label || ingotText(e.ingot)));
-        b.setAttribute('aria-label', (e.ingot.label || ingotText(e.ingot)) +
-          (used ? ' — already in the mold' : (open ? ' — drop it in the mold' : ' — pick an order first')));
-        b.title = used ? 'Already in the mold' : (open ? 'Drop it in the mold' : 'Pick an order first');
-        on(b,'click',function(){
-          /* NOT A DEAD CONTROL WHEN NOTHING IS OPEN. It says what is missing
-             instead of doing nothing, which is how the old chips behaved. */
-          if(used){ st.note = 'That one is already in the mold. Click it in the slot to take it back out.'; MF.paintForge(); return; }
-          if(!open){ st.note = 'Pick an order from the board on the left first, and the mold will open.'; MF.paintForge(); return; }
-          if(st.slots.length >= want){ st.note = 'The mold is full. Take something out of a slot if you want to change it.'; MF.paintForge(); return; }
-          st.slots.push({yardIdx:e.idx, key:e.key, ingot:e.ingot});
-          st.note = null;
-          MF.paintForge();
-        });
-        row.appendChild(b);
-      });
-      shelf.appendChild(row);
-      rack.appendChild(shelf);
-    });
-    rk.appendChild(rack);
+    host.appendChild(rk);
+    return rk;
   }
-  inner.appendChild(rk);
+  var rack = E('div','rack');
+  [['plain metal', function(g){ return g.m===0; }],
+   ['metal with an x in it', function(g){ return g.m!==0; }]].forEach(function(grp){
+    var these = have.filter(function(e){ return grp[1](e.ingot); });
+    if(!these.length) return;
+    var shelf = E('div','shelf');
+    shelf.appendChild(H('div','sh', grp[0]));
+    var row = E('div','metalrow');
+    these.forEach(function(e){
+      var used = st.slots.some(function(s){ return s.yardIdx===e.idx; });
+      var b = E('button','metalbtn' + (isPlainMetal(e.ingot)?' pure':'') + (used?' spent':''));
+      b.type='button';
+      b.setAttribute('data-metal', e.idx);
+      b.appendChild(H('span','ml', e.ingot.label || ingotText(e.ingot)));
+      b.setAttribute('aria-label', (e.ingot.label || ingotText(e.ingot)) +
+        (used ? ' — already in the mold' : (open ? ' — drop it in the mold' : ' — pick an order first')));
+      b.title = used ? 'Already in the mold' : (open ? 'Drop it in the mold' : 'Pick an order first');
+      on(b,'click',function(){
+        /* NOT A DEAD CONTROL WHEN NOTHING IS OPEN. It says what is missing
+           instead of doing nothing, which is how the old chips behaved. */
+        if(used){ st.note = 'That one is already in the mold. Click it in the slot to take it back out.'; MF.paintForge(); return; }
+        if(!open){ st.note = 'Pick an order from the board on the left first, and the mold will open.'; MF.paintForge(); return; }
+        if(st.slots.length >= want){ st.note = 'The mold is full. Take something out of a slot if you want to change it.'; MF.paintForge(); return; }
+        st.slots.push({yardIdx:e.idx, key:e.key, ingot:e.ingot});
+        st.note = null;
+        /* THE LAST METAL ARMS THE POUR. Only the drop that FILLS the mold sets
+           this, and paintCraft consumes it - otherwise every repaint would
+           snatch focus back off whatever the student was doing. */
+        if(st.slots.length === want) st.justFilled = true;
+        MF.paintForge();
+      });
+      row.appendChild(b);
+    });
+    shelf.appendChild(row);
+    rack.appendChild(shelf);
+  });
+  rk.appendChild(rack);
+  host.appendChild(rk);
+  return rk;
+};
 
-  /* ---- the heap: here, and deliberately not spendable ---- */
+/* ---------- THE HEAP, and the yard drawn as a place ----------
+
+   Below the work now rather than between the student and it. The forge takes
+   native metal; rock still carrying a seam is no use until it has been broken,
+   and it is deliberately NOT a button - a control that looks live and refuses
+   is worse than a thing that plainly is not one. Seeing it sitting there
+   unusable is what sends a student back down the shaft. That is the sink
+   working, and it works just as well underneath the mold as above it. */
+MF.paintHeap = function(host, st){
+  var box = E('div','panel'); box.style.marginTop='16px';
+  box.appendChild(H('div','panel-tag','THE YARD &mdash; WHAT IS STILL ROCK'));
+
+  var place = E('div','yardplace');
+  place.appendChild(MF.yardScene());
+  var inner = E('div','yardin');
+
   var hp = E('div','heaprow');
   hp.appendChild(H('div','ylab','THE HEAP &mdash; still carrying a seam'));
   if(!MF.state.rockpile.length){
@@ -4552,8 +4702,12 @@ MF.paintCraft = function(host, st){
   cru.appendChild(slotRow);
   cru.appendChild(H('div','hint', st.slots.length
     ? 'Click one to take it back out.'
-    : 'Click a metal on the rack above to drop it in.'));
+    : 'Click a metal on the rack below to drop it in.'));
   box.appendChild(cru);
+
+  /* THE METAL IS RIGHT HERE. Target, mold, slots, rack and pour, in that
+     order, with nothing between any two of them. */
+  MF.paintRack(box, st);
 
   /* WHAT IT IS WAITING FOR, when you cannot fill it. The old board disabled
      the button and said "not enough metal yet", which named nothing you could
@@ -4563,15 +4717,34 @@ MF.paintCraft = function(host, st){
       'No ' + want + ' metals on it multiply to that. Nothing is locked — break more ore and what comes out is racked here.'));
   }
 
+  /* THE POUR ARMS WHEN THE MOLD IS FULL, AND SAYS NOTHING ABOUT WHETHER THE
+     METALS ARE RIGHT. Lighting it only for a correct set would hand over the
+     answer before the pour and make the casting ceremonial - which is exactly
+     what MINE-SPEC §10a removed the free casting preview over. A wrong set and
+     a right set look identical here; the casting is still the only judge. */
   var full = st.slots.length === want;
-  var pourRow = E('div','row'); pourRow.style.marginTop='12px';
-  var pour = E('button','btn primary big','Pour the mold'); pour.type='button';
+  var pourRow = E('div','row pourrow');
+  var pour = E('button','btn primary big pourbtn','Pour the mold'); pour.type='button';
   pour.disabled = !full;
+  if(full) pour.setAttribute('data-armed','yes');
   on(pour,'click',function(){ MF.forgePour(st); });
   pourRow.appendChild(pour);
   if(!full) pourRow.appendChild(H('div','hint','The mold is not full yet.'));
   box.appendChild(pourRow);
+  /* FOCUS ONLY ON THE DROP THAT FILLED IT, and without scrolling: the button
+     is already beside the rack, so moving the page would be the hurdle rather
+     than the fix. The flag is consumed here, or every later repaint would
+     snatch focus back off whatever the student had moved on to. */
   host.appendChild(box);
+  /* AND THE FOCUS GOES LAST, because focus() on a node that is not in the
+     document yet does nothing at all and says nothing about it. The panel is
+     built detached and mounted on the line above; called before that, this was
+     a control that looked wired and silently was not - the same class of
+     silent failure as painting into a detached column (§35). */
+  if(full && st.justFilled){
+    st.justFilled = false;
+    try { pour.focus({preventScroll:true}); } catch(e){ pour.focus(); }
+  }
 };
 
 /* =========================================================================
@@ -4713,12 +4886,27 @@ MF.moldScene = function(key, pour){
   svg.appendChild(glyph('mdcutshadow'));      /* the depth, offset down and right */
   svg.appendChild(glyph('mdcut'));            /* the cut itself, black */
 
-  /* the reveal: the pour front crossing the shape brings its colour up */
+  /* ---- THE CAVITY FILLS FROM THE BOTTOM ----
+     It used to be a rect growing LEFT TO RIGHT over two things: the coloured
+     glyph and a translucent orange panel 212x172 laid across the whole cavity
+     area. That panel was the visible result - a transparent sheet dropped over
+     the sand - and it is gone. Nothing tints the sand around the shape now.
+
+     What is left rises: the clip rect is anchored at the FLOOR of the glyph and
+     grows upward, so the tool's own colour comes up out of the black from the
+     bottom, which is what a mold filling from underneath actually looks like.
+     The black cut stays underneath the whole time, so what a student watches is
+     an outline turning into metal rather than a picture being wiped on.
+
+     THE NUMBERS: the glyph is centred at y=186 at 150px, so it runs from 111
+     down to 261. The rect rests EMPTY on the floor of it (y=261, height=0) and
+     the animation walks y up to 111 while height grows to 150. Both are CSS
+     geometry properties on an SVG rect, which is the same mechanism the wipe
+     already used - only the axis has changed. */
   var rc = S('clipPath',{id:uid+'rev'});
-  rc.appendChild(S('rect',{class:'mdrevrect', x:120,y:60,width:270,height:230}));
+  rc.appendChild(S('rect',{class:'mdrevrect', x:120, y:261, width:270, height:0}));
   defs.appendChild(rc);
-  var rev = S('g',{'clip-path':'url(#'+uid+'rev)'});
-  rev.appendChild(S('rect',{class:'mdpool', x:150,y:96,width:212,height:172,rx:26,fill:'url(#'+uid+'hot)',opacity:'.5'}));
+  var rev = S('g',{class:'mdreveal','clip-path':'url(#'+uid+'rev)'});
   rev.appendChild(glyph('mdlive'));
   svg.appendChild(rev);
 
@@ -6026,18 +6214,26 @@ MF.paintBreak = function(host, B){
        number is a swing that can never land */
     if(B.rawFor !== t.id){ B.raw = MF.pickDefault(t.ore); B.rawFor = t.id; }
 
-    /* ---- THE HAMMER BAR: the picture, then the boxes ----
+    /* ---- THE HAMMER BAR: THE CONTROLS, THEN THE PICTURE ----
        Back to typing it. The drag-a-tile-into-the-head version made the head a
        wide plate that had to hold two sign toggles, two number boxes and two
        remove buttons - it stopped looking like a hammer and it overflowed the
-       column. The boxes sit under the picture now and the hammer is the shape
-       a hammer is.
+       column.
 
        WHAT SURVIVED FROM THE TILES, because it was the actual fix and not the
        mechanism: an empty x-part box means ONE, not nought (MF.readPickM), and
        the bar echoes what the head is cut to before you swing it. Those are
        what stop a cleared box swinging 6 at a lump you meant to hit with
-       (x + 6). */
+       (x + 6).
+
+       AND THE PICTURE IS NOW BELOW THE CONTROLS RATHER THAN ABOVE THEM. The
+       anvil-and-hammer stage is the tallest thing on the bench, and it sat
+       between the pieces and the boxes you type into - so the belt, the piece
+       under the pick and the swing button could not be on one screen together
+       and every swing meant scrolling back up to check what you were hitting.
+       The order is the order of the work now: choose a piece, cut the head,
+       swing - and the blow plays out underneath the button that fired it.
+       The `reach` group measures that the three fit in one viewport. */
     var cut = E('div','cutbar');
     cut.appendChild(H('div','cutlab','UNDER THE HAMMER'));
 
@@ -6047,7 +6243,6 @@ MF.paintBreak = function(host, B){
     /* THE BURST BELONGS WHERE THE HAMMER LANDS. It was drawn in the floorbox
        above, so the noise came from one box and the blow from another. */
     stage.appendChild(MF.thudBurst(anim));
-    cut.appendChild(stage);
 
     var isNum = t.ore.kind==='number';
     B._pieceIsNum = isNum;
@@ -6084,12 +6279,15 @@ MF.paintBreak = function(host, B){
       ? 'A whole number that runs through it.'
       : 'An empty x-part is a single x. Put 0 there to take out a plain number instead.'));
 
-    var swr = E('div','row'); swr.style.marginTop='10px';
-    var sw = E('button','btn primary big','Bring the hammer down'); sw.type='button';
+    var swr = E('div','row swingrow'); swr.style.marginTop='10px';
+    var sw = E('button','btn primary big swingbtn','Bring the hammer down'); sw.type='button';
     on(sw,'click',function(){ MF.swing(B); });
     swr.appendChild(sw);
     swr.appendChild(H('div','hint','Nothing here says whether it will run. The rock does.'));
     cut.appendChild(swr);
+    /* THE ANVIL GOES IN LAST. It is the tallest thing here and it is a
+       PICTURE - the blow lands under the button that fired it. */
+    cut.appendChild(stage);
     host.appendChild(cut);
     B._cutbar = cut;
     B._stage = stage;
@@ -7207,6 +7405,31 @@ MF.validate = function(){
     chk('mold');
     if(mScene.querySelectorAll('.mdlive').length !== 1)
       errs.push('mold: "' + t.nm + '" has nothing to reveal as the metal crosses it');
+    /* NOTHING MAY SHEET OVER THE SAND. The reveal used to carry a translucent
+       orange panel across the whole cavity area alongside the glyph, and what
+       that looked like was a transparent sheet dropped over the mold rather
+       than metal arriving in a shape. The cut, its shadow and the coloured
+       glyph are the only things allowed inside the reveal. */
+    chk('mold');
+    var mRev = mScene.querySelector('.mdreveal');
+    if(!mRev){ errs.push('mold: "' + t.nm + '" has no reveal at all'); }
+    else {
+      var mStray = [].slice.call(mRev.children).filter(function(n){
+        return n.tagName.toLowerCase() !== 'text';
+      });
+      if(mStray.length)
+        errs.push('mold: the reveal for "' + t.nm + '" carries a <' + mStray[0].tagName.toLowerCase() +
+                  '> as well as the tool — anything but the glyph in there tints the sand around the shape');
+    }
+    /* AND THE FILL RISES, AND ENDS FULL. A clip rect resting empty on the floor
+       of the glyph and growing upward is what "the outline fills in" means; a
+       rect with width in it is the old left-to-right wipe. */
+    chk('mold');
+    var mClip = mScene.querySelector('.mdrevrect');
+    if(!mClip){ errs.push('mold: "' + t.nm + '" has no pour front'); }
+    else if(Number(mClip.getAttribute('height')) !== 0)
+      errs.push('mold: the cavity for "' + t.nm + '" starts already filled (height ' +
+                mClip.getAttribute('height') + ') — there is nothing to watch arrive');
   });
   /* CONTROL: a mold that shows the wrong total must be caught */
   chk('mold');
@@ -7653,6 +7876,44 @@ MF.validate = function(){
           errs.push('surface: the light they cast is no stronger at midnight than at noon (' +
             sNoonGlow.toFixed(2) + ' -> ' + sMidGlow.toFixed(2) + ')');
 
+        /* EVERY NAMED SOURCE ON THE SITE IS WIRED, and named here so that one
+           added to the scene and left off the clock fails the build. The
+           miner's helmet lamp was exactly that for the whole life of the
+           project: the one light a student identifies with, and the only one
+           that never changed. Two of the three buildings also had a second
+           window drawn as a dead rect that stayed dark through midnight while
+           the one beside it burned.
+
+           The count is a FLOOR, not an exact number - a scene is allowed to
+           gain lights. What it may not do is lose them silently. */
+        chk('surface');
+        var sWant = 16;
+        if(sLit.length + sGlow.length < sWant)
+          errs.push('surface: only ' + (sLit.length + sGlow.length) + ' lights answer the clock, and there were ' +
+                    sWant + ' — a source has been added to the scene without being wired to the day');
+        /* the helmet lamp specifically: it is inside MF.art, which draws every
+           Mr Factor on the site, and only the surface one asks to be lit */
+        chk('surface');
+        var sHelm = MF.art(74, {lit:true});
+        if(!sHelm.querySelector('.sc-lit') || !sHelm.querySelector('.sc-glow'))
+          errs.push('surface: the miner\'s helmet lamp does not answer the clock');
+        chk('surface');
+        var sPlain = MF.art(74);
+        if(sPlain.querySelector('.sc-lit') || sPlain.querySelector('.sc-glow'))
+          errs.push('surface: a Mr Factor drawn off the surface carries a day level — MF.syncDay never runs there, ' +
+                    'so it would animate the day from dawn whatever the session clock said');
+        /* NO SOURCE MAY BE CAPPED BELOW FULL. A window pinned at opacity .55
+           can never be brighter than half lit however far the ramp climbs, so
+           the level had only the top half of its range to work in. */
+        chk('surface');
+        var sCapped = sLit.filter(function(el){
+          var own = el.querySelector('[opacity]') || el;
+          var o = Number(own.getAttribute && own.getAttribute('opacity'));
+          return o > 0 && o < 0.75;
+        });
+        if(sCapped.length)
+          errs.push('surface: ' + sCapped.length + ' source(s) are pinned below full strength, so the day/night ramp ' +
+                    'cannot take them all the way up');
         /* ---- THE DAY BELONGS TO THE SESSION, NOT TO THE SCENE ----
                MF.go rebuilds a screen from nothing on every arrival, and a CSS
                animation starts at zero - so the day restarted at dawn every
@@ -8650,6 +8911,168 @@ MF.validate = function(){
   if(!lyCaught) errs.push('CONTROL: the layout sweep cannot see text running off the right edge');
   document.body.removeChild(lyStage);
   MF._mine = lySaved.mine; MF._forge = lySaved.forge;
+
+
+  /* 5n. REACH: THE WORK MUST FIT ON ONE SCREEN.
+
+         The user's requirement, and it is a design constraint with a
+         measurable form: "creating less hurdles in our UI design for students
+         that will easily give up on a site that makes them scroll or click too
+         many unnecessary buttons."
+
+         §57 is the reason this is a GROUP and not a sentence. `SITE-STATE` had
+         asserted "no horizontal page scroll" for weeks while the page scrolled
+         155px sideways, because the claim was made by hand once and could
+         never be re-run. Reach rots the same way: every panel added between
+         two controls pushes them apart by exactly as much as nobody measured.
+
+         TWO CLUSTERS, each mounted at a real width, each measured from its
+         first control to its last:
+
+           the bench  - the belt, the piece under the pick, and the swing
+           the forge  - the target, the slots, the rack, and the pour
+
+         READ THE DENOMINATOR: two clusters, two widths, one budget. It says
+         nothing about the surface, the workshops or the yard; nothing about
+         whether a control that fits is one a student will FIND; and nothing
+         about the vertical run of the page as a whole - only about the
+         distance between the first and last thing in one piece of work. */
+  var rcBudget = 800;
+  var rcStage = document.createElement('div');
+  rcStage.style.cssText = 'position:fixed; left:-9000px; top:0; overflow:visible';
+  document.body.appendChild(rcStage);
+  var rcSaved = {mine:MF._mine, forge:MF._forge, tools:MF.state.tools, cart:MF.state.cart,
+                 sel:MF.state.selected, anvil:MF.state.anvil, layer:MF.state.layer,
+                 face:MF.state.face, fl:MF.state.faceLayer, yard:MF.state.yard,
+                 forgeSt:MF.state.forge, heap:MF.state.rockpile};
+
+  var rcSpan = function(root, fromSel, toSel){
+    var a = root.querySelector(fromSel), b = root.querySelector(toSel);
+    if(!a || !b) return {missing:(!a ? fromSel : toSel)};
+    var ab = a.getBoundingClientRect(), bb = b.getBoundingClientRect();
+    return {px: Math.round(bb.bottom - ab.top), from:a, to:b};
+  };
+
+  [1280, 380].forEach(function(w){
+    rcStage.style.width = w + 'px';
+
+    /* ---- the bench: belt -> pieces -> swing ---- */
+    chk('reach');
+    rcStage.innerHTML = '';
+    var rcMine = document.createElement('div');
+    rcStage.appendChild(rcMine);
+    MF.state.tools = {lantern:{forged:true}, drill:{forged:true}, auger:{forged:true}};
+    var rcLump = {kind:'poly', a:6, b:7, c:-3, id:'reach'};
+    MF.state.cart = [rcLump]; MF.state.selected = rcLump;
+    MF.state.anvil = MF.anvilInit(rcLump); MF.state.anvil.step = 'break';
+    MF.state.layer = 5; MF.state.face = []; MF.state.faceLayer = null;
+    MF._mine = null;
+    try { MF.SCREENS.mine(rcMine); MF.paintMine(); }
+    catch(e){ errs.push('reach: the mine threw while being measured: ' + e.message); return; }
+    var rcB = rcSpan(rcMine, '.beltstrap', '.swingbtn');
+    if(rcB.missing) errs.push('reach: the bench has no ' + rcB.missing + ' to measure at ' + w + 'px');
+    else if(rcB.px > rcBudget)
+      errs.push('reach: at ' + w + 'px the bench runs ' + rcB.px + 'px from the belt to the swing — ' +
+                (rcB.px - rcBudget) + 'px more than one ' + rcBudget + 'px screen, so a student cannot see ' +
+                'what they are holding, what they are hitting and the button that hits it at the same time');
+    /* the swing must come BEFORE the anvil picture, not after it */
+    chk('reach');
+    var rcSw = rcMine.querySelector('.swingbtn'), rcAnv = rcMine.querySelector('.cutbar .anvilstage');
+    if(rcSw && rcAnv && rcSw.getBoundingClientRect().top > rcAnv.getBoundingClientRect().top)
+      errs.push('reach: the anvil picture is above the swing button again — it is the tallest thing on the bench ' +
+                'and it pushes the belt and the pieces off the screen');
+
+    /* ---- the forge: target -> slots -> rack -> pour ---- */
+    chk('reach');
+    rcStage.innerHTML = '';
+    var rcForge = document.createElement('div');
+    rcStage.appendChild(rcForge);
+    MF.state.yard = {}; MF.state.rockpile = [];
+    [{m:0,k:2},{m:0,k:3},{m:0,k:5}].forEach(function(g){ MF.addToYard(g); });
+    MF.state.forge = {picked:'lantern', slots:[], result:null};
+    try { MF.SCREENS.forge(rcForge); }
+    catch(e){ errs.push('reach: the forge threw while being measured: ' + e.message); return; }
+    var rcF = rcSpan(rcForge, '.castfor', '.pourbtn');
+    if(rcF.missing) errs.push('reach: the craft floor has no ' + rcF.missing + ' to measure at ' + w + 'px');
+    else if(rcF.px > rcBudget)
+      errs.push('reach: at ' + w + 'px the craft floor runs ' + rcF.px + 'px from the target to the pour — ' +
+                (rcF.px - rcBudget) + 'px more than one ' + rcBudget + 'px screen');
+
+    /* THE RACK MUST BE BETWEEN THE SLOTS AND THE POUR, and all three inside the
+       craft panel. A rack in a sibling panel above is the layout this replaced. */
+    chk('reach');
+    var craft = rcForge.querySelector('.craft');
+    var rcRack = craft && craft.querySelector('.shelfrow');
+    var rcCru = craft && craft.querySelector('.crucible');
+    var rcPour = craft && craft.querySelector('.pourbtn');
+    if(!rcRack || !rcCru || !rcPour){
+      errs.push('reach: the craft floor is missing ' +
+        (!rcCru ? 'its slots' : (!rcRack ? 'the rack' : 'the pour button')) + ' — they must be one cluster');
+    } else {
+      var yC = rcCru.getBoundingClientRect().bottom,
+          yR = rcRack.getBoundingClientRect().top,
+          yP = rcPour.getBoundingClientRect().top;
+      if(!(yR >= yC - 1 && yP >= yR - 1))
+        errs.push('reach: the craft floor is out of order — slots, then the rack, then the pour');
+    }
+
+    /* THE DROP THAT FILLS THE MOLD MUST HAND FOCUS TO THE POUR. This is the
+       whole point of arming it: the next thing to do is the next thing your
+       hands are already on, with no hunting and no scroll. It shipped broken
+       once already - focus() was called on the panel before it was mounted, so
+       it did nothing and said nothing, which is the silent-failure class §35
+       is about. */
+    chk('reach');
+    if(rcRack && rcPour){
+      var rcMetals = rcRack.querySelectorAll('.metalbtn:not(.spent)');
+      var rcWant = MF.slotsWanted(MF.TOOLS.lantern);
+      if(rcMetals.length >= rcWant){
+        for(var rcI=0; rcI<rcWant; rcI++){
+          var rcNext = rcForge.querySelector('.craft .metalbtn:not(.spent)');
+          if(rcNext) rcNext.click();
+        }
+        var rcNowPour = rcForge.querySelector('.craft .pourbtn');
+        if(!rcNowPour || rcNowPour.disabled)
+          errs.push('reach: filling every slot did not arm the pour button');
+        else if(document.activeElement !== rcNowPour)
+          errs.push('reach: the metal that filled the mold did not hand focus to the pour button — ' +
+                    'a student has to go and find it');
+      }
+    }
+  });
+
+  /* CONTROL 1: the bench cluster must overflow if the anvil goes back on top */
+  chk('reach');
+  rcStage.style.width = '1280px';
+  rcStage.innerHTML = '';
+  var rcCtl = document.createElement('div');
+  rcStage.appendChild(rcCtl);
+  var rcTall = document.createElement('div');
+  rcTall.style.cssText = 'height:900px';
+  rcCtl.appendChild(H('div','beltstrap','belt'));
+  rcCtl.appendChild(rcTall);
+  var rcBtn = E('button','swingbtn','swing');
+  rcCtl.appendChild(rcBtn);
+  var rcCheck = rcSpan(rcCtl, '.beltstrap', '.swingbtn');
+  if(rcCheck.missing || rcCheck.px <= rcBudget)
+    errs.push('CONTROL: the reach check cannot see a cluster taller than one screen');
+  /* CONTROL 2: an out-of-order craft floor must be caught */
+  chk('reach');
+  rcStage.innerHTML = '';
+  var rcOrd = document.createElement('div');
+  rcStage.appendChild(rcOrd);
+  rcOrd.innerHTML = '<div class="craft"><div class="shelfrow">rack</div>' +
+                    '<div class="crucible">slots</div><button class="pourbtn">pour</button></div>';
+  var oC = rcOrd.querySelector('.crucible').getBoundingClientRect().bottom,
+      oR = rcOrd.querySelector('.shelfrow').getBoundingClientRect().top;
+  if(oR >= oC - 1)
+    errs.push('CONTROL: the reach check cannot see a rack sitting above the slots');
+
+  document.body.removeChild(rcStage);
+  MF._mine = rcSaved.mine; MF._forge = rcSaved.forge; MF.state.tools = rcSaved.tools;
+  MF.state.cart = rcSaved.cart; MF.state.selected = rcSaved.sel; MF.state.anvil = rcSaved.anvil;
+  MF.state.layer = rcSaved.layer; MF.state.face = rcSaved.face; MF.state.faceLayer = rcSaved.fl;
+  MF.state.yard = rcSaved.yard; MF.state.forge = rcSaved.forgeSt; MF.state.rockpile = rcSaved.heap;
 
   /* 6. NOTHING ON SCREEN MAY HAVE A CEILING, A PERCENTAGE, OR A COMPARISON.
         This is a stated requirement, so it is checked mechanically rather

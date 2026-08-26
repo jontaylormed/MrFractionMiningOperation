@@ -398,3 +398,65 @@ tally, no "correct", no attempt counter and nothing that goes up or down.
 
 Everything §8 excludes, unchanged. No workshop gates anything, and nothing in the
 Casting Shed is required before any layer of the mine.
+
+---
+
+## 15. Amendment, 2026-08-25 — reach is a requirement, and the pour still judges
+
+> **The user's words:** *"Scrolling to find buttons and belts need to be addressed
+> with the mind of creating less hurdles in our UI design for students that will
+> easily give up on a site that makes them scroll or click too many unnecessary
+> buttons."*
+
+This is the first requirement in this spec that is about **getting to** the work
+rather than about the work. It is written down because it is exactly the kind of
+claim that rots: `SITE-STATE` asserted "no horizontal page scroll" for weeks while
+the page scrolled 155px sideways (`VERIFICATION` §57), and reach decays the same way
+— every panel added between two controls pushes them apart by exactly as much as
+nobody measured.
+
+**So reach is a budget, and the `reach` group enforces it.** The bench (belt →
+pieces → swing) and the craft floor (target → mold → slots → rack → pour) must each
+fit inside one 800px screen, measured at two widths, with controls that must fail.
+
+### 15a. The pour button arms on FULL, and never on CORRECT
+
+The user asked for the pour button to be *"selected when the correct factors"*. Asked
+to choose, they took the reading that keeps the casting as the judge:
+
+> **The button is bright, armed and focused the moment the last slot fills — and a
+> wrong set of metals looks exactly like a right one.**
+
+Lighting it only for a correct set would hand over the answer before the pour, which
+is precisely the fault §10a removed the free casting preview over: it makes the pour
+ceremonial and leaves §6 with no mechanism. What the student gets instead is the
+*absence of a hurdle* — the next thing to do is the next thing on screen, under the
+hand that just dropped the metal.
+
+### 15b. The forge is one cluster; the heap moved under it
+
+Target, mold, slots, rack, pour, in that order, with nothing between any two of them.
+The rack used to be a panel of its own **above** the craft floor with the heap between
+it and the mold, so filling a three-metal order meant five scroll moves, none of which
+was mathematics. The heap and the drawn yard are still there — §11d is untouched —
+they are simply no longer standing between the student and the work.
+
+### 15c. The mine: the picture goes below the controls
+
+The belt was already beside the pieces. What separated them from the swing was the
+anvil-and-hammer stage, the tallest thing on the bench. The order is the order of the
+work now — choose a piece, cut the head, swing — and **the blow plays out underneath
+the button that fired it**. The three-second arc is untouched.
+
+### 15d. Light is contrast, not brightness
+
+Every named source now answers the day: the windmill's four windows, both of the Stamp
+Mill's, both of the Casting Shed's, the furnace, the lanterns, and — for the first time
+— **the miner's helmet lamp**, which was the one light a student identifies with and
+the only one that never changed.
+
+> **And turning them up was not enough.** `.sc-night` is a multiply blend over the
+> whole site, so it took the lamps down with the hillside and the contrast between a
+> lit window and the wall around it barely moved. The halos are painted **after** the
+> night in a `screen`-blended layer, which can only ever add light. The night still
+> falls on the whole operation; the lights now cut holes in it.

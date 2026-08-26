@@ -812,3 +812,54 @@ what it is for. Control: nowrap text far wider than the stage.
 - **A false green is the expensive kind.** Thirty groups and 9,500 checks said nothing
   while the page scrolled sideways; the fix was one more group, not more checks in the
   ones that already existed.
+
+## 58. Reach is a budget, and a multiply blend takes the lamps down with the hillside
+
+Two findings, one session, and both were invisible to every group that existed.
+
+### The craft floor was 1399px from the target to the pour
+
+The new `reach` group measures the span from the first control of a work cluster to
+its last and fails if it will not fit one 800px screen. It fired on its first run:
+
+> The mold is a 400×300 drawing at `width:100%`, so on a wide screen it grew to fill
+> the column. Nothing was wrong with the markup, nothing overflowed anything, and no
+> other check has an opinion about how tall a picture is allowed to be.
+
+`.moldwrap` is capped at 430px now. **The number came from the check, not from a
+person squinting at a screenshot** — which is the whole point of §57's lesson applied
+one step further: a geometric requirement gets a group.
+
+### focus() on an unmounted node does nothing and says nothing
+
+The pour button is supposed to take focus on the drop that fills the mold. It was
+called before `host.appendChild(box)`, so the button was not in the document yet.
+
+> A control that looks wired and silently is not — the same class as painting into a
+> detached column (§35), and it survived a by-hand check because "the button is bright
+> and one click away" was true and the focus part simply never happened.
+
+It is asserted now: the `reach` group clicks metals until the mold is full and requires
+`document.activeElement` to be the pour button.
+
+### The night was cancelling the lights
+
+`.sc-night` is a `mix-blend-mode:multiply` rect over the whole site. Multiply darkens
+everything beneath it, so raising the lamp keyframes from `.55 → 1` to `.34 → 1` made
+the sources brighter *and the scene no more legible*, because the same rect immediately
+took them back down.
+
+> **You cannot win a multiply by turning the input up.** The halos are painted after
+> the night rect in a `screen`-blended layer, which can only add. Noon 0.03 →
+> midnight 0.92, over a night that still falls on the whole operation.
+
+**The rules.**
+
+- **A requirement about reaching the work is measurable, so measure it.** "Fewer
+  hurdles" reads as taste and behaves as geometry.
+- **Check the blend before you tune the value.** If a later layer composites over a
+  thing, changing that thing's opacity is arguing with the wrong operator.
+- **`focus()` is silent on a detached node.** So is a lot else; mount first, then wire.
+- **A picture is not the work.** The mold, the anvil and the room banners are all
+  `width:100%` drawings, and every one of them is a candidate for pushing the controls
+  off the screen the moment the column gets wide.
