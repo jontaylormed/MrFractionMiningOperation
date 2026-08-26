@@ -2750,6 +2750,101 @@ function lantern(parent, cx, cy, scale, glowR){
   return g;
 }
 
+
+/* =========================================================================
+   A TILED ROOF WITH A GUTTER ON IT. Module scope, and all three buildings on
+   the surface call it - the Stamp Mill, the Casting Shed and the Forge.
+
+   They had a flat coloured triangle each. The forge had seven rake lines
+   standing in for pantiles, which is a hint at a roof rather than a roof, and
+   the other two had nothing at all: a shed is a box with a wedge on top until
+   the wedge has courses in it.
+
+   ONE BUILDER, THREE ROOFS. Three copies of a tiling loop is three chances for
+   one of them to drift, and this is the same reason `lantern`, `nameplate` and
+   `lit` are up here rather than inside a scene. The caller passes the geometry
+   and the palette; everything about how a tile is drawn lives once.
+
+   THE TILES ARE CLIPPED TO THE PITCH. Courses are drawn as full-width rows
+   across the roof's bounding box and cut to the triangle, so they narrow
+   toward the ridge on their own - laying each course to its own width would be
+   arithmetic that has to be kept in step with the roof line, and it would not
+   be.
+
+   THE GUTTER IS A REAL FIXTURE: a trough along the eaves with its inside in
+   shadow, brackets under it, a downpipe running to the ground and a shoe at
+   the bottom throwing the water clear of the wall. It hangs BELOW the fascia,
+   which is where a gutter goes.
+   ========================================================================= */
+function tiledRoof(parent, o){
+  var id = 'rf' + (tiledRoof._n = (tiledRoof._n || 0) + 1);
+  var lx = o.lx, rx = o.rx, ey = o.ey, ax = o.ax, ay = o.ay;
+  var tri = 'M' + lx + ' ' + ey + ' L' + ax + ' ' + ay + ' L' + rx + ' ' + ey + ' Z';
+
+  /* the pitch itself */
+  parent.appendChild(S('path', {d: tri, fill: o.tile}));
+
+  /* courses of tiles, cut to the pitch */
+  var defs = S('defs', {});
+  var cp = S('clipPath', {id: id});
+  cp.appendChild(S('path', {d: tri}));
+  defs.appendChild(cp);
+  parent.appendChild(defs);
+
+  var tg = S('g', {'clip-path': 'url(#' + id + ')'});
+  var step = o.course || 8, tw = o.tileW || 13;
+  for (var y = ay; y < ey + step; y += step) {
+    var row = Math.round((y - ay) / step);
+    /* the lap: each course throws a line of shadow onto the one below it */
+    tg.appendChild(S('rect', {x: String(lx - 8), y: String(y), width: String(rx - lx + 16),
+      height: '2', fill: o.tileDark, opacity: '.55'}));
+    /* and the tiles in that course, offset row to row so no joint runs */
+    for (var x = lx - 8 + (row % 2 ? tw / 2 : 0); x < rx + 8; x += tw) {
+      tg.appendChild(S('rect', {x: String(x + 1), y: String(y + 2), width: String(tw - 2),
+        height: String(step - 2), rx: '2.5', fill: o.tileLit || o.tile, opacity: '.45'}));
+      tg.appendChild(S('rect', {x: String(x + tw - 1), y: String(y + 2), width: '1.3',
+        height: String(step - 2), fill: o.tileDark, opacity: '.42'}));
+    }
+  }
+  parent.appendChild(tg);
+
+  /* the ridge cap, sat over the apex where the two pitches meet */
+  parent.appendChild(S('path', {d: 'M' + (ax - 11) + ' ' + (ay + 6) + ' L' + (ax + 11) + ' ' + (ay + 6) +
+    ' L' + (ax + 7) + ' ' + (ay - 2) + ' L' + (ax - 7) + ' ' + (ay - 2) + ' Z', fill: o.ridge || o.tileDark}));
+
+  /* the fascia board along the eaves */
+  parent.appendChild(S('rect', {x: String(lx - 4), y: String(ey - 4), width: String(rx - lx + 8),
+    height: '7', rx: '2', fill: o.fascia || o.tileDark}));
+
+  /* ---- THE GUTTER ---- brackets first, so they sit behind the trough */
+  var gx = lx - 6, gw = rx - lx + 12, gy = ey + 3;
+  for (var bx = gx + 9; bx < gx + gw - 6; bx += 27)
+    parent.appendChild(S('rect', {x: String(bx), y: String(gy - 2), width: '3', height: '9',
+      rx: '1', fill: o.gutterDark}));
+  parent.appendChild(S('rect', {x: String(gx), y: String(gy), width: String(gw), height: '6',
+    rx: '3', fill: o.gutter}));
+  /* the inside of the channel, in shadow - a gutter is a trough, not a pipe */
+  parent.appendChild(S('rect', {x: String(gx + 2), y: String(gy + 0.6), width: String(gw - 4),
+    height: '2', rx: '1', fill: o.gutterDark, opacity: '.75'}));
+
+  /* ---- THE DOWNPIPE ---- from the gutter to the ground, with a shoe */
+  if (o.downX != null) {
+    var dx = o.downX, dTop = gy + 5, dBot = o.downTo;
+    parent.appendChild(S('rect', {x: String(dx), y: String(dTop), width: '5',
+      height: String(dBot - dTop), rx: '2', fill: o.gutter}));
+    parent.appendChild(S('rect', {x: String(dx + 3.2), y: String(dTop), width: '1.4',
+      height: String(dBot - dTop), fill: o.gutterDark, opacity: '.5'}));
+    /* the bands that strap it to the wall */
+    [0.34, 0.72].forEach(function (f) {
+      parent.appendChild(S('rect', {x: String(dx - 1.6), y: String(dTop + (dBot - dTop) * f),
+        width: '8.2', height: '2.6', rx: '1', fill: o.gutterDark}));
+    });
+    /* and the shoe at the foot, throwing the water clear of the wall */
+    parent.appendChild(S('path', {d: 'M' + dx + ' ' + dBot + ' l5 0 l4 7 l-3 2.5 l-6 -6 Z',
+      fill: o.gutter}));
+  }
+}
+
 /* A nameplate BOLTED TO A FACADE. Module scope, not inside a scene: it was
    first written inside roomScene by accident - both scene builders have an
    identically shaped P() helper - so surfaceScene could not see it and every
@@ -2932,8 +3027,14 @@ MF.surfaceScene = function(){
          wrong doors. ---- */
   var sm = S('g',{transform:'translate(232,214)'});
   sm.appendChild(S('rect',{x:'0',y:'44',width:'132',height:'92',rx:'4',fill:'#7A5B3A'}));
-  sm.appendChild(S('path',{d:'M-10 44 L66 6 L142 44 Z',fill:'#8C4A3F'}));
-  sm.appendChild(S('rect',{x:'-12',y:'40',width:'156',height:'7',rx:'2',fill:'#6B3F32'}));
+  /* clay pantiles, a ridge cap, and a gutter with a downpipe to the ground */
+  tiledRoof(sm, {lx:-10, rx:142, ey:44, ax:66, ay:6,
+    tile:'#8C4A3F', tileLit:'#A85C4C', tileDark:'#5E2C24', ridge:'#6B3F32',
+    fascia:'#6B3F32', gutter:'#8A8478', gutterDark:'#4A463E',
+    /* the LEFT corner: at the right-hand one the pipe came down exactly where
+       Mr Factor stands, and he covered the whole run of it. A gutter drains at
+       a corner anyway - mid-wall is the wrong place for one. */
+    downX:1, downTo:132});
   /* the stack runs from its cap all the way DOWN INTO THE BODY at y=48, so it
      passes through the roofline (y≈17 at this x) instead of resting near it */
   sm.appendChild(S('rect',{x:'92',y:'-24',width:'24',height:'72',fill:'#6B4A32'}));
@@ -2965,8 +3066,11 @@ MF.surfaceScene = function(){
   /* ---- THE CASTING SHED -> the mold workshop. Ingots stacked outside. ---- */
   var cs = S('g',{transform:'translate(400,236)'});
   cs.appendChild(S('rect',{x:'0',y:'34',width:'118',height:'82',rx:'4',fill:'#6E7B87'}));
-  cs.appendChild(S('path',{d:'M-8 34 L59 4 L126 34 Z',fill:'#4A5560'}));
-  cs.appendChild(S('rect',{x:'-10',y:'30',width:'138',height:'7',rx:'2',fill:'#3E4750'}));
+  /* slate, to match the shed's grey walls, and a lead gutter down the far end */
+  tiledRoof(cs, {lx:-8, rx:126, ey:34, ax:59, ay:4,
+    tile:'#4A5560', tileLit:'#5E6C79', tileDark:'#2E3840', ridge:'#3E4750',
+    fascia:'#3E4750', gutter:'#7E8892', gutterDark:'#414A52',
+    downX:113, downTo:112});
   nameplate(cs, 59, 44, 'Casting Shed');
   /* BOTH THE SHED'S WINDOWS BURN. The second was slate-coloured and never lit;
      the tall one on the end is the door and stays dark. */
@@ -3011,12 +3115,13 @@ MF.surfaceScene = function(){
     }
   });
   fg.appendChild(S('rect',{x:'-4',y:'116',width:'126',height:'8',rx:'2',fill:'#4A3A2E'}));
-  fg.appendChild(S('path',{d:'M-8 38 L59 6 L126 38 Z',fill:'#6B3F32'}));
-  /* pantiles on the roof */
-  for(var tl=0; tl<7; tl++)
-    fg.appendChild(S('path',{d:'M'+(-2+tl*17)+' 38 L'+(57-tl*7.3)+' 9',
-      stroke:'#5A3428','stroke-width':'1.6',opacity:'.5',fill:'none'}));
-  fg.appendChild(S('rect',{x:'-10',y:'34',width:'138',height:'7',rx:'2',fill:'#5A3428'}));
+  /* THE PANTILES ARE REAL COURSES NOW. They were seven rake lines drawn from
+     the eaves to the ridge - a hint at a roof rather than a roof, and the only
+     one of the three buildings that had even that. */
+  tiledRoof(fg, {lx:-8, rx:126, ey:38, ax:59, ay:6,
+    tile:'#6B3F32', tileLit:'#8A5240', tileDark:'#472619', ridge:'#5A3428',
+    fascia:'#5A3428', gutter:'#8A8478', gutterDark:'#4A463E',
+    downX:2, downTo:114});
   nameplate(fg, 59, 47, 'The Forge');
 
   /* TWO CHIMNEYS: the tall one off the hearth, and a squatter one off the

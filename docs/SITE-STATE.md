@@ -136,7 +136,15 @@ Under `prefers-reduced-motion` the day stops at noon rather than flickering thro
 
 > **No source may be capped below full, either.** A window pinned at `opacity:.55` can never be brighter than half lit however far the ramp climbs, which left the level only the top half of its range — the windmill's windows shipped that way. The `surface` group (58) asserts it, along with a floor on how many sources are wired at all, so a light added to the scene and left off the clock fails the build. Controls: the helmet unwired, and a window pinned back to .55 — both caught.
 
-**The forge has two chimneys** — the tall one off the hearth and a squatter one off the second fire, each smoking on its own delay — and its walls are **coursed rubble stone**: offset joints, dressed quoins down both corners, a heavy sill course, pantiles on the roof, and a pool of furnace light on the ground outside.
+**All three buildings have tiled roofs and rain gutters**, drawn by one module-scope `tiledRoof` — the Stamp Mill in clay pantiles, the Casting Shed in slate, the Forge in warm pantiles. Each gets courses of tiles offset row to row so no joint runs, a ridge cap over the apex, a fascia board, and a **gutter**: a trough along the eaves with its inside in shadow, brackets under it, a downpipe strapped to the wall and a shoe at the foot throwing the water clear.
+
+They were three flat coloured triangles before. The Forge had seven rake lines drawn from eaves to ridge — a hint at a roof rather than a roof — and it was the only one of the three with even that.
+
+> **The tiles are clipped to the pitch.** Courses are laid as full-width rows across the roof's bounding box and cut to the triangle, so they narrow toward the ridge on their own. Laying each course to its own width would be arithmetic that has to be kept in step with the roofline, and it would not be.
+
+> **The Stamp Mill's downpipe is on the LEFT corner, and that is not arbitrary.** On the right it came down exactly where Mr Factor stands and he covered the entire run of it — found by asking `elementsFromPoint` what was on top, after a pixel sample said the pipe was the wrong colour. A gutter drains at a corner anyway; mid-wall is the wrong place for one.
+
+**The forge has two chimneys** — the tall one off the hearth and a squatter one off the second fire, each smoking on its own delay — and its walls are **coursed rubble stone**: offset joints, dressed quoins down both corners, a heavy sill course, a tiled roof with a gutter on it, and a pool of furnace light on the ground outside.
 
 > **The `surface` group (58) checks all of it**, and it has to run on a **live, mounted** scene: a detached svg has no running animations and `getBBox` on one returns zeroes, so a probe-built check would have passed for exactly the wrong reason. It asserts no window's box meets the door's; that every part of the day runs for the same 240,000ms; that the sun is up at noon and under at midnight with the moon opposite; that each sky owns its phase; that **no light carries both the flicker and a level**; that the lamps and their cast light are **measurably brighter at midnight**; and that the forge smokes from two flues. Controls: the windows back where they shipped (2 errors), one part of the day on a 90s clock (2), the sun stopped (1), the flicker/level conflict restored (10), lights that never brighten (2), the forge back to one chimney (1).
 
@@ -230,7 +238,6 @@ Plain numbers → a metal spread over a bracket → two brackets → a square �
 
 > **The `mold` group (95) asserts the property, not the implementation.** It used to require the reveal to hold *nothing but a `<text>`* — which was true, and was the defect. Every child of the reveal must now be **masked**, which catches both faults at once: a masked child cannot paint outside the silhouette, and a mask means the colour comes from a fill rather than from whatever palette the font happens to carry. It also asserts the mask is cut from the tool's **own icon** and that the metal is filled with a gradient. Controls: the bare glyph put back, an unmasked panel, a mask cut to the wrong tool, a flat fill — all four caught.
 
-
 **And the liquid is the background for the maths**, with the operations written out:
 
 ```
@@ -284,8 +291,6 @@ Metals are **spent** here — this is the yard's sink. Forging *is* distributing
 - **`MF.areaModel` appends; it does not own its host.** It once opened with `innerHTML=''` and deleted authored content at two of six call sites.
 - **The picture shows what is GIVEN.** Where a question is being asked, sides are dashed slots holding `?`.
 - **Described, never graded** — and now **spendable**. No percentages, no accuracy, no X-out-of-Y, no ranks, nothing with a ceiling, nothing that goes down. Requirements are drawn as slots, never counted.
-
-
 
 ## The work fits on one screen, and that is measured
 
