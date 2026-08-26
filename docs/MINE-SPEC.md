@@ -247,3 +247,92 @@ Everything §8 excludes, unchanged — the guided route, the fully open face, th
 A precise target can be an **unreachable** one. The `forge` group stocks a yard from 70 real smelts and asserts, per order, that some set of metals on it casts the object, that those metals are judged sound, that one metal nudged by one is **not**, and that the rejection says where it missed. It also asserts the ranks run 1..n with no ties and that no two orders share a target.
 
 **Still binding:** a tool assists, it never gates (§10a). Nothing on the board is required to work any layer.
+
+---
+
+## 13. Amendment, 2026-08-25 — a tool shows PART of a factorisation, and the hammer confirms it
+
+A user decision changed what an instrument is allowed to say. Recorded here rather
+than applied silently.
+
+> **The user's words:** *"The lantern, when put on the ore, should give the answer,
+> but it should show one factor and put a ? for the other factor. Each tool is a
+> schema for approaching the ore to identify the more complex factors."*
+>
+> and, on what that means for the rest of the belt: *"The tools is help realize part
+> of the factor not all the factor. The hammer should comfirm the test. Other tools
+> should factor by grouping or factor with the box method."*
+
+### 13a. The binding rule loosens by exactly one notch
+
+§10a's instruments obeyed *an instrument may say what IS THERE, never what to swing*.
+That is now too tight in one direction and it was never the real constraint. The rule
+is:
+
+> **A tool may show PART of a factorisation. It may never show all of it.**
+
+The Lantern lights **one side** and prints `?` for the other. The Drill lists every
+pair and marks none. The Auger reads what a seam has to satisfy and chooses nothing.
+The rule is enforced mechanically, over all seven tools, by the `schema` group — a
+method that prints every side of a lump fails the build — and, for the Lantern
+specifically, in both directions by the amended `sheet` group.
+
+**Why one side is not the answer.** A factorisation has two sides and they are not
+independent: once one is out, the other is exactly what is left. So one side is a
+foothold, and the division that gets you the other is the work. The Lantern lights
+the **simpler** side, so a loaded lump still leaves the harder half.
+
+### 13b. Every tool is a named method, and two of them are the ones the user named
+
+Each instrument now carries a **schema**: the real name of the move, why it works, and
+the method worked on the lump in front of you, with the steps that are still the
+student's marked open and drawn as `?`.
+
+| rank | tool | the method, by its real name |
+|---|---|---|
+| 1 | Deep Pick | cutting at the face — it has no factoring move, and says so |
+| 2 | Lantern | one side lit, one side dark |
+| 3 | Steel Pick | pulling out the common factor (the GCF) |
+| 4 | Decimal Dial | the whole-number test |
+| 5 | Shifter | **the box method** — a 2×2 box with both sides dashed |
+| 6 | Drill | the pair hunt, and the difference of two squares |
+| 7 | Powered Auger | **factoring by grouping** |
+
+The two the user named sit at ranks 5 and 7, where the ore is loaded enough to need
+them.
+
+### 13c. Nothing in a panel judges. The hammer does.
+
+§11e says the rock is the only judge in the mine, and that is untouched. What a
+student writes in the `?` goes to the **pick bar** — `MF.cutHammerTo` — and they
+swing it. The panel says nothing about whether it will run. A wrong answer gets no
+warning and the hammer glances off, exactly as it does for anything else typed into
+the bar.
+
+### 13d. The forge teaches the tool it hands over
+
+A sound pour now lands the casting, the verdict, **a short tutorial** — the method,
+why it works, and one practice on a fixed lump — and then the belt. The practice has
+no judge of its own: it hands the answer to `MF.breakOff`, the same engine the anvil
+swings through, so a miss is described by the rock rather than marked. The same
+tutorial reopens from the belt, because a lesson that exists only in the three
+seconds after a pour is a lesson nobody re-reads.
+
+### 13e. The Casting Shed is the learning hub
+
+It still teaches the mold. Under it now: a **translation table** from every mining
+word to the mathematics it stands for — ore→expression, seam→factor,
+breaking→factoring, **native metal→a prime or an irreducible polynomial**, twin
+seam→difference of two squares, common metal→GCF, loaded ore→`ax² + bx + c` with
+`a ≠ 1`, the pour→the distributive property — every row carrying a worked example
+**generated from the engine and asserted by the `rosetta` group**, so a row cannot
+drift into teaching a falsehood. Then all seven methods, readable whether or not you
+own the tool, and a way into every other room.
+
+**The building keeps its name.** It is the Casting Shed, and the `doors` assertion
+`/Cast|Mold/` does not move.
+
+### 13f. Still out
+
+Everything §8 excludes, unchanged. **Also still out:** any second judge in the mine.
+A panel that marked an answer would be exactly the thing §11e forbids.

@@ -874,6 +874,93 @@ input[type=range]{width:100%; accent-color:var(--ore); height:44px}
 .pickbtn:hover{border-color:var(--ore); background:#FFF6EA}
 
 /* =========================================================================
+   THE SCHEMAS. A method drawn as a numbered method, with the steps that are
+   still the student's marked as open rather than merely unfilled - an open
+   step and a finished step that look alike is a list nobody reads twice.
+   ========================================================================= */
+.schema{background:#FFFCF6; border:2px solid var(--tan); border-left:6px solid var(--ore);
+  border-radius:0 12px 12px 0; padding:13px 16px; margin:13px 0}
+.schema .slab{font-family:var(--display); font-size:11px; letter-spacing:.12em; color:var(--ore-t)}
+.schema .snm{font-family:var(--display); font-size:clamp(18px,2.7vw,22px); line-height:1.2; color:var(--ink); margin:1px 0 5px}
+.schema .swhy{font-size:15px; color:var(--ink-soft); max-width:66ch}
+ol.ssteps{margin:11px 0 0; padding-left:22px}
+ol.ssteps li{margin-bottom:10px; padding-left:4px}
+ol.ssteps li::marker{font-family:var(--display); color:var(--ore-t)}
+ol.ssteps li.open::marker{color:var(--vein)}
+.ssteps .sact{font-size:15px; color:var(--ink)}
+.ssteps .sshow{font-family:var(--display); font-size:clamp(16px,2.3vw,20px); color:var(--ink);
+  background:#fff; border:2px solid var(--rule); border-radius:9px; padding:6px 11px;
+  margin-top:5px; display:inline-block; max-width:100%; overflow-x:auto}
+/* an open step is the student's, and it says so in the colour the mine uses
+   for a seam that has not been driven yet */
+.ssteps li.open{border-left:4px dashed var(--vein); margin-left:-14px; padding-left:14px}
+.ssteps li.open .sact{color:var(--vein)}
+.schema .sfoot{font-size:13px; color:var(--ink-soft); margin-top:9px; font-style:italic}
+/* THE ?. It is the one mark on this page that means "and this part is yours",
+   so it is the same shape everywhere it appears. */
+.qm{font-family:var(--display); font-size:1.12em; color:var(--vein); background:#E8F2EE;
+  border:2px dashed var(--vein-lite); border-radius:7px; padding:0 .34em; display:inline-block}
+
+/* the lantern's one lit side */
+.onesided{background:#FFF6E3; border:3px solid var(--lamp); border-radius:12px; padding:12px 15px; margin:12px 0}
+.onesided .oslab{font-family:var(--display); font-size:11px; letter-spacing:.11em; color:#7F570B}
+.onesided .eq{margin:3px 0 4px; color:#4A3410; overflow-x:auto}
+.onesided .hint{color:#5A4B2A}
+
+/* naming the other side, and taking it to the anvil. The panel does NOT judge
+   it - the button cuts the hammer and the rock answers. */
+.nameside{background:#241D18; border:2px dashed #6B5B48; border-radius:12px; padding:12px 14px; margin:13px 0; color:#E4D5BB}
+.nameside .nslab{font-family:var(--display); font-size:11px; letter-spacing:.1em; color:var(--lamp)}
+.nameside .nshint{font-size:14px; color:#C9B695; margin:2px 0 9px; max-width:60ch}
+.nsrow{display:flex; align-items:center; gap:11px; flex-wrap:wrap}
+.nssay{margin-top:8px}
+.nssay .hint{color:#C9B695}
+
+/* =========================================================================
+   THE FORGE'S TUTORIAL, and the same block in the Casting Shed.
+   ========================================================================= */
+.lesson{background:var(--paper); border:3px solid var(--tan); border-radius:14px; padding:15px 17px; margin:14px 0}
+.lesson .lslab{font-family:var(--display); font-size:11px; letter-spacing:.12em; color:var(--ore-t)}
+.lesson .lsnm{font-family:var(--display); font-size:clamp(19px,3vw,24px); line-height:1.2; margin:2px 0 6px;
+  display:flex; align-items:center; gap:9px}
+.lesson .lsic{font-size:26px}
+.lesson .lswhy{font-size:15px; color:var(--ink-soft); max-width:66ch}
+.lesson .schema{background:#fff}
+.practice{background:#fff; border:2px solid var(--rule); border-radius:12px; padding:13px 15px; margin-top:13px}
+.practice .prlab{font-family:var(--display); font-size:11px; letter-spacing:.12em; color:var(--vein)}
+.practice .eq{margin:2px 0 4px}
+.practice .prask{font-size:15px; color:var(--ink); margin-bottom:9px; max-width:62ch}
+.practice .prout{margin-top:4px}
+
+/* =========================================================================
+   THE TRANSLATION TABLE. Two columns that mean the same thing, and a third
+   that proves it.
+   ========================================================================= */
+table.rosetta{border-collapse:collapse; width:100%; font-size:15px; margin-top:10px; display:block; overflow-x:auto}
+table.rosetta th{font-family:var(--display); font-weight:400; font-size:12px; letter-spacing:.06em; text-transform:uppercase;
+  color:var(--ore-t); text-align:left; padding:6px 16px 6px 0; border-bottom:2px solid var(--rule); white-space:nowrap}
+table.rosetta td{padding:9px 16px 9px 0; border-bottom:1px solid var(--rule); vertical-align:top}
+table.rosetta td.rm{min-width:150px}
+table.rosetta td.rm b{font-family:var(--display); font-weight:400; font-size:17px}
+table.rosetta .rn{font-size:13px; color:var(--ink-soft); margin-top:3px; max-width:38ch}
+table.rosetta td.rr{font-family:var(--display); font-size:16px; color:var(--vein); min-width:150px}
+table.rosetta td.rx{font-family:var(--display); font-size:16px; color:var(--ink); min-width:150px}
+
+/* the seven methods, folded away until wanted */
+.schemadet{border:2px solid var(--rule); border-radius:12px; background:#FFFCF6; margin:9px 0; overflow:hidden}
+.schemadet summary{display:flex; align-items:center; gap:10px; flex-wrap:wrap; cursor:pointer;
+  padding:12px 15px; min-height:44px; list-style:none}
+.schemadet summary::-webkit-details-marker{display:none}
+.schemadet summary:before{content:"▸"; color:var(--ore-t); font-size:15px}
+.schemadet[open] summary:before{content:"▾"}
+.schemadet summary:hover{background:#FFF6EA}
+.sdic{font-size:22px}
+.sdnm{font-family:var(--display); font-size:17px; color:var(--ink)}
+.sdtool{font-size:13px; color:var(--ink-soft)}
+.sdbody{padding:0 15px 13px}
+.sdbody .lesson{margin-top:0}
+
+/* =========================================================================
    THE WORLD. Everything below exists to make the page feel like a PLACE.
    Rules it follows: motion carries weight (a pick swings and lands, it does
    not fade); nothing that moves reports a quantity; every layer is its own
@@ -1812,20 +1899,350 @@ MF.castText = function(t){ return quad(t.cast.a, t.cast.b, t.cast.c); };
 MF.hasTool = function(k){ return !!MF.state.tools[k]; };
 
 /* =========================================================================
+   THE SCHEMAS. A tool is a METHOD, not a remark.
+
+   USER DECISION, 2026-08-25 (MINE-SPEC §13): "Each tool is a schema for
+   approaching the ore... The tools is help realize part of the factor not all
+   the factor. The hammer should confirm the test."
+
+   So the old binding rule loosens by exactly one notch and no further. An
+   instrument may now show PART of a factorisation - one side of it, one step
+   of a named method - and must never show all of it. And nothing here judges:
+   what a student names goes to the anvil and the ROCK answers, which is the
+   mine's only correctness signal (MINE-SPEC §11e).
+
+   ONE SOURCE, THREE SURFACES. The same schema is rendered in the tool panel
+   (worked on the live lump), in the forge's tutorial (worked on a fixed
+   example, with a practice), and in the Casting Shed (all seven, readable
+   before you own one). Three copies would be three chances to drift - the
+   same reason _openSheet builds every dialog and quad() prints every
+   expression.
+
+   `steps(ore)` returns [{act, shows, open, draw}] for THIS lump. `open:true`
+   marks the step the student has to take; it renders as a ? and is never
+   filled in. `practice` is a FIXED lump, so the tutorial shows the same worked
+   example every time and MF.validate can assert it against the engine.
+   ========================================================================= */
+MF.SCHEMA = {
+
+  /* rank 1. The deep pick has no factoring move - it multiplies what comes up
+     out of the wall. Saying that plainly beats inventing a method for it. */
+  pick: {
+    name: 'Cutting at the face',
+    why: 'This one is about how much rock you bring up, not about what is inside it. Three lumps a swing at the wall; on the floor a swing is still one swing.',
+    steps: function(ore){
+      return [
+        {act:'At the seam, swing once and three lumps come out of the wall.', shows:'three for one'},
+        {act:'On the anvil it changes nothing. What is in the rock is in the rock.', shows:MF.oreLabel(ore)}
+      ];
+    },
+    practice: {ore:{kind:'number',n:12}, ask:'Name one whole number that runs through 12.', answer:{m:0,k:2}}
+  },
+
+  /* rank 2. ONE SIDE LIT. The lantern names one factor and leaves the other
+     as a ?, because a factorisation has two sides and knowing one forces the
+     other - it is exactly what is left when the first comes out. Which side
+     it lights is the SIMPLER one, so on a loaded lump the harder half is
+     still the student's. */
+  lantern: {
+    name: 'One side lit, one side dark',
+    why: 'Every factorisation has two sides, and they are not independent: once one side is out, the other is whatever is left. So one side is a foothold rather than the answer. The lantern lights the simpler side and will not light the other.',
+    steps: function(ore){
+      var one = MF.simplestFactor(ore);
+      if(!one) return [{act:'Nothing moves in there. It is an element, and an element has no two sides.', shows:MF.oreLabel(ore)}];
+      return [
+        {act:'The lantern lights one side of it.', shows:'( ' + ingotHtml(one) + ' )'},
+        {act:'The other side is whatever is left when that one comes out.', open:true,
+         shows:MF.oreLabel(ore) + ' <span class="op">=</span> ( ' + ingotHtml(one) + ' ) <span class="op">&times;</span> ( <span class="qm">?</span> )'},
+        {act:'Name it, cut the hammer to it and swing. The lantern will not say whether you have it right &mdash; the rock will.', open:true}
+      ];
+    },
+    practice: {ore:{kind:'poly',a:1,b:-5,c:6}, ask:'x&sup2; &minus; 5x + 6 has ( x &minus; 2 ) in it. Name the other side.', answer:{m:1,k:-3}}
+  },
+
+  /* rank 3. The GCF pull, by its real name. The steel head performs it, so
+     what stays open is what is left underneath - which the blow reveals. */
+  steel: {
+    name: 'Pulling out the common factor (the GCF)',
+    why: 'If every term is carrying the same metal, that metal can be lifted out of all of them at once and stood in front of a bracket. It is the distributive property run backwards, and it is always the first thing to try.',
+    steps: function(ore){
+      var g = MF.commonMetal(ore);
+      if(!g) return [
+        {act:'Look at every term and ask what divides all of them.', shows:MF.oreLabel(ore)},
+        {act:'Nothing here divides every term but one, so there is no common metal to pull. A named swing still works.'}
+      ];
+      return [
+        {act:'Look at every term and ask what divides all of them.', shows:MF.oreLabel(ore)},
+        {act:'The biggest thing that divides every one of them:', shows:'<b>' + num(g) + '</b>'},
+        {act:'Stand it in front of a bracket. What goes inside is each term divided by it.', open:true,
+         shows:num(g) + ' <span class="op">&times;</span> ( <span class="qm">?</span> )'}
+      ];
+    },
+    practice: {ore:{kind:'poly',a:0,b:6,c:15}, ask:'6x + 15 &mdash; what is the biggest thing that divides both terms? Put 0 in the x-box and that number on the end.', answer:{m:0,k:3}}
+  },
+
+  /* rank 4. Whole numbers versus everything else. The dial's own reading does
+     the demonstrating; the schema names what is being demonstrated. */
+  dial: {
+    name: 'The whole-number test',
+    why: 'Breaking rock finds seams that sit on whole numbers, and only those. Nudge a coefficient half a step and a seam that looked certain is gone &mdash; the rock has not changed, the search has. That is why some lumps will not come apart however hard you look at them.',
+    steps: function(ore){
+      return [
+        {act:'Take the lump as it is and ask whether a whole-number seam runs through it.', shows:MF.oreLabel(ore)},
+        {act:'Now nudge the number on the end off a whole number and ask again.', shows:'the dial below does exactly this'},
+        {act:'If the seam survives whole numbers it can be broken. If it only lives on the decimals, no whole ingot will ever land on it.', open:true}
+      ];
+    },
+    practice: {ore:{kind:'poly',a:1,b:3,c:2}, ask:'x&sup2; + 3x + 2 sits on whole numbers. Name one side of it.', answer:{m:1,k:1}}
+  },
+
+  /* rank 5. THE BOX METHOD, and it is DRAWN rather than described - the
+     generic rectangle with both sides left dashed, which is what MF.areaModel
+     was built to draw and had only one caller for. */
+  shifter: {
+    name: 'The box method',
+    why: 'An x&sup2; can only come from two x-parts multiplied together, and the plain number on the end can only come from the two numbers multiplied together. Put those two in opposite corners of a box and the sides are forced. The two corners left over have to add up to the middle &mdash; that is the whole check.',
+    steps: function(ore){
+      if(ore.kind==='number' || ore.a===0) return [
+        {act:'The box needs an x&sup2; for its first corner, and there is none in this one.', shows:MF.oreLabel(ore)}
+      ];
+      return [
+        {act:'Draw a two-by-two box. The x&sup2; goes in one corner, the number on the end in the opposite corner.',
+         shows:sqTerm(ore.a) + '  and  ' + num(ore.c)},
+        {act:'The sides of the box are the two pieces you are hunting. Neither one is known yet.', open:true,
+         draw: function(li){
+           MF.areaModel(li, {
+             rows:[{label:'?'},{label:'?'}],
+             cols:[{label:'?'},{label:'?'}],
+             cells:[[{kind:'sq',text:quadText(ore.a,0,0)},{kind:'x',text:'?'}],
+                    [{kind:'x',text:'?'},{kind:'k',text:num(ore.c)}]],
+             caption:'Two corners are given. Both sides, and the other two corners, are not.',
+             a11y:'A two by two box with ' + quadText(ore.a,0,0) + ' in one corner and ' + num(ore.c) + ' in the opposite corner, every side marked with a question mark.'
+           });
+         }},
+        {act:'Fill the other two corners so they add to the middle term. When they do, the sides of the box are the answer.', open:true,
+         shows:'those two must come to <b>' + xt2(ore.b) + '</b>'}
+      ];
+    },
+    practice: {ore:{kind:'poly',a:1,b:8,c:16}, ask:'x&sup2; + 8x + 16 &mdash; the box comes out square. Name one side.', answer:{m:1,k:4}}
+  },
+
+  /* rank 6. The pair hunt, and the twin seam as the case where it collapses.
+     The drill lists every pair and marks none; choosing is the student's. */
+  drill: {
+    name: 'The pair hunt, and the difference of two squares',
+    why: 'Two numbers that multiply to the end and add to the middle are exactly the two numbers in the brackets. When the middle is nothing at all and the end is a negative square, that pair is a number and its own opposite &mdash; the two middles cancel, and what is left is a difference of two squares.',
+    steps: function(ore){
+      if(ore.kind==='number') return [
+        {act:'On a plain number the hunt is simpler: every pair that multiplies to it.', shows:num(ore.n)},
+        {act:'Any of them can be swung. Some leave more still to break than others.', open:true}
+      ];
+      if(ore.a===0) return [
+        {act:'No x&sup2; here, so there is no pair to hunt. Look for the metal every term is carrying instead.', shows:MF.oreLabel(ore)}
+      ];
+      var tgt = (ore.a===1) ? ore.c : ore.a*ore.c;
+      var twin = (ore.b===0 && ore.c<0 && isSquare(ore.a) && isSquare(-ore.c));
+      var out = [
+        {act:(ore.a===1 ? 'Take the number on the end.' : 'Multiply the x&sup2; by the number on the end &mdash; that is a&middot;c.'),
+         shows:'<b>' + num(tgt) + '</b>'},
+        {act:'List every pair that multiplies to it. The drill lists them; it marks none.', shows:'the core reads them out below'},
+        {act:'Take the one pair that also adds to the middle. Those two are the numbers in the brackets.', open:true,
+         shows:'it has to add to <b>' + num(ore.b) + '</b>'}
+      ];
+      if(twin) out.push({act:'And this one is a twin seam: no middle at all, and both ends square. The pair is a number and its opposite, so the middles cancel each other.',
+        shows:'a difference of two squares'});
+      return out;
+    },
+    practice: {ore:{kind:'poly',a:1,b:0,c:-25}, ask:'x&sup2; &minus; 25 has no middle term and both ends are squares. Name one side.', answer:{m:1,k:5}}
+  },
+
+  /* rank 7. FACTORING BY GROUPING, in full, on the loaded ore it exists for.
+     Every step after the first is the student's - the auger reads what the
+     seam has to satisfy and stops there. */
+  auger: {
+    name: 'Factoring by grouping',
+    why: 'On a loaded lump the middle term can be split into two pieces whose numbers multiply to a&middot;c. Split it and there are four terms instead of three; four terms fall into two pairs, and each pair carries a common metal. Pull both out and the same bracket is left over both times &mdash; and a bracket that comes out twice is a seam running through the whole thing.',
+    steps: function(ore){
+      if(ore.kind==='number') return [
+        {act:'Whatever comes out of a plain number has to divide it exactly. That is the only rule there is here.', shows:num(ore.n)}
+      ];
+      if(ore.a===0) return [
+        {act:'No x&sup2;, so there is nothing to group. Whatever comes out has to divide both terms.', shows:num(ore.b) + ' and ' + num(ore.c)}
+      ];
+      return [
+        {act:'Multiply the x&sup2; by the number on the end.',
+         shows:'a&middot;c <span class="op">=</span> ' + num(ore.a) + ' &times; ' + num(ore.c) + ' <span class="op">=</span> <b>' + num(ore.a*ore.c) + '</b>'},
+        {act:'Find the pair that multiplies to that and adds to the middle. The auger will not choose it for you.', open:true,
+         shows:'multiply to ' + num(ore.a*ore.c) + ', add to ' + num(ore.b) + ' &nbsp;<span class="qm">?</span>'},
+        {act:'Split the middle term into those two pieces, so the lump has four terms instead of three.', open:true,
+         shows:sqTerm(ore.a) + ' <span class="op">+</span> <span class="qm">?</span> <span class="op">+</span> <span class="qm">?</span> <span class="op">+</span> ' + num(ore.c)},
+        {act:'Group the first two and the last two, then pull the common metal out of each pair.', open:true,
+         shows:'( <span class="qm">?</span> ) <span class="op">+</span> ( <span class="qm">?</span> )'},
+        {act:'The same bracket comes out of both groups. That repeated bracket is the seam &mdash; cut the hammer to it.', open:true}
+      ];
+    },
+    practice: {ore:{kind:'poly',a:6,b:7,c:-3}, ask:'6x&sup2; + 7x &minus; 3 &mdash; a&middot;c is &minus;18, and &minus;2 and 9 multiply to &minus;18 and add to 7. Group it, and name one side.', answer:{m:2,k:3}}
+  }
+};
+
+/* THE SIMPLER SIDE OF A LUMP, and only ever one of them. Plain metal before a
+   bracket, and the smaller bracket before the larger, so the half the lantern
+   lights is the half that leaves the most work behind. Returns null for native
+   metal - an element has no two sides. */
+MF.simplestFactor = function(ore){
+  if(!ore || MF.isNative(ore)) return null;
+  if(ore.kind==='number'){
+    var pf = primeFactors(ore.n);
+    return pf.length > 1 ? {m:0, k:pf[0]} : null;
+  }
+  var res = MF.smeltPoly(ore.a, ore.b, ore.c);
+  var cand = (res.ingots||[]).filter(function(g){
+    return !(g.m===0 && g.k===0) && !(g.m===0 && Math.abs(g.k)===1);
+  });
+  if(!cand.length) return null;
+  cand.sort(function(x,y){
+    if((x.m===0) !== (y.m===0)) return x.m===0 ? -1 : 1;      /* plain metal first */
+    return (Math.abs(x.m)+Math.abs(x.k)) - (Math.abs(y.m)+Math.abs(y.k));
+  });
+  return cand[0];
+};
+
+/* the method, drawn. Appends; never owns its host (the areaModel rule). */
+MF.paintSchema = function(host, key, ore){
+  var s = MF.SCHEMA[key];
+  if(!s) return null;
+  var box = E('div','schema');
+  box.appendChild(H('div','slab','THE METHOD'));
+  box.appendChild(H('div','snm', s.name));
+  box.appendChild(H('div','swhy', s.why));
+  var steps = [];
+  try { steps = s.steps(ore) || []; }
+  catch(e){
+    box.appendChild(H('div','hint','This method does not reach that lump.'));
+    host.appendChild(box); return box;
+  }
+  var ol = E('ol','ssteps');
+  steps.forEach(function(st){
+    var li = E('li', st.open ? 'open' : null);
+    li.appendChild(H('div','sact', st.act));
+    if(st.shows) li.appendChild(H('div','sshow', st.shows));
+    if(st.draw){ try { st.draw(li); } catch(e2){} }
+    ol.appendChild(li);
+  });
+  box.appendChild(ol);
+  if(steps.some(function(st){ return st.open; }))
+    box.appendChild(H('div','sfoot','The open steps are yours. Nothing here does them, and nothing here says whether you have them right.'));
+  host.appendChild(box);
+  return box;
+};
+
+/* CARRYING A NAMED FACTOR TO THE ANVIL.
+
+   The panel does not judge - the hammer does (MINE-SPEC §11e). So what a
+   student writes in the ? goes into the pick bar and they swing it, and the
+   rock answers exactly as it does for anything else they type.
+
+   B.rawFor IS LOAD-BEARING: paintBreak resets B.raw to MF.pickDefault whenever
+   B.rawFor !== the id of the piece under the pick, so setting raw without
+   rawFor would be thrown away on the very next paint and the bar would open
+   empty with nothing on screen saying why. */
+MF.cutHammerTo = function(pieceId, m, k){
+  var B = MF.state.anvil;
+  if(!B) return false;
+  var at = -1;
+  B.floor.forEach(function(pc, i){ if(pc.id===pieceId) at = i; });
+  if(at < 0) return false;
+  if(MF.isNative(B.floor[at].ore)) return false;
+  B.at = at;
+  B.raw = {m:String(m), k:String(k)};
+  B.rawFor = B.floor[at].id;
+  B.last = null;
+  MF.closeTool();
+  MF.paintMine();
+  return true;
+};
+
+/* THE ? FILLED IN, AND TAKEN TO THE HAMMER. Only drawn when the panel knows
+   which piece it is standing on - off the breaking floor there is no bar to
+   cut, and a button that cannot do its one job is worse than no button.
+
+   It reports nothing about the answer. That is the whole point of it. */
+MF.paintNameSide = function(host, ore, pieceId){
+  var B = MF.state.anvil;
+  if(pieceId == null || !B) return null;
+  var here = null;
+  B.floor.forEach(function(pc){ if(pc.id===pieceId) here = pc; });
+  if(!here || MF.isNative(here.ore)) return null;
+
+  var isNum = (ore.kind==='number');
+  var wrap = E('div','nameside');
+  wrap.appendChild(H('div','nslab','THE OTHER SIDE'));
+  wrap.appendChild(H('div','nshint','Write what you think it is, then take it to the anvil. The hammer is the only thing here that confirms anything.'));
+  var row = E('div','nsrow');
+  var box = E('div','hbox');
+  var mi = null;
+  if(!isNum){
+    box.appendChild(H('span','paren','('));
+    mi = document.createElement('input'); mi.type='text'; mi.inputMode='numeric'; mi.placeholder='1';
+    mi.setAttribute('aria-label','how many x — leave it empty for a single x, or put 0 for a plain number');
+    box.appendChild(mi);
+    box.appendChild(H('span','paren','x +'));
+  }
+  var ki = document.createElement('input'); ki.type='text'; ki.inputMode='numeric'; ki.placeholder='0';
+  ki.setAttribute('aria-label', isNum ? 'the number you think runs through it' : 'the number on the end');
+  box.appendChild(ki);
+  if(!isNum) box.appendChild(H('span','paren',')'));
+  row.appendChild(box);
+
+  var say = E('div','nssay');
+  var go = E('button','btn primary','Cut the hammer to it'); go.type='button';
+  on(go,'click',function(){
+    var m = isNum ? 0 : MF.readPickM(mi.value);
+    var k = MF.readInt(ki.value);
+    if(!isFinite(m) || !isFinite(k) || isNaN(m) || isNaN(k)){
+      clear(say).appendChild(H('div','hint','That is not a whole number, so there is nothing to cut the head to yet.'));
+      return;
+    }
+    /* NOT A VERDICT. It cuts the bar and sends them to the anvil; whether the
+       seam runs is the swing's to say and nothing else's. */
+    if(!MF.cutHammerTo(pieceId, m, k))
+      clear(say).appendChild(H('div','hint','That piece is not on the floor any more.'));
+  });
+  row.appendChild(go);
+  wrap.appendChild(row);
+  wrap.appendChild(say);
+  host.appendChild(wrap);
+  return wrap;
+};
+
+/* =========================================================================
    WHAT A TOOL DOES WHEN YOU HOLD IT TO A PIECE OF ROCK.
 
-   Each `read` builds the panel that rises when the tool is dropped on a lump.
-   THE BINDING RULE, and it is the same one the Decimal Dial has always
-   carried: an instrument may say what IS THERE, never what to swing. The
-   Lantern says a seam still runs and refuses to say which; the Drill lists
-   every pair and refuses to pick one. A tool that named the factor would be
-   doing the one thing the student came to do.
+   Each `read` builds the panel that rises when the tool is dropped on a lump:
+   the fact the instrument gets off the rock, then MF.paintSchema with the
+   named method worked on that same rock.
+
+   THE BINDING RULE, AS AMENDED 2026-08-25 (MINE-SPEC §13): an instrument may
+   show PART of a factorisation and must never show all of it. The Lantern
+   lights one side and leaves the other as a ?; the Drill lists every pair and
+   marks none; the Auger reads what a seam has to satisfy and chooses nothing.
+   A tool that named both sides would be doing the one thing the student came
+   to do.
+
+   AND NOTHING IN HERE JUDGES. What a student writes in the ? goes to the pick
+   bar and they swing it. The rock is the only judge in the mine (§11e), which
+   is why paintNameSide has a button that cuts the hammer and no button that
+   marks an answer.
+
+   `pieceId` is optional: it is the piece on the breaking floor this reading is
+   standing on, and it is what lets a reading reach the hammer. Without it the
+   reading is still complete - it simply has no anvil to send anything to.
    ========================================================================= */
 MF.TOOL_READ = {
-  /* THE PIT LANTERN: is there still a seam in this, or is it an element?
-     This is the tool the whole repeated swing hangs off - it is what tells you
-     the piece in front of you is worth another go. */
-  lantern: function(host, ore){
+  /* THE PIT LANTERN: is there still a seam in this, and if there is, one side
+     of it. This is the tool the whole repeated swing hangs off - it is what
+     tells you the piece in front of you is worth another go. */
+  lantern: function(host, ore, pieceId){
     var native = MF.isNative(ore);
     var lit = E('div','lampread' + (native?' clear':' seamed'));
     lit.appendChild(H('div','big', native
@@ -1835,24 +2252,44 @@ MF.TOOL_READ = {
       ? (ore.kind==='number'
           ? 'It is a prime. Held to the light it stays exactly what it is — there is nothing inside it to come out.'
           : 'No whole-number seam runs through it. It is an element, the same kind of object as a prime, and the mine has nothing more to take out of it.')
-      : 'It will come apart. The lantern does not say along what — that is what the swing is for.'));
+      : 'It will come apart. The lantern lights one side of the seam and leaves the other dark.'));
     host.appendChild(lit);
-    if(!native) host.appendChild(H('p','hint','Put it back under the pick and name something that is in it.'));
+    if(native){
+      MF.paintSchema(host, 'lantern', ore);
+      return;
+    }
+    /* ONE SIDE LIT, THE OTHER A ?. The simpler side, so a loaded lump still
+       leaves the harder half to the student. */
+    var one = MF.simplestFactor(ore);
+    if(one){
+      var eq = E('div','onesided');
+      eq.appendChild(H('div','oslab','WHAT THE LIGHT REACHES'));
+      eq.appendChild(H('div','eq', MF.oreLabel(ore) + ' <span class="op">=</span> ( ' + ingotHtml(one) +
+        ' ) <span class="op">&times;</span> ( <span class="qm">?</span> )'));
+      eq.appendChild(H('div','hint','One side. The other is whatever is left when that one comes out — and the lantern will not light it.'));
+      host.appendChild(eq);
+    }
+    MF.paintSchema(host, 'lantern', ore);
+    MF.paintNameSide(host, ore, pieceId);
+    host.appendChild(H('p','hint','You can also swing the lit side. Either blow lands; they leave you different amounts still to break.'));
   },
 
   /* THE CORE DRILL: takes a core and reads the pairs out of it. It lists
      every pair and marks none of them - picking the one that also adds up is
      the student's job, and it always was. */
-  drill: function(host, ore){
+  drill: function(host, ore, pieceId){
+    MF.paintSchema(host, 'drill', ore);
     if(ore.kind==='number'){
       host.appendChild(H('p','hint','<b>The core comes up in whole pieces.</b> Every pair of whole numbers that multiplies to <b>' + num(ore.n) + '</b>:'));
       MF.scanTable(host, ore.n, null);
       host.appendChild(H('div','hint','Any of these can be swung. Some leave you more still to break than others.'));
+      MF.paintNameSide(host, ore, pieceId);
       return;
     }
     if(ore.a===0){
       host.appendChild(H('p','hint','<b>A flat core — no x² in this one.</b> There is one thing every term here carries, and the drill will not name it for you. Look at ' +
         num(ore.b) + ' and ' + num(ore.c) + ' together.'));
+      MF.paintNameSide(host, ore, pieceId);
       return;
     }
     var tgt = (ore.a===1) ? ore.c : ore.a*ore.c;
@@ -1864,16 +2301,19 @@ MF.TOOL_READ = {
       '. Every pair that multiplies to it, and what each one adds to. You are looking for the pair that also adds to <b>' + num(ore.b) + '</b>.'));
     MF.scanTable(host, tgt, null);
     host.appendChild(H('div','hint','No row is marked. The drill reads the rock; it does not choose where to swing.'));
+    MF.paintNameSide(host, ore, pieceId);
   },
 
-  /* THE EXPONENT RAIL: where an x² can come from, and where it cannot. */
-  shifter: function(host, ore){
+  /* THE EXPONENT RAIL: the box method, drawn, with both sides left dashed. */
+  shifter: function(host, ore, pieceId){
     if(ore.kind==='number' || ore.a===0){
       host.appendChild(H('p','hint','<b>No x² in this one.</b> The rail traces where an x² comes from, and there is none here to trace.'));
+      MF.paintSchema(host, 'shifter', ore);
       return;
     }
     host.appendChild(H('p','hint','<b>An x² of ' + num(ore.a) + ' in front.</b> An x² can only ever come from one place: the two x-parts multiplied together. ' +
       'So whatever two pieces come out of this, their x-parts multiply to <b>' + num(ore.a) + '</b>.'));
+    MF.paintSchema(host, 'shifter', ore);
     var rows = [];
     factorPairs(ore.a).forEach(function(pr){ rows.push(pr); });
     var tbl = E('table','scan');
@@ -1887,53 +2327,65 @@ MF.TOOL_READ = {
       tbl.appendChild(tr);
     });
     host.appendChild(tbl);
-    host.appendChild(H('div','hint','The plain number on the end comes from the other corner — the two numbers multiplied. The middle is the two of them crossed over, and that is the part the rail cannot do for you.'));
+    host.appendChild(H('div','hint','Those are the sides of the box along one edge. The plain number on the end comes from the other corner — the two numbers multiplied. The middle is the two of them crossed over, and that is the part the rail cannot do for you.'));
+    MF.paintNameSide(host, ore, pieceId);
   },
 
   /* THE DECIMAL DIAL: why nothing will come out, when nothing will. */
-  dial: function(host, ore){
+  dial: function(host, ore, pieceId){
     if(ore.kind==='number'){
       host.appendChild(H('p','hint','<b>The dial is cut for lumps with an x in them.</b> On a plain number there is nothing to nudge off the whole numbers.'));
+      MF.paintSchema(host, 'dial', ore);
       return;
     }
+    MF.paintSchema(host, 'dial', ore);
     MF.paintDial(host, {ore:ore});
+    MF.paintNameSide(host, ore, pieceId);
   },
 
   /* THE DEEP PICK works at the face, not on the floor. Saying so is better
      than a panel that does nothing and does not explain itself. */
-  pick: function(host, ore){
+  pick: function(host, ore, pieceId){
     host.appendChild(H('p','hint','<b>This one works at the seam, not on the floor.</b> The deep pick brings up three lumps a swing when you are cutting rock out of the wall. ' +
       'Down here on the anvil, a swing is a swing.'));
+    MF.paintSchema(host, 'pick', ore);
   },
 
   /* THE STEEL PICK: it does not read, it swings. Held to a lump it says what
      it would take and offers to take it - and it only ever takes the metal
      every term is already carrying, which is a move the student demonstrated
      at the forge to earn the tool. */
-  steel: function(host, ore){
+  steel: function(host, ore, pieceId){
     var g = MF.commonMetal(ore);
     if(!g){
       host.appendChild(H('p','hint','<b>Nothing common in this one.</b> There is no single metal that every term here is carrying, so the steel head has nothing to bite on. A named swing will still work.'));
+      MF.paintSchema(host, 'steel', ore);
+      MF.paintNameSide(host, ore, pieceId);
       return;
     }
     host.appendChild(H('p','hint','<b>Every term in this one is carrying the same metal.</b> The steel head takes it out in one blow — it will not touch anything else in the rock.'));
+    MF.paintSchema(host, 'steel', ore);
     var b = E('button','btn primary big','Rip out the common metal'); b.type='button';
     on(b,'click',function(){ MF.ripCommon(ore); });
     host.appendChild(b);
     host.appendChild(H('div','hint','What is left underneath is still yours to break.'));
   },
 
-  /* THE POWERED AUGER: what a seam HAS to satisfy before you drive it. It
-     narrows where to look and names nothing - the two divisibility facts are
-     the whole method for a loaded lump, and they are facts about the rock. */
-  auger: function(host, ore){
+  /* THE POWERED AUGER: factoring by grouping, and what a seam HAS to satisfy
+     before you drive it. It narrows where to look and names nothing - the two
+     divisibility facts are the whole method for a loaded lump, and they are
+     facts about the rock. */
+  auger: function(host, ore, pieceId){
     if(ore.kind==='number'){
       host.appendChild(H('p','hint','<b>Whatever you take out of ' + num(ore.n) + ' has to divide it exactly.</b> That is the only rule there is on a plain number — the auger has nothing more to add.'));
+      MF.paintSchema(host, 'auger', ore);
       return;
     }
     if(ore.a===0){
       host.appendChild(H('p','hint','<b>No x² in this one.</b> The auger is cut for loaded ore. On a flat lump, whatever comes out has to divide both ' +
         num(ore.b) + ' and ' + num(ore.c) + '.'));
+      MF.paintSchema(host, 'auger', ore);
+      MF.paintNameSide(host, ore, pieceId);
       return;
     }
     host.appendChild(H('p','hint','<b>Before you drive a seam, it has to fit at both ends.</b> The auger reads what it has to fit.'));
@@ -1951,6 +2403,8 @@ MF.TOOL_READ = {
     host.appendChild(t);
     host.appendChild(H('div','hint','Those two together rule out almost everything. What survives them still has to make the middle come to <b>' +
       num(ore.b) + '</b>, and that part the auger will not do for you.'));
+    MF.paintSchema(host, 'auger', ore);
+    MF.paintNameSide(host, ore, pieceId);
   }
 };
 
@@ -2893,7 +3347,142 @@ MF.areaModel = function(host, o){
 };
 
 /* =========================================================================
-   WORKSHOP 1 - THE MOLD (distributive property). Play, no questions.
+   THE TRANSLATION TABLE, and it is generated rather than typed.
+
+   Every word this site uses for a thing, against the word a textbook uses for
+   the same thing. A student who learns "the seam runs" and never learns that
+   the seam is A FACTOR has learned a game, not algebra - and the metaphor
+   stops being a way in the moment it becomes a private language.
+
+   EACH ROW CARRIES A WORKED EXAMPLE THAT COMES OUT OF THE ENGINE, not out of
+   prose. `show(ore)` is asked to produce the example and `holds(ore)` is what
+   makes the row TRUE - so the `rosetta` group can assert that x² − 25 really
+   does classify as a twin seam and 3x + 12 really does carry a common metal,
+   instead of trusting a sentence somebody typed. A row whose claim stopped
+   being true would be caught rather than sitting there teaching a falsehood.
+   ========================================================================= */
+MF.ROSETTA = [
+  { mine:'ore',                real:'an expression',
+    note:'Any expression at all — a number, a monomial, a binomial, a trinomial.',
+    ore:{kind:'poly',a:2,b:10,c:12},
+    show:function(o){ return MF.oreLabel(o) + ' is a lump of ore'; },
+    holds:function(o){ return o.kind==='poly'; } },
+
+  { mine:'a seam, a vein',     real:'a factor',
+    note:'It was in the rock before you arrived. Finding it does not put it there.',
+    ore:{kind:'poly',a:1,b:5,c:6},
+    show:function(o){ var g = MF.simplestFactor(o); return '( ' + ingotHtml(g) + ' ) runs through ' + MF.oreLabel(o); },
+    holds:function(o){ var g = MF.simplestFactor(o); return !!g && MF.breakOff(o, g).ok; } },
+
+  { mine:'breaking it',        real:'factoring',
+    note:'One swing takes out one factor. What is left goes back under the hammer, and that repeats until nothing will come apart.',
+    ore:{kind:'poly',a:2,b:10,c:12},
+    show:function(o){ return MF.oreLabel(o) + ' <span class="op">&rarr;</span> ' + MF.smeltString(MF.smeltPoly(o.a,o.b,o.c)); },
+    holds:function(o){ return !!MF.smeltPoly(o.a,o.b,o.c).ingots; } },
+
+  { mine:'native metal',       real:'a prime, or an irreducible polynomial',
+    note:'THE ONE THIS PLACE EXISTS FOR. They are not two similar things — they are the same object, an element that breaking cannot separate further.',
+    ore:{kind:'poly',a:1,b:0,c:4},
+    show:function(o){ return num(7) + ' and ' + MF.oreLabel(o) + ' are the same kind of thing'; },
+    holds:function(o){ return MF.isNative(o) && isPrime(7); } },
+
+  { mine:'a twin seam',        real:'a difference of two squares',
+    note:'No middle term, and both ends square. The two middles cancel each other out.',
+    ore:{kind:'poly',a:1,b:0,c:-25},
+    show:function(o){ return MF.oreLabel(o) + ' <span class="op">=</span> ' + MF.smeltString(MF.smeltPoly(o.a,o.b,o.c)); },
+    holds:function(o){ return MF.smeltPoly(o.a,o.b,o.c).kind === 'twin'; } },
+
+  { mine:'the common metal',   real:'the greatest common factor (the GCF)',
+    note:'The one thing every term is carrying. Always the first thing to look for.',
+    ore:{kind:'poly',a:0,b:3,c:12},
+    show:function(o){ return MF.oreLabel(o) + ' <span class="op">=</span> ' + num(MF.commonMetal(o)) + ' ( ' + quad(0, o.b/MF.commonMetal(o), o.c/MF.commonMetal(o)) + ' )'; },
+    holds:function(o){ var g = MF.commonMetal(o); return !!g && Math.abs(g) > 1 && o.b % g === 0 && o.c % g === 0; } },
+
+  { mine:'loaded ore',         real:'ax² + bx + c with a ≠ 1',
+    note:'Both ends are pinned, so the x-parts have to multiply to a and the numbers to c. That is what factoring by grouping is for.',
+    ore:{kind:'poly',a:6,b:7,c:-3},
+    show:function(o){ return MF.oreLabel(o) + ' <span class="op">=</span> ' + MF.smeltString(MF.smeltPoly(o.a,o.b,o.c)); },
+    holds:function(o){ return o.a !== 1 && o.a !== 0; } },
+
+  { mine:'the assay',          real:'recognising the form before you work it',
+    note:'Naming what kind of thing is in front of you, which is the step that decides which method you reach for.',
+    ore:{kind:'poly',a:1,b:-5,c:6},
+    show:function(o){ return MF.oreLabel(o) + ' is ' + (MF.ASSAY[MF.assayOf(o)] ? MF.ASSAY[MF.assayOf(o)].name : MF.assayOf(o)); },
+    holds:function(o){ return !!MF.ASSAY[MF.assayOf(o)]; } },
+
+  { mine:'the pour, the mold', real:'the distributive property',
+    note:'The forge’s move, and the only place it happens. Metals go in separate and one object comes out.',
+    ore:{kind:'poly',a:1,b:5,c:6},
+    show:function(o){ return '( x + 2 )( x + 3 ) <span class="op">=</span> ' + MF.oreLabel(o); },
+    holds:function(o){ var p = ingotProduct([{m:1,k:2},{m:1,k:3}]); return p.a===o.a && p.b===o.b && p.c===o.c; } },
+
+  { mine:'sound, or scrap',    real:'checking by multiplying back',
+    note:'If the pieces multiply back to the rock they came out of, they were the pieces. There is nothing else to check.',
+    ore:{kind:'poly',a:1,b:5,c:6},
+    show:function(o){ return 'multiply the pieces and see whether ' + MF.oreLabel(o) + ' comes back'; },
+    holds:function(o){ var p = ingotProduct([{m:1,k:2},{m:1,k:3}]); return p.a===o.a && p.b===o.b && p.c===o.c; } }
+];
+
+MF.paintRosetta = function(host){
+  var box = E('div','panel light');
+  box.appendChild(H('div','panel-tag','WHAT EVERY WORD HERE MEANS'));
+  box.appendChild(H('p','lede','This place calls things by mining names, and every one of them is a real mathematical thing with a real name. ' +
+    'If you only ever learn one column you have learned half of it.'));
+  var tbl = E('table','rosetta');
+  var hr = E('tr');
+  ['in the mine','in the maths','worked out'].forEach(function(h){ hr.appendChild(E('th',null,h)); });
+  tbl.appendChild(hr);
+  MF.ROSETTA.forEach(function(r){
+    var tr = E('tr');
+    tr.appendChild(H('td','rm','<b>' + r.mine + '</b><div class="rn">' + r.note + '</div>'));
+    tr.appendChild(H('td','rr', r.real));
+    var ex = '';
+    try { ex = r.show(r.ore); } catch(e){ ex = ''; }
+    tr.appendChild(H('td','rx', ex));
+    tbl.appendChild(tr);
+  });
+  box.appendChild(tbl);
+  box.appendChild(H('div','note good','<b>The row that matters most is “native metal”.</b> ' +
+    'A prime and a polynomial that nothing separates are not <em>like</em> each other. They are the same object: something already refined, ' +
+    'which breaking cannot take further. That is why <b>72</b> and <b>x² − 5x + 6</b> are one job and not two.'));
+  host.appendChild(box);
+  return box;
+};
+
+/* every method, readable before you own the tool. NOT GATED: a lesson you have
+   to earn is a lesson locked away from the student who needs it most, which is
+   the same rule §10a's binding constraint states about descent. */
+MF.paintSchemaIndex = function(host){
+  var box = E('div','panel');
+  box.appendChild(H('div','panel-tag','THE SEVEN METHODS'));
+  box.appendChild(H('p','lede','Each instrument at the forge is one way of walking up to a lump. You do not need the tool to read the method — ' +
+    'the method is the part that is worth having, and it works in a notebook with no tool at all.'));
+  MF.toolOrder().forEach(function(key){
+    var t = MF.TOOLS[key], s = MF.SCHEMA[key];
+    if(!s) return;
+    var d = document.createElement('details');
+    d.className = 'schemadet';
+    var sm = document.createElement('summary');
+    sm.innerHTML = '<span class="sdic">' + t.ic + '</span><span class="sdnm">' + s.name + '</span>' +
+      '<span class="sdtool">' + t.nm + (MF.hasTool(key) ? ' &middot; on your belt' : '') + '</span>';
+    d.appendChild(sm);
+    var body = E('div','sdbody');
+    MF.toolLesson(body, key, {lab:'THE METHOD, AND ONE TO TRY'});
+    d.appendChild(body);
+    box.appendChild(d);
+  });
+  host.appendChild(box);
+  return box;
+};
+
+/* =========================================================================
+   WORKSHOP 1 - THE CASTING SHED. The mold, and the learning hub.
+
+   It still teaches the mold, which is still the forge's move. What is new is
+   everything under it: the translation table from every mining word to the
+   mathematics it stands for, and all seven methods readable whether or not
+   you own the tool. A student who learns "the seam runs" and never learns
+   that a seam is a FACTOR has learned a game.
    ========================================================================= */
 MF.SCREENS['workshop-mold'] = function(host){
   var st = {a:3, b:4, c:5, mode:'num'};
@@ -2935,11 +3524,18 @@ MF.SCREENS['workshop-mold'] = function(host){
     'you will have the casting and be hunting for the metals that made it.'));
   host.appendChild(panel);
 
-  var go = E('div','row'); go.style.marginTop='14px';
-  go.appendChild(MF.jump('Now take some ore apart &rarr;','workshop-ore'));
-  go.appendChild(MF.jump('Straight into the mine &rarr;','mine'));
-  host.appendChild(go);
+  /* ---- THE HUB. Below the mold, because the mold is still what this room is
+     for and a wall of reading above it would bury the one thing you can play
+     with. ---- */
+  MF.paintRosetta(host);
+  MF.paintSchemaIndex(host);
 
+  var go = E('div','row'); go.style.marginTop='14px';
+  go.appendChild(MF.jump('Take some ore apart &rarr;','workshop-ore'));
+  go.appendChild(MF.jump('Into the mine &rarr;','mine'));
+  go.appendChild(MF.jump('To the forge &rarr;','forge'));
+  go.appendChild(MF.jump('Out to the surface &rarr;','home'));
+  host.appendChild(go);
   function draw(){
     var a=st.a,b=st.b,c=st.c,isX=(st.mode==='x');
     bw.style.display = isX?'none':'';
@@ -3578,6 +4174,10 @@ MF.forgePour = function(st){
   if(sound.ok){
     MF.spendFromYard(st.slots.map(function(s){ return s.key; }));
     MF.state.tools[st.picked] = {forged:true};
+    /* THE TUTORIAL LANDS WITH THE TOOL, between the verdict and the belt.
+       A tool handed over with a name and a sentence was first met in the
+       mine, on a lump that mattered. */
+    MF.toolLesson(box, st.picked, {lab:'YOU MADE THIS &mdash; HERE IS WHAT IT DOES'});
     var keep = E('button','btn primary','Hang it on your belt'); keep.type='button';
     on(keep,'click',function(){ st.picked=null; st.slots=[]; st.result=null; MF.paintForge(); });
     box.appendChild(keep);
@@ -3594,6 +4194,91 @@ MF.forgePour = function(st){
      single click. */
   if(box.isConnected && box.getBoundingClientRect().bottom > window.innerHeight)
     box.scrollIntoView({block:'nearest', behavior:'smooth'});
+};
+
+
+/* =========================================================================
+   THE FORGE'S TUTORIAL. A tool used to be handed over with a name and a
+   sentence, and the student then met it for the first time in the mine on a
+   lump that mattered. This is the short practice that closes that gap: what
+   the move is, WHY it works, and one worked lump to run it on.
+
+   IT IS NOT A ONE-SHOT. A lesson that exists only in the three seconds after
+   a pour is a lesson nobody re-reads, so the same function is appended when
+   the tool is clicked on the belt and when the Casting Shed lists it.
+
+   THE PRACTICE HAS NO JUDGE OF ITS OWN. It hands what the student names to
+   MF.breakOff - the same engine the anvil swings through - so a miss is
+   DESCRIBED by the rock ("the hammer glanced off; 4 does not run through 6x
+   and 15") rather than marked. One engine, one description, no second
+   opinion to drift.
+   ========================================================================= */
+MF.toolLesson = function(host, key, opts){
+  var t = MF.TOOLS[key], s = MF.SCHEMA[key];
+  if(!t || !s) return null;
+  opts = opts || {};
+  var box = E('div','lesson');
+  box.appendChild(H('div','lslab', opts.lab || 'HOW THIS ONE WORKS'));
+  box.appendChild(H('div','lsnm','<span class="lsic">' + t.ic + '</span>' + s.name));
+  box.appendChild(H('div','lswhy', s.why));
+
+  /* the method, worked on the fixed example rather than on nothing */
+  var p = s.practice;
+  MF.paintSchema(box, key, p.ore);
+
+  /* ---- the practice. One lump, one thing to name, described afterwards ---- */
+  var pr = E('div','practice');
+  pr.appendChild(H('div','prlab','TRY IT ONCE'));
+  pr.appendChild(H('div','eq sm', MF.oreLabel(p.ore)));
+  pr.appendChild(H('div','prask', p.ask));
+
+  var isNum = (p.ore.kind === 'number');
+  var row = E('div','nsrow');
+  var bx = E('div','hbox');
+  var mi = null;
+  if(!isNum){
+    bx.appendChild(H('span','paren','('));
+    mi = document.createElement('input'); mi.type='text'; mi.inputMode='numeric'; mi.placeholder='1';
+    mi.setAttribute('aria-label','how many x — leave it empty for a single x, or put 0 for a plain number');
+    bx.appendChild(mi);
+    bx.appendChild(H('span','paren','x +'));
+  }
+  var ki = document.createElement('input'); ki.type='text'; ki.inputMode='numeric'; ki.placeholder='0';
+  ki.setAttribute('aria-label', isNum ? 'the number you are taking out' : 'the number on the end');
+  bx.appendChild(ki);
+  if(!isNum) bx.appendChild(H('span','paren',')'));
+  row.appendChild(bx);
+
+  var out = E('div','prout');
+  var go = E('button','btn primary','Try it'); go.type='button';
+  on(go,'click',function(){
+    var m = isNum ? 0 : MF.readPickM(mi.value);
+    var k = MF.readInt(ki.value);
+    clear(out);
+    if(!isFinite(m) || !isFinite(k) || isNaN(m) || isNaN(k)){
+      out.appendChild(H('div','note','That is not a whole number, so there is nothing to try yet.'));
+      return;
+    }
+    /* THE ENGINE DESCRIBES IT. No new judge, and no mark. */
+    var got = MF.breakOff(p.ore, {m:m, k:k});
+    if(got.ok){
+      out.appendChild(H('div','note good','<b>The seam runs.</b> <b>' + MF.oreLabel(got.left) +
+        '</b> came out of it, and <b>' + MF.oreLabel(got.right) + '</b> is what was left behind. ' +
+        'That is the move — you will be doing it on real rock in a minute.'));
+    } else {
+      out.appendChild(H('div','note','<b>' + got.why + '</b> Nothing is lost — the lump is exactly as it was, and you can go again.'));
+    }
+  });
+  on(ki,'keydown',function(e){ if(e.key==='Enter'){ e.preventDefault(); go.click(); } });
+  row.appendChild(go);
+  pr.appendChild(row);
+  pr.appendChild(out);
+  pr.appendChild(H('div','hint','Nothing here is kept, and nothing here is a mark. It is the same engine the anvil swings through, so what it says about the rock is what the rock would say.'));
+  box.appendChild(pr);
+
+  box.appendChild(H('div','hint','<b>In the mine:</b> drag this off your belt onto a piece of rock, or open that piece’s slot and choose it.'));
+  host.appendChild(box);
+  return box;
 };
 
 /* WHAT MAKES A PART SOUND, and there is now exactly one rule: the casting is
@@ -4675,7 +5360,7 @@ MF.paintBreak = function(host, B){
       : ('Empty instrument slot on ' + MF.oreText(p.ore) + '. Choose something to hold to it.'));
     slot.title = t ? ('Read it again with the ' + t.nm) : 'Hold an instrument to this';
     on(slot,'click',function(){
-      if(t) MF.openTool(p.tool, p.ore, slot);
+      if(t) MF.openTool(p.tool, p.ore, slot, p.id);
       else MF.openSlot(p.id, slot);
     });
     cell.appendChild(slot);
@@ -5152,7 +5837,7 @@ MF._openSheet = function(o){
   document.addEventListener('keydown', MF._sheetKeys, true);
 };
 
-MF.openTool = function(key, ore, opener){
+MF.openTool = function(key, ore, opener, pieceId){
   var t = MF.TOOLS[key];
   if(!t || !ore) return;
   MF._openSheet({
@@ -5161,7 +5846,7 @@ MF.openTool = function(key, ore, opener){
     closeText: 'Take it away', opener: opener, key: key,
     fill: function(body){
       var reader = MF.TOOL_READ[key];
-      if(reader) reader(body, ore);
+      if(reader) reader(body, ore, pieceId);
       else body.appendChild(H('p','hint', t.ds));
     }
   });
@@ -5248,6 +5933,9 @@ MF.explainTool = function(key, opener){
     closeText: 'Put it back', opener: opener, key: key,
     fill: function(body){
       body.appendChild(H('p',null, t.ds));
+      /* THE SAME TUTORIAL THE FORGE GAVE. A lesson that exists only in the
+         three seconds after a pour is a lesson nobody re-reads. */
+      MF.toolLesson(body, key);
       body.appendChild(H('div','note','<b>To use it:</b> drag it onto a piece of rock on the breaking floor, or open that piece’s slot and choose it from there.'));
       body.appendChild(H('div','hint','<b>You made this by:</b> ' + t.forge));
     }
@@ -5321,7 +6009,7 @@ MF.applyTool = function(key, pieceId, opener){
   p.tool = key;
   MF.paintMine();
   var slot = MF._mine.mid.querySelector('.toolslot[data-piece="'+pieceId+'"]');
-  MF.openTool(key, p.ore, slot || opener);
+  MF.openTool(key, p.ore, slot || opener, pieceId);
 };
 
 /* opening a slot with no tool in it: choose one, or be told plainly that the
@@ -6474,7 +7162,7 @@ MF.validate = function(){
     else { var cr = MF.smeltPoly(cl.a,cl.b,cl.c); if(cr.ingots) cr.ingots.forEach(function(g){ if(!(g.m===0&&g.k===0)) MF.addToYard({m:g.m,k:g.k}); }); }
   }
   var contrastFails = [];
-  ['home','workshop-mold','workshop-ore','forge','mine'].forEach(function(scr){
+  ['home','workshop-mold','workshop-ore','forge','forge-poured','toolsheet','mine'].forEach(function(scr){
     stage.innerHTML='';
     var probe = document.createElement('div');
     stage.appendChild(probe);
@@ -6496,6 +7184,42 @@ MF.validate = function(){
         var cHave = MF.yardList();
         if(cHave.length) MF.state.forge.slots = [{yardIdx:cHave[0].idx, key:cHave[0].key, ingot:cHave[0].ingot}];
         MF.SCREENS.forge(probe);
+      } else if(scr==='forge-poured'){
+        /* AND ONCE MORE, POURED. The casting carries the tool's tutorial - the
+           method, the reasoning and a practice - and none of it existed on the
+           cold plate or on an open mold, so the sweep above walked straight
+           past every pixel of it. Same denominator question as the mold-open
+           pass that came before it. */
+        MF.state.forge = {picked:'lantern', slots:[], result:null};
+        MF.addToYard({m:0,k:2}); MF.addToYard({m:0,k:3}); MF.addToYard({m:0,k:5});
+        MF.SCREENS.forge(probe);
+        var cPool = MF.yardList().filter(function(e){ return e.ingot.m===0 && [2,3,5].indexOf(e.ingot.k)>=0; });
+        var cPick = {}, cSlots = [];
+        cPool.forEach(function(e){ if(!cPick[e.ingot.k] && cSlots.length<3){ cPick[e.ingot.k]=1; cSlots.push({yardIdx:e.idx, key:e.key, ingot:e.ingot}); } });
+        MF.state.forge.slots = cSlots;
+        if(cSlots.length===3) MF.forgePour(MF.state.forge);
+      } else if(scr==='toolsheet'){
+        /* THE PANEL THAT RISES OFF THE BELT. Every instrument's reading lives
+           in it - the lit side, the method, the open steps, the box - and it is
+           appended to document.body rather than into a screen, so mounting the
+           five screens never measured one character of it. */
+        MF.state.tools = {lantern:{forged:true},shifter:{forged:true},drill:{forged:true},auger:{forged:true},
+                          dial:{forged:true},steel:{forged:true},pick:{forged:true}};
+        MF.state.layer=4; MF.state.face=[]; MF.state.faceLayer=null;
+        var cLump = {kind:'poly', a:6, b:7, c:-3, id:'ctr'};
+        MF.state.cart=[cLump]; MF.state.selected=cLump;
+        MF.state.anvil=MF.anvilInit(cLump); MF.state.anvil.step='break';
+        MF._mine = null; MF.SCREENS.mine(probe); MF.paintMine();
+        var cPiece = MF.state.anvil.floor[0].id;
+        ['lantern','shifter','auger','drill'].forEach(function(tk){
+          MF.openTool(tk, cLump, null, cPiece);
+          var cs = document.querySelector('.toolsheet');
+          if(cs) MF._measureContrast(cs).forEach(function(m){
+            chk('contrast');
+            if(m.ratio < m.need) contrastFails.push(tk + ' panel: "'+m.text+'" ('+m.cls+') at '+m.ratio+':1, needs '+m.need);
+          });
+          MF.closeTool();
+        });
       } else { MF.SCREENS[scr](probe); }
     } catch(e){ errs.push('contrast: screen '+scr+' threw: '+e.message); return; }
     MF._measureContrast(probe).forEach(function(m){
@@ -6630,32 +7354,82 @@ MF.validate = function(){
     });
   });
 
-  /* THE LANTERN MUST NOT LEAK THE FACTORISATION */
-  var lampLeak = function(reader){
-    var hits = [];
+  /* PART OF A FACTORISATION, NEVER ALL OF IT.
+
+     This check used to assert the Lantern named NO factor. That is false by
+     design now (MINE-SPEC §13): the Lantern lights one side and leaves the
+     other as a ?. The rule it enforces is the one the user actually stated -
+     a tool "help realize part of the factor not all the factor" - so it
+     counts how many of the lump's own factors a reading contains and requires
+     the answer to be exactly one.
+
+     BOTH FAILURE DIRECTIONS ARE CONTROLLED, because an amended check that only
+     catches "too much" would pass silently on a Lantern that had stopped
+     saying anything at all - and a green group over a dead instrument is
+     exactly the failure §5 of CLAUDE.md is about.
+
+     READ THE DENOMINATOR: four lumps, one reader. It says nothing about the
+     other six instruments; the `schema` group sweeps those. */
+  var lampNames = function(reader){
+    var out = [];
     [[1,-5,6],[6,7,-3],[2,10,12],[1,0,-9]].forEach(function(t){
       var o = {kind:'poly',a:t[0],b:t[1],c:t[2]};
       var h = document.createElement('div');
-      try { reader(h, o); } catch(e){ return; }
+      try { reader(h, o); } catch(e){ out.push({ore:o, named:-1, err:e.message}); return; }
       var txt = (h.textContent||'').replace(/\s+/g,' ');
       var res = MF.smeltPoly(t[0],t[1],t[2]);
+      var seen = {};
       (res.ingots||[]).forEach(function(g){
         if(g.m===0 && g.k===0) return;
         var s = ingotText(g);
-        if(s.length > 1 && txt.indexOf(s) >= 0) hits.push(MF.oreText(o) + ' leaked "' + s + '"');
+        if(s.length > 1 && txt.indexOf(s) >= 0) seen[s] = 1;
       });
+      out.push({ore:o, named:Object.keys(seen).length, which:Object.keys(seen)});
     });
-    return hits;
+    return out;
+  };
+  var lampTooMany = function(reader){
+    return lampNames(reader).filter(function(r){ return r.named > 1; })
+      .map(function(r){ return MF.oreText(r.ore) + ' named ' + r.named + ' of its sides (' + r.which.join(', ') + ')'; });
+  };
+  /* AND ONE SIDE MUST ACTUALLY BE LIT - asserted STRUCTURALLY, not by
+     hunting the factor's text. The counter above ignores single-character
+     factor names on purpose (a bare "2" also occurs inside "x − 2", so
+     matching it would fire on readings that leaked nothing), which means a
+     lantern lighting the 2 of 2x² + 10x + 12 would count as naming nothing.
+     The lit side and the dark ? are elements, so they are looked for as
+     elements. */
+  var lampTooFew = function(reader){
+    var out = [];
+    [[1,-5,6],[6,7,-3],[2,10,12],[1,0,-9]].forEach(function(t){
+      var o = {kind:'poly',a:t[0],b:t[1],c:t[2]};
+      var h = document.createElement('div');
+      try { reader(h, o); } catch(e){ out.push(MF.oreText(o) + ' threw'); return; }
+      if(!h.querySelector('.onesided')) out.push(MF.oreText(o) + ' lit no side at all');
+      else if(!h.querySelector('.qm')) out.push(MF.oreText(o) + ' lit a side and left no ? for the other');
+    });
+    return out;
   };
   chk('sheet');
-  var leaks = lampLeak(MF.TOOL_READ.lantern);
-  if(leaks.length) errs.push('sheet: the lantern named the factor — ' + leaks[0]);
-  /* CONTROL: a lantern that DID name it must be caught */
+  var over = lampTooMany(MF.TOOL_READ.lantern);
+  if(over.length) errs.push('sheet: the lantern named the whole factorisation — ' + over[0]);
   chk('sheet');
-  if(!lampLeak(function(h,o){
+  var under = lampTooFew(MF.TOOL_READ.lantern);
+  if(under.length) errs.push('sheet: ' + under[0]);
+  /* CONTROL 1: a lantern that names BOTH sides must be caught */
+  chk('sheet');
+  if(!lampTooMany(function(h,o){
       h.appendChild(H('div','x','A seam runs, and it is ' + MF.smeltString(MF.smeltPoly(o.a,o.b,o.c)) + '.'));
     }).length)
-    errs.push('CONTROL: the leak check cannot see a lantern that prints the factorisation');
+    errs.push('CONTROL: the leak check cannot see a lantern that prints the whole factorisation');
+  /* CONTROL 2: a lantern that names NOTHING must be caught too. Without this,
+     the amended check passes on an instrument that has quietly stopped
+     working, which is worse than the leak it replaced. */
+  chk('sheet');
+  if(!lampTooFew(function(h,o){
+      h.appendChild(H('div','x','A seam still runs through this one.'));
+    }).length)
+    errs.push('CONTROL: the leak check cannot see a lantern that lights no side at all');
 
   /* the panel itself: opens, focuses, closes on Escape, leaves nothing */
   var shHost = document.createElement('div');
@@ -6955,6 +7729,139 @@ MF.validate = function(){
   MF.state.faceLayer = kSaved.fl; MF.state.inspecting = kSaved.insp; MF.state.cart = kSaved.cart;
   MF.state.selected = kSaved.sel; MF.state.anvil = kSaved.anvil; MF.state.breaking = kSaved.brk;
   MF.state.scan = kSaved.scan; MF.state.rockpile = kSaved.heap;
+
+
+  /* 5j. THE SCHEMAS. Every instrument is now a named method, and a method has
+         two ways of being wrong that prose cannot catch:
+
+         it can DO THE STUDENT'S WORK - naming every factor of the lump, which
+         is the rule the user set out ("help realize part of the factor not all
+         the factor") and which the sheet group only enforces for the Lantern;
+
+         and its PRACTICE can be a lie - a worked example whose stated answer
+         does not actually come out of the lump it is attached to. That one is
+         checked against MF.breakOff, the same engine the anvil swings through,
+         because a practice that judged itself could agree with itself while
+         both were wrong.
+
+         READ THE DENOMINATOR: seven methods over the same seven ore shapes the
+         sheet group sweeps, plus one practice each. It says nothing about
+         whether a method is well WORDED or whether the steps are in a helpful
+         order - no check on this page can see that. */
+  var scSchemaOres = [{kind:'number',n:60},{kind:'number',n:31},{kind:'poly',a:1,b:-5,c:6},
+                      {kind:'poly',a:0,b:6,c:15},{kind:'poly',a:6,b:7,c:-3},
+                      {kind:'poly',a:1,b:0,c:4},{kind:'poly',a:0,b:1,c:3}];
+
+  /* every tool has a method, and every method has a tool. A tool whose schema
+     was never written would render an empty panel and say nothing about it. */
+  Object.keys(MF.TOOLS).forEach(function(k){
+    chk('schema');
+    if(!MF.SCHEMA[k]) errs.push('schema: ' + k + ' is a tool with no method behind it');
+  });
+  Object.keys(MF.SCHEMA).forEach(function(k){
+    chk('schema');
+    if(!MF.TOOLS[k]) errs.push('schema: there is a method for "' + k + '", which is not a tool');
+  });
+
+  /* HOW MANY OF A LUMP'S OWN FACTORS DOES A METHOD PRINT? More than one is the
+     method doing the work the student came to do. */
+  var scNamed = function(fn, ore){
+    var h = document.createElement('div');
+    try { fn(h, ore); } catch(e){ return {err:e.message}; }
+    var txt = (h.textContent||'').replace(/\s+/g,' ');
+    if(ore.kind !== 'poly') return {n:0};
+    var res = MF.smeltPoly(ore.a, ore.b, ore.c);
+    var seen = {};
+    (res.ingots||[]).forEach(function(g){
+      if(g.m===0 && g.k===0) return;
+      var s = ingotText(g);
+      if(s.length > 1 && txt.indexOf(s) >= 0) seen[s] = 1;
+    });
+    return {n:Object.keys(seen).length, which:Object.keys(seen)};
+  };
+  var scPaint = function(key){
+    return function(h, ore){ MF.paintSchema(h, key, ore); };
+  };
+  Object.keys(MF.SCHEMA).forEach(function(key){
+    var s = MF.SCHEMA[key];
+    scSchemaOres.forEach(function(so){
+      chk('schema');
+      var got = scNamed(scPaint(key), so);
+      if(got.err){ errs.push('schema: ' + key + ' threw on ' + MF.oreText(so) + ': ' + got.err); return; }
+      if(got.n > 1)
+        errs.push('schema: ' + key + ' held to ' + MF.oreText(so) + ' printed ' + got.n +
+                  ' of its sides (' + got.which.join(', ') + ') — a method may show part, never all');
+    });
+    /* the method must actually say something on every shape of ore */
+    scSchemaOres.forEach(function(so){
+      chk('schema');
+      var h = document.createElement('div');
+      try { MF.paintSchema(h, key, so); } catch(e){ return; }
+      var txt = (h.textContent||'').replace(/\s+/g,' ').trim();
+      if(txt.length < 40)
+        errs.push('schema: ' + key + ' on ' + MF.oreText(so) + ' rendered almost nothing (' + txt.length + ' chars)');
+    });
+    /* THE PRACTICE IS CHECKED AGAINST THE ENGINE, not against itself */
+    chk('schema');
+    if(!s.practice || !s.practice.ore || !s.practice.answer){
+      errs.push('schema: ' + key + ' has no practice to try');
+    } else {
+      var pg = MF.breakOff(s.practice.ore, s.practice.answer);
+      if(!pg.ok)
+        errs.push('schema: ' + key + '\'s practice answer ' + ingotText(s.practice.answer) +
+                  ' does not come out of ' + MF.oreText(s.practice.ore) + ' (' + pg.reason + ')');
+    }
+  });
+  /* CONTROL 1: a method that prints the whole factorisation must be caught */
+  chk('schema');
+  if(scNamed(function(h,o){
+      h.appendChild(H('div','x', o.kind==='poly' ? MF.smeltString(MF.smeltPoly(o.a,o.b,o.c)) : ''));
+    }, {kind:'poly',a:1,b:-5,c:6}).n <= 1)
+    errs.push('CONTROL: the schema check cannot see a method that names every side of a lump');
+  /* CONTROL 2: a practice whose answer is nudged by one must be caught */
+  chk('schema');
+  if(MF.breakOff(MF.SCHEMA.auger.practice.ore,
+                 {m:MF.SCHEMA.auger.practice.answer.m, k:MF.SCHEMA.auger.practice.answer.k + 1}).ok)
+    errs.push('CONTROL: a practice answer nudged by one still comes out of the lump — the engine is not judging it');
+
+  /* 5k. THE TRANSLATION TABLE. Every row claims that a mining word and a
+         mathematical term are the same thing, and shows a worked example. The
+         claim is what gets asserted - against the engine, never against the
+         sentence next to it - because a row that quietly stopped being true
+         would sit in the one place on this site whose whole job is telling a
+         student what the words mean.
+
+         READ THE DENOMINATOR: it checks that each row's example still SATISFIES
+         the row's own claim and still renders. It cannot tell you whether the
+         English translation is the one a textbook would use - that is a human
+         reading, and nothing here substitutes for it. */
+  MF.ROSETTA.forEach(function(r, i){
+    chk('rosetta');
+    var holds = false;
+    try { holds = !!r.holds(r.ore); } catch(e){ holds = false; }
+    if(!holds)
+      errs.push('rosetta: the row "' + r.mine + ' → ' + r.real + '" uses ' + MF.oreText(r.ore) +
+                ' as its example, and that example does not satisfy the row\'s own claim');
+    chk('rosetta');
+    var shown = '';
+    try { shown = String(r.show(r.ore) || ''); } catch(e){ shown = ''; }
+    if(shown.replace(/<[^>]+>/g,'').trim().length < 8)
+      errs.push('rosetta: the row "' + r.mine + '" shows no worked example');
+    chk('rosetta');
+    if(!r.real || !r.mine || r.real === r.mine)
+      errs.push('rosetta: row ' + i + ' does not translate anything');
+  });
+  /* the row this whole site exists for has to be on the table */
+  chk('rosetta');
+  if(!MF.ROSETTA.some(function(r){ return /irreducible/i.test(r.real) && /prime/i.test(r.real); }))
+    errs.push('rosetta: nothing on the table says a prime and an irreducible polynomial are the same object');
+  /* CONTROL: a row whose example contradicts its term must be caught */
+  chk('rosetta');
+  var scBadRow = {mine:'a twin seam', real:'a difference of two squares',
+                  ore:{kind:'poly',a:1,b:-5,c:6},
+                  holds:function(o){ return MF.smeltPoly(o.a,o.b,o.c).kind === 'twin'; }};
+  if(scBadRow.holds(scBadRow.ore))
+    errs.push('CONTROL: the rosetta check cannot see a row whose example contradicts its own term');
 
   /* 6. NOTHING ON SCREEN MAY HAVE A CEILING, A PERCENTAGE, OR A COMPARISON.
         This is a stated requirement, so it is checked mechanically rather

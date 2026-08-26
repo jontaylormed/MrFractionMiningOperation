@@ -1,7 +1,7 @@
 # What the site is, right now
 ### The single place any brief, agent or session reads to find out what exists
 
-**Last verified 2026-08-24** by `MF.validate()` run in a browser against this tree, by driving the seam's clicks by hand, and by walking a lump through assay → swing → glance-off → swing → yard through the real DOM. The last **screenshot** pass was 2026-08-22 — the 2026-08-24 pass measured geometry from the DOM instead, because the preview pane renders a `file://` page as a static snapshot and its pixels are not the live page.
+**Last verified 2026-08-25** by `MF.validate()` run in a browser against this tree over a **local HTTP server**, by driving the lantern → hammer path by hand through the real DOM, and by measuring the new panels' geometry at 1280 / 760 / 380px. **`file://` could not be used:** the preview pane renders it as a static snapshot and `MF` never runs, so nothing on the page can be exercised at all. The last **screenshot** pass was 2026-08-22 — every pass since has measured geometry from the DOM, and `VERIFICATION.md` §56 is what happened the one time this build trusted a screenshot instead.
 
 ---
 
@@ -18,11 +18,11 @@
 
 | | |
 |---|---|
-| **File** | **one** — `index.html`, ~4,400 lines, fully self-contained |
+| **File** | **one** — `index.html`, ~7,500 lines, fully self-contained |
 | **Screens** | **five** — surface, the Stamp Mill, the Casting Shed, the mine, the forge |
 | **Layers** | **five**, all reachable from the first screen, none gated on anything |
 | **Instruments** | **seven**, all made at the forge, none granted |
-| **Validation** | `MF.validate()` → **8,615 checks / 26 groups / 0 errors**, two controls that must fail, and do |
+| **Validation** | `MF.validate()` → **9,307 checks / 28 groups / 0 errors**, two controls that must fail, and do |
 
 > **A check is only as wide as the space it sweeps.** The `truthy` group reported 0 errors across 642 checks while **1,970 Decimal Dial states printed a falsehood**, because it tested each lump's original integer coefficients and never nudged `c` — the one thing the dial exists to do. It now sweeps every slider position the control can reach (3,287 checks). Ask of any green result: *what did it not look at?*
 | **Runtime** | Zero dependencies, no build step, no network requests, no storage, runs from `file://` |
@@ -80,7 +80,15 @@ That is the payoff: prime factorisation and polynomial factoring are not two met
 
 The **Smelting House is the Stamp Mill** — the mine does not smelt any more, and a stamp mill is the real building that breaks ore. Its room is a **battery of five iron stamps** in a timber frame, lifted by cams on a shaft and dropped into mortar boxes, falling out of step with each other. That machine *is* the workshop's lesson standing in the corner: big things come apart into smaller ones, over and over, until what is left will not come apart.
 
-The **Casting Shed** is unchanged — it still teaches the mold, which is still the forge's move.
+The **Casting Shed still teaches the mold**, which is still the forge's move — and it is now **the learning hub**, which is where a student goes to find out what any of the words mean.
+
+Under the mold player: a **translation table**, every mining word against the term a textbook uses, because a student who learns *"the seam runs"* and never learns that a seam is **a factor** has learned a game rather than algebra. Ten rows — ore→an expression, a seam→a factor, breaking→factoring, **native metal→a prime, or an irreducible polynomial**, a twin seam→a difference of two squares, the common metal→the GCF, loaded ore→`ax² + bx + c` with `a ≠ 1`, the assay→recognising the form, the pour→the distributive property, sound-or-scrap→checking by multiplying back.
+
+**Every row's worked example is generated from the engine, not typed.** A row carries `show(ore)` and `holds(ore)`, and the `rosetta` group (32) asserts the claim rather than the sentence: `x² − 25` really does classify `twin`, `3x + 12` really does carry a common metal of 3, `x² + 4` really does come back `pure`. Controls: a row whose example contradicts its own term, and the prime↔irreducible row removed from the table — both caught. The native-metal row gets its own note under the table, because it is the one this whole site exists for.
+
+Then **all seven methods, readable whether or not you own the tool**, each with its name, why it works and a practice to try — folded shut until wanted. Not gated: a lesson you have to earn is a lesson locked away from the student who needs it most. And four ways out instead of two: the Stamp Mill, the mine, the forge, the surface.
+
+> The building **keeps its name**. The `doors` assertion `/Cast|Mold/` did not move, unlike the Stamp Mill's, because nothing about what this room is called changed.
 
 > The `doors` group hardcoded `/Smelt/i` for this building. It moved with the name **deliberately** rather than being quietly deleted, and it is `/Stamp|Mill|Crush|Break/i` now — proved by renaming the door to "The Tea Room" and watching it fire.
 
@@ -154,23 +162,39 @@ The board used to ask for a *shape* — "three pure ingots", "any four metals at
 
 `rank` runs 1–7, ordered by how much the instrument does for you when you are getting metal out of rock, and the object it is cast from gets harder in step:
 
-| rank | tool | cast | from | held to a lump, it |
+| rank | tool | cast | from | the method it carries, by its real name |
 |---|---|---|---|---|
-| 1 | **Deep Pick** | `12` | 2 · 2 · 3 | says plainly that it works at the seam, not on the floor |
-| 2 | **Pit Lantern** | `30` | 2 · 3 · 5 | says whether a seam still runs through it. Never says along what. |
-| 3 | **Steel Pick** | `3x + 12` | 3 · (x+4) | rips the common metal out in one blow, and touches nothing else |
-| 4 | **Decimal Dial** | `x² + 3x + 2` | (x+1)(x+2) | shows why nothing will come out, when nothing will |
-| 5 | **Exponent Rail** | `x² + 8x + 16` | (x+4)(x+4) | shows where its x² can have come from |
-| 6 | **Core Drill** | `x² − 25` | (x+5)(x−5) | lists every pair that could run through it, and marks none |
-| 7 | **Powered Auger** | `6x² + 7x − 3` | (2x+3)(3x−1) | reads what the x-part and the number *have* to divide before a seam can run; traces the division on a swing that lands |
+| 1 | **Deep Pick** | `12` | 2 · 2 · 3 | *cutting at the face* — it has no factoring move and says so |
+| 2 | **Pit Lantern** | `30` | 2 · 3 · 5 | *one side lit, one side dark* — lights **one** factor, prints `?` for the other |
+| 3 | **Steel Pick** | `3x + 12` | 3 · (x+4) | *pulling out the common factor (the GCF)* |
+| 4 | **Decimal Dial** | `x² + 3x + 2` | (x+1)(x+2) | *the whole-number test* |
+| 5 | **Exponent Rail** | `x² + 8x + 16` | (x+4)(x+4) | **the box method** — a 2×2 box, both sides dashed `?` |
+| 6 | **Core Drill** | `x² − 25` | (x+5)(x−5) | *the pair hunt, and the difference of two squares* |
+| 7 | **Powered Auger** | `6x² + 7x − 3` | (2x+3)(3x−1) | **factoring by grouping**, in full — four of its five steps stay open |
 
 Plain numbers → a metal spread over a bracket → two brackets → a square → a twin seam → loaded at both ends. **The target is on the order card and again, large, on the open mold**, and a casting that misses is described term by term — *"the x² came out 2 and the order wants 6"* — exactly as the mine describes a pick that glanced off.
 
 > **A precise target can become an unreachable one, so it is checked.** The `forge` group (44) stocks a yard from 70 real smelts and asserts, for every order: some set of metals on it casts the object; those metals are judged sound; **one metal nudged by one is not**; and the rejection says where it missed. It also asserts the ranks run 1..7 with no ties and that no two orders are cut for the same object — a board that claims an escalation has to have one. Controls: an unreachable target, duplicate targets, tied ranks, a judge that accepts anything, and a judge that rejects without explaining — all five caught.
 
+## A tool shows PART of a factorisation, and the hammer confirms it
+
+**Amended 2026-08-25 by user decision (`MINE-SPEC` §13).** The old rule was *an instrument may say what is there, never what to swing*. It is now:
+
+> **A tool may show PART of a factorisation. It may never show all of it.**
+
+**The Lantern lights one side and leaves the other dark.** Held to `x² − 5x + 6` it prints `( x − 2 ) × ( ? )`. Which side it lights is the **simpler** one — plain metal before a bracket, the smaller bracket before the larger — so a rank-7 lump still leaves the harder half. A factorisation's two sides are not independent: once one is out the other is exactly what is left, so one side is a foothold and the division is still the work.
+
+**Nothing in a panel judges.** You write the other side into the `?`, press **cut the hammer to it**, and the pick bar opens cut to what you named. Then you swing, and the rock answers. A wrong answer gets **no warning from the panel** — verified by typing one — and the hammer glances off exactly as it does for anything else typed into the bar. `MINE-SPEC` §11e is untouched: the rock is the only judge in the mine.
+
+> `B.rawFor` is load-bearing in that handoff. `paintBreak` resets `B.raw` to `MF.pickDefault` whenever `rawFor` does not match the piece under the pick, so setting `raw` alone would be discarded on the very next paint and the bar would open empty with nothing on screen saying why.
+
+**One schema, three surfaces.** `MF.SCHEMA` holds each method once — its real name, why it works, `steps(ore)` worked on the lump in front of you, and a **fixed** practice lump. It is rendered in the tool panel, in the forge's tutorial and in the Casting Shed. Three copies would be three chances to drift, which is the reason `_openSheet` builds every dialog and `quad()` prints every expression.
+
+> **The `schema` group (121) enforces the rule over all seven**, not just the Lantern: no method may print more than one of a lump's own factors, every method renders on all seven ore shapes, and **every practice answer is checked against `MF.breakOff`** rather than against itself. Controls: a method that prints the whole factorisation, and a practice answer nudged by one — both caught. The `sheet` group (59) covers the Lantern in **both** directions, because a check loosened to "not more than one" passes on an instrument naming **none** — see `VERIFICATION.md` §55.
+
 **The ladder buys reach and sight, never an answer.** The Steel Pick only takes the metal every term is already carrying — a move the student demonstrated at the forge to earn it — and the Auger narrows where to look without naming anything. The hand pick is free and always in your hands; the `nogate` group still walks every layer with an empty yard and no tools.
 
-> **An instrument may say what is there, never what to swing.** The `sheet` group asserts the Lantern's reading never contains the factorisation, with a control that prints it and must be caught. **The pair scanner is no longer free** — it is the Drill's reading now, the same move §10a made with the casting preview, and it also stopped the swing button falling below the fold.
+> **A tool shows part, never all — and the pair scanner is not free.** The `sheet` group (59) holds the Lantern to naming **exactly one** side, in both directions, and the `schema` group (121) holds all seven methods to the same rule. The pair scanner is the Drill's reading, the same move §10a made with the casting preview, and it also stopped the swing button falling below the fold.
 
 ## The pour, seen from above
 
@@ -220,6 +244,10 @@ Metals are **spent** here — this is the yard's sink. Forging *is* distributing
 
 **The casting preview is the Lantern's power, not a default.** Before you forge one, the mold is dark and you learn from the casting.
 
+**And the forge now teaches the tool it hands over.** A sound pour lands the casting, the verdict, then **a short tutorial** — the method's real name, why it works, and one practice on a fixed lump — and only then *Hang it on your belt*. The practice has **no judge of its own**: it hands what the student names to `MF.breakOff`, the same engine the anvil swings through, so a miss comes back described by the rock (*"the hammer glanced off"*) rather than marked. The same tutorial reopens from the belt, because a lesson that exists only in the three seconds after a pour is a lesson nobody re-reads.
+
+> **The tutorial was outside the contrast sweep, so the sweep was widened rather than the gap documented.** The `contrast` group mounted the forge cold, then with a mold open — never **poured**, so not one pixel of the casting's tutorial was measured. It now mounts a poured forge and, separately, **the tool panel itself**, which is appended to `document.body` rather than into a screen and had therefore never been swept at all. 461 → **783 elements**, 0 failures, proved by colouring the method text `#FBF6EE` and watching nine readings fire at 1.02:1.
+
 > **Tools assist; they never gate.** The `nogate` check walks every layer with an empty yard and no tools and asserts ore still comes up.
 
 ## Invariants enforced in code, not asserted in prose
@@ -245,6 +273,8 @@ Metals are **spent** here — this is the yard's sink. Forging *is* distributing
 - **`math-content` has never run against the generated ore.** The ore is generated rather than authored, so most lumps a student will meet have been checked only by `MF.validate`'s own sweep — which the author also wrote (§16).
 - **Never deployed.** No `gh` CLI, no remote, no published URL. Nothing has been checked against the copy a student would open, which `VERIFICATION.md` §34 says is the only check that matters.
 - **The scene overhaul is unfinished.** The surface and the mine are rendered places; the bench, the workshops, the yard and the forge are still panels.
+- **No student has read one word of the new teaching copy.** Ten translation rows, seven method names, seven "why it works" paragraphs and seven practices were written in one sitting by the author. `rosetta` asserts that each row's *example* is true; **nothing asserts that the English on the left is the translation a teacher would use**, and no check on this page can. That is a human reading and it has not happened.
+- **`MF.validate()` cannot be run from `file://` any more — and could not before.** The preview pane renders a `file://` page as a static snapshot, so `MF` is never defined and *nothing* on the page can be exercised. This build was verified over a local HTTP server. The claim that the site "runs from `file://`" is still believed and is still **unproven in a browser this session**.
 
 ---
 

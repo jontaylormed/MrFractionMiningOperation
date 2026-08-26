@@ -714,3 +714,61 @@ The contrast sweep failed the build over the mold's cavity — a tool icon, deli
 - **Widening an exclusion is weakening a check, so prove the check still bites.** The control here is not "does the emoji stop failing" — it is `.castfor .cfeq{color:#FDF8F0}`, real unreadable text on the same screen, which still fires at 1.02:1.
 - **Draw the line at "has any word character", not at "starts with an emoji".** The narrow rule keeps every mixed label in the sweep; the broad one would have quietly dropped every button with an icon on it.
 - **And prefer removing the second source of truth to measuring it.** The cavity used to be seven hand-drawn silhouettes — a second description of what each tool looks like, free to drift from the icon. It is the icon now, and the `mold` group asserts they are the same character.
+
+## 55. Amending a check has two failure directions, and the old control only covered one
+
+The `sheet` group asserted that the Lantern's reading **never** contains a factor of
+the lump, with a control that printed the full factorisation and had to be caught.
+A user decision (`MINE-SPEC` §13) made that assertion false by design: the Lantern
+now lights one side and leaves the other as a `?`.
+
+The tempting move is to delete the check. The correct move is to make it assert the
+rule that actually binds — *part, never all* — and the trap is that an amended check
+has **two** ways to be wrong where the original had one.
+
+> Loosened to "must not name more than one side", the check passes on a Lantern that
+> names **none** — one that has quietly stopped working. A green group over a dead
+> instrument is worse than the leak it replaced, because nothing on screen says so.
+
+So there are two controls, and both must fire: a Lantern that prints
+`MF.smeltString` in full, and a Lantern that prints only prose.
+
+**And the second control could not be written the same way as the first.** Counting
+factor names in text deliberately ignores single-character ones — a bare `2` also
+occurs inside `x − 2`, so matching it would fire on readings that leaked nothing.
+That blind spot is harmless when you are asking *did it say too much* and fatal when
+you are asking *did it say anything*: the Lantern lighting the `2` of `2x² + 10x + 12`
+would have counted as naming nothing at all. The lit side and the dark `?` are
+elements, so the second control looks for **elements** — `.onesided` and `.qm` — not
+for text.
+
+**The rules.**
+
+- **When a rule changes, move the check with it and keep the old control.** The
+  original control still has to fire; it is the half of the rule that did not change.
+- **Ask what the loosened check now passes on.** Every relaxation opens a direction,
+  and that direction needs its own control before the group goes green.
+- **Match the instrument to the question.** "Did it say too much" is a text question.
+  "Did it say anything" is a structural one. Using the text counter for both is how a
+  known blind spot gets promoted into a false pass.
+
+## 56. A paused arrival wipe is not a clipped page
+
+A screenshot of the new Casting Shed showed the translation table cut off at
+285×318px in the corner of a 760px viewport — a clipped container, an obvious
+layout bug, and worth reporting.
+
+It was neither. The settle step pauses every animation, and it had been run
+immediately after `MF.go`, which **freezes `main.arriving` mid-wipe**. The DOM said
+the table was 684×1359 and nothing overflowed anything.
+
+> The picture was of a page caught halfway through arriving. The defect was in the
+> instrument, and it was indistinguishable from a real one.
+
+**The rules.**
+
+- **Pause the ambient animations, finish the transitional ones.** They are not the
+  same kind of thing: one is life, the other is a page still becoming itself.
+- **Measure geometry from the DOM before believing a screenshot of it.** This is the
+  second time on this project that the pixels have been the less reliable instrument
+  (`SITE-STATE`, 2026-08-24), and both times the DOM settled it in one read.
