@@ -156,6 +156,18 @@ The face is **2280px of rock**, several screens wide, scanned by dragging, scrol
 
 **And the reason none of it fired at first: the pick was eating the click.** It follows the cursor with its *handle* under the pointer and is painted after the rocks, so hit-testing the centre of a lump returned the pick's handle, head and collar — the rock was never reached. The same fault sat on the surface, where Mr Factor, the portal's dark mouth and the out-going cart are all painted after the hotspots: **the blackest, most mine-looking part of the mine was the one place a click did nothing.** Both are now stated as a class — *in a scene, only a door takes a hit; on the face, only a lump does; everything else is a picture* — and swept by the `overlay` group (56 checks, control: put the pick back in front of the mouse, and it is caught).
 
+**The mine is cut into a mountain range, and the range is kept east.** It used to be a single dome of rock standing in a green field with soft hills a long way behind it — nobody digs a mine into a boulder, and the whole eastern end of the site read as a stone dropped on a lawn. There are two ridgelines behind it now, hazy blue and nearer grey, and a rocky shoulder that climbs out of the pasture and carries the portal on its foot.
+
+**Measured by rendering the scene with the range and without it and diffing the two:** it touches **x=516..899 of 900**, so the **western 57% of the illustration is untouched** — the plains, the fence, the cart track and the four western pines are exactly as they were. What it adds grows eastward: 10px of peak above the hill line at x=520, 96px at x=720, 173px at x=880. The two eastern pines now stand silhouetted against rock rather than against empty sky.
+
+> **The bases are drawn down to y=300 and y=330 and the two soft hills, painted immediately after, cover them completely.** Only peaks show. And they have to be *tall enough to show*: the first pass peaked at 154 against a hill topping out at 185–222, so a few pixels stood clear and the rest was buried.
+>
+> **Aerial perspective is a tint, not an erasure.** At 50% over a pale sky the far range was so hazy that a colour test written to find sky classified the mountain as sky. It is 72% now.
+
+> `ridgePath(points, baseY)` is module scope and **pure** — it returns a path string and touches no DOM — so it carries none of the three-identical-scene-builders hazard (`CLAUDE.md` 1). Straight segments deliberately: a quadratic gives rolling hills and this scene already has two of those. Mountains have edges.
+
+> **All of it is inert.** Nine `.sc-range` paths, and the existing `.scene svg * { pointer-events:none }` rule means not one of them can take a click. Verified at the portal mouth (still "Into the Mine"), on the new hillside and on a far peak.
+
 **The mine's hotspot is now the bluff, not a box below it.** It was `712,300 152×100`, starting 54 units below the top of the rock, so the arch, the timber head and the nameplate reading *The Mine* were all outside the target. It is now `712,244 162×132`, matching the graphic's drawn bounds. **The other three buildings' hotspots have not been re-measured against their graphics** — only the mine was.
 
 **Digging is decoupled from breaking.** You may descend to the deepest layer and hoard raw ore having broken nothing.

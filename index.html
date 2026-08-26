@@ -2845,6 +2845,18 @@ function tiledRoof(parent, o){
   }
 }
 
+
+/* A JAGGED SKYLINE from a list of [x,y] points, closed down to a base line.
+   Pure - it returns a path string and touches no DOM - so it can be used by
+   any scene without the three-identical-scene-builders hazard (CLAUDE.md 1).
+   Straight segments on purpose: a quadratic curve gives rolling hills, and
+   this scene already has two of those. Mountains have edges. */
+function ridgePath(pts, baseY){
+  return 'M' + pts[0][0] + ' ' + baseY +
+         ' L' + pts.map(function(p){ return p[0] + ' ' + p[1]; }).join(' L') +
+         ' L' + pts[pts.length-1][0] + ' ' + baseY + ' Z';
+}
+
 /* A nameplate BOLTED TO A FACADE. Module scope, not inside a scene: it was
    first written inside roomScene by accident - both scene builders have an
    identically shaped P() helper - so surfaceScene could not see it and every
@@ -2948,6 +2960,41 @@ MF.surfaceScene = function(){
     });
     g.appendChild(cl); svg.appendChild(g);
   });
+
+  /* ---- THE MOUNTAIN RANGE THE MINE IS CUT INTO ----
+
+     The mine used to be a single dome of rock standing in the middle of a
+     green field, with soft hills a long way behind it. Nobody digs a mine into
+     a boulder: a portal is the foot of something much bigger than itself, and
+     without that the whole right-hand end of the site read as a stone dropped
+     on a lawn.
+
+     IT IS KEPT TO THE RIGHT, AND MOSTLY ABOVE THE HILL LINE. The range runs
+     from x=500 east and its bases are drawn down to y=300 and y=330 - which
+     the two soft hills, painted immediately after this, cover completely. What
+     is left on screen is peaks standing above the ridgeline over the mine end
+     of the valley. The plains, the fence, the cart track and the four pines to
+     the west are untouched; the two eastern pines now stand SILHOUETTED
+     against rock instead of against empty sky, which is more of a tree than
+     they were before, not less.
+
+     AERIAL PERSPECTIVE DOES THE DEPTH: the far range is hazy and blue because
+     there is more air in front of it, the near one greyer and darker. That is
+     what puts one behind the other without either being drawn smaller. */
+  /* THE PEAKS HAVE TO CLEAR THE GREEN. The soft hill behind this end of the
+     valley tops out around y=185..222, so a range peaking at 154 showed a few
+     pixels of itself and the rest was buried - and at 50% over a pale sky it
+     was so hazy that a colour test written to find sky classified the MOUNTAIN
+     as sky. Aerial perspective is a tint, not an erasure. */
+  P(ridgePath([[500,300],[542,210],[580,242],[624,178],[664,214],[706,146],
+               [748,190],[796,124],[840,172],[880,144],[916,196],[960,300]], 300),
+    '#8795A8', {opacity:'.72', class:'sc-range'});
+  /* snow on the two that earn it, cut to the same slopes as the peaks */
+  P('M796 124 L779 152 L789 147 L796 155 L806 143 L813 152 Z','#EEF3F8',{opacity:'.85', class:'sc-range'});
+  P('M880 144 L867 166 L874 162 L882 169 L888 159 L893 166 Z','#EEF3F8',{opacity:'.7', class:'sc-range'});
+  P(ridgePath([[620,330],[664,228],[700,262],[744,208],[788,240],[832,196],
+               [876,234],[920,210],[980,330]], 330),
+    '#6E7788', {opacity:'.78', class:'sc-range'});
 
   /* far hills */
   P('M0 250 q120 -66 240 -20 q120 46 250 -14 q140 -64 410 6 V420 H0 Z','#A8B79B',{opacity:'.75'});
@@ -3208,6 +3255,26 @@ MF.surfaceScene = function(){
      the only thing that hides it is the darkness it is rolling out of, and
      once clear it passes in front of the rails, the ground and the props
      instead of behind them. */
+
+  /* ---- THE HILLSIDE THE PORTAL IS CUT INTO ----
+     The bluff on its own was the "single rock in a field". This is the ground
+     it belongs to: a rocky shoulder climbing east out of the pasture and
+     running off the edge of the scene, in the bluff's own palette so the two
+     read as one hill rather than as a rock parked against a backdrop.
+
+     It starts at x=690 - clear of the forge, whose sill course ends at 682 -
+     and its base stops at y=356, ABOVE the rail line at 368, so the track
+     still runs unbroken into the portal. */
+  P(ridgePath([[690,356],[712,300],[742,268],[784,240],[830,252],[872,228],[900,244]], 356),
+    '#6E5C49', {class:'sc-range'});
+  P(ridgePath([[690,356],[716,318],[752,296],[800,274],[848,286],[900,268]], 356),
+    '#7A6650', {opacity:'.92', class:'sc-range'});
+  /* strata: a few beds of rock running with the slope, which is what stops a
+     silhouette reading as a paper cut-out */
+  [[706,330,168],[724,346,150],[770,300,120]].forEach(function(s){
+    svg.appendChild(S('path',{class:'sc-range', d:'M'+s[0]+' '+s[1]+' q'+(s[2]/2)+' -14 '+s[2]+' -6',
+      stroke:'#5E4E3E','stroke-width':'2.5',fill:'none',opacity:'.45','stroke-linecap':'round'}));
+  });
 
   /* ---- the mine entrance, cut into a bluff ---- */
   var en = S('g',{transform:'translate(742,214)'});
