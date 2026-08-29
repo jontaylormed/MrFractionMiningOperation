@@ -188,7 +188,14 @@ The face is **2280px of rock**, several screens wide, scanned by dragging, scrol
 
 **The galleries are tighter.** Nine rows at 10–11px of padding ran the shaft to 921px and set the height of the whole band. At 7px, holding the 44px minimum every control here keeps, the shaft is 982 and the page is **2095px → 2025px**.
 
-**The two work boxes stay level, including mid-swing.** They were `align-items:start` and the hammer box grew every time the anvil stage did — the pair drifted apart exactly when a student was watching it. Stretched, with a reserved 186px under the anvil stage: measured before and during a swing, both boxes are top 1344, height 474, **identical**.
+**The vein is 260 tall, and the ore is spread up it.** It was 190, and every lump was dropped between y=50 and y=192 — the ore sat in the bottom three quarters with a bare band of rock above it and nothing in the top quarter at all. Ore is laid across 10%–80% of the height now: measured on a layer-4 face, **y 32..204 with a mean of 108 against a midline of 130, and 11 of 15 lumps in the top half.**
+
+**The finishing blow lands in the hammer box.** It used to be appended to the *bench* — below the pair entirely — so the last and best swing of a lump played out underneath the floor and the column grew a stage taller to hold it. It goes in the box the hammer bar occupied, so the row keeps its two columns.
+
+**And the row never moves or changes size.** Three things were making it: the pair was `align-items:start`; the right box lost 166px when the hammer bar went at the end of a lump; and the lead line above the floor is shorter once there is more than one piece, which jumped everything 21px. Stretched, with a 524px floor under the pair and a reserved height on the lead line: measured **top 1042, height 524 — fresh, after a glance, and after the last blow, identical.**
+
+**The head of the bench.** The lump is the headline at **42px** (every other `.eq` is ~30). The Stamp Mill sits in the **top-right corner** as a small orange button with its one line of explanation **underneath it**, and the assay question follows below both — a signpost in the corner rather than a paragraph across the work.
+
 
 **The Stamp Mill suggestion is one line.** It was a note panel with two sentences and a full-size button, taking more room on the bench than the lump it was about. It is 52px, right-aligned, with a small orange button — the `--ore` the mine already uses for anything that points somewhere.
 

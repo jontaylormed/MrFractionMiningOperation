@@ -184,6 +184,13 @@ input[type=range]{width:100%; accent-color:var(--ore); height:44px}
    box and it changes size while the blow plays, so without a floor under it the
    box breathed in and out on every swing. */
 .workpair .anvilstage{min-height:186px; justify-content:flex-end}
+/* AND THE ROW KEEPS ITS HEIGHT WHEN THE LUMP IS FINISHED. The hammer bar is
+   genuinely gone at that point - no boxes, nothing to type - so the right box
+   lost 166px and the whole row collapsed under the student at the exact moment
+   of the last blow. A floor under the pair means the end of a lump changes
+   what is IN the box and never the shape of it. */
+@media (min-width:901px){ .workpair{min-height:524px} }
+.floorlead{min-height:3.1em}
 @media (max-width:900px){ .workpair{grid-template-columns:minmax(0,1fr)} }
 /* minmax(0,1fr), NOT 1fr: a bare 1fr column has min-width:auto and grows to
    fit its widest child, so the 2280px seam stretched the whole page sideways
@@ -1127,17 +1134,28 @@ table.rosetta td.rx{font-family:var(--display); font-size:16px; color:var(--ink)
 .methodline .mlab{font-family:var(--display); font-size:11px; letter-spacing:.11em; color:var(--ore-t)}
 .methodline .mnm{font-family:var(--display); font-size:16px; color:var(--ink); flex:1 1 auto}
 .methodline .mlgo{font-size:12px; padding:8px 11px; min-height:44px}
-/* the Stamp Mill suggestion: one line, and it sits out of the way. It was a
-   full note panel with two sentences and a full-size button, which took more
-   room on the bench than the lump it was about. */
-.millpoint{display:flex; align-items:center; gap:10px; flex-wrap:wrap;
-  justify-content:flex-end; margin:8px 0 4px}
-.millpoint .mpt{flex:1 1 auto; font-size:12px; color:var(--ink-soft); text-align:right}
-/* orange, and small. The lamp orange the mine already uses for anything that
-   points somewhere. */
-.mpbtn{flex:0 0 auto; background:var(--ore); color:#FFF7EA; border-color:var(--ore-t);
+/* the head of the bench: the lump on the left, the Stamp Mill signpost in the
+   top right corner with its line underneath it */
+.benchhead{display:flex; align-items:flex-start; justify-content:space-between;
+  gap:14px; flex-wrap:wrap; margin-bottom:4px}
+/* THE ORE IS THE HEADLINE. It was the same size as any other .eq on the page,
+   and it is the one thing every control on this screen refers to. */
+.benchore{flex:1 1 220px; min-width:0; margin:0;
+  font-size:clamp(28px,4.6vw,42px); line-height:1.15}
+/* the signpost: button first, its line under it, both hard against the right */
+.millpoint{flex:0 0 auto; display:flex; flex-direction:column; align-items:flex-end;
+  text-align:right; gap:5px; max-width:210px}
+.millpoint .mpt{font-size:12px; color:var(--ink-soft); line-height:1.3}
+.mpbtn{background:var(--ore); color:#FFF7EA; border-color:var(--ore-t);
   font-size:12px; padding:7px 12px; min-height:44px}
 .mpbtn:hover{background:var(--ore-t); border-color:var(--ore-t); color:#FFF7EA}
+/* the finishing blow lives in the hammer box's place, so the row never changes
+   shape between the last swing and the end of the lump */
+.endbar .anvilstage{min-height:186px}
+@media (max-width:560px){
+  .benchhead{flex-direction:column}
+  .millpoint{align-items:flex-start; text-align:left; max-width:100%}
+}
 .splitdia{width:min(300px,100%)}
 
 /* =========================================================================
@@ -5835,7 +5853,12 @@ MF.LAYER_LOOK = [
    movement rather than reading a grid of seven.
    SEAM_W is the drawn width; the viewport shows roughly a third of it. */
 MF.SEAM_W = 2280;
-MF.SEAM_H = 190;
+/* 260, NOT 190. The vein was 190 tall and every lump was dropped between
+   y=50 and y=192 - so the ore sat in the bottom three quarters with a bare
+   band of rock above it, and the midpoint of the spread was well below the
+   middle of the seam. A vein you scan along should have rock in it above and
+   below the ore, not ore resting on the floor of the picture. */
+MF.SEAM_H = 260;
 MF.SEAM_COUNT = 15;
 
 MF.stockFace = function(){
@@ -5856,7 +5879,10 @@ MF.stockFace = function(){
     var span = (MF.SEAM_W - 200) / (MF.SEAM_COUNT - 1);
     o.slot = MF.nextSeamSlot();
     o.px = 100 + o.slot * span + (rng() - 0.5) * span * 0.6;
-    o.py = 50 + rng() * 142;
+    /* SPREAD ACROSS THE VEIN, and biased a little high so most of the ore is
+       NOT in the bottom half. 10%..80% of the height, which for a 260 seam is
+       26..208 against a midline of 130. */
+    o.py = MF.SEAM_H * 0.10 + rng() * MF.SEAM_H * 0.70;
     o.sz = 26 + rng() * 24;
     o.rot = rng() * Math.PI * 2;
     /* its own silhouette: a different number of faces, each pulled in or out
@@ -6410,30 +6436,34 @@ MF.paintAnvil = function(host){
      crossing the whole page, and on a narrow screen it meant scrolling, which
      you cannot do mid-drag. The belt now hangs inside the floorbox itself,
      directly above the pieces it acts on. */
-  bench.appendChild(H('div','eq', MF.oreLabel(ore)));
+  /* THE HEAD OF THE BENCH: the lump on the left, large, because it is the
+     thing the whole screen is about - and the Stamp Mill in the top right
+     corner with its line of explanation UNDER the button, so the suggestion
+     reads as a signpost in the corner rather than a paragraph across the work.
+     The assay follows underneath both. */
+  var head = E('div','benchhead');
+  head.appendChild(H('div','eq benchore', MF.oreLabel(ore)));
+
+  /* A PLAIN NUMBER POINTS AT THE STAMP MILL. Numbers still break here - the
+     whole thesis is that 72 and x² − 5x + 6 are one job - but the room built
+     for factor trees and primes is one click away from the bench that needs
+     it, instead of two screens and a guess. */
+  if(ore.kind === 'number'){
+    var sm = E('div','millpoint');
+    var mj = E('button','btn mpbtn'); mj.type='button';
+    mj.innerHTML = 'Stamp Mill &rarr;';
+    mj.setAttribute('aria-label','Go to the Stamp Mill, the room built for breaking numbers apart');
+    on(mj,'click',function(){ MF.go('workshop-ore'); });
+    sm.appendChild(mj);
+    sm.appendChild(H('span','mpt','Numbers come apart the same way rock does.'));
+    head.appendChild(sm);
+  }
+  bench.appendChild(head);
 
   /* NO STEP STRIP. Two numbered stages with the second greyed out is a gate
      drawn as furniture: it says you are not allowed here yet even when you
      are. The one act on this bench is BREAK, and the assay sits inside it as
      something you may reach for. */
-  /* A PLAIN NUMBER POINTS AT THE STAMP MILL. Numbers still break here - the
-     whole thesis is that 72 and x² − 5x + 6 are one job - but the room built
-     for factor trees and primes is one click away from the bench that needs
-     it, instead of two screens and a guess. */
-  if(ore.kind === "number"){
-    /* ONE LINE, AND THE BUTTON ON THE RIGHT. It was a full note panel with two
-       sentences and a full-size button, which took more room on the bench than
-       the lump it was about - a suggestion should not outweigh the work. */
-    var sm = E("div","millpoint");
-    sm.appendChild(H("span","mpt","Numbers come apart the same way rock does."));
-    var mj = E("button","btn mpbtn"); mj.type="button";
-    mj.innerHTML = "Stamp Mill &rarr;";
-    mj.setAttribute("aria-label","Go to the Stamp Mill, the room built for breaking numbers apart");
-    on(mj,"click",function(){ MF.go("workshop-ore"); });
-    sm.appendChild(mj);
-    bench.appendChild(sm);
-  }
-
   MF.paintAssay(bench, B);
   MF.paintBreak(bench, B);
 
@@ -6782,7 +6812,10 @@ MF.paintBreak = function(host, B){
   var anim = B.anim;
   B.anim = null;
 
-  host.appendChild(H('p','hint', pieces.length===1
+  /* the lead line over the floor. It carries a class and a reserved height
+     because its two versions are different lengths, and the shorter one let
+     the whole row jump 21px up at the moment the lump finished. */
+  host.appendChild(H('p','hint floorlead', pieces.length===1
     ? '<b>Name one thing that is in there, and swing.</b> If the seam runs, the lump comes apart and both pieces land on the floor. Nothing here tells you beforehand whether it will.'
     : '<b>Anything still rock goes back under the pick.</b> Break it again.'));
 
@@ -6863,21 +6896,32 @@ MF.paintBreak = function(host, B){
 
   /* ---- the swing, or the end of the lump ---- */
   if(done){
-    /* THE FINISHING BLOW STILL LANDS ON SCREEN. The hammer bar goes when every
-       piece is native, and that is the most satisfying swing there is - so the
-       anvil is drawn once more with the piece that was just struck on it, and
-       the hammer comes down on it. No boxes, nothing to type: the work is
-       finished, this is just the blow that finished it. */
+    /* THE FINISHING BLOW LANDS IN THE HAMMER BOX, where every other blow has
+       landed. It used to be appended to the BENCH - below the pair entirely -
+       so the last and best swing of a lump played out underneath the floor,
+       after the two boxes, and the whole column grew a stage taller to hold it.
+       It goes in the same box the hammer bar occupied, so the pair keeps its
+       two columns and neither box moves or changes size at any point in the
+       life of a lump. */
+    var endBox = E('div','cutbar endbar');
+    endBox.appendChild(H('div','cutlab','THE LAST BLOW'));
     if(anim && B.last && B.last.struck){
       var endStage = E('div','anvilstage done');
       endStage.setAttribute('data-anim', anim);
       endStage.appendChild(MF.anvilScene(B.last.struck, {shatter:true}));
       endStage.appendChild(MF.thudBurst(anim));
-      host.appendChild(endStage);
+      endBox.appendChild(endStage);
+    } else {
+      /* no blow to replay (a repaint, or reduced motion): the box still has to
+         be there and still has to be the same size, or the row collapses */
+      var restStage = E('div','anvilstage done');
+      restStage.appendChild(MF.anvilScene(B.last && B.last.struck ? B.last.struck : pieces[0].ore, {shatter:true}));
+      endBox.appendChild(restStage);
     }
-    host.appendChild(H('div','note good','<b>Every piece on the floor is native metal.</b> ' +
-      'Nothing in any of them comes apart any further. That is the end of the lump — ' +
+    endBox.appendChild(H('div','note good','<b>Every piece is native metal.</b> ' +
+      'Nothing in any of them comes apart further. That is the end of the lump — ' +
       'not a failure to get further into it.'));
+    pair.appendChild(endBox);
   } else {
     var t = pieces[B.at];
     /* the boxes are cut for the lump under the pick: an x-shaped pick on a
