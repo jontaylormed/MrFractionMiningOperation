@@ -959,3 +959,45 @@ the field was inert. The control passed while testing nothing.
 - **Moving a region breaks every probe that knew where it was.** The bench moved to
   the work band and `swing` reported "the hammer bar drew no boxes to type in" —
   true of the node it was looking at, false of the page.
+
+## 61. A check that sets the stage width but not the window measures a page nobody has
+
+`MF.validate()` was run, reported **0 errors**, and the build was committed. The same
+build, on the same machine, reported **4 errors** an hour later. Nothing had changed
+but the size of the browser window.
+
+`layout` mounted every screen in a 320px-wide `div`. `reach` mounted the bench and the
+craft floor in a stage it set to 1280px and then 380px.
+
+> **`@media` keys off the viewport, not off the box you put the content in.** So the
+> 320px stage was rendering the *three-column desktop mine* squeezed into 320px, and
+> reporting the third column as 150px of overflow. That layout exists on no screen at
+> any size: at a real 320px viewport the media query stacks the columns and nothing
+> overflows at all.
+
+Both groups were measuring a hybrid — the stage's width with the window's media
+queries — and the result moved with whatever the tester happened to have open. At a
+279px pane: green. At 1280px: four failures. **The green one was the reading I
+trusted, and it was worth nothing.**
+
+Both now take their width from `document.documentElement.clientWidth`, so the stage
+and the media queries agree, and both report the width they swept. `reach` also
+stopped comparing against a hardcoded 800px "screen" — a guess about somebody else's
+monitor — and compares against `window.innerHeight`, the screen actually in front of
+the person running it.
+
+**Once it was honest it immediately found a real one**: the forge's craft floor ran
+805px from the target to the pour button, against a 700px laptop. The mold picture was
+324px of that. At 310px wide it is 232 tall, and the cluster fits.
+
+**The rules.**
+
+- **A check with a hidden dependency on the environment is worse than no check**, because
+  it produces a green you will act on. Ask of any measurement: *what else has to be
+  true for this number to mean what I think it means?*
+- **You cannot simulate a viewport with a `div`.** Anything media-query-sensitive is
+  measured at the real viewport or not measured.
+- **Budgets should come from the machine, not from a memory of one.** "One 800px
+  screen" was never anybody's screen.
+- **Re-run the instrument in the state you will ship from.** The failing reading and
+  the passing reading were the same code minutes apart.

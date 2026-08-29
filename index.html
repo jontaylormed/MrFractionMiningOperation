@@ -148,16 +148,42 @@ input[type=range]{width:100%; accent-color:var(--ore); height:44px}
    gap:12px, not 18: the three places are one machine and were floating apart.
    minmax(0,1fr) on the face for the reason below - a bare 1fr grows to fit the
    2280px seam and takes the page sideways with it. */
-.minegrid{display:grid; grid-template-columns:214px minmax(0,1fr) 232px; gap:12px; align-items:start}
+/* THE THREE PLACES SHARE A BOTTOM EDGE. align-items:start left each column at
+   its natural height, so the shaft ran to 1215, the cart stopped at 991 and
+   the yard at 650 - a ragged 565px of dead space above the break floor, and
+   565px of scrolling nobody needed. They stretch to one row height now and
+   their panels fill it, so the band is a rectangle and the work starts
+   directly under all three. */
+.minegrid{display:grid; grid-template-columns:214px minmax(0,1fr) 232px; gap:12px; align-items:stretch}
+.minegrid > *{min-width:0; display:flex; flex-direction:column}
+/* the panel in each column takes the height the column was given */
+.minegrid > * > .shaft,
+.minegrid > * > .panel{flex:1 1 auto}
+/* and the LAST panel in a column carries no bottom margin, so its edge is the
+   column edge. The cart stopped 16px short of the break floor on its own
+   margin, which is exactly the ragged edge this band exists to remove. */
+.minegrid > * > :last-child{margin-bottom:0}
 .minework{margin-top:12px}
 /* the two work boxes, side by side. 1fr each so neither squeezes the other;
    the floor holds the pieces you choose between and the bar holds the head you
    cut, and choosing without seeing what you are cutting to is the hurdle this
    removes. */
-.workpair{display:grid; grid-template-columns:minmax(0,1fr) minmax(0,1fr); gap:14px; align-items:start}
+/* THE TWO WORK BOXES STAY LEVEL AND STAY SIDE BY SIDE.
+
+   They were `align-items:start`, so each was its own height, and the hammer box
+   grew whenever the anvil stage did - which is every swing. The pair drifted
+   apart exactly when a student was watching it. stretch keeps both boxes the
+   full height of the taller one, so the swing changes what is INSIDE the box
+   and never the shape of the row. */
+.workpair{display:grid; grid-template-columns:minmax(0,1fr) minmax(0,1fr); gap:14px; align-items:stretch}
 .workpair > *{min-width:0}
-/* one column under 900px: side by side stops helping the moment each box is
-   too narrow to hold its own contents. */
+/* and the hammer box carries no top margin in here - it had 12px from the days
+   it sat UNDER the floor box, which pushed it 12px lower than its partner */
+.workpair > .cutbar{margin-top:0}
+/* THE ANVIL STAGE HAS A RESERVED HEIGHT. It is the tallest thing in the hammer
+   box and it changes size while the blow plays, so without a floor under it the
+   box breathed in and out on every swing. */
+.workpair .anvilstage{min-height:186px; justify-content:flex-end}
 @media (max-width:900px){ .workpair{grid-template-columns:minmax(0,1fr)} }
 /* minmax(0,1fr), NOT 1fr: a bare 1fr column has min-width:auto and grows to
    fit its widest child, so the 2280px seam stretched the whole page sideways
@@ -171,7 +197,6 @@ input[type=range]{width:100%; accent-color:var(--ore); height:44px}
   .minegrid{grid-template-columns:minmax(0,1fr)}
   .minegrid > *:nth-child(2){order:-1}
 }
-.minegrid > *{min-width:0}
 
 /* ---- THE FORGE: orders on the left, the yard and the mold on the right.
        Same rule as the mine on one column - the WORK goes first and the list
@@ -241,8 +266,12 @@ input[type=range]{width:100%; accent-color:var(--ore); height:44px}
    1399px between the target and the pour button - the `reach` group caught it
    and named the number. It is a picture of what you are making; it does not
    need to be bigger than the thing you are making it with. */
-.moldwrap{border:3px solid #241C15; border-radius:12px; overflow:hidden; margin:10px auto 12px;
-  background:#241A12; max-width:430px}
+.moldwrap{border:3px solid #241C15; border-radius:12px; overflow:hidden; margin:8px auto 12px;
+  background:#241A12; max-width:310px}
+/* 310, not 430. The pour is the best picture on the site and it was also 324px
+   of the 805px between the target and the pour button - the single biggest
+   reason a student had to scroll to find the thing they were about to press.
+   At 310 the same drawing is 232 tall and the whole craft floor fits a laptop. */
 .moldwrap svg{display:block; width:100%; height:auto}
 .moldwrap svg *{pointer-events:none}
 
@@ -359,7 +388,7 @@ input[type=range]{width:100%; accent-color:var(--ore); height:44px}
 .moldslot{min-width:78px; text-align:center}
 /* the object the mold is cut for: the question, at the size of a question */
 .castfor{background:linear-gradient(180deg,#FFF6E3,#FBEBCB); border:3px solid var(--lamp);
-  border-radius:12px; padding:12px 15px 13px; margin-bottom:12px}
+  border-radius:12px; padding:9px 14px 10px; margin-bottom:9px}
 /* #8F6410 measured 4.46:1 against the plate and the sweep failed the build by
    four hundredths. #7F570B is 5.98:1. */
 .castfor .cflab{font-family:var(--display); font-size:11px; letter-spacing:.11em; color:#7F570B}
@@ -421,14 +450,18 @@ input[type=range]{width:100%; accent-color:var(--ore); height:44px}
    As a gradient stop it was the palest colour on the element, so every
    contrast reading measured the text against wood it does not sit on and
    four labels failed at 2.9-4.0. The rock behind the words is now flat. */
+/* TIGHTER GALLERIES. Nine rows at 10-11px of padding and a 6px gap ran the
+   shaft to 921px, which set the height of the whole top band and put the break
+   floor 1227px down the page. 7px of padding and a 4px gap holds the 44px
+   minimum every control on this site keeps and takes ~180px out of the scroll. */
 .layer{position:relative; display:block; width:100%; text-align:left; cursor:pointer;
-  border:0; border-radius:0 8px 8px 0; padding:10px 12px 11px 26px; margin:0 0 6px;
+  border:0; border-radius:0 8px 8px 0; padding:7px 11px 7px 26px; margin:0 0 4px;
   font-family:var(--body); font-size:14px; color:#F0E2C8; min-height:44px;
   background:linear-gradient(180deg,#3A3129,#332B24);
   box-shadow:inset 0 1px 0 rgba(255,255,255,.06), 0 2px 0 rgba(0,0,0,.35)}
 .layer:after{content:""; position:absolute; left:0; top:0; bottom:0; width:11px;
   background:linear-gradient(90deg,#6B5335 0 7px,#4A3B2C 7px 11px)}
-.layer:before{content:""; position:absolute; left:15px; top:13px; width:7px; height:7px; border-radius:50%;
+.layer:before{content:""; position:absolute; left:15px; top:11px; width:7px; height:7px; border-radius:50%;
   background:#5A4B3C; z-index:1; transition:background .3s ease, box-shadow .3s ease}
 .layer:hover{background:linear-gradient(180deg,#46392E,#3C3227)}
 .layer[aria-current=true]{color:#FFF3DE; background:linear-gradient(180deg,#55432F,#4A3A28)}
@@ -540,8 +573,11 @@ input[type=range]{width:100%; accent-color:var(--ore); height:44px}
 .choice[data-result] .why{display:block; font-size:14px; color:var(--ink-soft); margin-top:5px}
 
 /* crucible + ingots */
-.crucible{background:linear-gradient(180deg,#3A3129,#241D18); border:3px solid var(--rock-3); border-radius:14px; padding:14px; color:#F0E2C8}
-.crucible h4{color:#FFE9C4; font-size:16px; margin-bottom:8px}
+.crucible{background:linear-gradient(180deg,#3A3129,#241D18); border:3px solid var(--rock-3); border-radius:14px; padding:10px 14px 11px; color:#F0E2C8}
+/* the crucible carried a full h4 and 8px under it; the slots are the content
+   and the heading is a label. Every row trimmed here is a row a student does
+   not scroll past to reach the pour button. */
+.crucible h4{color:#FFE9C4; font-size:14px; margin-bottom:5px}
 .ingotrow{display:flex; gap:10px; flex-wrap:wrap; align-items:center}
 .ingot{background:linear-gradient(160deg,var(--ingot-lite),var(--ingot)); color:#16202A; border:2px solid #55606B;
   border-radius:7px 7px 10px 10px; padding:9px 14px; font-family:var(--display); font-size:19px; min-width:64px; text-align:center}
@@ -1091,6 +1127,17 @@ table.rosetta td.rx{font-family:var(--display); font-size:16px; color:var(--ink)
 .methodline .mlab{font-family:var(--display); font-size:11px; letter-spacing:.11em; color:var(--ore-t)}
 .methodline .mnm{font-family:var(--display); font-size:16px; color:var(--ink); flex:1 1 auto}
 .methodline .mlgo{font-size:12px; padding:8px 11px; min-height:44px}
+/* the Stamp Mill suggestion: one line, and it sits out of the way. It was a
+   full note panel with two sentences and a full-size button, which took more
+   room on the bench than the lump it was about. */
+.millpoint{display:flex; align-items:center; gap:10px; flex-wrap:wrap;
+  justify-content:flex-end; margin:8px 0 4px}
+.millpoint .mpt{flex:1 1 auto; font-size:12px; color:var(--ink-soft); text-align:right}
+/* orange, and small. The lamp orange the mine already uses for anything that
+   points somewhere. */
+.mpbtn{flex:0 0 auto; background:var(--ore); color:#FFF7EA; border-color:var(--ore-t);
+  font-size:12px; padding:7px 12px; min-height:44px}
+.mpbtn:hover{background:var(--ore-t); border-color:var(--ore-t); color:#FFF7EA}
 .splitdia{width:min(300px,100%)}
 
 /* =========================================================================
@@ -6373,11 +6420,17 @@ MF.paintAnvil = function(host){
      whole thesis is that 72 and x² − 5x + 6 are one job - but the room built
      for factor trees and primes is one click away from the bench that needs
      it, instead of two screens and a guess. */
-  if(ore.kind === 'number'){
-    var sm = E('div','note millpoint');
-    sm.innerHTML = '<b>Numbers come apart the same way rock does.</b> ' +
-      'The Stamp Mill is built for this one — cut it there and watch two different first cuts reach the same metals.';
-    sm.appendChild(MF.jump('The Stamp Mill &rarr;','workshop-ore'));
+  if(ore.kind === "number"){
+    /* ONE LINE, AND THE BUTTON ON THE RIGHT. It was a full note panel with two
+       sentences and a full-size button, which took more room on the bench than
+       the lump it was about - a suggestion should not outweigh the work. */
+    var sm = E("div","millpoint");
+    sm.appendChild(H("span","mpt","Numbers come apart the same way rock does."));
+    var mj = E("button","btn mpbtn"); mj.type="button";
+    mj.innerHTML = "Stamp Mill &rarr;";
+    mj.setAttribute("aria-label","Go to the Stamp Mill, the room built for breaking numbers apart");
+    on(mj,"click",function(){ MF.go("workshop-ore"); });
+    sm.appendChild(mj);
     bench.appendChild(sm);
   }
 
@@ -9619,8 +9672,22 @@ MF.validate = function(){
         about whether a thing is legible once it fits, and nothing about the
         dialogs - those are appended to document.body and are swept for
         contrast, not for width. */
+  /* THE STAGE MUST BE THE WIDTH THE MEDIA QUERIES ARE ANSWERING.
+
+     This mounted screens in a 320px box while the WINDOW stayed whatever the
+     tester had open, and @media keys off the window - so the wide three-column
+     layout was being squeezed into 320px and measured. That layout exists on no
+     screen. It reported the mine's yard column and the forge's second column as
+     "overflowing" because a third grid track starts past 320px, and it reported
+     ZERO when the window itself was narrow.
+
+     A green run at one window size and four failures at another is not a check,
+     and it is how a build with four failures in it got committed as green. The
+     stage is the live viewport width now, so the stage and the media queries
+     agree, and the width is reported with the result. */
+  var lyW = document.documentElement.clientWidth;
   var lyStage = document.createElement('div');
-  lyStage.style.cssText = 'position:fixed; left:-9000px; top:0; width:320px; overflow:visible';
+  lyStage.style.cssText = 'position:fixed; left:-13000px; top:0; overflow:visible; width:' + lyW + 'px';
   document.body.appendChild(lyStage);
   var lySaved = {mine:MF._mine, forge:MF._forge, screen:MF.state.screen};
   var lyWidest = 0;
@@ -9650,7 +9717,7 @@ MF.validate = function(){
     });
     if(worstBy > 1){
       lyWidest = Math.max(lyWidest, worstBy);
-      errs.push('layout: on "' + scr + '" at 320px, <' + worst.tagName.toLowerCase() +
+      errs.push('layout: on "' + scr + '" at ' + lyW + 'px, <' + worst.tagName.toLowerCase() +
         ' class="' + String(worst.className && worst.className.baseVal !== undefined ? worst.className.baseVal : worst.className || '') +
         '"> runs ' + Math.round(worstBy) + 'px off the right edge — "' +
         (worst.textContent||'').trim().slice(0,30) + '"');
@@ -9662,7 +9729,7 @@ MF.validate = function(){
   lyStage.innerHTML = '';
   lyStage.appendChild(lyProbe);
   lyProbe.appendChild(H('div', null, '<span style="white-space:nowrap; display:inline-block">' +
-    'a line of text that cannot wrap and is far wider than three hundred and twenty pixels' + '</span>'));
+    new Array(40).join('a line of text that cannot wrap ') + '</span>'));
   var lyEdge = lyProbe.getBoundingClientRect().right, lyCaught = false;
   lyProbe.querySelectorAll('*').forEach(function(n){
     if(n.getBoundingClientRect().right > lyEdge + 1) lyCaught = true;
@@ -9696,9 +9763,16 @@ MF.validate = function(){
          whether a control that fits is one a student will FIND; and nothing
          about the vertical run of the page as a whole - only about the
          distance between the first and last thing in one piece of work. */
-  var rcBudget = 800;
+  /* SAME HAZARD AS THE LAYOUT GROUP, and it bit the same way: this set the
+     STAGE to 1280px and 380px while @media keyed off the WINDOW, so it measured
+     a wide forge crushed into 380px - a layout no student can produce - and
+     called the result a reach failure. It measures at the live viewport now,
+     against the height of the screen actually in front of the tester, and it
+     reports both. A budget of 800 was a guess about somebody else's monitor. */
+  var rcW = document.documentElement.clientWidth;
+  var rcBudget = Math.max(520, window.innerHeight);
   var rcStage = document.createElement('div');
-  rcStage.style.cssText = 'position:fixed; left:-9000px; top:0; overflow:visible';
+  rcStage.style.cssText = 'position:fixed; left:-13000px; top:0; overflow:visible';
   document.body.appendChild(rcStage);
   var rcSaved = {mine:MF._mine, forge:MF._forge, tools:MF.state.tools, cart:MF.state.cart,
                  sel:MF.state.selected, anvil:MF.state.anvil, layer:MF.state.layer,
@@ -9712,7 +9786,7 @@ MF.validate = function(){
     return {px: Math.round(bb.bottom - ab.top), from:a, to:b};
   };
 
-  [1280, 380].forEach(function(w){
+  [rcW].forEach(function(w){
     rcStage.style.width = w + 'px';
 
     /* ---- the bench: belt -> pieces -> swing ---- */

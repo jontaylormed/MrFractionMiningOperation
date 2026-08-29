@@ -22,7 +22,7 @@
 | **Screens** | **eight** — surface, the Stamp Mill, the Casting Shed and its three workshops, the mine, the forge |
 | **Layers** | **five**, all reachable from the first screen, none gated on anything |
 | **Instruments** | **seven**, all made at the forge, none granted |
-| **Validation** | `MF.validate()` → **9,612 checks / 32 groups / 0 errors**, two controls that must fail, and do |
+| **Validation** | `MF.validate()` → **9,601 checks / 32 groups / 0 errors**, two controls that must fail, and do — **run it at the width you ship from**, because `layout` and `reach` measure the live viewport and report it (`VERIFICATION.md` §61) |
 
 > **A check is only as wide as the space it sweeps.** The `truthy` group reported 0 errors across 642 checks while **1,970 Decimal Dial states printed a falsehood**, because it tested each lump's original integer coefficients and never nudged `c` — the one thing the dial exists to do. It now sweeps every slider position the control can reach (3,287 checks). Ask of any green result: *what did it not look at?*
 | **Runtime** | Zero dependencies, no build step, no network requests, no storage, runs from `file://` |
@@ -183,6 +183,16 @@ The face is **2280px of rock**, several screens wide, scanned by dragging, scrol
 **A plain number points at the Stamp Mill.** Numbers still break here — the *72 and x² − 5x + 6 are one job* thesis needs them to — but the room built for factor trees is one click from the bench that wants it.
 
 **THE MINE IS TWO BANDS.** The three **places** you move between — shaft, face, yard — sit tight across the top on a **12px** gap. The **work** is a full-width band beneath them, and its two boxes are **side by side**: *on the floor* and *under the hammer*. Measured at 1280: floor 49..625, hammer 639..1216, tops 12px apart, band 30..1234. Stacked inside a third of the page, the pieces you choose between and the bar you cut the head to could not be looked at together — the one pairing the act depends on.
+
+**THE THREE PLACES SHARE A BOTTOM EDGE.** They were `align-items:start`, so the shaft ran to 1215, the cart stopped at 991 and the yard at 650 — a ragged 565px of dead space above the break floor, and 565px of scrolling nobody needed. All three stretch to one row height now and their panels fill it, so the band is a rectangle: **shaft, face and yard all bottom out at 1104, the cart is flush with its column edge, and the break floor starts 12px below all of them.**
+
+**The galleries are tighter.** Nine rows at 10–11px of padding ran the shaft to 921px and set the height of the whole band. At 7px, holding the 44px minimum every control here keeps, the shaft is 982 and the page is **2095px → 2025px**.
+
+**The two work boxes stay level, including mid-swing.** They were `align-items:start` and the hammer box grew every time the anvil stage did — the pair drifted apart exactly when a student was watching it. Stretched, with a reserved 186px under the anvil stage: measured before and during a swing, both boxes are top 1344, height 474, **identical**.
+
+**The Stamp Mill suggestion is one line.** It was a note panel with two sentences and a full-size button, taking more room on the bench than the lump it was about. It is 52px, right-aligned, with a small orange button — the `--ore` the mine already uses for anything that points somewhere.
+
+> **The forge's craft floor lost 100px too.** The pour picture was 324px of the 805px between the target and the pour button — the single biggest reason a student had to scroll to reach the thing they were about to press. At 310px wide the same drawing is 232 tall and the whole cluster fits a 700px laptop. Found only once `reach` stopped lying (`VERIFICATION.md` §61).
 
 ## The tools draw, and every one leaves a ?
 
