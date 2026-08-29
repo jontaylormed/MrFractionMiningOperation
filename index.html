@@ -163,6 +163,28 @@ input[type=range]{width:100%; accent-color:var(--ore); height:44px}
    column edge. The cart stopped 16px short of the break floor on its own
    margin, which is exactly the ragged edge this band exists to remove. */
 .minegrid > * > :last-child{margin-bottom:0}
+/* THE FACE TAKES ITS HEIGHT, THE CART TAKES WHAT IS LEFT.
+
+   The middle column is stretched to the row height the shaft sets, so anything
+   the seam gains has to come out of the cart or the column grows and pushes the
+   break floor down the page. The face is sized by its content; the cart is the
+   flexible one and scrolls inside itself when it holds more than fits. The
+   student loses nothing - the cart is a list and it was already scrollable. */
+.minegrid > *:nth-child(2) > .face{flex:0 0 auto}
+.minegrid > *:nth-child(2) > .panel:last-child{flex:1 1 auto; min-height:150px; max-height:430px;
+  display:flex; flex-direction:column; overflow:hidden}
+/* .cartbody has to BE a flex container, or .cart's flex rules mean nothing to
+   it and the list grows to its content inside a clipped panel - which does not
+   scroll, it just hides the lumps past the fold. min-height:0 at every level,
+   because the flexbox default is min-height:auto and that refuses to shrink
+   below the content. */
+.minegrid > *:nth-child(2) > .panel:last-child .cartbody{flex:1 1 auto; min-height:0;
+  display:flex; flex-direction:column}
+/* the cart list KEEPS ITS CAP and scrolls inside itself. Letting it grow to
+   fit its contents put a full cart in charge of the row height - eight lumps
+   took the column to 1811 and the page to 2733, which is the scrolling this
+   whole band exists to remove. */
+.minegrid > *:nth-child(2) > .panel:last-child .cart{max-height:none; flex:1 1 auto; min-height:0; overflow-y:auto}
 .minework{margin-top:12px}
 /* the two work boxes, side by side. 1fr each so neither squeezes the other;
    the floor holds the pieces you choose between and the bar holds the head you
@@ -1433,7 +1455,13 @@ table.rosetta td.rx{font-family:var(--display); font-size:16px; color:var(--ink)
 .seamview{overflow-x:auto; overflow-y:hidden; cursor:grab; scroll-behavior:smooth;
   scrollbar-color:var(--lamp) #241D18}
 .seamview:active{cursor:grabbing}
-.seamview svg{width:auto; max-width:none; height:190px}
+/* THE SEAM IS SHOWN TALLER THAN IT IS DRAWN. The rock is the same 2280x190
+   it always was - what changed is the size it is rendered at. At 190px it was
+   a letterbox strip and the lumps in it were small; at 286 the same rock and
+   the same lumps are half again as big, which is what "extend it vertically"
+   buys. The width scales with it, so you scan a little less seam per screen
+   and see a great deal more of what is in it. */
+.seamview svg{width:auto; max-width:none; height:286px}
 .seamview::-webkit-scrollbar{height:10px}
 .seamview::-webkit-scrollbar-track{background:#241D18}
 .seamview::-webkit-scrollbar-thumb{background:var(--lamp); border-radius:999px}
@@ -5853,12 +5881,7 @@ MF.LAYER_LOOK = [
    movement rather than reading a grid of seven.
    SEAM_W is the drawn width; the viewport shows roughly a third of it. */
 MF.SEAM_W = 2280;
-/* 260, NOT 190. The vein was 190 tall and every lump was dropped between
-   y=50 and y=192 - so the ore sat in the bottom three quarters with a bare
-   band of rock above it, and the midpoint of the spread was well below the
-   middle of the seam. A vein you scan along should have rock in it above and
-   below the ore, not ore resting on the floor of the picture. */
-MF.SEAM_H = 260;
+MF.SEAM_H = 190;
 MF.SEAM_COUNT = 15;
 
 MF.stockFace = function(){
@@ -5879,10 +5902,7 @@ MF.stockFace = function(){
     var span = (MF.SEAM_W - 200) / (MF.SEAM_COUNT - 1);
     o.slot = MF.nextSeamSlot();
     o.px = 100 + o.slot * span + (rng() - 0.5) * span * 0.6;
-    /* SPREAD ACROSS THE VEIN, and biased a little high so most of the ore is
-       NOT in the bottom half. 10%..80% of the height, which for a 260 seam is
-       26..208 against a midline of 130. */
-    o.py = MF.SEAM_H * 0.10 + rng() * MF.SEAM_H * 0.70;
+    o.py = 50 + rng() * 142;
     o.sz = 26 + rng() * 24;
     o.rot = rng() * Math.PI * 2;
     /* its own silhouette: a different number of faces, each pulled in or out

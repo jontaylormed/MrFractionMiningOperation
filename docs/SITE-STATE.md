@@ -188,7 +188,11 @@ The face is **2280px of rock**, several screens wide, scanned by dragging, scrol
 
 **The galleries are tighter.** Nine rows at 10–11px of padding ran the shaft to 921px and set the height of the whole band. At 7px, holding the 44px minimum every control here keeps, the shaft is 982 and the page is **2095px → 2025px**.
 
-**The vein is 260 tall, and the ore is spread up it.** It was 190, and every lump was dropped between y=50 and y=192 — the ore sat in the bottom three quarters with a bare band of rock above it and nothing in the top quarter at all. Ore is laid across 10%–80% of the height now: measured on a layer-4 face, **y 32..204 with a mean of 108 against a midline of 130, and 11 of 15 lumps in the top half.**
+**The seam is shown at 286px, not 190.** The rock is the same **2280 × 190** it always was — what changed is the size it is rendered at. As a 190px strip it was a letterbox with small lumps in it; the same rock and the same lumps now stand **307px** tall in the column, half again as large. The width scales with it, so you scan a little less seam per screen and see a great deal more of what is in it.
+
+**And the cart gives up the height.** The middle column is stretched to the row the shaft sets, so anything the seam gains has to come out of the cart or the column grows and pushes the break floor down the page. The cart is the flexible one and scrolls inside itself: measured at 1, 4, 8 and 15 lumps the face stays 307px, the cart caps at 430px, **every lump stays reachable**, the three columns stay flush, and the page holds at **2052px whatever the cart is carrying** — it was 2733 at eight lumps when the list was allowed to grow.
+
+> **`.cartbody` has to BE a flex container**, or `.cart`s flex rules mean nothing to it: the list grew to its content inside a clipped panel, which does not scroll — it just hides the lumps past the fold. `min-height:0` is needed at every level of the chain, because the flexbox default is `min-height:auto` and that refuses to shrink below the content.
 
 **The finishing blow lands in the hammer box.** It used to be appended to the *bench* — below the pair entirely — so the last and best swing of a lump played out underneath the floor and the column grew a stage taller to hold it. It goes in the box the hammer bar occupied, so the row keeps its two columns.
 
