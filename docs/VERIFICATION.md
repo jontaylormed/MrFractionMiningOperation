@@ -915,3 +915,47 @@ onto the clone before serialising. Then the frames differ: cut `r−b 34` → mo
   the property that makes the picture true.
 - **When you rasterise for measurement, bake the computed styles first** — or you are
   measuring an unstyled document and calling it the page.
+
+## 60. Nothing measured whether a panel was a picture, so it stopped being one
+
+The instruments were made into named methods, and every group agreed they were
+correct. `schema` proved no method printed more than one factor. `sheet` proved the
+Lantern lit exactly one side. `quiz`, `rosetta`, `contrast`, `layout` all passed.
+
+And the panels were unreadable. A method name, a paragraph of reasoning, and the
+method narrated as a numbered list of sentences — the user's report was *"mostly text
+with no diagrams and not enough number information"*, which they could see in one
+glance and which **nothing in the build could see at all**.
+
+> Every group measured whether a reading was **true**. Not one measured whether it
+> was a **picture**. That is the signature of a property nobody asserted: the checks
+> are green, the user is right, and the two facts do not touch.
+
+The `visual` group asserts three things per reading, on a lump that factors: it
+**draws** (an `<svg>`), it **leaves a hole** (a `.qm`), and it is **not mostly prose**
+(a character budget on text outside the diagrams). Writing it immediately found four
+faults in the work that had just been done to fix the complaint — two tools drawing
+nothing, one leaving no `?`, and three over the prose budget.
+
+**And one of its controls proved nothing.** The gate control set `B.step = 'assay'`
+and asserted the hammer had gone. It had not: the gate was never the `step` field, it
+was a conditional wrapped around `paintBreak`, and once that conditional was removed
+the field was inert. The control passed while testing nothing.
+
+> A control has to reintroduce **the mechanism**, not the symptom's name. "Set the
+> field the old code read" is not the same as "put back the branch that did the
+> gating", and only one of them fails when the check is broken.
+
+**The rules.**
+
+- **Ask what property the user can see that no group can.** "Correct" and "usable"
+  are different assertions and green on one says nothing about the other.
+- **A check written against markup fails the build when the markup gets better.**
+  `sheet` looked for `.onesided`; the lit side became a diagram and the check fired
+  on an improvement. It asks for `svg` + `.qm` now — the property, not the class.
+- **When a node outlives the call that built it, do not cache it on state.** Pairing
+  the two work boxes cached the wrapper on `B`, and `B` survives the repaint: the
+  next paint built the hammer bar into last paint's detached node. Use the local.
+- **Moving a region breaks every probe that knew where it was.** The bench moved to
+  the work band and `swing` reported "the hammer bar drew no boxes to type in" —
+  true of the node it was looking at, false of the page.

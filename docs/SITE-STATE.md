@@ -1,7 +1,7 @@
 # What the site is, right now
 ### The single place any brief, agent or session reads to find out what exists
 
-**Last verified 2026-08-25** by `MF.validate()` run in a browser against this tree over a **local HTTP server**, by driving the lantern → hammer path by hand through the real DOM, and by measuring the new panels' geometry at 1280 / 760 / 380px. **`file://` could not be used:** the preview pane renders it as a static snapshot and `MF` never runs, so nothing on the page can be exercised at all. The last **screenshot** pass was 2026-08-22 — every pass since has measured geometry from the DOM, and `VERIFICATION.md` §56 is what happened the one time this build trusted a screenshot instead.
+**Last verified 2026-08-26** by `MF.validate()` run in a browser against this tree over a **local HTTP server**, by driving the lantern → hammer path by hand through the real DOM, and by measuring the new panels' geometry at 1280 / 760 / 380px. **`file://` could not be used:** the preview pane renders it as a static snapshot and `MF` never runs, so nothing on the page can be exercised at all. The last **screenshot** pass was 2026-08-22 — every pass since has measured geometry from the DOM, and `VERIFICATION.md` §56 is what happened the one time this build trusted a screenshot instead.
 
 ---
 
@@ -22,7 +22,7 @@
 | **Screens** | **eight** — surface, the Stamp Mill, the Casting Shed and its three workshops, the mine, the forge |
 | **Layers** | **five**, all reachable from the first screen, none gated on anything |
 | **Instruments** | **seven**, all made at the forge, none granted |
-| **Validation** | `MF.validate()` → **9,558 checks / 31 groups / 0 errors**, two controls that must fail, and do |
+| **Validation** | `MF.validate()` → **9,612 checks / 32 groups / 0 errors**, two controls that must fail, and do |
 
 > **A check is only as wide as the space it sweeps.** The `truthy` group reported 0 errors across 642 checks while **1,970 Decimal Dial states printed a falsehood**, because it tested each lump's original integer coefficients and never nudged `c` — the one thing the dial exists to do. It now sweeps every slider position the control can reach (3,287 checks). Ask of any green result: *what did it not look at?*
 | **Runtime** | Zero dependencies, no build step, no network requests, no storage, runs from `file://` |
@@ -171,6 +171,38 @@ The face is **2280px of rock**, several screens wide, scanned by dragging, scrol
 **The mine's hotspot is now the bluff, not a box below it.** It was `712,300 152×100`, starting 54 units below the top of the rock, so the arch, the timber head and the nameplate reading *The Mine* were all outside the target. It is now `712,244 162×132`, matching the graphic's drawn bounds. **The other three buildings' hotspots have not been re-measured against their graphics** — only the mine was.
 
 **Digging is decoupled from breaking.** You may descend to the deepest layer and hoard raw ore having broken nothing.
+
+## The bench: no question in the way, and the work in one band
+
+**The bench opens on the hammer.** It used to open on the assay with the breaking floor hidden behind it — a student who wanted to swing had to answer something first. The assay is **not gone**: it is one of the three verbs (`MINE-SPEC` §3) and it sits on the bench as *"what kind of rock is this?"*, a call you may make at any time and never have to. Made, it settles and persists with its reason, which is what the `explain` group asserts.
+
+> **`nogate` (20) sweeps the bench itself now**: on a freshly built, never-clicked bench the swing must be present, the choices must **not** be, and the offer must be. Control: the gate restored — and the gate was never the `step` field but a conditional round `paintBreak`, so the first version of that control proved nothing (`VERIFICATION.md` §60).
+
+**A lump can go straight from the cart to the yard.** The bench was the only door out of the cart, so putting a lump down meant picking it up first. `MF.stow` is the single place that decides **rack or heap**, and both routes call it — tipping the breaking floor, and **→ yard** on a cart lump. Checked both ways, with a control that drops the ore.
+
+**A plain number points at the Stamp Mill.** Numbers still break here — the *72 and x² − 5x + 6 are one job* thesis needs them to — but the room built for factor trees is one click from the bench that wants it.
+
+**THE MINE IS TWO BANDS.** The three **places** you move between — shaft, face, yard — sit tight across the top on a **12px** gap. The **work** is a full-width band beneath them, and its two boxes are **side by side**: *on the floor* and *under the hammer*. Measured at 1280: floor 49..625, hammer 639..1216, tops 12px apart, band 30..1234. Stacked inside a third of the page, the pieces you choose between and the bar you cut the head to could not be looked at together — the one pairing the act depends on.
+
+## The tools draw, and every one leaves a ?
+
+They were correct and unreadable: a method name, a paragraph of reasoning, and the method narrated as a numbered list. **Every group said they were true and none said whether they were a picture.**
+
+**The X method is the spine** — `a·c` on top, `b` on the bottom, the pair on the sides. With `a = 1` the sides are the bracket constants; with `a ≠ 1` they split the middle and the four terms go into the **X-box**, whose rows and columns give up the factors.
+
+| tool | draws | leaves open |
+|---|---|---|
+| **Drill** | the X, and every pair that multiplies to a·c | one side of the X |
+| **Shifter** | the X, carried into the 2×2 box | the other side, and every edge |
+| **Auger** | the full X-box: X → split middle → box → factors on the edges | the pair, a corner, both brackets |
+| **Lantern** | the split: one lump above, two pieces below | the dark side |
+| **Steel** | the terms, and what divides all of them | what goes inside the bracket |
+
+**Not one number is inside an SVG.** The strokes are SVG; every number is an HTML span pinned over them in percentages, the way `MF.shedArt` does it — `VERIFICATION.md` §59 is what happens otherwise.
+
+**The mine draws; the Casting Shed reads.** The full schema is one line on the panel now, with the method a click away in the room that already renders every one of them in full. Nothing was deleted.
+
+> **The `visual` group (39)** asserts what no group asserted before: each reading **draws** (an `<svg>`), **leaves a hole** (a `.qm`), and is **not mostly prose** (a budget on text outside the diagrams). It also checks the X's own arithmetic against the engine — the sides multiply to the top and add to the bottom. Writing it immediately found four faults in the work done to fix the complaint. Controls: no diagram, every `?` filled, prose padding, and a nudged pair — all caught.
 
 ## The yard: a heap and a rack
 
@@ -340,7 +372,8 @@ Metals are **spent** here — this is the yard's sink. Forging *is* distributing
 - **`math-content` has never run against the generated ore.** The ore is generated rather than authored, so most lumps a student will meet have been checked only by `MF.validate`'s own sweep — which the author also wrote (§16).
 - **Never deployed.** No `gh` CLI, no remote, no published URL. Nothing has been checked against the copy a student would open, which `VERIFICATION.md` §34 says is the only check that matters.
 - **The scene overhaul is unfinished.** The surface and the mine are rendered places; the bench, the workshops, the yard and the forge are still panels.
-- **No student has read one word of the new teaching copy.** Ten translation rows, seven method names, seven "why it works" paragraphs and seven practices were written in one sitting by the author. `rosetta` asserts that each row's *example* is true; **nothing asserts that the English on the left is the translation a teacher would use**, and no check on this page can. That is a human reading and it has not happened.
+- **No student has read one word of the new teaching copy, and none has seen the X.** The X diagram, the redacted work lines and the five rewritten tool panels were built in one sitting by the author. The `visual` group asserts that a panel DRAWS and LEAVES A HOLE; **nothing asserts that the diagram is legible, that the redacted number is the interesting one, or that the X is drawn the way a particular teacher draws it.** Those are human readings and they have not happened.
+- **No student has read one word of the other new teaching copy.** Ten translation rows, seven method names, seven "why it works" paragraphs and seven practices were written in one sitting by the author. `rosetta` asserts that each row's *example* is true; **nothing asserts that the English on the left is the translation a teacher would use**, and no check on this page can. That is a human reading and it has not happened.
 - **`MF.validate()` cannot be run from `file://` any more — and could not before.** The preview pane renders a `file://` page as a static snapshot, so `MF` is never defined and *nothing* on the page can be exercised. This build was verified over a local HTTP server. The claim that the site "runs from `file://`" is still believed and is still **unproven in a browser this session**.
 
 ---

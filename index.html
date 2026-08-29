@@ -140,7 +140,25 @@ input[type=range]{width:100%; accent-color:var(--ore); height:44px}
   border:2px solid var(--tan); color:var(--ore-t); border-radius:999px; padding:3px 11px}
 
 /* ---------- mine layout ---------- */
-.minegrid{display:grid; grid-template-columns:230px minmax(0,1fr) 240px; gap:18px; align-items:start}
+/* THE MINE IN TWO BANDS. The top band is the three PLACES - shaft, face, yard
+   - held tight against each other so the operation reads as one glance. The
+   bottom band is the WORK, full width, and it carries the two boxes side by
+   side: what is on the floor, and what is under the hammer.
+
+   gap:12px, not 18: the three places are one machine and were floating apart.
+   minmax(0,1fr) on the face for the reason below - a bare 1fr grows to fit the
+   2280px seam and takes the page sideways with it. */
+.minegrid{display:grid; grid-template-columns:214px minmax(0,1fr) 232px; gap:12px; align-items:start}
+.minework{margin-top:12px}
+/* the two work boxes, side by side. 1fr each so neither squeezes the other;
+   the floor holds the pieces you choose between and the bar holds the head you
+   cut, and choosing without seeing what you are cutting to is the hurdle this
+   removes. */
+.workpair{display:grid; grid-template-columns:minmax(0,1fr) minmax(0,1fr); gap:14px; align-items:start}
+.workpair > *{min-width:0}
+/* one column under 900px: side by side stops helping the moment each box is
+   too narrow to hold its own contents. */
+@media (max-width:900px){ .workpair{grid-template-columns:minmax(0,1fr)} }
 /* minmax(0,1fr), NOT 1fr: a bare 1fr column has min-width:auto and grows to
    fit its widest child, so the 2280px seam stretched the whole page sideways
    in the single-column layout instead of scrolling inside its viewport. */
@@ -1012,6 +1030,68 @@ table.rosetta td.rx{font-family:var(--display); font-size:16px; color:var(--ink)
 .sdtool{font-size:13px; color:var(--ink-soft)}
 .sdbody{padding:0 15px 13px}
 .sdbody .lesson{margin-top:0}
+
+/* =========================================================================
+   THE X, AND THE LINE-BY-LINE WORKING UNDER IT.
+   Every number in the diagram is HTML pinned over the SVG strokes, never SVG
+   <text> — see VERIFICATION §59.
+   ========================================================================= */
+.xwrap{display:flex; gap:14px; align-items:center; flex-wrap:wrap;
+  background:#FFFCF6; border:2px solid var(--rule); border-radius:12px; padding:12px 14px; margin:10px 0}
+.xdia{position:relative; flex:0 0 auto; width:min(260px,100%)}
+.xdia svg{display:block; width:100%; height:auto}
+.xlabs{position:absolute; inset:0; pointer-events:none}
+.xcell{position:absolute; transform:translate(-50%,-50%); white-space:nowrap;
+  font-family:var(--display); font-size:clamp(17px,3vw,22px); color:var(--ink); line-height:1}
+.xcell.xtop{color:var(--ore-t)}
+.xcell.xbot{color:var(--vein)}
+.xkey{flex:1 1 180px; min-width:0}
+.xkey .xk{font-size:13px; color:var(--ink-soft); margin-bottom:5px}
+.xkey .xk b{font-family:var(--display); font-weight:400; color:var(--ink)}
+.xkey .dim{opacity:.8}
+
+.diaglab{font-family:var(--display); font-size:11px; letter-spacing:.11em;
+  color:var(--ore-t); margin:12px 0 2px}
+/* a line of working with holes in it */
+.wline{display:flex; gap:9px; align-items:baseline; flex-wrap:wrap; margin:6px 0}
+.wline .wlab{font-size:13px; color:var(--ink-soft); flex:0 0 auto}
+.wline .weq{font-family:var(--display); font-size:clamp(16px,2.4vw,21px); color:var(--ink);
+  display:inline-flex; align-items:center; gap:2px; flex-wrap:wrap}
+.wline.wbig .weq{font-size:clamp(18px,2.8vw,24px)}
+.wline .wpart{white-space:pre}
+
+/* the assay, now that it is offered rather than demanded */
+.assayoffer{display:flex; gap:10px; align-items:center; flex-wrap:wrap; margin:10px 0}
+.assaybtn{background:#FFFCF6}
+/* --ink-soft on the bench's tan (211,168,119) reads 3.85:1 and the sweep
+   failed the build over it. The bench is a light surface, so the ink has to be
+   the dark one. */
+.assayhint{font-size:13px; color:var(--ink)}
+.assayskip{margin-top:10px}
+.millpoint .btn{margin-top:8px}
+
+/* sending a lump straight from the cart to the yard */
+.lumpcell{display:flex; flex-direction:column; gap:4px; align-items:stretch}
+.tuyard{font-size:12px; padding:6px 8px; min-height:44px; background:#241D18;
+  color:#E4D5BB; border:2px solid #6B5B48; border-radius:9px; cursor:pointer;
+  font-family:var(--display)}
+.tuyard:hover{background:#33291F; border-color:var(--lamp); color:#FFE9C4}
+
+/* the folded reasoning */
+.swhyfold{margin:6px 0 2px}
+.swhyfold summary{cursor:pointer; font-size:13px; color:var(--ore-t);
+  font-family:var(--display); letter-spacing:.03em; min-height:24px; list-style:none}
+.swhyfold summary::-webkit-details-marker{display:none}
+.swhyfold summary:before{content:"▸ "; }
+.swhyfold[open] summary:before{content:"▾ "; }
+.swhyfold .swhy{margin-top:5px}
+/* the method, credited in one line, with the reading a click away */
+.methodline{display:flex; gap:10px; align-items:center; flex-wrap:wrap;
+  border-top:2px solid var(--rule); margin-top:12px; padding-top:10px}
+.methodline .mlab{font-family:var(--display); font-size:11px; letter-spacing:.11em; color:var(--ore-t)}
+.methodline .mnm{font-family:var(--display); font-size:16px; color:var(--ink); flex:1 1 auto}
+.methodline .mlgo{font-size:12px; padding:8px 11px; min-height:44px}
+.splitdia{width:min(300px,100%)}
 
 /* =========================================================================
    THE CASTING SHED'S THREE WORKSHOPS.
@@ -2258,6 +2338,159 @@ MF.SCHEMA = {
   }
 };
 
+/* =========================================================================
+   THE X, AND THE BOX IT FEEDS. The diagram school actually teaches.
+
+   USER DECISION, 2026-08-26 (MINE-SPEC §15): "these tools should be visual
+   overlays, as if they were diagrams... teach the X method of factoring, which
+   is still popular in school... at least one number needs to be a ?"
+
+   THE METHOD, so the code and the classroom agree on what is being drawn:
+   for ax² + bx + c you put a·c at the TOP of an X and b at the BOTTOM, and the
+   two numbers that multiply to the top and add to the bottom go LEFT and
+   RIGHT. With a = 1 those two are the bracket constants and you are finished.
+   With a ≠ 1 they split the middle term into two, and the four terms go into a
+   2×2 box whose rows and columns give up the factors when you pull the common
+   metal off each one.
+
+   AT LEAST ONE CELL IS ALWAYS A ?. Pass null for it. This is the user's rule
+   and it is also the rule the `schema` group already enforced from the other
+   direction: on a monic trinomial the two sides of the X ARE the two bracket
+   constants, so filling both in would be printing the whole factorisation, and
+   the check fails the build for it. The two rules are one rule.
+
+   NOT ONE NUMBER IS IN THE SVG. VERIFICATION §59: SVG <text> paints with
+   `fill` and inherits the `color` a contrast sweep reads, which is real
+   arithmetic about pixels the property never touches - ten labels failed at
+   1.06:1 the last time this rule was broken. The strokes are SVG; every number
+   is an HTML span pinned over them in percentages, the way MF.shedArt does it.
+   ========================================================================= */
+MF.xDiagram = function(host, o){
+  var wrap = E('div','xdia');
+  var W = 260, VH = 190;
+  var svg = S('svg',{viewBox:'0 0 '+W+' '+VH, preserveAspectRatio:'xMidYMid meet','aria-hidden':'true'});
+  var labs = E('div','xlabs');
+
+  /* the two strokes of the X */
+  ['M40 34 L220 156','M220 34 L40 156'].forEach(function(d){
+    svg.appendChild(S('path',{d:d, stroke:'#C8B89A','stroke-width':'5',fill:'none','stroke-linecap':'round'}));
+  });
+  /* a disc behind each cell so a number never sits on a stroke */
+  [[130,26],[130,164],[36,95],[224,95]].forEach(function(c){
+    svg.appendChild(S('ellipse',{cx:String(c[0]),cy:String(c[1]),rx:'34',ry:'21',
+      fill:'#FFFCF6',stroke:'#C8B89A','stroke-width':'2.5'}));
+  });
+
+  function cell(x, y, val, cls){
+    var known = (val !== null && val !== undefined && val !== '');
+    var n = H('span','xcell ' + (cls||'') + (known?'':' open'),
+      known ? String(val) : '<span class="qm">?</span>');
+    n.style.left = ((x/W)*100).toFixed(2) + '%';
+    n.style.top  = ((y/VH)*100).toFixed(2) + '%';
+    labs.appendChild(n);
+  }
+  cell(130, 26,  o.top,    'xtop');
+  cell(130, 164, o.bottom, 'xbot');
+  cell(36,  95,  o.left,   'xside');
+  cell(224, 95,  o.right,  'xside');
+
+  wrap.appendChild(svg);
+  wrap.appendChild(labs);
+
+  var box = E('div','xwrap');
+  box.appendChild(wrap);
+  var key = E('div','xkey');
+  key.appendChild(H('div','xk','<b>top</b> — what they multiply to' + (o.topWhy ? ' <span class="dim">' + o.topWhy + '</span>' : '')));
+  key.appendChild(H('div','xk','<b>bottom</b> — what they add to' + (o.botWhy ? ' <span class="dim">' + o.botWhy + '</span>' : '')));
+  key.appendChild(H('div','xk','<b>sides</b> — the pair you are hunting'));
+  box.appendChild(key);
+  host.appendChild(box);
+
+  /* an accessible reading of the same thing, because the numbers are the point */
+  box.setAttribute('role','img');
+  box.setAttribute('aria-label','An X diagram. Top: ' + (o.top==null?'unknown':o.top) +
+    ', the number the pair multiplies to. Bottom: ' + (o.bottom==null?'unknown':o.bottom) +
+    ', the number the pair adds to. Left: ' + (o.left==null?'unknown':o.left) +
+    '. Right: ' + (o.right==null?'unknown':o.right) + '.');
+  return box;
+};
+
+/* THE SPLIT: one lump above, two pieces below, one of them still a ?.
+   The lantern's whole reading in a picture - a factorisation has two sides,
+   and knowing one forces the other. Same rule as the X: strokes in SVG, every
+   number an HTML span over them (VERIFICATION §59). */
+MF.splitDiagram = function(host, o){
+  var wrap = E('div','xdia splitdia');
+  var W = 300, VH = 140;
+  var svg = S('svg',{viewBox:'0 0 '+W+' '+VH, preserveAspectRatio:'xMidYMid meet','aria-hidden':'true'});
+  /* the whole, and the two it comes apart into */
+  svg.appendChild(S('rect',{x:'70',y:'8',width:'160',height:'40',rx:'9',
+    fill:'#FFFCF6',stroke:'#C8B89A','stroke-width':'3'}));
+  [[16,92],[172,92]].forEach(function(b){
+    svg.appendChild(S('rect',{x:String(b[0]),y:'92',width:'112',height:'40',rx:'9',
+      fill:'#FFFCF6',stroke:'#C8B89A','stroke-width':'3'}));
+  });
+  /* the two limbs down to them */
+  ['M150 48 L72 92','M150 48 L228 92'].forEach(function(d){
+    svg.appendChild(S('path',{d:d,stroke:'#C8B89A','stroke-width':'4',fill:'none','stroke-linecap':'round'}));
+  });
+  var labs = E('div','xlabs');
+  function cell(x,y,val,cls){
+    var known = (val !== null && val !== undefined && val !== '');
+    var n = H('span','xcell ' + (cls||'') + (known?'':' open'),
+      known ? String(val) : '<span class="qm">?</span>');
+    n.style.left = ((x/W)*100).toFixed(2) + '%';
+    n.style.top  = ((y/VH)*100).toFixed(2) + '%';
+    labs.appendChild(n);
+  }
+  cell(150, 28, o.whole, 'xtop');
+  cell(72, 112, o.left, 'xside');
+  cell(228, 112, o.right, 'xside');
+  wrap.appendChild(svg); wrap.appendChild(labs);
+  var box = E('div','xwrap');
+  box.appendChild(wrap);
+  if(o.key){
+    var k = E('div','xkey');
+    k.appendChild(H('div','xk', o.key));
+    box.appendChild(k);
+  }
+  box.setAttribute('role','img');
+  box.setAttribute('aria-label','A split diagram. ' + (o.whole==null?'A lump':o.whole) +
+    ' comes apart into ' + (o.left==null?'an unknown piece':o.left) + ' and ' +
+    (o.right==null?'an unknown piece':o.right) + '.');
+  host.appendChild(box);
+  return box;
+};
+
+/* A LINE OF WORKING WITH HOLES IN IT. `parts` is a list of strings and nulls;
+   a null is drawn as a ?. This is what "line-by-line steps with some numbers
+   redacted" means in markup, and it is one function so a step cannot invent
+   its own way of hiding a number. */
+MF.workLine = function(host, label, parts, cls){
+  var row = E('div','wline' + (cls?' '+cls:''));
+  if(label) row.appendChild(H('span','wlab', label));
+  var eq = E('span','weq');
+  parts.forEach(function(p){
+    if(p === null || p === undefined) eq.appendChild(H('span','qm','?'));
+    else eq.appendChild(H('span','wpart', String(p)));
+  });
+  row.appendChild(eq);
+  host.appendChild(row);
+  return row;
+};
+
+/* THE X-BOX: the four terms in a 2×2, with the factors read off the edges.
+   MF.areaModel already draws a box with dashed unknown sides and it is used by
+   the Casting Shed and the Shifter, so this hands it the four corners rather
+   than drawing a second kind of box that could drift from the first. */
+MF.xBox = function(host, o){
+  return MF.areaModel(host, {
+    rows: o.rows, cols: o.cols, cells: o.cells,
+    caption: o.caption,
+    a11y: o.a11y || 'A two by two box holding the four terms, with the factors along its edges.'
+  });
+};
+
 /* THE SIMPLER SIDE OF A LUMP, and only ever one of them. Plain metal before a
    bracket, and the smaller bracket before the larger, so the half the lantern
    lights is the half that leaves the most work behind. Returns null for native
@@ -2280,6 +2513,32 @@ MF.simplestFactor = function(ore){
   return cand[0];
 };
 
+/* THE METHOD, CREDITED IN ONE LINE, WITH THE ESSAY A CLICK AWAY.
+
+   The tool panels used to carry the whole schema: name, a paragraph of
+   reasoning, and the numbered method narrated in sentences. All true, all
+   prose, and it is what the panel opened on. The `visual` group counts the
+   prose outside the diagrams and fails the build over it now.
+
+   The reading in the mine DRAWS. The reading that explains lives in the
+   Casting Shed, where MF.paintSchemaIndex still renders every schema in full
+   and MF.toolLesson still teaches it - so nothing was deleted, it moved to the
+   room built for reading. This is the pointer between the two. */
+MF.methodLine = function(host, key){
+  var s = MF.SCHEMA[key];
+  if(!s) return null;
+  var row = E('div','methodline');
+  row.appendChild(H('span','mlab','THE METHOD'));
+  row.appendChild(H('span','mnm', s.name));
+  var b = E('button','btn mlgo','read it in the Casting Shed &rarr;'); b.type='button';
+  b.innerHTML = 'read it in the Casting Shed &rarr;';
+  b.setAttribute('aria-label','Read the full method for ' + s.name + ' in the Casting Shed');
+  on(b,'click',function(){ MF.closeTool(); MF.go('shed-methods'); });
+  row.appendChild(b);
+  host.appendChild(row);
+  return row;
+};
+
 /* the method, drawn. Appends; never owns its host (the areaModel rule). */
 MF.paintSchema = function(host, key, ore){
   var s = MF.SCHEMA[key];
@@ -2287,7 +2546,17 @@ MF.paintSchema = function(host, key, ore){
   var box = E('div','schema');
   box.appendChild(H('div','slab','THE METHOD'));
   box.appendChild(H('div','snm', s.name));
-  box.appendChild(H('div','swhy', s.why));
+  /* THE REASONING FOLDS AWAY. It is the best paragraph in the panel and it was
+     the first thing on screen, which made every tool open on a wall of prose.
+     A student who wants it opens it; a student who wants to work does not have
+     to scroll past it. */
+  var whyD = document.createElement('details');
+  whyD.className = 'swhyfold';
+  var whyS = document.createElement('summary');
+  whyS.textContent = 'why this works';
+  whyD.appendChild(whyS);
+  whyD.appendChild(H('div','swhy', s.why));
+  box.appendChild(whyD);
   var steps = [];
   try { steps = s.steps(ore) || []; }
   catch(e){
@@ -2388,33 +2657,50 @@ MF.paintNameSide = function(host, ore, pieceId){
   return wrap;
 };
 
+/* THE PAIR THE X IS HUNTING, and which side of it to light.
+
+   Returns {ac, b, p, q} for a trinomial that factors over the whole numbers:
+   p and q multiply to a·c and add to b. Straight off the engine's own
+   factorisation rather than searched for again here, because two things that
+   compute the same pair are two things that can disagree about it. */
+MF.xPair = function(ore){
+  if(!ore || ore.kind !== 'poly' || ore.a === 0) return null;
+  var ac = ore.a * ore.c, res = MF.smeltPoly(ore.a, ore.b, ore.c);
+  if(!res.ingots) return null;
+  var br = res.ingots.filter(function(g){ return g.m !== 0; });
+  if(br.length !== 2) return null;
+  /* (m1 x + k1)(m2 x + k2) splits the middle into m1·k2 and m2·k1 */
+  var g0 = res.ingots.filter(function(g){ return g.m === 0; })[0];
+  var s = g0 ? g0.k : 1;
+  var p = br[0].m * br[1].k * s, q = br[1].m * br[0].k * s;
+  if(p * q !== ac || p + q !== ore.b) return null;
+  return {ac:ac, b:ore.b, p:p, q:q};
+};
+
 /* =========================================================================
    WHAT A TOOL DOES WHEN YOU HOLD IT TO A PIECE OF ROCK.
 
-   Each `read` builds the panel that rises when the tool is dropped on a lump:
-   the fact the instrument gets off the rock, then MF.paintSchema with the
-   named method worked on that same rock.
+   EVERY PANEL OPENS ON A PICTURE. They used to open on a method name, a
+   paragraph of reasoning and a numbered list of sentences - correct, and
+   almost entirely prose. A tool that has to be read before it can be used is
+   a tool a student puts down. The reasoning is still here; it is behind a
+   "why this works" fold, under the diagram.
 
-   THE BINDING RULE, AS AMENDED 2026-08-25 (MINE-SPEC §13): an instrument may
-   show PART of a factorisation and must never show all of it. The Lantern
-   lights one side and leaves the other as a ?; the Drill lists every pair and
-   marks none; the Auger reads what a seam has to satisfy and chooses nothing.
-   A tool that named both sides would be doing the one thing the student came
-   to do.
+   THE BINDING RULE, AS AMENDED 2026-08-25 (MINE-SPEC §13) AND EXTENDED
+   2026-08-26 (§15): an instrument may show PART of a factorisation and never
+   all of it, and what it shows is DRAWN with at least one number left as a ?.
+   The X's two sides are the pair; one of them is always open. The box's edges
+   are the factors; at least one is always dashed.
 
    AND NOTHING IN HERE JUDGES. What a student writes in the ? goes to the pick
-   bar and they swing it. The rock is the only judge in the mine (§11e), which
-   is why paintNameSide has a button that cuts the hammer and no button that
-   marks an answer.
+   bar and they swing it. The rock is the only judge in the mine (§11e).
 
-   `pieceId` is optional: it is the piece on the breaking floor this reading is
-   standing on, and it is what lets a reading reach the hammer. Without it the
-   reading is still complete - it simply has no anvil to send anything to.
+   `pieceId` is optional: the piece on the breaking floor this reading stands
+   on, and what lets a reading reach the hammer.
    ========================================================================= */
 MF.TOOL_READ = {
   /* THE PIT LANTERN: is there still a seam in this, and if there is, one side
-     of it. This is the tool the whole repeated swing hangs off - it is what
-     tells you the piece in front of you is worth another go. */
+     of it. This is the tool the whole repeated swing hangs off. */
   lantern: function(host, ore, pieceId){
     var native = MF.isNative(ore);
     var lit = E('div','lampread' + (native?' clear':' seamed'));
@@ -2423,160 +2709,187 @@ MF.TOOL_READ = {
       : 'A seam still runs through this one.'));
     lit.appendChild(H('div','sm', native
       ? (ore.kind==='number'
-          ? 'It is a prime. Held to the light it stays exactly what it is — there is nothing inside it to come out.'
-          : 'No whole-number seam runs through it. It is an element, the same kind of object as a prime, and the mine has nothing more to take out of it.')
-      : 'It will come apart. The lantern lights one side of the seam and leaves the other dark.'));
+          ? 'It is a prime. Held to the light it stays exactly what it is.'
+          : 'No whole-number seam runs through it. It is an element — the same kind of object as a prime.')
+      : 'It will come apart. The lantern lights one side and leaves the other dark.'));
     host.appendChild(lit);
-    if(native){
-      MF.paintSchema(host, 'lantern', ore);
-      return;
-    }
-    /* ONE SIDE LIT, THE OTHER A ?. The simpler side, so a loaded lump still
-       leaves the harder half to the student. */
+    if(native){ MF.methodLine(host, "lantern"); return; }
     var one = MF.simplestFactor(ore);
     if(one){
-      var eq = E('div','onesided');
-      eq.appendChild(H('div','oslab','WHAT THE LIGHT REACHES'));
-      eq.appendChild(H('div','eq', MF.oreLabel(ore) + ' <span class="op">=</span> ( ' + ingotHtml(one) +
-        ' ) <span class="op">&times;</span> ( <span class="qm">?</span> )'));
-      eq.appendChild(H('div','hint','One side. The other is whatever is left when that one comes out — and the lantern will not light it.'));
-      host.appendChild(eq);
+      host.appendChild(H('div','diaglab','WHAT THE LIGHT REACHES'));
+      MF.splitDiagram(host, {whole:MF.oreLabel(ore), left:'( ' + ingotHtml(one) + ' )', right:null,
+        key:'One side is lit. The other is whatever is left when that one comes out — and the lantern will not light it.'});
     }
-    MF.paintSchema(host, 'lantern', ore);
+    MF.methodLine(host, 'lantern');
     MF.paintNameSide(host, ore, pieceId);
-    host.appendChild(H('p','hint','You can also swing the lit side. Either blow lands; they leave you different amounts still to break.'));
   },
 
-  /* THE CORE DRILL: takes a core and reads the pairs out of it. It lists
-     every pair and marks none of them - picking the one that also adds up is
-     the student's job, and it always was. */
+  /* THE CORE DRILL: the X, and the pairs that could fill it. */
   drill: function(host, ore, pieceId){
-    MF.paintSchema(host, 'drill', ore);
     if(ore.kind==='number'){
-      host.appendChild(H('p','hint','<b>The core comes up in whole pieces.</b> Every pair of whole numbers that multiplies to <b>' + num(ore.n) + '</b>:'));
+      MF.workLine(host, 'every pair that multiplies to', [num(ore.n)], 'wbig');
       MF.scanTable(host, ore.n, null);
-      host.appendChild(H('div','hint','Any of these can be swung. Some leave you more still to break than others.'));
+      host.appendChild(H('div','hint','No row is marked. Any of them can be swung; some leave more still to break.'));
+      MF.methodLine(host, "drill");
       MF.paintNameSide(host, ore, pieceId);
       return;
     }
     if(ore.a===0){
-      host.appendChild(H('p','hint','<b>A flat core — no x² in this one.</b> There is one thing every term here carries, and the drill will not name it for you. Look at ' +
-        num(ore.b) + ' and ' + num(ore.c) + ' together.'));
+      MF.workLine(host, 'no x² to hunt in — look at', [num(ore.b), ' and ', num(ore.c), ' together'], 'wbig');
+      MF.methodLine(host, "drill");
       MF.paintNameSide(host, ore, pieceId);
       return;
     }
-    var tgt = (ore.a===1) ? ore.c : ore.a*ore.c;
-    if(Math.abs(tgt) >= 600){
-      host.appendChild(H('p','hint','<b>The core is too deep to read.</b> ' + num(tgt) + ' has more pairs in it than the drill will bring up.'));
-      return;
+    /* THE X, WITH ONE SIDE LIT AND ONE OPEN */
+    var pr = MF.xPair(ore);
+    host.appendChild(H('div','diaglab','THE X — ' + (ore.a===1 ? 'the end on top, the middle below' : 'a·c on top, the middle below')));
+    MF.xDiagram(host, {
+      top: num(ore.a * ore.c), bottom: num(ore.b),
+      left: pr ? num(pr.p) : null, right: null,
+      topWhy: ore.a===1 ? '' : '= ' + num(ore.a) + ' × ' + num(ore.c),
+      botWhy: ''
+    });
+    if(pr){
+      MF.workLine(host, 'so the pair is', [num(pr.p), ' and ', null], 'wbig');
+      host.appendChild(H('div','hint','One side is lit. The other multiplies with it to <b>' +
+        num(ore.a*ore.c) + '</b> and adds with it to <b>' + num(ore.b) + '</b>.'));
+    } else {
+      host.appendChild(H('div','hint','No whole pair fills this X. That is the reading — nothing whole comes out of it.'));
     }
-    host.appendChild(H('p','hint','<b>The core reads ' + num(tgt) + '</b>' + (ore.a===1?'':' — that is a·c') +
-      '. Every pair that multiplies to it, and what each one adds to. You are looking for the pair that also adds to <b>' + num(ore.b) + '</b>.'));
-    MF.scanTable(host, tgt, null);
-    host.appendChild(H('div','hint','No row is marked. The drill reads the rock; it does not choose where to swing.'));
+    var tgt = (ore.a===1) ? ore.c : ore.a*ore.c;
+    if(Math.abs(tgt) < 600){
+      host.appendChild(H('div','diaglab','EVERY PAIR THAT MULTIPLIES TO ' + num(tgt)));
+      MF.scanTable(host, tgt, null);
+      host.appendChild(H('div','hint','No row is marked. The drill reads the rock; it does not choose.'));
+    }
+    MF.methodLine(host, 'drill');
     MF.paintNameSide(host, ore, pieceId);
   },
 
-  /* THE EXPONENT RAIL: the box method, drawn, with both sides left dashed. */
+  /* THE EXPONENT RAIL: the X carried into the box. */
   shifter: function(host, ore, pieceId){
     if(ore.kind==='number' || ore.a===0){
-      host.appendChild(H('p','hint','<b>No x² in this one.</b> The rail traces where an x² comes from, and there is none here to trace.'));
-      MF.paintSchema(host, 'shifter', ore);
+      host.appendChild(H('p','hint','<b>No x² in this one.</b> The box needs one for its first corner.'));
+      MF.methodLine(host, "shifter");
       return;
     }
-    host.appendChild(H('p','hint','<b>An x² of ' + num(ore.a) + ' in front.</b> An x² can only ever come from one place: the two x-parts multiplied together. ' +
-      'So whatever two pieces come out of this, their x-parts multiply to <b>' + num(ore.a) + '</b>.'));
-    MF.paintSchema(host, 'shifter', ore);
-    var rows = [];
-    factorPairs(ore.a).forEach(function(pr){ rows.push(pr); });
-    var tbl = E('table','scan');
-    var hr = E('tr'); ['the two x-parts','multiplied','gives'].forEach(function(h){ hr.appendChild(E('th',null,h)); });
-    tbl.appendChild(hr);
-    rows.forEach(function(r){
-      var tr = E('tr');
-      tr.appendChild(E('td',null, (r[0]===1?'x':num(r[0])+'x') + '  and  ' + (r[1]===1?'x':num(r[1])+'x')));
-      tr.appendChild(E('td',null, num(r[0]) + ' × ' + num(r[1])));
-      tr.appendChild(H('td',null, '<b>' + (r[0]*r[1]===1?'x²':num(r[0]*r[1])+'x²') + '</b>'));
-      tbl.appendChild(tr);
+    var pr = MF.xPair(ore);
+    host.appendChild(H('div','diaglab','THE X FIRST'));
+    MF.xDiagram(host, {
+      top: num(ore.a * ore.c), bottom: num(ore.b),
+      left: pr ? num(pr.p) : null, right: null,
+      topWhy: ore.a===1 ? '' : '= ' + num(ore.a) + ' × ' + num(ore.c)
     });
-    host.appendChild(tbl);
-    host.appendChild(H('div','hint','Those are the sides of the box along one edge. The plain number on the end comes from the other corner — the two numbers multiplied. The middle is the two of them crossed over, and that is the part the rail cannot do for you.'));
+    host.appendChild(H('div','diaglab','AND THE PAIR GOES IN THE BOX'));
+    MF.xBox(host, {
+      rows:[{label:'?'},{label:'?'}],
+      cols:[{label:'?'},{label:'?'}],
+      cells:[[{kind:'sq',text:quadText(ore.a,0,0)},{kind:'x',text: pr ? xt2(pr.p) : '?'}],
+             [{kind:'x',text:'?'},{kind:'k',text:num(ore.c)}]],
+      caption:'Two corners are given, one is lit, and every side is still open.',
+      a11y:'A two by two box with ' + quadText(ore.a,0,0) + ' in one corner and ' + num(ore.c) +
+           ' in the opposite corner, and every side marked with a question mark.'
+    });
+    MF.workLine(host, 'the two middles must come to', [xt2(ore.b)], 'wbig');
+    host.appendChild(H('div','hint','Pull the common metal off each row and each column, and the sides of the box are the answer.'));
+    MF.methodLine(host, 'shifter');
     MF.paintNameSide(host, ore, pieceId);
   },
 
   /* THE DECIMAL DIAL: why nothing will come out, when nothing will. */
   dial: function(host, ore, pieceId){
     if(ore.kind==='number'){
-      host.appendChild(H('p','hint','<b>The dial is cut for lumps with an x in them.</b> On a plain number there is nothing to nudge off the whole numbers.'));
-      MF.paintSchema(host, 'dial', ore);
+      host.appendChild(H('p','hint','<b>The dial is cut for lumps with an x in them.</b>'));
+      MF.methodLine(host, "dial");
       return;
     }
-    MF.paintSchema(host, 'dial', ore);
     MF.paintDial(host, {ore:ore});
+    MF.methodLine(host, 'dial');
     MF.paintNameSide(host, ore, pieceId);
   },
 
-  /* THE DEEP PICK works at the face, not on the floor. Saying so is better
-     than a panel that does nothing and does not explain itself. */
+  /* THE DEEP PICK works at the face, not on the floor. */
   pick: function(host, ore, pieceId){
-    host.appendChild(H('p','hint','<b>This one works at the seam, not on the floor.</b> The deep pick brings up three lumps a swing when you are cutting rock out of the wall. ' +
-      'Down here on the anvil, a swing is a swing.'));
-    MF.paintSchema(host, 'pick', ore);
+    host.appendChild(H('p','hint','<b>This one works at the seam, not on the floor.</b> Three lumps a swing when you are cutting rock out of the wall. Down here a swing is a swing.'));
+    MF.methodLine(host, "pick");
   },
 
-  /* THE STEEL PICK: it does not read, it swings. Held to a lump it says what
-     it would take and offers to take it - and it only ever takes the metal
-     every term is already carrying, which is a move the student demonstrated
-     at the forge to earn the tool. */
+  /* THE STEEL PICK: the common metal, drawn out in front of a bracket. */
   steel: function(host, ore, pieceId){
     var g = MF.commonMetal(ore);
     if(!g){
-      host.appendChild(H('p','hint','<b>Nothing common in this one.</b> There is no single metal that every term here is carrying, so the steel head has nothing to bite on. A named swing will still work.'));
-      MF.paintSchema(host, 'steel', ore);
+      /* NOTHING TO BITE ON IS STILL A READING, and it still gets drawn. A
+         panel that answers "no" in a sentence and stops is the wall of text
+         this whole change is against - so it shows the terms, shows that only
+         1 divides all of them, and hands the lump to the method that does
+         apply here. */
+      host.appendChild(H('div','diaglab','WHAT EVERY TERM DIVIDES BY'));
+      var sTerms = (ore.kind==='number') ? [num(ore.n)]
+        : [ore.a?sqTerm(ore.a):null, ore.b?xt2(ore.b):null, ore.c?num(ore.c):null].filter(Boolean);
+      MF.workLine(host, null, [sTerms.join('   ')], 'wbig');
+      MF.workLine(host, 'the biggest that divides them all', ['1'], 'wbig');
+      host.appendChild(H('div','hint','So there is nothing to stand in front of a bracket. The pair hunt is the way into this one:'));
+      if(ore.kind==='poly' && ore.a!==0){
+        var sPr = MF.xPair(ore);
+        MF.xDiagram(host, {
+          top: num(ore.a*ore.c), bottom: num(ore.b),
+          left: sPr ? num(sPr.p) : null, right: null,
+          topWhy: ore.a===1 ? '' : '= ' + num(ore.a) + ' × ' + num(ore.c)
+        });
+      } else {
+        MF.splitDiagram(host, {whole:MF.oreLabel(ore), left:null, right:null,
+          key:'Both sides are still yours. Name one and swing.'});
+      }
+      MF.methodLine(host, 'steel');
       MF.paintNameSide(host, ore, pieceId);
       return;
     }
-    host.appendChild(H('p','hint','<b>Every term in this one is carrying the same metal.</b> The steel head takes it out in one blow — it will not touch anything else in the rock.'));
-    MF.paintSchema(host, 'steel', ore);
+    host.appendChild(H('div','diaglab','EVERY TERM IS CARRYING THE SAME METAL'));
+    var terms = (ore.kind==='number') ? [num(ore.n)]
+      : [ore.a?sqTerm(ore.a):null, ore.b?xt2(ore.b):null, ore.c?num(ore.c):null].filter(Boolean);
+    MF.workLine(host, null, [terms.join('   ')], 'wbig');
+    MF.workLine(host, 'each divides by', [num(g)], 'wbig');
+    MF.workLine(host, 'so it comes out in front', [num(g), ' ( ', null, ' )'], 'wbig');
     var b = E('button','btn primary big','Rip out the common metal'); b.type='button';
     on(b,'click',function(){ MF.ripCommon(ore); });
     host.appendChild(b);
-    host.appendChild(H('div','hint','What is left underneath is still yours to break.'));
+    MF.methodLine(host, "steel");
   },
 
-  /* THE POWERED AUGER: factoring by grouping, and what a seam HAS to satisfy
-     before you drive it. It narrows where to look and names nothing - the two
-     divisibility facts are the whole method for a loaded lump, and they are
-     facts about the rock. */
+  /* THE POWERED AUGER: the full X-box on loaded ore. */
   auger: function(host, ore, pieceId){
     if(ore.kind==='number'){
-      host.appendChild(H('p','hint','<b>Whatever you take out of ' + num(ore.n) + ' has to divide it exactly.</b> That is the only rule there is on a plain number — the auger has nothing more to add.'));
-      MF.paintSchema(host, 'auger', ore);
+      MF.workLine(host, 'whatever comes out has to divide', [num(ore.n)], 'wbig');
+      MF.methodLine(host, "auger");
       return;
     }
     if(ore.a===0){
-      host.appendChild(H('p','hint','<b>No x² in this one.</b> The auger is cut for loaded ore. On a flat lump, whatever comes out has to divide both ' +
-        num(ore.b) + ' and ' + num(ore.c) + '.'));
-      MF.paintSchema(host, 'auger', ore);
+      MF.workLine(host, 'whatever comes out has to divide both', [num(ore.b), ' and ', num(ore.c)], 'wbig');
+      MF.methodLine(host, "auger");
       MF.paintNameSide(host, ore, pieceId);
       return;
     }
-    host.appendChild(H('p','hint','<b>Before you drive a seam, it has to fit at both ends.</b> The auger reads what it has to fit.'));
-    var t = E('table','scan');
-    var hr = E('tr'); ['the piece you take out','has to'].forEach(function(h){ hr.appendChild(E('th',null,h)); });
-    t.appendChild(hr);
-    var r1=E('tr'); r1.appendChild(H('td',null,'its <b>x-part</b>'));
-    r1.appendChild(H('td',null,'divide <b>' + num(ore.a) + '</b> — the two x-parts multiply to the x² and nothing else can make one'));
-    t.appendChild(r1);
-    var r2=E('tr'); r2.appendChild(H('td',null,'its <b>number</b>'));
-    r2.appendChild(H('td',null, ore.c===0
-      ? 'be nothing at all — there is no plain number on the end of this one'
-      : 'divide <b>' + num(ore.c) + '</b> — the two numbers multiply to the end'));
-    t.appendChild(r2);
-    host.appendChild(t);
-    host.appendChild(H('div','hint','Those two together rule out almost everything. What survives them still has to make the middle come to <b>' +
-      num(ore.b) + '</b>, and that part the auger will not do for you.'));
-    MF.paintSchema(host, 'auger', ore);
+    var pr = MF.xPair(ore);
+    host.appendChild(H('div','diaglab','1 — THE X'));
+    MF.xDiagram(host, {
+      top: num(ore.a*ore.c), bottom: num(ore.b),
+      left: pr ? num(pr.p) : null, right: null,
+      topWhy: '= ' + num(ore.a) + ' × ' + num(ore.c)
+    });
+    host.appendChild(H('div','diaglab','2 — SPLIT THE MIDDLE WITH THAT PAIR'));
+    MF.workLine(host, null, [sqTerm(ore.a), ' + ', pr ? xt2(pr.p) : null, ' + ', null, ' + ', num(ore.c)], 'wbig');
+    host.appendChild(H('div','diaglab','3 — THE FOUR TERMS GO IN THE BOX'));
+    MF.xBox(host, {
+      rows:[{label:'?'},{label:'?'}],
+      cols:[{label:'?'},{label:'?'}],
+      cells:[[{kind:'sq',text:quadText(ore.a,0,0)},{kind:'x',text: pr ? xt2(pr.p) : '?'}],
+             [{kind:'x',text:'?'},{kind:'k',text:num(ore.c)}]],
+      caption:'Pull the common metal off each row and each column. The sides are the factors.'
+    });
+    host.appendChild(H('div','diaglab','4 — READ THE FACTORS OFF THE EDGES'));
+    MF.workLine(host, null, ['( ', null, ' )', ' × ', '( ', null, ' )'], 'wbig');
+    host.appendChild(H('div','hint','Both sides are yours. The auger reads the rock and will not choose for you.'));
+    MF.methodLine(host, 'auger');
     MF.paintNameSide(host, ore, pieceId);
   }
 };
@@ -5351,12 +5664,26 @@ MF.forgeJudge = function(t, ingots, prod){
 /* =========================================================================
    THE MINE
    ========================================================================= */
+/* THE MINE IN TWO BANDS.
+
+   The top band is the three places you MOVE between - the shaft you descend,
+   the rock face you cut, the yard you stock - and they sit tight against each
+   other so the whole operation is one glance.
+
+   The bottom band is the WORK, full width, and the two boxes in it are side by
+   side: what is on the floor, and what is under the hammer. They used to be
+   stacked inside the middle column, one under the other and both squeezed into
+   a third of the page, so the pieces you were choosing between and the bar you
+   cut the hammer to could not be looked at together - which is the one pairing
+   the whole act depends on. */
 MF.SCREENS.mine = function(host){
   var grid = E('div','minegrid');
   var colL = E('div'), colM = E('div'), colR = E('div');
   grid.appendChild(colL); grid.appendChild(colM); grid.appendChild(colR);
   host.appendChild(grid);
-  MF._mine = {left:colL, mid:colM, right:colR};
+  var work = E('div','minework');
+  host.appendChild(work);
+  MF._mine = {left:colL, mid:colM, right:colR, work:work};
   MF.paintMine();
 };
 MF.paintMine = function(){
@@ -5364,7 +5691,7 @@ MF.paintMine = function(){
      navigation away from the mine, and painting into a detached column is the
      silent-failure class that already cost a review cycle (s35) */
   if(!MF._mine || !MF._mine.mid || !MF._mine.mid.isConnected) return;
-  MF.paintShaft(); MF.paintFace(); MF.paintYard();
+  MF.paintShaft(); MF.paintFace(); MF.paintYard(); MF.paintWork();
   MF.drainFlashes();          /* after the repaint, so a message survives it */
 };
 
@@ -5809,26 +6136,37 @@ MF.paintFace = function(){
   if(!MF.state.cart.length){
     cartPanel.appendChild(H('p','hint','Empty. Swing the pick above — and dig as much as you want before you smelt anything.'));
   } else {
-    cartPanel.appendChild(H('p','hint','Raw ore you are carrying. Pick one up to put it on the bench.'));
+    cartPanel.appendChild(H('p','hint','Raw ore you are carrying. Put one on the bench to work it — or send it straight to the yard and come back to it later.'));
     var body = E('div','cartbody');
     var cart = E('div','cart');
     MF.state.cart.forEach(function(o){
+      var cell = E('div','lumpcell');
       var b = E('button','lump' + (o.fresh?' fresh':'')); b.type='button';
       b.setAttribute('data-ore', o.id);      /* survives the repaint, so the knock finds it */
       b.appendChild(E('span','glyph'));
       b.appendChild(H('span','txt', MF.oreLabel(o)));
       b.appendChild(H('span','lay','LAYER ' + o.layer));
       if(MF.state.selected && MF.state.selected.id===o.id) b.setAttribute('aria-current','true');
+      b.setAttribute('aria-label', MF.oreText(o) + ' — put it on the bench');
       on(b,'click',function(){
-        /* picking up the lump ALREADY on the bench resets the bench to the
-           assay, which is a real thing to have done - but off-screen, below the
-           cart, so the click looked like nothing. It knocks now. */
+        /* picking up the lump ALREADY on the bench rebuilds the bench, which is
+           a real thing to have done - but off-screen, below the cart, so the
+           click looked like nothing. It knocks now. */
         MF.state.selected = o;
         MF.state.anvil = null;
         MF.paintMine();
         MF.knockLump(o.id);
       });
-      cart.appendChild(b);
+      cell.appendChild(b);
+      /* STRAIGHT TO THE YARD. The bench was the only door out of the cart, so
+         putting a lump down meant picking it up first. */
+      var y = E('button','tuyard','&rarr; yard'); y.type='button';
+      y.innerHTML = '&rarr; yard';
+      y.title = 'Send it to the yard without working it';
+      y.setAttribute('aria-label','Send ' + MF.oreText(o) + ' straight to the yard without working it');
+      on(y,'click',function(){ MF.cartToYard(o.id); });
+      cell.appendChild(y);
+      cart.appendChild(cell);
     });
     body.appendChild(cart);
     cartPanel.appendChild(body);
@@ -5838,9 +6176,19 @@ MF.paintFace = function(){
     cartPanel.appendChild(E('div','cartrail'));
   }
   host.appendChild(cartPanel);
+};
 
+/* THE WORK BAND, full width and below the three places you move between. The
+   bench used to be appended to the middle column under the cart, which left
+   the breaking floor a third of the page wide and stacked its two boxes one
+   above the other. */
+MF.paintWork = function(){
+  var host = MF._mine && MF._mine.work;
+  if(!host || !host.isConnected) return;
+  clear(host);
   if(MF.state.selected) MF.paintAnvil(host);
-  else if(MF.state.cart.length) host.appendChild(MF.says('<b>Mr Factor:</b> Pick a lump out of the cart and set it on the bench when you are ready. No hurry — the cart does not empty itself.'));
+  else if(MF.state.cart.length)
+    host.appendChild(MF.says('<b>Mr Factor:</b> Pick a lump out of the cart and set it on the bench when you are ready. No hurry — the cart does not empty itself.'));
 };
 
 /* =========================================================================
@@ -5989,8 +6337,13 @@ MF.breakRock = function(idx){
    happens in exactly one place in this build - the forge, where it makes
    tools. The mine breaks. The forge smelts.
    ========================================================================= */
+/* THE BENCH OPENS ON THE HAMMER. It used to open on a question with the
+   breaking floor hidden behind it, and a student who wanted to swing had to
+   answer something first. The assay is not gone - it is one of the three verbs
+   (MINE-SPEC s3) and it is still here, as a call you can make at any time and
+   never have to make. What went is the GATE, not the step. */
 MF.anvilInit = function(ore){
-  return { ore:ore, step:'assay', assayTried:false,
+  return { ore:ore, step:'break', assayTried:false,
            floor:[{ore:ore, id:1}],   /* every piece off this lump, in order */
            seq:1,                     /* piece ids, so a repaint can find one */
            at:0,                      /* which piece is under the pick */
@@ -6012,26 +6365,30 @@ MF.paintAnvil = function(host){
      directly above the pieces it acts on. */
   bench.appendChild(H('div','eq', MF.oreLabel(ore)));
 
-  var strip = E('div','stepstrip');
-  [['assay','ASSAY','what is this?'],['break','BREAK','take it apart']].forEach(function(s){
-    var d = E('div','st' + (B.step===s[0]?' on':'') + (MF.stepDone(B,s[0])?' done':''));
-    d.appendChild(H('b',null,s[1]));
-    d.appendChild(H('div','s', s[2]));
-    strip.appendChild(d);
-  });
-  bench.appendChild(strip);
+  /* NO STEP STRIP. Two numbered stages with the second greyed out is a gate
+     drawn as furniture: it says you are not allowed here yet even when you
+     are. The one act on this bench is BREAK, and the assay sits inside it as
+     something you may reach for. */
+  /* A PLAIN NUMBER POINTS AT THE STAMP MILL. Numbers still break here - the
+     whole thesis is that 72 and x² − 5x + 6 are one job - but the room built
+     for factor trees and primes is one click away from the bench that needs
+     it, instead of two screens and a guess. */
+  if(ore.kind === 'number'){
+    var sm = E('div','note millpoint');
+    sm.innerHTML = '<b>Numbers come apart the same way rock does.</b> ' +
+      'The Stamp Mill is built for this one — cut it there and watch two different first cuts reach the same metals.';
+    sm.appendChild(MF.jump('The Stamp Mill &rarr;','workshop-ore'));
+    bench.appendChild(sm);
+  }
 
-  /* the call is always drawn - interactive at the assay step, settled after -
-     so the reason a student gave stays with the lump instead of vanishing */
   MF.paintAssay(bench, B);
-  if(B.step==='break') MF.paintBreak(bench, B);
+  MF.paintBreak(bench, B);
 
   host.appendChild(bench);
 };
-MF.stepDone = function(B, step){
-  var order = {assay:0, 'break':1};
-  return order[step] < order[B.step];
-};
+/* MF.stepDone is gone with the step strip it fed. It answered "is this stage
+   behind us", which was only ever a question because the stages were a
+   sequence you had to walk. There is one act on this bench now. */
 
 MF.paintAssay = function(host, B){
   var ore = B.ore;
@@ -6045,16 +6402,31 @@ MF.paintAssay = function(host, B){
      students who got it wrong, and the longest copy in it (the two-true-
      readings note) was the least readable. Now a settled call renders as a
      panel that persists for as long as the lump is on the bench. */
-  if(B.step !== 'assay'){
-    var called = B.calledAs || right;
+  /* THREE STATES, WHERE THERE USED TO BE TWO.
+     Settled: a call has been made, and it stays on screen with its reason for
+     as long as the lump is on the bench.
+     Offered: no call yet, and the bench is NOT waiting on one - a single quiet
+     control that opens the choices when a student wants them.
+     Asking: the choices themselves, unchanged. */
+  if(B.calledAs){
     var settled = E('div','note good');
-    settled.innerHTML = '<b>You called it: ' + MF.ASSAY[called].name + '.</b> ' +
-      (B.calledWhy || MF.ASSAY[called].tell);
+    settled.innerHTML = '<b>You called it: ' + MF.ASSAY[B.calledAs].name + '.</b> ' +
+      (B.calledWhy || MF.ASSAY[B.calledAs].tell);
     host.appendChild(settled);
     return;
   }
+  if(B.step !== 'assay'){
+    var offer = E('div','assayoffer');
+    var ob = E('button','btn assaybtn','What kind of rock is this?'); ob.type='button';
+    ob.setAttribute('aria-label','Name what kind of rock this is. Optional — the hammer works either way.');
+    on(ob,'click',function(){ B.step = 'assay'; MF.paintMine(); });
+    offer.appendChild(ob);
+    offer.appendChild(H('span','assayhint','Optional. The hammer works either way.'));
+    host.appendChild(offer);
+    return;
+  }
 
-  host.appendChild(H('p','hint','<b>Assay it first.</b> What kind of rock are you holding? Nothing else on the bench opens until you have called it — because a call you made is the only thing you can later catch yourself out on.'));
+  host.appendChild(H('p','hint','<b>What kind of rock are you holding?</b> Nothing depends on this — you can swing without it. It is here because a call you made is the only thing you can later catch yourself out on.'));
 
   /* the Drill reads structure - this is its power, and it is the only thing
      on the assay screen that says anything beyond what is visibly there */
@@ -6108,6 +6480,12 @@ MF.paintAssay = function(host, B){
     wrap.appendChild(btn);
   });
   host.appendChild(wrap);
+  /* AND A WAY OUT OF THE QUESTION. It is opened deliberately now, so it needs
+     a door: a student who opens it and changes their mind must not be stuck
+     looking at choices they did not want. */
+  var skip = E('button','btn assayskip','Never mind — back to the hammer'); skip.type='button';
+  on(skip,'click',function(){ B.step = 'break'; MF.paintMine(); });
+  host.appendChild(skip);
 };
 
 /* deterministic option order - the correct call must not sit in the same slot */
@@ -6403,7 +6781,13 @@ MF.paintBreak = function(host, B){
     rowf.appendChild(cell);
   });
   fl.appendChild(rowf);
-  host.appendChild(fl);
+  /* THE TWO WORK BOXES GO SIDE BY SIDE. What is on the floor and what is under
+     the hammer are the one pairing the whole act depends on - you choose a
+     piece and you cut the head to something you can see. Stacked, they could
+     not be looked at together. */
+  var pair = E('div','workpair');
+  pair.appendChild(fl);
+  host.appendChild(pair);
 
   /* ---- what the last swing did. A description of the rock, every time ---- */
   if(B.last){
@@ -6521,7 +6905,11 @@ MF.paintBreak = function(host, B){
     /* THE ANVIL GOES IN LAST. It is the tallest thing here and it is a
        PICTURE - the blow lands under the button that fired it. */
     cut.appendChild(stage);
-    host.appendChild(cut);
+    /* the LOCAL pair, not one cached on B. B outlives the call, so a cached
+       node is last paint's node - detached - and the hammer bar would be built
+       into a DOM nothing is showing. That is the fault class that already cost
+       a review cycle (VERIFICATION s35). */
+    pair.appendChild(cut);
     B._cutbar = cut;
     B._stage = stage;
 
@@ -6652,12 +7040,37 @@ MF.knockPiece = function(id){
 /* THE FLOOR GOES IN THE YARD: metal on the rack, rock on the heap. Rock is
    never destroyed and never counted - it is ore you have not finished with,
    and the heap is where you left it. */
+/* ONE PLACE DECIDES RACK OR HEAP. Native metal is racked and the forge can
+   spend it; anything still carrying a seam goes on the heap and can be broken
+   later. Both routes into the yard - tipping the breaking floor, and sending a
+   lump straight out of the cart - call this, so the rule cannot be true in one
+   of them and wrong in the other. */
+MF.stow = function(ore){
+  if(MF.isNative(ore)){ MF.addToYard(MF.oreToIngot(ore)); return 'rack'; }
+  MF.state.rockpile.push(ore); return 'heap';
+};
 MF.tipFloor = function(B, why){
-  B.floor.forEach(function(p){
-    if(MF.isNative(p.ore)) MF.addToYard(MF.oreToIngot(p.ore));
-    else MF.state.rockpile.push(p.ore);
-  });
+  B.floor.forEach(function(p){ MF.stow(p.ore); });
   MF.finishLump(B, why);
+};
+
+/* STRAIGHT FROM THE CART TO THE YARD, without touching the bench. Digging and
+   stockpiling used to be one route with a workbench in the middle of it: the
+   only way to put a lump down was to pick it up, and on a lump you did not
+   want to work yet that is a hurdle with nothing on the other side of it. */
+MF.cartToYard = function(id){
+  var ore = null;
+  MF.state.cart.forEach(function(o){ if(o.id===id) ore = o; });
+  if(!ore) return false;
+  var where = MF.stow(ore);
+  MF.state.cart = MF.state.cart.filter(function(o){ return o.id!==id; });
+  /* if it was the lump on the bench, the bench goes with it */
+  if(MF.state.selected && MF.state.selected.id===id){ MF.state.selected = null; MF.state.anvil = null; }
+  MF.paintMine();
+  MF.flash(where==='rack'
+    ? MF.oreText(ore) + ' is native metal — racked in the yard.'
+    : MF.oreText(ore) + ' still has a seam in it. On the heap, ready when you are.');
+  return true;
 };
 /* THE X-PART BOX IS NOT THE NUMBER BOX, AND EMPTY DOES NOT MEAN ZERO IN IT.
 
@@ -7823,6 +8236,92 @@ MF.validate = function(){
     var got = MF.digOre(L, probeRng);
     if(!got) errs.push('nogate: layer '+L+' produced no ore for a student with no tools');
   }
+
+  /* AND NO QUESTION MAY STAND BETWEEN A LUMP AND THE HAMMER.
+     The bench used to open on the assay with the breaking floor hidden behind
+     it: a student who wanted to swing had to answer something first. The assay
+     survives - it is one of the three verbs and it is still on the bench - but
+     as an offer. This asserts the swing is reachable on a freshly built,
+     never-clicked bench, which is the only state that matters for a student
+     who does not want the question. */
+  var ngStage = document.createElement('div');
+  ngStage.style.cssText = 'position:fixed; left:-11000px; top:0; width:560px';
+  document.body.appendChild(ngStage);
+  var ngSaved = {sel:MF.state.selected, anvil:MF.state.anvil, mine:MF._mine};
+  [[1,-5,6],[6,7,-3],[0,0,60]].forEach(function(t){
+    chk('nogate');
+    var ore = t[0]===0 && t[1]===0 ? {kind:'number', n:t[2], id:'ng'+t[2], layer:1}
+                                   : {kind:'poly', a:t[0], b:t[1], c:t[2], id:'ng'+t[1]+t[2], layer:4};
+    MF.state.selected = ore;
+    MF.state.anvil = MF.anvilInit(ore);
+    var host = document.createElement('div');
+    ngStage.appendChild(host);
+    try { MF.paintAnvil(host); }
+    catch(e){ errs.push('nogate: the bench threw on ' + MF.oreText(ore) + ': ' + e.message); ngStage.removeChild(host); return; }
+    var swing = [].slice.call(host.querySelectorAll('button')).filter(function(b){
+      return /bring the hammer down/i.test(b.textContent||''); })[0];
+    if(!swing)
+      errs.push('nogate: a freshly dug ' + MF.oreText(ore) + ' lands on a bench with no way to swing — something is gating the hammer');
+    chk('nogate');
+    if(host.querySelectorAll('.choices .choice').length)
+      errs.push('nogate: the bench opens on the assay question for ' + MF.oreText(ore) + ' rather than offering it');
+    chk('nogate');
+    if(!host.querySelector('.assayoffer'))
+      errs.push('nogate: the assay is not offered at all on ' + MF.oreText(ore) + ' — the step has been deleted, not ungated');
+    ngStage.removeChild(host);
+  });
+  /* CONTROL: put the gate back and the sweep must fail.
+     THE GATE WAS NEVER THE step FIELD - it was a conditional wrapped
+     round paintBreak. Setting the field alone left the hammer on screen and
+     the control passed while proving nothing, which is the failure mode a
+     control exists to prevent. It patches the thing that actually gated. */
+  chk('nogate');
+  var ngReal = MF.anvilInit, ngBreak = MF.paintBreak;
+  MF.anvilInit = function(o){ var B = ngReal(o); B.step = 'assay'; return B; };
+  MF.paintBreak = function(h, B){ if(B.step === 'break') return ngBreak(h, B); };
+  var ngGated = document.createElement('div');
+  ngStage.appendChild(ngGated);
+  MF.state.selected = {kind:'poly',a:1,b:-5,c:6,id:'ngctl',layer:4};
+  MF.state.anvil = MF.anvilInit(MF.state.selected);
+  MF.paintAnvil(ngGated);
+  var ngSwing = [].slice.call(ngGated.querySelectorAll('button')).filter(function(b){
+    return /bring the hammer down/i.test(b.textContent||''); }).length;
+  MF.anvilInit = ngReal; MF.paintBreak = ngBreak;
+  ngStage.removeChild(ngGated);
+  if(ngSwing) errs.push('CONTROL: the gate check cannot see a bench that hides the hammer behind the assay');
+
+  /* AND A LUMP MUST BE ABLE TO REACH THE YARD WITHOUT TOUCHING THE BENCH. */
+  var ngYard = {yard:MF.state.yard, heap:MF.state.rockpile, cart:MF.state.cart};
+  [[{kind:'poly',a:1,b:0,c:4,id:'sy1',layer:3}, 'rack'],      /* native */
+   [{kind:'poly',a:1,b:-5,c:6,id:'sy2',layer:4}, 'heap']      /* still rock */
+  ].forEach(function(pair){
+    chk('nogate');
+    MF.state.yard = {}; MF.state.rockpile = []; MF.state.cart = [pair[0]];
+    MF.state.selected = null; MF.state.anvil = null; MF._mine = null;
+    MF.cartToYard(pair[0].id);
+    var racked = MF.yardList().length, heaped = MF.state.rockpile.length;
+    var landed = racked ? 'rack' : (heaped ? 'heap' : 'nowhere');
+    if(landed !== pair[1])
+      errs.push('nogate: ' + MF.oreText(pair[0]) + ' sent straight from the cart landed on the ' +
+                landed + ' and belongs on the ' + pair[1]);
+    chk('nogate');
+    if(MF.state.cart.length)
+      errs.push('nogate: ' + MF.oreText(pair[0]) + ' went to the yard and is still in the cart as well');
+  });
+  /* CONTROL: a stow that drops the ore must be caught */
+  chk('nogate');
+  MF.state.yard = {}; MF.state.rockpile = [];
+  var ngStow = MF.stow;
+  MF.stow = function(){ return 'rack'; };
+  MF.state.cart = [{kind:'poly',a:1,b:0,c:4,id:'syc',layer:3}];
+  MF.cartToYard('syc');
+  var ngLost = (MF.yardList().length === 0 && MF.state.rockpile.length === 0);
+  MF.stow = ngStow;
+  if(!ngLost) errs.push('CONTROL: a stow that drops the ore still put it somewhere');
+  MF.state.yard = ngYard.yard; MF.state.rockpile = ngYard.heap; MF.state.cart = ngYard.cart;
+  MF.state.selected = ngSaved.sel; MF.state.anvil = ngSaved.anvil; MF._mine = ngSaved.mine;
+  document.body.removeChild(ngStage);
+
   MF.state.yard = savedYard; MF.state.tools = savedTools; MF.state.forge = savedForge;
 
   /* 5h. NO DISTRACTOR MAY BE TRUE, AND NO ROOT MAY BE DENIED.
@@ -8530,14 +9029,18 @@ MF.validate = function(){
      matching it would fire on readings that leaked nothing), which means a
      lantern lighting the 2 of 2x² + 10x + 12 would count as naming nothing.
      The lit side and the dark ? are elements, so they are looked for as
-     elements. */
+     elements - and it looks for the PROPERTY, not one class name. The lit side
+     was a .onesided div and is a split DIAGRAM now; a check written against the
+     markup would have failed the build over a panel that got better, which is
+     the trap the mold group's "nothing but a <text>" assertion fell into. What
+     has to be true is that something is DRAWN and something is left OPEN. */
   var lampTooFew = function(reader){
     var out = [];
     [[1,-5,6],[6,7,-3],[2,10,12],[1,0,-9]].forEach(function(t){
       var o = {kind:'poly',a:t[0],b:t[1],c:t[2]};
       var h = document.createElement('div');
       try { reader(h, o); } catch(e){ out.push(MF.oreText(o) + ' threw'); return; }
-      if(!h.querySelector('.onesided')) out.push(MF.oreText(o) + ' lit no side at all');
+      if(!h.querySelector('svg')) out.push(MF.oreText(o) + ' lit no side at all — it drew nothing');
       else if(!h.querySelector('.qm')) out.push(MF.oreText(o) + ' lit a side and left no ? for the other');
     });
     return out;
@@ -8775,11 +9278,16 @@ MF.validate = function(){
       var so = {kind:'poly',a:a,b:b,c:c,layer:5,id:'sw'+a+b+c};
       MF.state.cart=[so]; MF.state.selected=so; MF.state.anvil=null; MF.state.rockpile=[];
       MF.paintMine();
-      var m2 = MF._mine.mid, nm2 = MF.ASSAY[MF.assayOf(so)].name;
+      /* THE BENCH IS IN THE WORK BAND NOW, not the middle column. This probe
+         hunted .hbox inputs in MF._mine.mid and found none the moment the two
+         work boxes moved below the three places - it reported "the hammer bar
+         drew no boxes to type in", which was true of the node it was looking
+         at and false of the page. */
+      var m2 = MF._mine.work, nm2 = MF.ASSAY[MF.assayOf(so)].name;
       var ch2 = [].slice.call(m2.querySelectorAll('.choice')).filter(function(x){
         return (x.textContent||'').indexOf(nm2)===0; })[0];
       if(ch2) kHit(ch2);
-      return MF._mine.mid;
+      return MF._mine.work;
     };
     var swHit = function(m2, xs, ks){
       var ins = m2.querySelectorAll('.hbox input');
@@ -8789,7 +9297,7 @@ MF.validate = function(){
       var btn = [].slice.call(m2.querySelectorAll('.cutbar .btn')).filter(function(b){
         return /hammer/i.test(b.textContent); })[0];
       if(btn) kHit(btn);
-      return MF._mine.mid;
+      return MF._mine.work;
     };
     [['a swing that leaves work to do', 2,10,12, '0','2'],
      ['the finishing blow',             3,22,24, '', '6'],
@@ -9325,6 +9833,121 @@ MF.validate = function(){
   MF.state.layer = rcSaved.layer; MF.state.face = rcSaved.face; MF.state.faceLayer = rcSaved.fl;
   MF.state.yard = rcSaved.yard; MF.state.forge = rcSaved.forgeSt; MF.state.rockpile = rcSaved.heap;
 
+
+  /* 5n. THE TOOLS MUST DRAW, AND MUST LEAVE A HOLE.
+
+         The instruments were correct and unreadable: a method name, a
+         paragraph of reasoning and a numbered list of sentences. Nothing in
+         the build could see that, because every group measured whether a
+         reading was TRUE and none measured whether it was a PICTURE. The user
+         could see it immediately - "mostly text with no diagrams and not
+         enough number information" - which is the signature of a property
+         nobody asserted.
+
+         Three things are asserted per reading, on a lump that actually
+         factors:
+
+         - it DRAWS. At least one <svg> in the panel.
+         - it LEAVES A HOLE. At least one `.qm` - the user's rule, "at least
+           one number needs to be a ?", and the same rule the `schema` group
+           enforces from the other side, since on a monic trinomial the two
+           sides of the X are the two bracket constants and filling both in
+           would be printing the whole factorisation.
+         - it is NOT MOSTLY PROSE. The visible text outside the diagram and the
+           worked lines has a budget, so a diagram bolted onto four paragraphs
+           does not pass.
+
+         READ THE DENOMINATOR: five instruments that read a trinomial, over two
+         lumps. It says nothing about whether a diagram is LEGIBLE, whether the
+         redacted number is the interesting one, or whether the X is drawn the
+         way a particular teacher draws it. Those are human readings and none
+         of them has happened. */
+  var vsOres = [{kind:'poly',a:1,b:-5,c:6}, {kind:'poly',a:6,b:7,c:-3}];
+  var vsTools = ['drill','shifter','auger','lantern','steel'];
+  var vsRead = function(tk, ore){
+    var h = document.createElement('div');
+    vsStage.appendChild(h);
+    try { MF.TOOL_READ[tk](h, ore, null); } catch(e){ vsStage.removeChild(h); return {err:e.message}; }
+    var prose = 0;
+    /* every paragraph-ish node that is NOT inside a diagram or a worked line */
+    h.querySelectorAll('p, .hint, .swhy, .sact, .sm, .big').forEach(function(n){
+      if(n.closest('.xwrap') || n.closest('.wline') || n.closest('.stage')) return;
+      prose += (n.textContent||'').trim().length;
+    });
+    var out = {svg:h.querySelectorAll('svg').length, qm:h.querySelectorAll('.qm').length,
+               prose:prose, all:(h.textContent||'').trim().length};
+    vsStage.removeChild(h);
+    return out;
+  };
+  var vsStage = document.createElement('div');
+  vsStage.style.cssText = 'position:fixed; left:-11000px; top:0; width:560px';
+  document.body.appendChild(vsStage);
+  var vsSaved = MF.state.anvil;
+  MF.state.anvil = null;                 /* paintNameSide needs no bench here */
+
+  vsTools.forEach(function(tk){
+    vsOres.forEach(function(ore){
+      var g = vsRead(tk, ore);
+      chk('visual');
+      if(g.err){ errs.push('visual: ' + tk + ' threw on ' + MF.oreText(ore) + ': ' + g.err); return; }
+      if(!g.svg)
+        errs.push('visual: ' + tk + ' held to ' + MF.oreText(ore) + ' drew nothing — it is a wall of text');
+      chk('visual');
+      if(!g.qm)
+        errs.push('visual: ' + tk + ' held to ' + MF.oreText(ore) + ' left no ? — it either does the work or asks nothing');
+      chk('visual');
+      if(g.prose > 620)
+        errs.push('visual: ' + tk + ' held to ' + MF.oreText(ore) + ' is ' + g.prose +
+                  ' characters of prose outside its diagrams — the picture is not the panel');
+    });
+  });
+  /* CONTROL 1: a reading that draws nothing must be caught */
+  chk('visual');
+  var vsNoDraw = (function(){
+    var h = document.createElement('div');
+    h.appendChild(H('p','hint','A long enough sentence about the rock to look like a real reading, with no picture in it at all.'));
+    return {svg:h.querySelectorAll('svg').length, qm:h.querySelectorAll('.qm').length};
+  })();
+  if(vsNoDraw.svg || vsNoDraw.qm)
+    errs.push('CONTROL: the visual check cannot tell a drawing from a paragraph');
+  /* CONTROL 2: a reading with every number filled in must be caught */
+  chk('visual');
+  var vsFilled = document.createElement('div');
+  vsStage.appendChild(vsFilled);
+  MF.xDiagram(vsFilled, {top:'-18', bottom:'7', left:'-2', right:'9'});
+  if(vsFilled.querySelectorAll('.qm').length)
+    errs.push('CONTROL: an X with all four cells given still reports a redaction');
+  vsStage.removeChild(vsFilled);
+  /* CONTROL 3: and an X with an open cell must report one */
+  chk('visual');
+  var vsOpen = document.createElement('div');
+  vsStage.appendChild(vsOpen);
+  MF.xDiagram(vsOpen, {top:'-18', bottom:'7', left:'-2', right:null});
+  if(!vsOpen.querySelectorAll('.qm').length)
+    errs.push('CONTROL: an X with an open cell does not draw a ? — the redaction is invisible to the check');
+  vsStage.removeChild(vsOpen);
+
+  /* THE X ITSELF MUST BE TRUE. Its two sides multiply to the top and add to
+     the bottom, checked against the engine's own factorisation rather than
+     against the arithmetic that drew it. */
+  var vsX = [[1,-5,6],[6,7,-3],[2,10,12],[1,8,16],[3,-2,-8]];
+  vsX.forEach(function(t){
+    chk('visual');
+    var pr = MF.xPair({kind:'poly',a:t[0],b:t[1],c:t[2]});
+    if(!pr){ errs.push('visual: the X cannot be filled for ' + quadText(t[0],t[1],t[2]) + ', which does factor'); return; }
+    if(pr.p * pr.q !== pr.ac || pr.p + pr.q !== pr.b)
+      errs.push('visual: the X for ' + quadText(t[0],t[1],t[2]) + ' claims ' + pr.p + ' and ' + pr.q +
+                ' multiply to ' + pr.ac + ' and add to ' + pr.b + ', and they do not');
+  });
+  /* CONTROL: a pair nudged by one must break the X's own arithmetic */
+  chk('visual');
+  var vsP = MF.xPair({kind:'poly',a:6,b:7,c:-3});
+  if(vsP && (vsP.p + 1) * vsP.q === vsP.ac)
+    errs.push('CONTROL: the X arithmetic check cannot see a wrong pair');
+
+  document.body.removeChild(vsStage);
+  MF.state.anvil = vsSaved;
+
   /* 6. NOTHING ON SCREEN MAY HAVE A CEILING, A PERCENTAGE, OR A COMPARISON.
         This is a stated requirement, so it is checked mechanically rather
         than trusted (philosophy 2.5a). */
@@ -9383,7 +10006,7 @@ MF.playthrough = function(layer){
   var B = MF.state.anvil = MF.anvilInit(ore);
   log.push('ore: ' + MF.oreText(ore));
   var kind = MF.assayOf(ore);
-  B.step = 'break'; log.push('assayed: ' + kind);
+  B.step = 'break'; log.push('called it: ' + kind + ' (optional now — the bench opens on the hammer)');
 
   /* SWING UNTIL NOTHING ON THE FLOOR CAN BE BROKEN. Each swing names one
      factor from the engine and drives it through the real UI path, so what is

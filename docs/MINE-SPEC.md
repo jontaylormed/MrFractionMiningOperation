@@ -460,3 +460,85 @@ the only one that never changed.
 > lit window and the wall around it barely moved. The halos are painted **after** the
 > night in a `screen`-blended layer, which can only ever add light. The night still
 > falls on the whole operation; the lights now cut holes in it.
+
+---
+
+## 15. Amendment, 2026-08-26 — the tools draw, and the bench stops asking permission
+
+> **The user's words:** *"I'm not sure we still need the question beforehand… allow
+> students to put it directly in the yard… we can redirect students to the Stamp
+> Yard for number sense."*
+>
+> and on the instruments: *"the tools need to open a view screen with more visuals
+> and less reading… give supporting information and nearly bring them to a solution,
+> but at least one number needs to be a ?… visual overlays, as if they were diagrams…
+> teach the X method of factoring, which is still popular in school… line-by-line
+> steps with some numbers redacted to force the student to bring their own critical
+> thinking. But right now, when you [use] a tool, it is mostly text with no diagrams
+> and not enough number information."*
+
+### 15a. The assay stops gating. It is not deleted.
+
+§3 names ASSAY one of the three verbs and §11b said the recognition gate was
+untouched. **The gate is gone; the verb is not.** The bench opens on the hammer, and
+*"what kind of rock is this?"* is a control you may press at any time and never have
+to. A call, once made, still settles and persists with its reason — which is what the
+`explain` group asserts and why deleting it was the wrong move.
+
+`nogate` now sweeps the bench itself: on a freshly built, never-clicked bench the
+swing must be present, the choices must **not** be, and the offer must be. Control:
+the gate restored — and note that the gate was never the `step` field but a
+conditional around `paintBreak`, so a control that only set the field proved nothing.
+
+### 15b. A lump can go straight from the cart to the yard
+
+The bench used to be the only door out of the cart: putting a lump down meant picking
+it up first. `MF.stow` is now the one place that decides rack or heap, and both
+routes — tipping the breaking floor, and **→ yard** on a cart lump — call it.
+
+### 15c. The X method, and it is the spine
+
+For `ax² + bx + c`: **a·c on top of an X, b on the bottom, and the two numbers that
+multiply to the top and add to the bottom on the left and right.** With `a = 1` those
+two are the bracket constants. With `a ≠ 1` they split the middle term and the four
+terms go into the **X-box**, whose rows and columns give up the factors when the
+common metal is pulled off each.
+
+| tool | draws | leaves open |
+|---|---|---|
+| Drill | the X, and every pair that multiplies to a·c | one side of the X |
+| Shifter | the X, carried into the 2×2 box | the other side, and every edge of the box |
+| Auger | the full X-box: X → split middle → box → factors on the edges | the pair, a corner, both brackets |
+| Lantern | the split — one lump above, two pieces below | the dark side |
+| Steel | the terms and what divides them all | what goes inside the bracket |
+
+**At least one number is always a `?`.** That is the user's rule, and it is the rule
+the `schema` group already enforced from the other side: on a monic trinomial the two
+sides of the X *are* the two bracket constants, so filling both in would print the
+whole factorisation and fail the build. The two rules are one rule.
+
+### 15d. The mine draws; the Casting Shed reads
+
+The panels carried the whole schema — name, a paragraph of reasoning, the method
+narrated in sentences. It is one line now, with the full method a click away in the
+Casting Shed, where `paintSchemaIndex` and `toolLesson` already render every schema
+in full. **Nothing was deleted; it moved to the room built for reading.**
+
+### 15e. Plain numbers point at the Stamp Mill
+
+Numbers still break in the mine — the *72 and x² − 5x + 6 are one job* thesis needs
+them to — but a number on the bench now carries a link to the room built for factor
+trees and primes.
+
+### 15f. The mine is two bands
+
+The three **places** you move between — shaft, face, yard — sit tight across the top
+on a 12px gap. The **work** is a full-width band beneath them, and the two boxes in
+it are **side by side**: what is on the floor, and what is under the hammer. Stacked
+in a third of the page, the pieces you choose between and the bar you cut the head to
+could not be looked at together, and that is the one pairing the act depends on.
+
+### 15g. Still out
+
+Everything §8 excludes. And still: no second judge in the mine. The `?` goes to the
+pick bar and the rock answers.
