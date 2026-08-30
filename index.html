@@ -34,7 +34,13 @@
   --rock:#3A3129; --rock-2:#4A3F34; --rock-3:#2E2620;
   --vein:#1F5C4F; --vein-lite:#2E7D6B;
   --molten:#E2600F; --molten-2:#FFB347;
-  --ingot:#6E7B87; --ingot-lite:#AEBAC6;
+  /* --ingot IS THE DARK END OF EVERY METAL BAR, AND IT WAS TOO DARK.
+     #16202A on #6E7B87 is 3.80:1. The bars pass in the mine's yard, where the
+     label is bold and the threshold drops to 3, and fail in the forge's mold
+     slots, where it is not — the same colour reading as a pass or a fail
+     depending on font-weight. #8A97A3 puts it at 5.52:1 either way, and an
+     ingot is polished steel, so lighter is also more like the thing. */
+  --ingot:#8A97A3; --ingot-lite:#C4CED8;
   --twin:#5B3E8C; --loaded:#1E5A86; --pure:#8C6A1F;
   --tile-sq:#CFE0EF; --tile-sq-ink:#1E4C74;
   --tile-x:#F6DCB8;  --tile-x-ink:#8F4712;
@@ -5647,6 +5653,15 @@ MF.moldScene = function(key, pour){
   /* ---- THE MATHS, over the metal, with the operations written out ---- */
   if(pour && pour.maths){
     var m = pour.maths;
+    /* THE HALO THAT MAKES THIS READABLE IS IN THE STYLESHEET, on `.mdnum`:
+       a 4px #FFE9A8 stroke with paint-order:stroke. It has to be, because the
+       thing under these numbers is not one colour and never will be — the
+       casting is deliberately alive, molten to dull red to steel — and no flat
+       ink clears both ends of that range. #3A1B06 on the halo is 13.05:1 at
+       every frame of the pour.
+       DO NOT set stroke or stroke-width as attributes here: CSS wins over SVG
+       presentation attributes, so they would be inert and would read like a
+       second opinion that never takes effect. */
     var txt = function(x,y,s,cls,size){
       var n = S('text',{x:String(x),y:String(y),'text-anchor':'middle',
         'font-family':"'Black Han Sans','Arial Black',Impact,sans-serif",
@@ -9036,7 +9051,7 @@ MF.validate = function(){
      the threshold, and every run of this group reported clean over them.
      READ THE DENOMINATOR: a green sweep proves only what it mounted, and this
      one was choosing what to mount at random. */
-  Object.keys(MF.SCREENS).concat(['mine-layer1','mine-number','mine-blow','mine-done','forge-poured','toolsheet']).forEach(function(scr){
+  Object.keys(MF.SCREENS).concat(['mine-layer1','mine-number','mine-blow','mine-done','forge-armed','forge-poured','toolsheet']).forEach(function(scr){
     stage.innerHTML='';
     var probe = document.createElement('div');
     stage.appendChild(probe);
@@ -9135,6 +9150,35 @@ MF.validate = function(){
         var cHave = MF.yardList();
         if(cHave.length) MF.state.forge.slots = [{yardIdx:cHave[0].idx, key:cHave[0].key, ingot:cHave[0].ingot}];
         MF.SCREENS.forge(probe);
+      } else if(scr==='forge-armed'){
+        /* A MOLD WITH EVERY SLOT FILLED AND NOTHING POURED YET.
+           The `forge` pass fills ONE slot and `forge-poured` pours - so the
+           armed mold, the moment before the student presses pour, was never
+           mounted. That is where the metal chips are on screen in numbers, and
+           `.ingot` shipped at 3.80:1 in them: #16202A on the #6E7B87 end of the
+           bar. The same chips PASS in the mine's yard, where the label is bold
+           and the threshold drops to 3 - one colour reading as a pass or a fail
+           depending on font-weight, which is not a property anyone was
+           tracking. Every tool, because each fills a different number of slots
+           with different metals. */
+        MF.state.yard = {};
+        [2,2,2,3,3,5,5].forEach(function(k){ MF.addToYard({m:0,k:k}); });
+        [[1,4],[1,4],[1,1],[1,2],[1,-5],[1,5],[3,-1],[2,3]].forEach(function(g){ MF.addToYard({m:g[0],k:g[1]}); });
+        var caArmed = 0;
+        Object.keys(MF.TOOLS).forEach(function(tk){
+          var spec = MF.TOOLS[tk];
+          MF.state.tools = {};
+          MF.state.forge = {picked:tk, slots:[], result:null};
+          var caPick = MF.castableFrom(spec.cast, spec.slots, MF.yardList());
+          if(!caPick || caPick.length !== spec.slots) return;
+          MF.state.forge.slots = caPick.map(function(e){ return {yardIdx:e.idx, key:e.key, ingot:e.ingot}; });
+          var caBox = document.createElement('div');
+          probe.appendChild(caBox);
+          MF._forge = null; MF.SCREENS.forge(caBox);
+          if(caBox.querySelector('.ingot')) caArmed++;
+        });
+        if(!caArmed)
+          errs.push('contrast: forge-armed filled no mold, so the metal chips in the slots were not swept');
       } else if(scr==='forge-poured'){
         /* AND ONCE MORE, POURED. The casting carries the tool's tutorial - the
            method, the reasoning and a practice - and none of it existed on the
@@ -9234,6 +9278,70 @@ MF.validate = function(){
     if(r < need)
       errs.push('contrast: the placeholder "'+el.placeholder+'" is '+r+':1 on its own box, needs '+need);
   });
+  /* TEXT ON A SURFACE THAT CHANGES COLOUR MUST CARRY ITS OWN BACKGROUND.
+
+     The maths written over a casting cannot be checked against "the backdrop",
+     because the backdrop is a three-second animation from molten through deep
+     red to steel. A flat ink that clears the dark end cannot clear the bright
+     end - the arithmetic is in the comment on MF.moldArt's `txt`. What can be
+     asserted is the thing that makes it readable at every frame: a HALO, drawn
+     behind the letterforms, that the fill contrasts against.
+
+     IT READS COMPUTED STYLE, NOT ATTRIBUTES. The halo lives in the stylesheet
+     on `.mdnum`, and CSS wins over SVG presentation attributes - so a check
+     that read the attributes would be reading whatever the last author wrote
+     there, pass, and say nothing about what renders. That is a check grading
+     its own input, and this one was written that way first.
+
+     READ THE DENOMINATOR: this asserts the halo EXISTS in the rendered style,
+     contrasts with the fill, and is thick enough to hold the letterform off
+     the casting. It does NOT measure a pixel against the casting - a stroke
+     can still be visually thin on a busy background, and no check here can see
+     that. It replaces a measurement that cannot be made with a structural rule
+     that can. */
+  var cHalo = document.createElement('div');
+  cHalo.style.cssText = 'position:fixed; left:-13000px; top:0; width:900px';
+  document.body.appendChild(cHalo);
+  MF.state.yard = {};
+  [2,2,2,3,3,5,5].forEach(function(k){ MF.addToYard({m:0,k:k}); });
+  [[1,4],[1,4],[1,1],[1,2],[1,-5],[1,5],[3,-1],[2,3]].forEach(function(g){ MF.addToYard({m:g[0],k:g[1]}); });
+  Object.keys(MF.TOOLS).forEach(function(tk){
+    var spec = MF.TOOLS[tk];
+    MF.state.tools = {};
+    MF.state.forge = {picked:tk, slots:[], result:null};
+    var pick = MF.castableFrom(spec.cast, spec.slots, MF.yardList());
+    if(!pick || pick.length !== spec.slots) return;
+    MF.state.forge.slots = pick.map(function(e){ return {yardIdx:e.idx, key:e.key, ingot:e.ingot}; });
+    cHalo.innerHTML = '';
+    MF._forge = null;
+    try { MF.SCREENS.forge(cHalo); MF.forgePour(MF.state.forge); }
+    catch(e){ errs.push('contrast: the '+tk+' mold threw while pouring: '+e.message); return; }
+    var nums = cHalo.querySelectorAll('text.mdnum');
+    chk('contrast');
+    if(!nums.length){ errs.push('contrast: the '+tk+' casting wrote no maths over itself, so the halo was not checked'); return; }
+    nums.forEach(function(t){
+      chk('contrast');
+      var ts = getComputedStyle(t);
+      var fill = ts.fill, halo = ts.stroke;
+      var sw = parseFloat(ts.strokeWidth || 0);
+      var fs = parseFloat(ts.fontSize);
+      var fr = cRgb(fill), hr = cRgb(halo);
+      if(!hr || !sw || ts.paintOrder.indexOf('stroke') !== 0){
+        errs.push('contrast: the casting\'s "'+(t.textContent||'').trim().slice(0,14)+
+          '" is written straight onto metal that goes from molten to steel, with no halo drawn behind it');
+        return;
+      }
+      if(sw < fs * 0.15)
+        errs.push('contrast: the halo on "'+(t.textContent||'').trim().slice(0,14)+'" is '+sw+
+          ' on '+fs+'px text — too thin to hold the letterform off the casting');
+      var hrRatio = cRatio(fr, hr);
+      if(hrRatio < 4.5)
+        errs.push('contrast: the casting\'s "'+(t.textContent||'').trim().slice(0,14)+
+          '" is '+fill+' on a '+halo+' halo — '+hrRatio+':1, needs 4.5');
+    });
+  });
+  document.body.removeChild(cHalo);
+
   /* AND THE ONE SVG LABEL: its fill against the fill of the shape under it */
   cPhProbe.querySelectorAll('svg text').forEach(function(t){
     if(!(t.textContent||'').trim()) return;

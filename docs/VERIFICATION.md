@@ -1262,3 +1262,68 @@ reading are all human questions and none of them has been asked.
 - **A sweep's blind spots are structural, not accidental.** Ask what *kind* of text
   the instrument cannot reach — pseudo-elements, another paint property, another
   state — rather than only where it has looked.
+
+## 68. Sweeping the forge and the workshops — one defect, and one I invented
+
+**584 renders**: 146 states at each of 380, 560, 994 and 1250px. The Casting Shed
+intro and its three workshops and the Stamp Mill — fresh, every slider at both ends
+and the middle, every number box at four values, **every quiz option clicked one at a
+time**, every non-navigation button pressed, and typed answers submitted right, wrong
+and empty. The forge — cold with an empty yard and a stocked one; each of seven molds
+empty, part-filled, **armed**, **poured sound**, **poured scrap**, its tutorial's
+practice answered right and wrong, every tutorial quiz option, and the tool already on
+the belt. Plus the mine again, because a variable changed under its yard rack.
+
+### The real one: `--ingot`, and a colour that passed or failed by font-weight
+
+Metal bars read `#16202A` on the `#6E7B87` end of their gradient: **3.80:1**. They
+**pass in the mine's yard**, where the label is bold and 19px, so the threshold drops
+to 3 — and **fail in the forge's mold slots**, where it is not bold. One colour, two
+verdicts, decided by a property nobody was tracking.
+
+The dark end is now `#8A97A3` (5.52:1 either way), which is also more like polished
+steel. And the state where those chips are on screen in numbers — **a mold with every
+slot filled and nothing poured yet** — had never been mounted: the sweep's `forge`
+pass fills *one* slot and `forge-poured` pours. `forge-armed` mounts it, for all seven
+tools, and catches the old colour by name.
+
+### The one I invented, which is the more useful half
+
+I rasterised the poured mold, stripped its `<text>`, sampled the pixels under each
+label at the moment it was actually visible, and reported the casting's maths at
+**2.58–3.18:1** over the hot stretches. Then I "fixed" it by adding a halo.
+
+**There was already a halo.** `.mdnum` carries `paint-order:stroke` with a 4px
+`#FFE9A8` stroke, from the stylesheet. `#3A1B06` on that gold is **13.05:1**, at every
+frame. My probe stripped the text — so it measured the fill against the *casting*,
+which is not what the letterforms sit on. The defect was in the instrument.
+
+Two things nearly shipped because of it:
+
+- **An inert edit.** I set `stroke` and `stroke-width` as SVG presentation attributes.
+  **CSS wins over presentation attributes**, so the computed stroke stayed the
+  stylesheet's gold and my values did nothing. A change that renders identically to no
+  change is worse than none: it reads like a decision.
+- **A check that graded its own input.** The halo assertion read `getAttribute`
+  — the attributes I had just written. It would pass forever and say nothing about
+  what a student sees. It reads `getComputedStyle` now, and its five controls
+  (no stroke, zero width, stroke the same colour as the fill, a hairline width, and
+  `paint-order` putting the halo *over* the glyph) each fail with their own message.
+
+**And my first four controls were worthless too** — they patched `MF.moldArt`, which
+does not exist. All four "passed", which I briefly read as the checks being broken.
+A control that does not introduce the fault is indistinguishable from a check that
+cannot see it, and only one of those is a problem.
+
+**The rules.**
+
+- **Before believing an instrument that disagrees with the build, check the
+  instrument.** Mine removed the very thing it was measuring.
+- **A control must be seen to bite.** If a control passes, the first hypothesis is
+  that it did nothing — verify the fault is actually present before concluding the
+  check is blind.
+- **Never assert against the value you just wrote.** Read what the browser computed.
+- **CSS beats SVG presentation attributes.** An attribute set alongside a stylesheet
+  rule is decoration.
+- **Text that carries its own halo cannot be measured against its backdrop** — the
+  halo is the backdrop. Assert the halo instead, and say that is what you did.
