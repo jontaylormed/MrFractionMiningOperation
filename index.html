@@ -99,6 +99,16 @@ input[type=text],input[type=number]{font-family:var(--body); font-size:17px; pad
   border:2px solid var(--tan); border-radius:10px; background:#fff; color:var(--ink); max-width:100%}
 input:focus{outline:3px solid var(--lamp); outline-offset:1px; border-color:var(--ore)}
 input[type=range]{width:100%; accent-color:var(--ore); height:44px}
+/* THE PLACEHOLDER IS COPY, AND IT WAS THE BROWSER'S. The hammer bar's ghost
+   `1` and `0` are the line that tells a student what an empty box MEANS - the
+   thing that stops a cleared box swinging 6 at a lump they meant to hit with
+   (x + 6), per §47 - and it was being painted in Chrome's UA default #757575.
+   That is 4.61:1: a pass, and a pass this file did not choose. Firefox paints
+   its placeholder at 54% alpha, which on the same white is ~3.5:1, so the one
+   number a zero-dependency single file cannot control was deciding whether
+   that copy was legible. Pinned at 6.53:1, with opacity:1 because Firefox
+   applies its own on top. */
+input::placeholder, textarea::placeholder{color:#6B5B48; opacity:1}
 .row{display:flex; gap:12px; flex-wrap:wrap; align-items:center}
 .grow{flex:1 1 auto}
 .eq{font-family:var(--display); font-size:clamp(20px,3vw,30px); line-height:1.5; margin:8px 0}
@@ -531,7 +541,19 @@ input[type=range]{width:100%; accent-color:var(--ore); height:44px}
 /* .hint is --ink-soft, which is a dark-on-cream colour. Inside the wall and
    the crucible it lands on near-black and disappears, so it is re-set here.
    Measured after the fix: #D9C39C on #45392F = 6.9:1. */
-.wall .hint, .crucible .hint{color:#D9C39C}
+/* THE WALL IS TINTED PER LAYER, AND LAYER 1 IS THE LIGHTEST ROCK ON THE SITE.
+   `MF.LAYER_LOOK` runs #6E5A40 at the top of the shaft down to #2E2A28 at the
+   bottom, so any light ink on this wall has to clear GRAVEL, not the layer the
+   sweep happens to mount. #D9C39C reads 3.82:1 on layer 1 and passes on the
+   other four.
+
+   THIS IS THE SECOND TIME. `.depthline` was raised to #F2E6D0 for exactly this
+   failure, on exactly this wall, and the hint sitting beside it was left at
+   the old value. Fixing an instance twice is the signal that the class is the
+   hazard: it is not this hint, it is light ink on a wall whose brightness the
+   student chooses. The sweep now mounts layer 1 as `mine-layer1`. */
+.wall .hint{color:#EDDCBC}
+.crucible .hint{color:#D9C39C}
 .wall .facegrid{display:grid; grid-template-columns:repeat(auto-fill,minmax(74px,1fr)); gap:7px; margin:12px 0}
 .rockbit{aspect-ratio:1; border-radius:8px; background:linear-gradient(150deg,#6B5A47,#4A3F34); border:1px solid #2E2620}
 .rockbit.glint{background:linear-gradient(150deg,#8A6E45,#5A4A38); box-shadow:inset 0 0 0 2px rgba(232,163,61,.55)}
@@ -9014,7 +9036,7 @@ MF.validate = function(){
      the threshold, and every run of this group reported clean over them.
      READ THE DENOMINATOR: a green sweep proves only what it mounted, and this
      one was choosing what to mount at random. */
-  Object.keys(MF.SCREENS).concat(['mine-number','mine-blow','mine-done','forge-poured','toolsheet']).forEach(function(scr){
+  Object.keys(MF.SCREENS).concat(['mine-layer1','mine-number','mine-blow','mine-done','forge-poured','toolsheet']).forEach(function(scr){
     stage.innerHTML='';
     var probe = document.createElement('div');
     stage.appendChild(probe);
@@ -9026,6 +9048,25 @@ MF.validate = function(){
         var lump = MF.digOre(4, cRng);
         if(lump){ MF.state.cart=[lump]; MF.state.selected=lump; MF.state.anvil=MF.anvilInit(lump); MF.state.anvil.step='break'; }
         MF.paintMine();
+      } else if(scr==='mine-layer1'){
+        /* THE LIGHTEST WALL IN THE MINE. `MF.LAYER_LOOK` tints the rock face
+           per layer, from #6E5A40 at the top of the shaft to #2E2A28 at the
+           bottom, and every mount above this one is at layer 4 — a dark one.
+           Every piece of light ink on that wall therefore had four chances to
+           pass and none to fail. Two elements have now shipped readable on
+           layers 2–5 and unreadable on Gravel: the depth line, and the hint
+           beside it.
+           Layer 1 is the worst case rather than an arbitrary extra, because it
+           is the lightest of the five and the wall's ink is light. */
+        MF._mine = null;
+        MF.SCREENS.mine(probe);
+        MF.state.layer=1; MF.state.face=[]; MF.state.faceLayer=null;
+        var c1 = MF.digOre(1, cRng);
+        if(c1){ MF.state.cart=[c1]; MF.state.selected=c1;
+                MF.state.anvil=MF.anvilInit(c1); MF.state.anvil.step='break'; }
+        MF.paintMine();
+        if(!probe.querySelector('.wall'))
+          errs.push('contrast: mine-layer1 mounted no rock wall, so the lightest tint was not swept');
       } else if(scr==='mine-number'){
         /* THE SAME SCREEN WITH A NUMBER ON THE BENCH. This is the only state
            in which the Stamp Mill signpost exists at all. */
@@ -9137,6 +9178,87 @@ MF.validate = function(){
       if(m.ratio < m.need) contrastFails.push(scr+': "'+m.text+'" ('+m.cls+') at '+m.ratio+':1, needs '+m.need);
     });
   });
+  /* TWO KINDS OF TEXT THE SWEEP ABOVE STRUCTURALLY CANNOT SEE.
+
+     `_measureContrast` walks elements with a text node in them and reads
+     `color`. That misses:
+
+     - A PLACEHOLDER, which is a pseudo-element and has no text node of its
+       own. It is also the only text on this site whose colour the file was
+       not choosing: unset, Chrome paints #757575 (4.61:1) and Firefox 54%
+       alpha (~3.5:1), so the same build was legible or not depending on what
+       the student happened to open it in.
+     - SVG <text>, which paints with `fill` and only INHERITS `color`. §59 is
+       the whole story: ten labels once measured 1.06:1 because a sweep read a
+       property that draws none of their pixels. The one SVG label left in the
+       mine is the expression cut into the rock on the anvil, and what is
+       behind it is a <polygon> fill, not a CSS background - so both halves of
+       that reading have to come from SVG attributes.
+
+     Both are measured against the real backdrop rather than skipped. */
+  var cPh = document.createElement('div');
+  cPh.style.cssText = 'position:fixed; left:-13000px; top:0; width:' +
+    document.documentElement.clientWidth + 'px';
+  document.body.appendChild(cPh);
+  function cRgb(v){
+    var m=(v||'').match(/rgba?\((\d+),\s*(\d+),\s*(\d+)(?:,\s*([\d.]+))?/);
+    if(m) return [+m[1],+m[2],+m[3], m[4]!==undefined?+m[4]:1];
+    m=(v||'').match(/^#([0-9a-fA-F]{6})$/);
+    if(m) return [parseInt(m[1].slice(0,2),16),parseInt(m[1].slice(2,4),16),parseInt(m[1].slice(4,6),16),1];
+    return null;
+  }
+  function cLum(c){ var a=c.slice(0,3).map(function(x){ x/=255;
+    return x<=0.03928?x/12.92:Math.pow((x+0.055)/1.055,2.4); });
+    return 0.2126*a[0]+0.7152*a[1]+0.0722*a[2]; }
+  function cFlat(fg,bg){ var a=fg[3];
+    return [0,1,2].map(function(i){ return fg[i]*a + bg[i]*(1-a); }).concat([1]); }
+  function cRatio(f,b){ var L1=cLum(f),L2=cLum(b);
+    return Math.round(((Math.max(L1,L2)+0.05)/(Math.min(L1,L2)+0.05))*100)/100; }
+  var cPhProbe = document.createElement('div');
+  cPh.appendChild(cPhProbe);
+  MF._mine = null; MF.SCREENS.mine(cPhProbe);
+  MF.state.layer=4; MF.state.face=[]; MF.state.faceLayer=null;
+  var cPhOre = {kind:'poly', a:6, b:7, c:-3, layer:4, id:'ctr-ph'};
+  MF.state.cart=[cPhOre]; MF.state.selected=cPhOre;
+  MF.state.anvil=MF.anvilInit(cPhOre); MF.state.anvil.step='break';
+  MF.paintMine();
+  cPhProbe.querySelectorAll('input, textarea').forEach(function(el){
+    if(!el.placeholder) return;
+    chk('contrast');
+    var cs=getComputedStyle(el), ps=getComputedStyle(el,'::placeholder');
+    var bg=cRgb(cs.backgroundColor) || [255,255,255,1];
+    var pc=cRgb(ps.color);
+    if(!pc){ errs.push('contrast: the placeholder "'+el.placeholder+'" reports no colour at all'); return; }
+    var px=parseFloat(cs.fontSize), need=(px>=24)?3:4.5;
+    var r=cRatio(cFlat(pc,bg), bg);
+    if(r < need)
+      errs.push('contrast: the placeholder "'+el.placeholder+'" is '+r+':1 on its own box, needs '+need);
+  });
+  /* AND THE ONE SVG LABEL: its fill against the fill of the shape under it */
+  cPhProbe.querySelectorAll('svg text').forEach(function(t){
+    if(!(t.textContent||'').trim()) return;
+    chk('contrast');
+    var fill = t.getAttribute('fill') || getComputedStyle(t).fill;
+    var box = t.getBoundingClientRect(), svg = t.ownerSVGElement, under = null;
+    if(svg && box.width){
+      var cx=box.left+box.width/2, cy=box.top+box.height/2;
+      svg.querySelectorAll('rect,polygon,path,circle,ellipse').forEach(function(s){
+        var sb=s.getBoundingClientRect();
+        if(cx<sb.left||cx>sb.right||cy<sb.top||cy>sb.bottom) return;
+        var f=s.getAttribute('fill');
+        if(f && f !== 'none' && f.indexOf('url(')<0) under = f;   /* last painted wins */
+      });
+    }
+    var fr=cRgb(fill), ur=cRgb(under);
+    if(!fr || !ur) return;             /* a gradient fill is not a flat colour */
+    var px=parseFloat(getComputedStyle(t).fontSize), need=(px>=24)?3:4.5;
+    var r=cRatio(fr, ur);
+    if(r < need)
+      errs.push('contrast: the SVG label "'+(t.textContent||'').trim().slice(0,20)+
+        '" is '+fill+' on '+under+' — '+r+':1, needs '+need);
+  });
+  document.body.removeChild(cPh);
+
   contrastFails.slice(0,8).forEach(function(f){ errs.push('contrast: '+f); });
   if(contrastFails.length > 8) errs.push('contrast: and '+(contrastFails.length-8)+' more');
 

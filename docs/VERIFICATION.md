@@ -1201,3 +1201,64 @@ two failures above survived. Proven by stubbing `MF.simplestFactor` to return nu
 - **A pass that can mount nothing must say so.** Three sweeps in a row here have
   reported clean over surfaces they never built (§62, §64, and this one). The guard
   costs one line.
+
+## 67. Sweeping the whole mine — what it found, and what it still cannot see
+
+Asked to sweep the mine for low-contrast text, **580 renders** were measured: 145
+distinct states at each of 380, 560, 994 and 1250px. Every layer idle and with a rock
+under inspection; the cart empty and full; the yard in its four states; eight shapes
+of ore on the bench (monic, loaded, shared metal, twin seam, linear, native,
+composite number, prime); each with the assay offered, the choices open, a *wrong*
+call clicked, and a settled call; **all seven instruments held to all eight**; a
+glance; every intermediate floor while a lump is broken step by step; the finished
+bench; and both burst words.
+
+**One failure, and it was a repeat.** `.wall .hint` — *"Where you are along the seam"*
+— at **3.82:1**, on **layer 1 only**.
+
+`MF.LAYER_LOOK` tints the rock wall per layer, `#6E5A40` at the top of the shaft down
+to `#2E2A28` at the bottom. Light ink on that wall has to clear **Gravel**, not the
+layer the sweep happens to mount — and every mount in the build was at layer 4, a
+dark one. So the wall's ink had four chances to pass and none to fail.
+
+> **`.wall .depthline` was raised to `#F2E6D0` for exactly this failure, on exactly
+> this wall, and the hint sitting beside it was left at the old value.** Fixing an
+> instance twice is the signal that the class is the hazard. `mine-layer1` mounts the
+> lightest tint — the worst case rather than an arbitrary extra, because the wall's
+> ink is light.
+
+### And two kinds of text the sweep structurally could not see
+
+`_measureContrast` walks elements that contain a text node and reads `color`.
+
+- **A placeholder is a pseudo-element** with no text node of its own. The hammer
+  bar's ghost `1` and `0` — the copy that tells a student what an empty box *means*,
+  the §47 line — had **no colour set in this file at all**. Chrome paints `#757575`
+  (4.61:1); Firefox paints 54% alpha (~3.5:1). The one build, one file, zero
+  dependencies, and whether that copy was legible depended on what the student
+  opened it in. Pinned at 6.53:1 with `opacity:1`, because Firefox applies its own.
+- **SVG `<text>` paints with `fill` and only inherits `color`** (§59). What is behind
+  it is a `<polygon>`'s `fill`, not a CSS background, so *both* halves of the reading
+  have to come from SVG attributes. The mine has one such label — the expression cut
+  into the rock on the anvil — at 6.02:1.
+
+Both are measured in `contrast` now, against their real backdrops. Controls: the
+placeholder handed back to a translucent default (1.88:1) and the rock label dimmed
+to `#7A6A55` (1.26:1). Both named, both by number.
+
+**READ THE DENOMINATOR.** Even at 580 renders this measured **text against its
+backdrop, at rest**. It did not look at `:hover` or `:focus` colours, at disabled
+controls, at the forge or the workshops, at anything mid-transition other than the
+two burst frames forced visible, or at whether text is legible for any reason other
+than contrast ratio — size, weight, tracking, and whether the sentence is worth
+reading are all human questions and none of them has been asked.
+
+**The rules.**
+
+- **When a fix is an instance and the neighbour fails the same way, you fixed the
+  wrong thing.** Twice on one wall is the tell.
+- **A value the file does not set is a value the browser sets.** "It passes" is not
+  the same as "we chose it", and the two differ across browsers.
+- **A sweep's blind spots are structural, not accidental.** Ask what *kind* of text
+  the instrument cannot reach — pseudo-elements, another paint property, another
+  state — rather than only where it has looked.
