@@ -1,7 +1,7 @@
 # What the site is, right now
 ### The single place any brief, agent or session reads to find out what exists
 
-**Last verified 2026-08-26** by `MF.validate()` run in a browser against this tree over a **local HTTP server**, by driving the lantern → hammer path by hand through the real DOM, and by measuring the new panels' geometry at 1280 / 760 / 380px. **`file://` could not be used:** the preview pane renders it as a static snapshot and `MF` never runs, so nothing on the page can be exercised at all. The last **screenshot** pass was 2026-08-22 — every pass since has measured geometry from the DOM, and `VERIFICATION.md` §56 is what happened the one time this build trusted a screenshot instead.
+**Last verified 2026-08-29** by `MF.validate()` run in a browser against this tree over a **local HTTP server**, at **380×780, 994×700 and 1250×900**, plus `MF.playthrough(4)` and `(5)`, and by driving the assay, the cart→yard route and six cart sizes by hand through the real DOM. **`file://` could not be used:** the preview pane renders it as a static snapshot and `MF` never runs, so nothing on the page can be exercised at all.
 
 ---
 
@@ -22,7 +22,7 @@
 | **Screens** | **eight** — surface, the Stamp Mill, the Casting Shed and its three workshops, the mine, the forge |
 | **Layers** | **five**, all reachable from the first screen, none gated on anything |
 | **Instruments** | **seven**, all made at the forge, none granted |
-| **Validation** | `MF.validate()` → **9,702 checks / 33 groups / 0 errors**, two controls that must fail, and do — **run it at the width you ship from**, because `layout`, `reach` and `hollow` measure the live viewport and report it (`VERIFICATION.md` §61, §63). Verified at **380×780, 994×700 and 1250×900** |
+| **Validation** | `MF.validate()` → **9,721 checks / 34 groups / 0 errors**, two controls that must fail, and do — **run it at the width you ship from**, because `layout`, `reach`, `hollow` and `cartdraw` measure the live viewport and report it (`VERIFICATION.md` §61, §63, §65). Verified at **380×780, 994×700 and 1250×900** |
 
 > **A check is only as wide as the space it sweeps.** The `truthy` group reported 0 errors across 642 checks while **1,970 Decimal Dial states printed a falsehood**, because it tested each lump's original integer coefficients and never nudged `c` — the one thing the dial exists to do. It now sweeps every slider position the control can reach (3,287 checks). Ask of any green result: *what did it not look at?*
 | **Runtime** | Zero dependencies, no build step, no network requests, no storage, runs from `file://` |
@@ -42,9 +42,9 @@ What will not break further is **native metal** — a prime, or a polynomial no 
 
 ## The loop
 
-**ASSAY → BREAK, and BREAK again.**
+**BREAK, and BREAK again — with the assay offered alongside, never in front.**
 
-- **Assay** is a gate: `display:none` on stage 2 until the seam is called correctly. Verified on a freshly built, never-clicked, detached task.
+- **Assay is not a gate and has not been since `MINE-SPEC.md` §15a.** This file said `display:none` on stage 2 until the seam is called correctly, which stopped being true and stayed written down — the exact drift the warning at the top of this file describes. A freshly built, never-clicked bench has **live swing controls**, and the `nogate` group asserts it with a control that restores the gate. The offer sits in the bench's top-right corner; taking it opens the five choices, and a call once made settles into the body with its reason and stays.
 - **Break** is one swing at a time. You name **one** thing that is in the rock; the seam runs and the lump comes apart into that factor and the remainder, or the hammer glances off and the rock is described. **Both pieces land on the floor, and anything still carrying a seam goes back under the hammer.**
 
 **The lump is drawn on an anvil, and the anvil is drawn flat.** A London-pattern anvil on a stump — horn, step, face, hardy hole, waisted body — with the lump on the face where the hammer lands and its expression cut into the stone. **Four flat planes and a dark outline**, the same way the valley, the yard, the stamp mill and the gallery wall six inches above it are drawn.
@@ -184,7 +184,9 @@ The face is **2280px of rock**, several screens wide, scanned by dragging, scrol
 
 > **`nogate` (20) sweeps the bench itself now**: on a freshly built, never-clicked bench the swing must be present, the choices must **not** be, and the offer must be. Control: the gate restored — and the gate was never the `step` field but a conditional round `paintBreak`, so the first version of that control proved nothing (`VERIFICATION.md` §60).
 
-**A lump can go straight from the cart to the yard.** The bench was the only door out of the cart, so putting a lump down meant picking it up first. `MF.stow` is the single place that decides **rack or heap**, and both routes call it — tipping the breaking floor, and **→ yard** on a cart lump. Checked both ways, with a control that drops the ore. The button is a **small orange tab centred under the lump chip** — 74×30, not the full-width slab it was, because the lump above it is the thing you are meant to reach for first.
+**A lump can go straight from the cart to the yard.** The bench was the only door out of the cart, so putting a lump down meant picking it up first. `MF.stow` is the single place that decides **rack or heap**, and both routes call it — tipping the breaking floor, and **→ yard** on a cart lump. Checked both ways, with a control that drops the ore. The button is an **orange tab centred under the lump chip** — **100×42**, not the full-width slab it was, because the lump above it is the thing you are meant to reach for first.
+
+> **And the cart it sits in keeps its shape as it empties.** `.cartrail` — 6px of track under the wheels — is a flex item of a column with a 430px cap and had no `flex-shrink:0`, so it measured 2.02, 2.44, 2.82, 3.52, 4.69, 6.00px as lumps left: a bar at the bottom of the box appearing and disappearing on every click. The **list** gives up height in that column; the cart drawn around it is scenery and scenery does not breathe. `cartdraw` renders six cart sizes and compares the chrome against all of them (`VERIFICATION.md` §65).
 
 **A plain number points at the Stamp Mill.** Numbers still break here — the *72 and x² − 5x + 6 are one job* thesis needs them to — but the room built for factor trees is one click from the bench that wants it.
 
@@ -204,7 +206,7 @@ The face is **2280px of rock**, several screens wide, scanned by dragging, scrol
 
 **And the row never moves or changes size.** Three things were making it: the pair was `align-items:start`; the right box lost 166px when the hammer bar went at the end of a lump; and the lead line above the floor is shorter once there is more than one piece, which jumped everything 21px. Stretched, with a 524px floor under the pair and a reserved height on the lead line: measured **top 1042, height 524 — fresh, after a glance, and after the last blow, identical.**
 
-**The head of the bench: the number, and a corner.** The lump is the headline at **58px** — every other `.eq` on the site is ~30, and this is the one thing every control on the screen refers to. Everything that is *not* the work is stacked into a single column **hard against the top-right corner**, 13px in from the bench's edge: the **Stamp Mill** button with its line underneath it, and below that **"What kind of rock is this?"** with its line underneath *that*.
+**The head of the bench: the number, and a corner.** The lump is the headline at **76px** — every other `.eq` on the site is ~30. It is the **starting number of the breaking floor** and everything under it is a consequence of it, so it is not merely large; it is the first thing on the screen. Everything that is *not* the work is stacked into a single column **hard against the top-right corner**, 13px in from the bench's edge: the **Stamp Mill** button with its line underneath it, and below that **"What kind of rock is this?"** with its line underneath *that*.
 
 > The assay used to run the full width of the bench directly under the ore. An optional question laid across the work, between the student and the hammer, is the shape of the gate §15 took out — even with the gate gone. In the corner it reads as what it is. Clicking it still opens the five choices in the body, where they have room; a call, once made, still settles into the body with its reason and stays there.
 

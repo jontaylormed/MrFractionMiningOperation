@@ -543,10 +543,17 @@ input[type=range]{width:100%; accent-color:var(--ore); height:44px}
   border:3px solid #2A3138; border-radius:4px 4px 14px 14px; padding:12px 12px 16px; margin-top:6px}
 .cartbody:before{content:""; position:absolute; left:0; right:0; top:-3px; height:8px;
   background:linear-gradient(180deg,#8A9AA6,#66727E); border-radius:3px 3px 0 0}
-.cartwheels{display:flex; justify-content:space-around; margin:-6px 10px 0}
+/* THE WHEELS AND THE TRACK DO NOT FLEX. The cart panel is a flex column with a
+   430px cap, and a flex item with no `flex-shrink:0` is a candidate for being
+   squeezed when the column is over budget. `.cartrail` is 6px of track under
+   the wheels and it was measuring 2, 3, 3, 4, 5, 6px as lumps left the cart -
+   a bar at the bottom of the box that appeared and disappeared on every click.
+   The LIST is the thing that gives up height here; the cart it is drawn in
+   keeps its shape. */
+.cartwheels{display:flex; justify-content:space-around; margin:-6px 10px 0; flex:0 0 auto}
 .cartwheels i{display:block; width:22px; height:22px; border-radius:50%;
   background:radial-gradient(circle at 40% 38%, #6E7A86 0 26%, #2E353C 28%); border:2px solid #1E242A}
-.cartrail{height:6px; margin:2px 0 0; border-radius:3px;
+.cartrail{height:6px; margin:2px 0 0; border-radius:3px; flex:0 0 auto;
   background:repeating-linear-gradient(90deg,#5A4B3C 0 12px, #3A3129 12px 18px)}
 .lump .txt{font-family:var(--display); font-size:17px}
 .lump .lay{font-size:11px; color:var(--ink-soft); margin-left:auto; letter-spacing:.06em}
@@ -1155,8 +1162,8 @@ table.rosetta td.rx{font-family:var(--display); font-size:16px; color:var(--ink)
    cart - so cream would fail the build at 11px. Near-black on --ore is
    4.9:1. */
 .lumpcell{display:flex; flex-direction:column; gap:5px; align-items:stretch}
-.tuyard{align-self:center; font-size:11px; letter-spacing:.05em;
-  padding:5px 13px; min-height:30px; background:var(--ore); color:#1A120B;
+.tuyard{align-self:center; font-size:14px; letter-spacing:.05em;
+  padding:9px 20px; min-height:40px; background:var(--ore); color:#1A120B;
   border:2px solid var(--lamp); border-radius:999px; cursor:pointer;
   font-family:var(--display)}
 .tuyard:hover{background:var(--lamp); border-color:#FFE9C4; color:#1A120B}
@@ -1179,12 +1186,15 @@ table.rosetta td.rx{font-family:var(--display); font-size:16px; color:var(--ink)
    top right corner with its line underneath it */
 .benchhead{display:flex; align-items:flex-start; justify-content:space-between;
   gap:14px; flex-wrap:wrap; margin-bottom:4px}
-/* THE ORE IS THE HEADLINE, AND IT IS THE BIGGEST THING ON THE BENCH. It was
-   the same size as any other .eq on the page, and it is the one thing every
-   control on this screen refers to. It now clears the corner column's whole
-   stack, so the top of this box is the number and nothing else. */
-.benchore{flex:1 1 240px; min-width:0; margin:0 0 2px;
-  font-size:clamp(34px,6.2vw,58px); line-height:1.08; letter-spacing:-.005em}
+/* THE ORE IS THE HEADLINE, AND IT IS THE BIGGEST THING ON THE BENCH BY A LONG
+   WAY. It was the same size as any other .eq on the page (~30px), and it is
+   the STARTING NUMBER of the whole breaking floor - everything under it is a
+   consequence of it. At 58px it was merely large; at 76px it is the first
+   thing on the screen and reads as where the work begins. It clears the corner
+   column's whole stack, so the top of this box is the number and nothing
+   else. */
+.benchore{flex:1 1 240px; min-width:0; margin:0 0 4px;
+  font-size:clamp(40px,7.4vw,76px); line-height:1.06; letter-spacing:-.01em}
 /* THE CORNER: the two asides on this bench, stacked hard into the top right.
    The Stamp Mill signpost first, the assay under it, each with its line of
    explanation beneath its own button. Neither is the act this screen is for,
@@ -9984,6 +9994,81 @@ MF.validate = function(){
   MF._mine = hoSaved.mine; MF.state.cart = hoSaved.cart; MF.state.selected = hoSaved.sel;
   MF.state.anvil = hoSaved.bench; MF.state.layer = hoSaved.layer;
   MF.state.face = hoSaved.face; MF.state.faceLayer = hoSaved.fl;
+
+  /* 5p. THE CART IS DRAWN THE SAME WHATEVER IS IN IT.
+
+         The cart panel is a flex column with a 430px cap, and a flex item with
+         no `flex-shrink:0` is a candidate for being squeezed when the column
+         runs over. `.cartrail` - 6px of track under the wheels - was measuring
+         2, 3, 3, 4, 5, 6px as lumps left the cart: a bar at the bottom of the
+         box that appeared and disappeared on every click, reported by the user
+         and by nothing else.
+
+         The LIST is what gives up height in that column. The cart drawn around
+         it is scenery and scenery does not breathe.
+
+         READ THE DENOMINATOR: the wheels and the track, over six cart sizes,
+         at the live viewport width. It says nothing about the list, nothing
+         about the panel's own height - which is SUPPOSED to move, that is what
+         absorbs the seam - and nothing about any other decoration on the page.
+         It is a check about two elements. */
+  var cdStage = document.createElement('div');
+  cdStage.style.cssText = 'position:fixed; left:-13000px; top:0; width:' +
+    document.documentElement.clientWidth + 'px';
+  document.body.appendChild(cdStage);
+  var cdSaved = {mine:MF._mine, cart:MF.state.cart, sel:MF.state.selected, bench:MF.state.anvil,
+                 layer:MF.state.layer, face:MF.state.face, fl:MF.state.faceLayer};
+  /* the same six lumps every time, so only the COUNT is changing */
+  var cdRng = makeRng(4242), cdPool = [];
+  for(var cdi=0; cdi<6; cdi++){ var cdL = MF.digOre(4, cdRng); if(cdL) cdPool.push(cdL); }
+  var cdSeen = {};
+  function cdChrome(n){
+    var probe = document.createElement('div');
+    cdStage.innerHTML = ''; cdStage.appendChild(probe);
+    MF._mine = null; MF.SCREENS.mine(probe);
+    MF.state.layer = 4; MF.state.face = []; MF.state.faceLayer = null;
+    MF.state.cart = cdPool.slice(0, n);
+    MF.state.selected = MF.state.cart[0];
+    MF.state.anvil = MF.anvilInit(MF.state.cart[0]); MF.state.anvil.step = 'break';
+    MF.paintMine();
+    var w = probe.querySelector('.cartwheels'), r = probe.querySelector('.cartrail');
+    return {wheels: w ? Math.round(w.getBoundingClientRect().height * 100) / 100 : null,
+            rail:   r ? Math.round(r.getBoundingClientRect().height * 100) / 100 : null};
+  }
+  [6,5,4,3,2,1].forEach(function(n){
+    chk('cartdraw');
+    var got;
+    try { got = cdChrome(n); }
+    catch(e){ errs.push('cartdraw: the mine threw with ' + n + ' lumps in the cart: ' + e.message); return; }
+    if(got.wheels === null || got.rail === null){
+      errs.push('cartdraw: with ' + n + ' lumps the cart has no wheels or no track drawn under it');
+      return;
+    }
+    cdSeen[n] = got;
+    var first = cdSeen[6];
+    if(!first) return;
+    [['wheels','the wheels under the cart'],['rail','the track under the wheels']].forEach(function(part){
+      chk('cartdraw');
+      if(Math.abs(got[part[0]] - first[part[0]]) > 0.5)
+        errs.push('cartdraw: ' + part[1] + ' measures ' + got[part[0]] + 'px with ' + n +
+          ' lump' + (n===1?'':'s') + ' in it and ' + first[part[0]] +
+          'px with 6 — the cart changes shape as it empties');
+    });
+  });
+  /* CONTROL: put the fault back - a shrinkable track in a capped column - and
+     watch the same six-way comparison catch it. */
+  chk('cartdraw');
+  var cdCtl = document.createElement('style');
+  cdCtl.textContent = '.cartrail{flex:0 1 auto !important}';
+  document.head.appendChild(cdCtl);
+  var cdA = cdChrome(6), cdB = cdChrome(1);
+  document.head.removeChild(cdCtl);
+  if(Math.abs(cdA.rail - cdB.rail) <= 0.5)
+    errs.push('CONTROL: a track that shrinks under a full cart is not reported as the cart changing shape');
+  document.body.removeChild(cdStage);
+  MF._mine = cdSaved.mine; MF.state.cart = cdSaved.cart; MF.state.selected = cdSaved.sel;
+  MF.state.anvil = cdSaved.bench; MF.state.layer = cdSaved.layer;
+  MF.state.face = cdSaved.face; MF.state.faceLayer = cdSaved.fl;
 
 
   /* 5n. REACH: THE WORK MUST FIT ON ONE SCREEN.

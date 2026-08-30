@@ -1117,3 +1117,43 @@ Restoring the two original colours fails the build in **four** places at once.
 - **Anything that exists only during an animation has to be mounted by hand.** Three
   independent mechanisms — never swung, `opacity:0` at rest, animations paused before
   measurement — each on its own enough to hide it.
+
+## 65. A flex item with no `flex-shrink:0` is a candidate for being squeezed
+
+The cart panel is a flex column with a **430px cap** — the constraint that lets the
+seam be shown taller without the middle column growing (§the cart gives up the height).
+`.cartrail` is 6px of track under the wheels, and it is a flex item of that column.
+It has no `flex-shrink:0`.
+
+So it was squeezed. Measured across a cart emptying one lump at a time:
+
+```
+6 lumps  rail 2.02px       3 lumps  rail 3.52px
+5 lumps  rail 2.44px       2 lumps  rail 4.69px
+4 lumps  rail 2.82px       1 lump   rail 6.00px
+```
+
+**A bar at the bottom of the cart box that appeared and disappeared on every click** —
+reported by the user, and by nothing else. It is decoration, so no instrument had a
+reason to look at it: `layout` watches the right edge, `hollow` watches one label,
+`contrast` watches text, `reach` watches the gap between two controls. A 4px strip of
+scenery breathing in and out is beneath all of them.
+
+The list is what gives up height in that column. **The cart drawn around it is scenery
+and scenery does not breathe** — the wheels and the track are pinned `flex:0 0 auto`.
+
+`cartdraw` mounts the mine at six cart sizes and compares the chrome against the
+six-lump reading. Its control restores `flex:0 1 auto` on the rail and the same
+six-way comparison names it four times.
+
+**The rules.**
+
+- **Every child of a constrained flex container is shrinkable until you say
+  otherwise.** The default is `flex-shrink:1`, and a fixed `height` does not protect
+  it. Anything decorative in such a container wants `flex:0 0 auto` explicitly.
+- **A cap you add in one place changes every sibling in that box.** The 430px cap was
+  added to make the seam taller; the defect it caused was four elements away and
+  arrived weeks later.
+- **Compare a thing against itself in another state.** The rail was never *wrong* at
+  any single moment — 2px is a plausible rail. It was wrong across states, and only a
+  check that renders more than one state can see that.
