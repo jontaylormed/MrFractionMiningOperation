@@ -1001,3 +1001,69 @@ the person running it.
   screen" was never anybody's screen.
 - **Re-run the instrument in the state you will ship from.** The failing reading and
   the passing reading were the same code minutes apart.
+
+## 62. A sweep that chooses its own subjects at random has a denominator it never states
+
+The `contrast` group mounts every screen and measures every run of text on it. It had
+been green for weeks. Two controls on the mine's bench were below the threshold the
+whole time:
+
+| | | |
+|---|---|---|
+| `.mpbtn` "Stamp Mill →" | cream `#FFF7EA` on `--ore` | **3.55:1**, needs 4.5 |
+| `.mpt` its line underneath | `--ink-soft` on the bench's timber | **3.85:1**, needs 4.5 |
+
+Neither had ever been measured, because **the Stamp Mill signpost only exists when the
+lump on the bench is a plain number**, and the sweep's mine pass dug its lump with a
+seeded RNG and worked with whatever came up. What came up was a polynomial, every run.
+
+The group was not wrong about anything it looked at. It simply never looked, and
+nothing in its output said so — a count of 883 checks reads like coverage.
+
+The second colour is the same failure the `.assayhint` comment three lines above it
+already records in writing: *"`--ink-soft` on the bench's tan reads 3.85:1 and the
+sweep failed the build over it."* The lesson was written down, and then a new label on
+the same surface reintroduced it, because writing a rule down does not enforce it.
+
+The mine is mounted twice now — `mine` and `mine-number` — and the second exists only
+to put a number on the bench. It caught both faults by name the moment it ran.
+
+**The rules.**
+
+- **A pass that samples is a pass that can miss, and it will not tell you.** If a
+  surface only exists in one state, that state has to be mounted deliberately.
+- **A check count is not a coverage number.** 883 checks over the screens that
+  happened to render is not 883 checks over the screens that exist.
+- **A rule in a comment is not a check.** The exact contrast failure documented in the
+  stylesheet was re-committed six inches below the sentence describing it.
+
+## 63. A flex-basis is a height once the axis turns, and nothing measured empty space
+
+`.benchore` carries `flex:1 1 240px` so the ore keeps a minimum **width** beside the
+corner column. Under 560px `.benchhead` becomes `flex-direction:column` — and
+flex-basis measures the **main** axis, whichever one that is. So on every phone the ore
+label was a **240px-tall box holding a single 48px line**, and 192px of empty timber
+sat between the number and the breaking floor.
+
+Three groups were watching that screen and none could see it:
+
+- `layout` measures the **right edge**, and says so in its own denominator note. A
+  hollow box crosses no edge.
+- `reach` measures the **distance between two controls**. This was inside one box.
+- `contrast` measures **text**. The empty part has none.
+
+The property nobody owned is *is this box mostly nothing?* — which is the axis this
+project has spent four sessions buying back at the user's explicit request.
+
+`hollow` measures it directly: the label's box against the union of its own line
+boxes, at the live viewport width. Its control puts the original declaration back.
+
+**The rules.**
+
+- **A shorthand written for one axis is a different declaration on the other.** Any
+  `flex:` value on an element whose container direction changes at a breakpoint has
+  two meanings, and only one of them was intended.
+- **Wasted space is a defect with no symptom.** Nothing overflows, nothing overlaps,
+  nothing is unreadable — so every instrument reports clean.
+- **When you widen a value, re-measure at the narrow end.** The basis went 220 → 240
+  for the wide layout and got 20px worse on the phone.

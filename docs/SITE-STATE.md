@@ -22,7 +22,7 @@
 | **Screens** | **eight** — surface, the Stamp Mill, the Casting Shed and its three workshops, the mine, the forge |
 | **Layers** | **five**, all reachable from the first screen, none gated on anything |
 | **Instruments** | **seven**, all made at the forge, none granted |
-| **Validation** | `MF.validate()` → **9,601 checks / 32 groups / 0 errors**, two controls that must fail, and do — **run it at the width you ship from**, because `layout` and `reach` measure the live viewport and report it (`VERIFICATION.md` §61) |
+| **Validation** | `MF.validate()` → **9,698 checks / 33 groups / 0 errors**, two controls that must fail, and do — **run it at the width you ship from**, because `layout`, `reach` and `hollow` measure the live viewport and report it (`VERIFICATION.md` §61, §63). Verified at **380×780, 994×700 and 1250×900** |
 
 > **A check is only as wide as the space it sweeps.** The `truthy` group reported 0 errors across 642 checks while **1,970 Decimal Dial states printed a falsehood**, because it tested each lump's original integer coefficients and never nudged `c` — the one thing the dial exists to do. It now sweeps every slider position the control can reach (3,287 checks). Ask of any green result: *what did it not look at?*
 | **Runtime** | Zero dependencies, no build step, no network requests, no storage, runs from `file://` |
@@ -47,9 +47,11 @@ What will not break further is **native metal** — a prime, or a polynomial no 
 - **Assay** is a gate: `display:none` on stage 2 until the seam is called correctly. Verified on a freshly built, never-clicked, detached task.
 - **Break** is one swing at a time. You name **one** thing that is in the rock; the seam runs and the lump comes apart into that factor and the remainder, or the hammer glances off and the rock is described. **Both pieces land on the floor, and anything still carrying a seam goes back under the hammer.**
 
-**The lump is drawn on an anvil.** A **London-pattern anvil on a stump** — horn, step, polished face, hardy and pritchel holes, waisted body, feet, iron banding, a pair of tongs leaning on it — with the lump sitting on the face where the hammer lands and its expression cut into the stone.
+**The lump is drawn on an anvil, and the anvil is drawn flat.** A London-pattern anvil on a stump — horn, step, face, hardy hole, waisted body — with the lump on the face where the hammer lands and its expression cut into the stone. **Four flat planes and a dark outline**, the same way the valley, the yard, the stamp mill and the gallery wall six inches above it are drawn.
 
-**The hammer stands upright over the work with its striking face pointing down at it** — haft vertical with a bound grip, a block head with the eye and its wedge, a flared bright face, a cross-peen off the back. It is part of the drawing, not a box floating over it, which is what let it become the shape a hammer actually is.
+> It used to be the only **rendered** object on the site: seven gradients, a metallic bevel on every plane, tongs leaning on the stump, bolt heads, grain lines, chips of swarf across the floor. Against a build that is flat fill and outline everywhere else it read as a photograph pasted into a drawing. **Same silhouette, same coordinates** — the hammer's pivot, the rock's seat on the face and the shatter animation are all pinned to those numbers and none of them moved. What went is the shading and the clutter. The rock keeps **one** mark on it: the orange seam, which is the only mark that means anything.
+
+**The hammer stands upright over the work with its striking face pointing down at it** — vertical haft, a block head with the eye through it, a flared light face, a cross-peen off the back. It is part of the drawing, not a box floating over it, which is what let it become the shape a hammer actually is.
 
 **You type what to cut the head to**, in a bar under the picture: `( [ ] x + [ ] )`.
 
@@ -178,7 +180,7 @@ The face is **2280px of rock**, several screens wide, scanned by dragging, scrol
 
 > **`nogate` (20) sweeps the bench itself now**: on a freshly built, never-clicked bench the swing must be present, the choices must **not** be, and the offer must be. Control: the gate restored — and the gate was never the `step` field but a conditional round `paintBreak`, so the first version of that control proved nothing (`VERIFICATION.md` §60).
 
-**A lump can go straight from the cart to the yard.** The bench was the only door out of the cart, so putting a lump down meant picking it up first. `MF.stow` is the single place that decides **rack or heap**, and both routes call it — tipping the breaking floor, and **→ yard** on a cart lump. Checked both ways, with a control that drops the ore.
+**A lump can go straight from the cart to the yard.** The bench was the only door out of the cart, so putting a lump down meant picking it up first. `MF.stow` is the single place that decides **rack or heap**, and both routes call it — tipping the breaking floor, and **→ yard** on a cart lump. Checked both ways, with a control that drops the ore. The button is a **small orange tab centred under the lump chip** — 74×30, not the full-width slab it was, because the lump above it is the thing you are meant to reach for first.
 
 **A plain number points at the Stamp Mill.** Numbers still break here — the *72 and x² − 5x + 6 are one job* thesis needs them to — but the room built for factor trees is one click from the bench that wants it.
 
@@ -198,10 +200,11 @@ The face is **2280px of rock**, several screens wide, scanned by dragging, scrol
 
 **And the row never moves or changes size.** Three things were making it: the pair was `align-items:start`; the right box lost 166px when the hammer bar went at the end of a lump; and the lead line above the floor is shorter once there is more than one piece, which jumped everything 21px. Stretched, with a 524px floor under the pair and a reserved height on the lead line: measured **top 1042, height 524 — fresh, after a glance, and after the last blow, identical.**
 
-**The head of the bench.** The lump is the headline at **42px** (every other `.eq` is ~30). The Stamp Mill sits in the **top-right corner** as a small orange button with its one line of explanation **underneath it**, and the assay question follows below both — a signpost in the corner rather than a paragraph across the work.
+**The head of the bench: the number, and a corner.** The lump is the headline at **58px** — every other `.eq` on the site is ~30, and this is the one thing every control on the screen refers to. Everything that is *not* the work is stacked into a single column **hard against the top-right corner**, 13px in from the bench's edge: the **Stamp Mill** button with its line underneath it, and below that **"What kind of rock is this?"** with its line underneath *that*.
 
+> The assay used to run the full width of the bench directly under the ore. An optional question laid across the work, between the student and the hammer, is the shape of the gate §15 took out — even with the gate gone. In the corner it reads as what it is. Clicking it still opens the five choices in the body, where they have room; a call, once made, still settles into the body with its reason and stays there.
 
-**The Stamp Mill suggestion is one line.** It was a note panel with two sentences and a full-size button, taking more room on the bench than the lump it was about. It is 52px, right-aligned, with a small orange button — the `--ore` the mine already uses for anything that points somewhere.
+**Both orange buttons in the mine are one treatment**, and both carry **dark ink**: `--ore` fill, `--lamp` border, `#1A120B` text. Cream on `--ore` is **3.55:1** and the Stamp Mill button shipped at exactly that, unmeasured, for weeks (`VERIFICATION.md` §62).
 
 > **The forge's craft floor lost 100px too.** The pour picture was 324px of the 805px between the target and the pour button — the single biggest reason a student had to scroll to reach the thing they were about to press. At 310px wide the same drawing is 232 tall and the whole cluster fits a 700px laptop. Found only once `reach` stopped lying (`VERIFICATION.md` §61).
 
@@ -395,6 +398,8 @@ Metals are **spent** here — this is the yard's sink. Forging *is* distributing
 - **The scene overhaul is unfinished.** The surface and the mine are rendered places; the bench, the workshops, the yard and the forge are still panels.
 - **No student has read one word of the new teaching copy, and none has seen the X.** The X diagram, the redacted work lines and the five rewritten tool panels were built in one sitting by the author. The `visual` group asserts that a panel DRAWS and LEAVES A HOLE; **nothing asserts that the diagram is legible, that the redacted number is the interesting one, or that the X is drawn the way a particular teacher draws it.** Those are human readings and they have not happened.
 - **No student has read one word of the other new teaching copy.** Ten translation rows, seven method names, seven "why it works" paragraphs and seven practices were written in one sitting by the author. `rosetta` asserts that each row's *example* is true; **nothing asserts that the English on the left is the translation a teacher would use**, and no check on this page can. That is a human reading and it has not happened.
+- **Nothing asserts that the anvil now matches the rest of the art.** "It does not match the art style" was a human reading and so is "it does now". The build can say there are no gradients left in `MF.anvilScene`; it cannot say the drawing sits right beside the gallery wall above it. **No group measures style.**
+- **`hollow` looks at one element, at one width.** It measures `.benchore` against its own text, at whatever the window happens to be. It says nothing about any other box on the bench, and a run at 1250px cannot see a fault that only exists under 560px. Its value is that it is honest about the width it swept.
 - **`MF.validate()` cannot be run from `file://` any more — and could not before.** The preview pane renders a `file://` page as a static snapshot, so `MF` is never defined and *nothing* on the page can be exercised. This build was verified over a local HTTP server. The claim that the site "runs from `file://`" is still believed and is still **unproven in a browser this session**.
 
 ---

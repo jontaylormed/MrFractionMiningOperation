@@ -542,3 +542,39 @@ could not be looked at together, and that is the one pairing the act depends on.
 
 Everything §8 excludes. And still: no second judge in the mine. The `?` goes to the
 pick bar and the rock answers.
+
+## 16. The bench has a corner, and the drawing is flat
+
+*User, 2026-08-29.*
+
+### 16a. Everything that is not the work goes in the top-right corner
+
+The bench's head is the ore and a corner column, and nothing else. The ore is the
+**headline** — the one thing every control on the screen refers to. The **Stamp Mill**
+signpost and the **assay** offer are stacked into a single column hard against the
+top-right, each with its own line of explanation directly beneath its own button.
+
+> An optional question laid across the full width of the bench, between the student
+> and the hammer, is the **shape** of the gate §15a removed — even with the gate itself
+> gone. Position carries the same claim the sequence used to. Clicking the offer still
+> opens the five choices in the body, where they have room, and a call once made still
+> settles into the body with its reason.
+
+### 16b. The second action on a lump looks like the second action
+
+A lump's route to the yard is a **small centred tab** under its chip, not a slab the
+same width as the lump above it. The lump is what the student should reach for first
+and the layout has to say so.
+
+### 16c. One orange, and it carries dark ink
+
+Anything in the mine that points somewhere is `--ore` fill with a `--lamp` border and
+near-black text. **Cream on `--ore` is 3.55:1 and does not ship** (`VERIFICATION.md`
+§62).
+
+### 16d. The anvil is drawn the way everything else is drawn
+
+Flat fill, dark outline, no gradients. The whole site is drawn that way and the anvil
+was not, which made the one object the student looks at hardest the one object that
+looked pasted in. Detail that is not load-bearing comes off; the **silhouette and
+every coordinate the animations are pinned to stay exactly as they are**.

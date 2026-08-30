@@ -1135,12 +1135,21 @@ table.rosetta td.rx{font-family:var(--display); font-size:16px; color:var(--ink)
 .assayskip{margin-top:10px}
 .millpoint .btn{margin-top:8px}
 
-/* sending a lump straight from the cart to the yard */
-.lumpcell{display:flex; flex-direction:column; gap:4px; align-items:stretch}
-.tuyard{font-size:12px; padding:6px 8px; min-height:44px; background:#241D18;
-  color:#E4D5BB; border:2px solid #6B5B48; border-radius:9px; cursor:pointer;
+/* SENDING A LUMP STRAIGHT FROM THE CART TO THE YARD - small, centred, orange.
+   At full width in the dark of the cart it read as heavy as the lump above it,
+   and the lump is the thing you are meant to reach for. It is a tab under the
+   chip now, not a second slab.
+
+   THE INK ON IT IS DARK, NOT CREAM. #FFF7EA on --ore is 3.55:1 and this button
+   IS inside the contrast sweep - the mine screen mounts with a lump in the
+   cart - so cream would fail the build at 11px. Near-black on --ore is
+   4.9:1. */
+.lumpcell{display:flex; flex-direction:column; gap:5px; align-items:stretch}
+.tuyard{align-self:center; font-size:11px; letter-spacing:.05em;
+  padding:5px 13px; min-height:30px; background:var(--ore); color:#1A120B;
+  border:2px solid var(--lamp); border-radius:999px; cursor:pointer;
   font-family:var(--display)}
-.tuyard:hover{background:#33291F; border-color:var(--lamp); color:#FFE9C4}
+.tuyard:hover{background:var(--lamp); border-color:#FFE9C4; color:#1A120B}
 
 /* the folded reasoning */
 .swhyfold{margin:6px 0 2px}
@@ -1160,23 +1169,54 @@ table.rosetta td.rx{font-family:var(--display); font-size:16px; color:var(--ink)
    top right corner with its line underneath it */
 .benchhead{display:flex; align-items:flex-start; justify-content:space-between;
   gap:14px; flex-wrap:wrap; margin-bottom:4px}
-/* THE ORE IS THE HEADLINE. It was the same size as any other .eq on the page,
-   and it is the one thing every control on this screen refers to. */
-.benchore{flex:1 1 220px; min-width:0; margin:0;
-  font-size:clamp(28px,4.6vw,42px); line-height:1.15}
+/* THE ORE IS THE HEADLINE, AND IT IS THE BIGGEST THING ON THE BENCH. It was
+   the same size as any other .eq on the page, and it is the one thing every
+   control on this screen refers to. It now clears the corner column's whole
+   stack, so the top of this box is the number and nothing else. */
+.benchore{flex:1 1 240px; min-width:0; margin:0 0 2px;
+  font-size:clamp(34px,6.2vw,58px); line-height:1.08; letter-spacing:-.005em}
+/* THE CORNER: the two asides on this bench, stacked hard into the top right.
+   The Stamp Mill signpost first, the assay under it, each with its line of
+   explanation beneath its own button. Neither is the act this screen is for,
+   so neither lies across the work - they are tucked up against the banding.
+   The negative margins pull the stack out of the bench's 16px padding so it
+   sits in the corner rather than politely inside it. */
+.benchcorner{flex:0 0 auto; display:flex; flex-direction:column; align-items:flex-end;
+  text-align:right; gap:9px; max-width:214px; margin:-6px -6px 0 0}
+.benchcorner > *{margin:0}
 /* the signpost: button first, its line under it, both hard against the right */
 .millpoint{flex:0 0 auto; display:flex; flex-direction:column; align-items:flex-end;
-  text-align:right; gap:5px; max-width:210px}
-.millpoint .mpt{font-size:12px; color:var(--ink-soft); line-height:1.3}
-.mpbtn{background:var(--ore); color:#FFF7EA; border-color:var(--ore-t);
+  text-align:right; gap:4px; max-width:100%}
+/* --ink-soft on the bench's timber is 3.85:1, the same failure .assayhint
+   above already carries. The bench is a mid-tone; its body text goes dark. */
+.millpoint .mpt{font-size:12px; color:var(--ink); line-height:1.3}
+/* DARK INK ON THE ORANGE, not cream: #FFF7EA on --ore is 3.55:1 and this
+   button shipped at that, unseen, because the contrast sweep's mine pass dug
+   a polynomial every time and the signpost only exists for a number. The two
+   orange buttons in the mine - this and the cart's tab to the yard - are now
+   one treatment. */
+.mpbtn{background:var(--ore); color:#1A120B; border-color:var(--lamp);
   font-size:12px; padding:7px 12px; min-height:44px}
-.mpbtn:hover{background:var(--ore-t); border-color:var(--ore-t); color:#FFF7EA}
+.mpbtn:hover{background:var(--lamp); border-color:#FFE9C4; color:#1A120B}
+/* the assay, offered in the corner under the signpost and in the same shape */
+.benchcorner .assayoffer{display:flex; flex-direction:column; align-items:flex-end;
+  text-align:right; gap:4px; margin:0; max-width:100%}
+.benchcorner .assaybtn{font-size:12px; padding:7px 12px; min-height:38px}
+.benchcorner .assayhint{font-size:12px; line-height:1.3; color:var(--ink)}
 /* the finishing blow lives in the hammer box's place, so the row never changes
    shape between the last swing and the end of the lump */
 .endbar .anvilstage{min-height:186px}
 @media (max-width:560px){
   .benchhead{flex-direction:column}
-  .millpoint{align-items:flex-start; text-align:left; max-width:100%}
+  /* FLEX-BASIS IS A HEIGHT ONCE THE AXIS TURNS. .benchore carries
+     `flex:1 1 240px` for the wide layout, where 240px is a minimum WIDTH; in
+     column direction the same declaration made the label 240px TALL for a
+     single 48px line, and 192px of empty timber sat under the ore on every
+     phone. Nothing measured it - `reach` counts the distance between two
+     controls, and this was inside one box. */
+  .benchore{flex:0 0 auto}
+  .benchcorner{align-items:flex-start; text-align:left; max-width:100%; margin:0}
+  .millpoint,.benchcorner .assayoffer{align-items:flex-start; text-align:left; max-width:100%}
 }
 .splitdia{width:min(300px,100%)}
 
@@ -6468,6 +6508,12 @@ MF.paintAnvil = function(host){
      whole thesis is that 72 and x² − 5x + 6 are one job - but the room built
      for factor trees and primes is one click away from the bench that needs
      it, instead of two screens and a guess. */
+  /* THE CORNER COLUMN. Both asides on this bench live in it, stacked: the
+     Stamp Mill signpost, and under it the offer to name the rock. The assay
+     used to run the full width of the bench directly under the ore, which put
+     an optional question between the student and the hammer - the exact shape
+     of the gate §15 took out. In the corner it reads as what it is. */
+  var corner = E('div','benchcorner');
   if(ore.kind === 'number'){
     var sm = E('div','millpoint');
     var mj = E('button','btn mpbtn'); mj.type='button';
@@ -6476,8 +6522,10 @@ MF.paintAnvil = function(host){
     on(mj,'click',function(){ MF.go('workshop-ore'); });
     sm.appendChild(mj);
     sm.appendChild(H('span','mpt','Numbers come apart the same way rock does.'));
-    head.appendChild(sm);
+    corner.appendChild(sm);
   }
+  MF.assayOffer(corner, B);
+  if(corner.childNodes.length) head.appendChild(corner);
   bench.appendChild(head);
 
   /* NO STEP STRIP. Two numbered stages with the second greyed out is a gate
@@ -6492,6 +6540,23 @@ MF.paintAnvil = function(host){
 /* MF.stepDone is gone with the step strip it fed. It answered "is this stage
    behind us", which was only ever a question because the stages were a
    sequence you had to walk. There is one act on this bench now. */
+
+/* THE OFFER TO NAME THE ROCK, which lives in the bench's top right corner.
+   Split out of MF.paintAssay so the corner column can hold it: the button sits
+   under the Stamp Mill signpost with its own line beneath it, and the choices
+   it opens still fill the body below. Returns whether it drew anything, so a
+   corner with nothing in it is never appended. */
+MF.assayOffer = function(host, B){
+  if(B.calledAs || B.step === 'assay') return false;
+  var offer = E('div','assayoffer');
+  var ob = E('button','btn assaybtn','What kind of rock is this?'); ob.type='button';
+  ob.setAttribute('aria-label','Name what kind of rock this is. Optional — the hammer works either way.');
+  on(ob,'click',function(){ B.step = 'assay'; MF.paintMine(); });
+  offer.appendChild(ob);
+  offer.appendChild(H('span','assayhint','Optional. The hammer works either way.'));
+  host.appendChild(offer);
+  return true;
+};
 
 MF.paintAssay = function(host, B){
   var ore = B.ore;
@@ -6518,16 +6583,10 @@ MF.paintAssay = function(host, B){
     host.appendChild(settled);
     return;
   }
-  if(B.step !== 'assay'){
-    var offer = E('div','assayoffer');
-    var ob = E('button','btn assaybtn','What kind of rock is this?'); ob.type='button';
-    ob.setAttribute('aria-label','Name what kind of rock this is. Optional — the hammer works either way.');
-    on(ob,'click',function(){ B.step = 'assay'; MF.paintMine(); });
-    offer.appendChild(ob);
-    offer.appendChild(H('span','assayhint','Optional. The hammer works either way.'));
-    host.appendChild(offer);
-    return;
-  }
+  /* THE OFFER IS NOT DRAWN HERE ANY MORE. It is MF.assayOffer, and paintAnvil
+     puts it in the top right corner under the Stamp Mill. Only the CHOICES -
+     which are wide, and are a thing you have asked for - open in the body. */
+  if(B.step !== 'assay') return;
 
   host.appendChild(H('p','hint','<b>What kind of rock are you holding?</b> Nothing depends on this — you can swing without it. It is here because a call you made is the only thing you can later catch yourself out on.'));
 
@@ -6706,53 +6765,35 @@ MF.anvilScene = function(ore, opts){
   var wrap = E('div','anvilsvg');
   var W=340, VH=232;
   var svg = S('svg',{viewBox:'0 0 '+W+' '+VH,'aria-hidden':'true'});
-  var defs = S('defs',{});
-  function grad(id, stops){
-    var g = S('linearGradient',{id:id,x1:'0',y1:'0',x2:'0',y2:'1'});
-    stops.forEach(function(s){ g.appendChild(S('stop',{offset:s[0],'stop-color':s[1]})); });
-    defs.appendChild(g);
-  }
-  function gradX(id, stops){
-    var g = S('linearGradient',{id:id,x1:'0',y1:'0',x2:'1',y2:'0'});
-    stops.forEach(function(s){ g.appendChild(S('stop',{offset:s[0],'stop-color':s[1]})); });
-    defs.appendChild(g);
-  }
-  grad('anvFace',[['0%','#D6DEE5'],['38%','#9DA9B5'],['100%','#6E7A86']]);
-  grad('anvBody',[['0%','#7E8A96'],['46%','#5E6A76'],['100%','#39424B']]);
-  gradX('anvHorn',[['0%','#3E4750'],['70%','#93A0AC']]);
-  grad('stumpG',[['0%','#8A6A45'],['40%','#6B4A32'],['100%','#4A3524']]);
-  grad('rockG',[['0%','#8A7358'],['58%','#6B5A47'],['100%','#463A2C']]);
-  gradX('headG',[['0%','#39424B'],['22%','#8A97A3'],['58%','#5E6A76'],['100%','#2E363D']]);
-  gradX('haftG',[['0%','#4A3220'],['30%','#A67C55'],['70%','#7A5636'],['100%','#3E2A1A']]);
-  svg.appendChild(defs);
+  /* NO <defs>, AND NOT ONE GRADIENT. There were seven, and they are what the
+     rest of the site does not have. */
 
-  /* ---- the ground, the stump, the anvil ---- */
-  svg.appendChild(S('ellipse',{cx:172,cy:226,rx:126,ry:8,fill:'#1B1511',opacity:'.5'}));
-  svg.appendChild(S('path',{d:'M104 202 h136 l-9 24 h-118 Z',fill:'url(#stumpG)',stroke:'#3A2A1C','stroke-width':'2'}));
-  for(var gr=0; gr<5; gr++)
-    svg.appendChild(S('path',{d:'M'+(112+gr*5)+' 204 l-3 20',stroke:'#4A3524','stroke-width':'2',opacity:'.55',fill:'none'}));
-  svg.appendChild(S('rect',{x:104,y:208,width:136,height:5,fill:'#5A626A',opacity:'.85'}));
-  svg.appendChild(S('rect',{x:101,y:219,width:140,height:5,fill:'#5A626A',opacity:'.7'}));
-  [116,168,224].forEach(function(bx){ svg.appendChild(S('circle',{cx:bx,cy:210.5,r:'2.2',fill:'#8A9AA6'})); });
+  /* ---- the ground, the stump, the anvil ----
 
-  svg.appendChild(S('path',{d:'M110 192 h124 l6 12 h-136 Z',fill:'#39424B'}));
-  svg.appendChild(S('path',{d:'M138 172 h68 l14 22 h-96 Z',fill:'url(#anvBody)',stroke:'#2A3138','stroke-width':'2','stroke-linejoin':'round'}));
+     FLAT, AND CUT BACK. This was the only rendered object on the site: seven
+     gradients, a metallic bevel on every plane, tongs leaning on the stump,
+     bolt heads, grain lines, chips of swarf across the floor. Every other
+     scene in the build - the valley, the yard, the stamp mill, the gallery
+     wall six inches above this one - is flat fill and a dark outline, so the
+     anvil read as a photograph pasted into a drawing.
+
+     Same silhouette, same coordinates: the hammer's pivot, the rock's seat on
+     the face and the shatter animation are all pinned to these numbers and
+     none of them moved. What went is the shading and the clutter. */
+  svg.appendChild(S('ellipse',{cx:172,cy:226,rx:118,ry:7,fill:'#1B1511',opacity:'.42'}));
+  /* the stump: two flat tones, one for the top face and one for the side */
+  svg.appendChild(S('path',{d:'M104 202 h136 l-9 24 h-118 Z',fill:'#6B4A32',stroke:'#3A2A1C','stroke-width':'2','stroke-linejoin':'round'}));
+  svg.appendChild(S('rect',{x:102,y:208,width:140,height:5,fill:'#5A626A'}));
+
+  /* the anvil, in four flat planes: base, waist, table, face */
+  svg.appendChild(S('path',{d:'M110 192 h124 l6 12 h-136 Z',fill:'#414A53',stroke:'#2A3138','stroke-width':'2','stroke-linejoin':'round'}));
+  svg.appendChild(S('path',{d:'M138 172 h68 l14 22 h-96 Z',fill:'#5E6A76',stroke:'#2A3138','stroke-width':'2','stroke-linejoin':'round'}));
   svg.appendChild(S('path',{d:'M104 170 h136 l-16 6 h-104 Z',fill:'#4E5862'}));
-  svg.appendChild(S('path',{d:'M104 156 q-32 2 -58 12 q26 8 58 8 Z',fill:'url(#anvHorn)',stroke:'#2A3138','stroke-width':'2','stroke-linejoin':'round'}));
-  svg.appendChild(S('rect',{x:100,y:162,width:14,height:9,fill:'#5E6A76',stroke:'#2A3138','stroke-width':'1.5'}));
-  svg.appendChild(S('path',{d:'M112 154 h150 l0 16 h-150 Z',fill:'url(#anvFace)',stroke:'#2A3138','stroke-width':'2','stroke-linejoin':'round'}));
-  svg.appendChild(S('rect',{x:114,y:155.5,width:146,height:3,rx:1.5,fill:'#EDF2F6',opacity:'.75'}));
-  svg.appendChild(S('rect',{x:232,y:158,width:11,height:9,rx:1,fill:'#1B2126'}));
-  svg.appendChild(S('circle',{cx:252,cy:162,r:'3.4',fill:'#1B2126'}));
-
-  var tongs = S('g',{transform:'rotate(-16 268 188)'});
-  tongs.appendChild(S('rect',{x:266,y:176,width:5,height:50,rx:2,fill:'#6E7A86'}));
-  tongs.appendChild(S('rect',{x:272,y:176,width:5,height:50,rx:2,fill:'#5A626A'}));
-  tongs.appendChild(S('path',{d:'M264 180 q8 -12 16 0',fill:'none',stroke:'#8A9AA6','stroke-width':'4','stroke-linecap':'round'}));
-  svg.appendChild(tongs);
-  for(var c=0;c<10;c++)
-    svg.appendChild(S('path',{d:'M'+(46+c*28)+' '+(222-((c*5)%5))+' l5 -3 l3 4 Z',
-      fill:(c%3?'#6B5B48':'#8A9AA6'), opacity:'.6'}));
+  svg.appendChild(S('path',{d:'M104 156 q-32 2 -58 12 q26 8 58 8 Z',fill:'#6E7A86',stroke:'#2A3138','stroke-width':'2','stroke-linejoin':'round'}));
+  svg.appendChild(S('path',{d:'M112 154 h150 l0 16 h-150 Z',fill:'#A9B5C0',stroke:'#2A3138','stroke-width':'2','stroke-linejoin':'round'}));
+  /* the hardy hole - the one detail kept, because it is what makes the shape
+     read as an anvil rather than as a grey block */
+  svg.appendChild(S('rect',{x:232,y:158,width:11,height:9,rx:1,fill:'#2A3138'}));
 
   /* ---- THE LUMP, on the face where the hammer lands ----
      `shatter` is the finishing blow: the last piece breaks up under the hammer
@@ -6763,12 +6804,9 @@ MF.anvilScene = function(ore, opts){
   g.appendChild(S('ellipse',{cx:186,cy:153,rx:56,ry:5,fill:'#1B2126',opacity:'.45'}));
   g.appendChild(S('polygon',{
     points:'140,112 176,100 214,106 234,124 228,144 190,152 148,148 130,130',
-    fill:'url(#rockG)',stroke:'#2E2620','stroke-width':'3','stroke-linejoin':'round'}));
-  g.appendChild(S('path',{d:'M176 100 l-14 26 l-32 4',fill:'none',stroke:'#4A3F34','stroke-width':'2',opacity:'.8'}));
-  g.appendChild(S('path',{d:'M162 126 l28 26',fill:'none',stroke:'#4A3F34','stroke-width':'2',opacity:'.8'}));
-  g.appendChild(S('path',{d:'M162 126 l52 -19',fill:'none',stroke:'#5A4B3C','stroke-width':'2',opacity:'.7'}));
-  g.appendChild(S('path',{d:'M138 122 q26 -9 50 -3 q22 6 44 -4',fill:'none',stroke:'#C96A1F','stroke-width':'3.5','stroke-linecap':'round',opacity:'.9'}));
-  g.appendChild(S('circle',{cx:'156',cy:'114',r:'2.6',fill:'#F2DCA4',opacity:'.9'}));
+    fill:'#6B5A47',stroke:'#2E2620','stroke-width':'3','stroke-linejoin':'round'}));
+  /* the seam, which is the only mark on it that means anything */
+  g.appendChild(S('path',{d:'M138 122 q26 -9 50 -3 q22 6 44 -4',fill:'none',stroke:'#C96A1F','stroke-width':'3.5','stroke-linecap':'round'}));
   var label = S('text',{x:'182',y:'134','text-anchor':'middle',
     'font-family':"'Black Han Sans','Arial Black',Impact,sans-serif",fill:'#FFF3DE',
     'paint-order':'stroke',stroke:'#241D18','stroke-width':'5','stroke-linejoin':'round'});
@@ -6783,23 +6821,18 @@ MF.anvilScene = function(ore, opts){
      the animation goes on the inner group, per MF.ANIM_TRANSFORM_CLASSES. */
   var mount = S('g',{});
   var ham = S('g',{class:'hammerswing'});
-  /* the haft, vertical, thicker at the butt with a bound grip */
-  ham.appendChild(S('path',{d:'M170 12 l12 0 l3 88 l-18 0 Z',fill:'url(#haftG)',stroke:'#2E1E10','stroke-width':'2','stroke-linejoin':'round'}));
-  for(var w=0; w<5; w++)
-    ham.appendChild(S('path',{d:'M'+(169-w*0.4)+' '+(18+w*7)+' l'+(14+w*0.8)+' 3',
-      stroke:'#3A2A1C','stroke-width':'2.4',opacity:'.75',fill:'none'}));
+  /* the haft, vertical - one flat timber tone, the same #8A6A45 the crates and
+     the props in the valley are drawn in */
+  ham.appendChild(S('path',{d:'M170 12 l12 0 l3 88 l-18 0 Z',fill:'#8A6A45',stroke:'#4A3524','stroke-width':'2','stroke-linejoin':'round'}));
   /* the head: a block square on the end of the haft, the face pointing DOWN */
   ham.appendChild(S('path',{d:'M148 98 h56 l6 8 l0 14 l-6 8 h-56 l-6 -8 l0 -14 Z',
-    fill:'url(#headG)',stroke:'#1F262C','stroke-width':'2.5','stroke-linejoin':'round'}));
-  /* the eye, where the haft passes through, and the wedge in it */
+    fill:'#5E6A76',stroke:'#2A3138','stroke-width':'2.5','stroke-linejoin':'round'}));
+  /* the eye, where the haft passes through */
   ham.appendChild(S('rect',{x:167,y:100,width:18,height:8,rx:2,fill:'#2A3138'}));
-  ham.appendChild(S('rect',{x:170,y:101,width:12,height:3,rx:1,fill:'#8A6A45'}));
-  /* THE STRIKING FACE, flared and bright: the side that meets the anvil */
-  ham.appendChild(S('path',{class:'hface',d:'M140 122 h64 l-4 10 h-56 Z',fill:'#B9C4CE',stroke:'#1F262C','stroke-width':'2.5','stroke-linejoin':'round'}));
-  ham.appendChild(S('rect',{x:146,y:129,width:52,height:3,rx:1.5,fill:'#EDF2F6',opacity:'.8'}));
+  /* THE STRIKING FACE, flared and light: the side that meets the anvil */
+  ham.appendChild(S('path',{class:'hface',d:'M140 122 h64 l-4 10 h-56 Z',fill:'#A9B5C0',stroke:'#2A3138','stroke-width':'2.5','stroke-linejoin':'round'}));
   /* a cross-peen off the back, so it reads as a forging hammer and not a brick */
-  ham.appendChild(S('path',{d:'M204 102 l22 6 l0 8 l-22 6 Z',fill:'#4E5862',stroke:'#1F262C','stroke-width':'2.5','stroke-linejoin':'round'}));
-  ham.appendChild(S('path',{d:'M148 100 l0 26',stroke:'#B9C4CE','stroke-width':'2',opacity:'.5',fill:'none'}));
+  ham.appendChild(S('path',{d:'M204 102 l22 6 l0 8 l-22 6 Z',fill:'#4E5862',stroke:'#2A3138','stroke-width':'2.5','stroke-linejoin':'round'}));
   mount.appendChild(ham);
   svg.appendChild(mount);
 
@@ -8910,7 +8943,15 @@ MF.validate = function(){
      screens at all: a POURED forge and the tool panel. Typing the list by
      hand is how the three Casting Shed workshops would have shipped
      unmeasured. */
-  Object.keys(MF.SCREENS).concat(['forge-poured','toolsheet']).forEach(function(scr){
+  /* 'mine-number' IS A SEPARATE PASS, and it had to become one.
+     The mine pass digs with cRng and takes whatever comes up, which was a
+     POLYNOMIAL every time - so the Stamp Mill signpost, which exists only when
+     the lump on the bench is a plain number, was never once mounted by this
+     sweep. It shipped at 3.55:1 with its line under it at 3.85:1, both below
+     the threshold, and every run of this group reported clean over them.
+     READ THE DENOMINATOR: a green sweep proves only what it mounted, and this
+     one was choosing what to mount at random. */
+  Object.keys(MF.SCREENS).concat(['mine-number','forge-poured','toolsheet']).forEach(function(scr){
     stage.innerHTML='';
     var probe = document.createElement('div');
     stage.appendChild(probe);
@@ -8921,6 +8962,16 @@ MF.validate = function(){
         MF.state.layer=4; MF.state.face=[]; MF.state.faceLayer=null;
         var lump = MF.digOre(4, cRng);
         if(lump){ MF.state.cart=[lump]; MF.state.selected=lump; MF.state.anvil=MF.anvilInit(lump); MF.state.anvil.step='break'; }
+        MF.paintMine();
+      } else if(scr==='mine-number'){
+        /* THE SAME SCREEN WITH A NUMBER ON THE BENCH. This is the only state
+           in which the Stamp Mill signpost exists at all. */
+        MF._mine = null;
+        MF.SCREENS.mine(probe);
+        MF.state.layer=4; MF.state.face=[]; MF.state.faceLayer=null;
+        var cNum = {kind:'number', n:72, layer:4, id:'ctr-num'};
+        MF.state.cart=[cNum]; MF.state.selected=cNum;
+        MF.state.anvil=MF.anvilInit(cNum); MF.state.anvil.step='break';
         MF.paintMine();
       } else if(scr==='forge'){
         /* WITH A MOLD OPEN, and with something in it. Mounted cold the forge
@@ -9801,6 +9852,78 @@ MF.validate = function(){
   if(!lyCaught) errs.push('CONTROL: the layout sweep cannot see text running off the right edge');
   document.body.removeChild(lyStage);
   MF._mine = lySaved.mine; MF._forge = lySaved.forge;
+
+  /* 5o. A BOX MUST NOT BE MOSTLY EMPTY.
+
+         `.benchore` carries `flex:1 1 240px` so the ore keeps a sensible
+         minimum WIDTH beside the corner column. Under 560px the head turns to
+         `flex-direction:column`, and a flex-basis measures the MAIN axis - so
+         the same declaration became a 240px HEIGHT for a single 48px line, and
+         every phone got 192px of empty timber between the ore and the floor.
+
+         Nothing in the build could see it. `layout` measures the right edge
+         only, and says so. `reach` measures the distance between two controls,
+         and this was inside one box. A hollow box crosses no edge and moves no
+         control; it just wastes the screen, on the axis this project has spent
+         four sessions trying to buy back.
+
+         So it is measured directly: the label's box against the text actually
+         drawn in it, at the live viewport width.
+
+         READ THE DENOMINATOR: ONE element, at ONE width - whatever the window
+         happens to be. It says nothing about any other box on the bench, and a
+         run at 1200px cannot see a fault that only exists under 560px. The
+         value is that it is checked at whatever width you are testing, and the
+         width is reported with the failure. */
+  var hoStage = document.createElement('div');
+  hoStage.style.cssText = 'position:fixed; left:-13000px; top:0; width:' +
+    document.documentElement.clientWidth + 'px';
+  document.body.appendChild(hoStage);
+  var hoSaved = {mine:MF._mine, cart:MF.state.cart, sel:MF.state.selected, bench:MF.state.anvil,
+                 layer:MF.state.layer, face:MF.state.face, fl:MF.state.faceLayer};
+  /* the text a box actually draws, as the union of its own line boxes */
+  function hoTextH(el){
+    var r = document.createRange(); r.selectNodeContents(el);
+    var rects = r.getClientRects(), top = Infinity, bot = -Infinity;
+    for(var i=0;i<rects.length;i++){ top = Math.min(top, rects[i].top); bot = Math.max(bot, rects[i].bottom); }
+    return (rects.length && isFinite(top)) ? bot - top : 0;
+  }
+  [{kind:'poly', a:1, b:-3, c:-10, layer:4, id:'ho-p'},
+   {kind:'number', n:72, layer:4, id:'ho-n'}].forEach(function(hoOre){
+    chk('hollow');
+    var probe = document.createElement('div');
+    hoStage.innerHTML = ''; hoStage.appendChild(probe);
+    try {
+      MF._mine = null; MF.SCREENS.mine(probe);
+      MF.state.layer = 4; MF.state.face = []; MF.state.faceLayer = null;
+      MF.state.cart = [hoOre]; MF.state.selected = hoOre;
+      MF.state.anvil = MF.anvilInit(hoOre); MF.state.anvil.step = 'break';
+      MF.paintMine();
+    } catch(e){ errs.push('hollow: the mine threw while building: ' + e.message); return; }
+    var lab = probe.querySelector('.benchore');
+    if(!lab){ errs.push('hollow: the bench has no ore label on it at all'); return; }
+    var box = lab.getBoundingClientRect().height, txt = hoTextH(lab);
+    if(txt > 0 && box > txt * 1.6 + 12)
+      errs.push('hollow: at ' + document.documentElement.clientWidth + 'px the ore label "' +
+        (lab.textContent||'').trim() + '" draws ' + Math.round(txt) + 'px of text in a ' +
+        Math.round(box) + 'px box — ' + Math.round(box - txt) + 'px of the bench is empty');
+  });
+  /* CONTROL: put the fault back and watch it fail. This is the exact
+     declaration that shipped it - a flex-basis on the turned axis. */
+  chk('hollow');
+  var hoCtl = document.createElement('div');
+  hoStage.innerHTML = ''; hoStage.appendChild(hoCtl);
+  hoCtl.style.cssText = 'display:flex; flex-direction:column; align-items:flex-start';
+  var hoLab = H('div','eq benchore','x<sup>2</sup> &minus; 3x &minus; 10');
+  hoLab.style.flex = '1 1 240px';
+  hoCtl.appendChild(hoLab);
+  var hoBox = hoLab.getBoundingClientRect().height, hoTxt = hoTextH(hoLab);
+  if(!(hoTxt > 0 && hoBox > hoTxt * 1.6 + 12))
+    errs.push('CONTROL: a 240px flex-basis on a one-line label is not reported as a hollow box');
+  document.body.removeChild(hoStage);
+  MF._mine = hoSaved.mine; MF.state.cart = hoSaved.cart; MF.state.selected = hoSaved.sel;
+  MF.state.anvil = hoSaved.bench; MF.state.layer = hoSaved.layer;
+  MF.state.face = hoSaved.face; MF.state.faceLayer = hoSaved.fl;
 
 
   /* 5n. REACH: THE WORK MUST FIT ON ONE SCREEN.
