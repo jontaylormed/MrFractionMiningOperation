@@ -1157,3 +1157,47 @@ six-way comparison names it four times.
 - **Compare a thing against itself in another state.** The rail was never *wrong* at
   any single moment — 2px is a plausible rail. It was wrong across states, and only a
   check that renders more than one state can see that.
+
+## 66. A component that paints its own background must paint its own ink
+
+The note under the anvil at the end of a lump — *"Every piece is native metal… that
+is the end of the lump, not a failure to get further into it"* — was **`#E4D5BB` on
+`#F1F8F5`. 1.34:1.** The single most pastoral sentence on the site, invisible.
+
+`.note` and its three variants each lay down a near-white card and **none of them set
+a `color`**. On the light screens where notes were first written that was harmless,
+because the inherited ink was already dark. Dropped inside the breaking floor's dark
+panel, the note kept its white card and inherited the panel's cream text.
+
+**Seventeen notes are built in this file** and any of them can land on a dark surface.
+The fix belongs on `.note`, not on the call site that happened to be reported.
+
+### And the state it lives in had never been rendered
+
+`mine-done` — the bench once every piece on the floor is native — is a whole panel
+the sweep had never reached: the last blow in the hammer box, the bare anvil, the
+note. **Nothing in this build had ever broken a lump all the way down.** The moment
+that pass existed it found a *second* failure nobody had reported: `.piece.native .pt`
+— the words **"native metal"**, the thing the entire screen is driving at — at
+**3.2:1** on the gold chip, because a piece only carries that label once it is native.
+
+The pass breaks the lump **for real**, through `MF.swing`, rather than handing
+`paintBreak` a hand-built floor of native pieces. A hand-built floor is a state the
+app cannot reach, and a check against one proves nothing about the app.
+
+**It also asserts that it got there.** If the loop fails to reach the end, the pass
+reports *"mine-done never reached the end of a lump, so the finished bench was not
+swept"* rather than sweeping nothing and reporting clean — which is precisely how the
+two failures above survived. Proven by stubbing `MF.simplestFactor` to return null.
+
+**The rules.**
+
+- **Inheritance is not a decision.** A component that controls its own background has
+  taken responsibility for the contrast on it, and must set both halves.
+- **A fix goes where the class of defect lives.** One note was reported; four variants
+  and seventeen call sites had the same hole.
+- **Terminal states are states.** "After the work is finished" is as real a screen as
+  "before it starts", and it is the one no automated pass wanders into by accident.
+- **A pass that can mount nothing must say so.** Three sweeps in a row here have
+  reported clean over surfaces they never built (§62, §64, and this one). The guard
+  costs one line.
