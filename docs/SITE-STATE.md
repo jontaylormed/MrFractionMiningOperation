@@ -22,7 +22,7 @@
 | **Screens** | **eight** — surface, the Stamp Mill, the Casting Shed and its three workshops, the mine, the forge |
 | **Layers** | **five**, all reachable from the first screen, none gated on anything |
 | **Instruments** | **seven**, all made at the forge, none granted |
-| **Validation** | `MF.validate()` → **9,698 checks / 33 groups / 0 errors**, two controls that must fail, and do — **run it at the width you ship from**, because `layout`, `reach` and `hollow` measure the live viewport and report it (`VERIFICATION.md` §61, §63). Verified at **380×780, 994×700 and 1250×900** |
+| **Validation** | `MF.validate()` → **9,702 checks / 33 groups / 0 errors**, two controls that must fail, and do — **run it at the width you ship from**, because `layout`, `reach` and `hollow` measure the live viewport and report it (`VERIFICATION.md` §61, §63). Verified at **380×780, 994×700 and 1250×900** |
 
 > **A check is only as wide as the space it sweeps.** The `truthy` group reported 0 errors across 642 checks while **1,970 Decimal Dial states printed a falsehood**, because it tested each lump's original integer coefficients and never nudged `c` — the one thing the dial exists to do. It now sweeps every slider position the control can reach (3,287 checks). Ask of any green result: *what did it not look at?*
 | **Runtime** | Zero dependencies, no build step, no network requests, no storage, runs from `file://` |
@@ -68,6 +68,10 @@ What will not break further is **native metal** — a prime, or a polynomial no 
 > **The resting angle used to cover the maths.** At −20° the head overlapped the expression cut into the ore by **49×10px**, and the expression is 11px tall — it was hiding the thing the student is there to read. Measured against the label’s own box, it clears from −55°; it rests at −62° with 7px to spare.
 
 The impact throws a comic burst — **THUD!** when the seam runs, **CLANG!** when it glances and the hammer comes straight back off the face — **at the anvil, where the blow is**. On the **finishing blow** the hammer bar has gone, so the anvil is drawn once more with the piece that was struck, the hammer comes down on it, and **the last piece shatters and leaves the anvil bare**: there is nothing left to work, and ore still lying there would say the opposite. Under `prefers-reduced-motion` the burst still reports the hit and the last piece is still gone; neither performs.
+
+**The burst word is dark and its halo is light.** It was cream lettering with a dark outline, painted on the star — **1.30:1** for THUD! on gold and **1.08:1** for CLANG! on silver, the two worst readings on the site. The fill and the stroke have swapped roles: near-black letters against **11.98 / 7.91 / 4.52** and **14.8 / 8.81 / 4.28** across each star's stops.
+
+> **The contrast sweep read it as 14.9:1 and had done for weeks.** The star is an absolutely-positioned *sibling* of the word, not an ancestor, so the backdrop walker climbed straight past it to the dark panel behind them both. `_backdrops` checks for a painted, positioned sibling covering the text before it walks the tree, and the burst is now mounted on purpose as `mine-blow` — it exists only during a swing, rests at `opacity:0`, and animations are paused before anything measures, so it was unreachable three separate ways (`VERIFICATION.md` §64).
 
 ```
 60             -> 6 | 10  -> 2 | 3, 5 | 2

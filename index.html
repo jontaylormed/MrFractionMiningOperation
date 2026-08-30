@@ -777,8 +777,15 @@ input[type=range]{width:100%; accent-color:var(--ore); height:44px}
   background:radial-gradient(circle at 50% 50%, #FFD27A 0 34%, #E8A33D 55%, #C96A1F 100%);
   clip-path:polygon(50% 0%,60% 22%,83% 12%,77% 35%,100% 40%,80% 55%,96% 74%,72% 71%,73% 96%,53% 80%,
                     38% 100%,33% 76%,10% 84%,17% 61%,0% 50%,20% 38%,7% 17%,31% 22%,34% 2%)}
+/* THE WORD IS DARK AND THE HALO IS LIGHT, not the other way round.
+   It was cream (#FFF3DE) with a dark outline - and it is sitting on the STAR,
+   which is pale gold. Cream on #FFD27A is 1.30:1; the letterforms were doing
+   nothing and the only thing carrying the word was its own 6px outline. The
+   fill and the stroke have swapped roles: near-black letters, a warm cream
+   halo behind them, and the same drop shadow under the whole thing. Against
+   the star's three stops the fill now reads 11.98 / 7.91 / 4.52. */
 .thud .tword{position:relative; font-family:var(--display); font-size:38px; letter-spacing:.03em;
-  color:#FFF3DE; paint-order:stroke; -webkit-text-stroke:6px #3A2408; text-shadow:0 4px 0 #7A4A12}
+  color:#2A1806; paint-order:stroke; -webkit-text-stroke:6px #FFE9C4; text-shadow:0 4px 0 #7A4A12}
 @keyframes thudpop{
   0%,56%{opacity:0; transform:translate(-50%,-50%) scale(.2) rotate(-16deg)}
   61%{opacity:1; transform:translate(-50%,-50%) scale(1.26) rotate(5deg)}
@@ -791,7 +798,10 @@ input[type=range]{width:100%; accent-color:var(--ore); height:44px}
 @keyframes starspin{0%,56%{transform:rotate(0)}100%{transform:rotate(26deg)}}
 .anvilstage[data-anim] .thud .tstar{animation:starspin 3000ms ease-out 1}
 /* a glance is a smaller, colder ring of a word */
-.anvilstage[data-anim=glance] .thud .tword{font-size:30px; color:#DCE6EE; -webkit-text-stroke:6px #26333D; text-shadow:0 4px 0 #46545F}
+/* the same swap on the cold word: it was #DCE6EE on a silver star at 1.08:1,
+   which is the worst reading on the site. Dark slate on the star's stops now
+   reads 14.8 / 8.81 / 4.28. */
+.anvilstage[data-anim=glance] .thud .tword{font-size:30px; color:#101820; -webkit-text-stroke:6px #EAF2F8; text-shadow:0 4px 0 #46545F}
 .anvilstage[data-anim=glance] .thud .tstar{background:radial-gradient(circle at 50% 50%, #E6EEF4 0 34%, #A9B8C4 55%, #6E7E8C 100%)}
 
 /* the pieces are held back so they arrive ON the beat - 58% of 3000ms.
@@ -8885,16 +8895,46 @@ MF.validate = function(){
   function _lum(c){ var a=c.map(function(x){ x/=255; return x<=0.03928?x/12.92:Math.pow((x+0.055)/1.055,2.4); });
     return 0.2126*a[0]+0.7152*a[1]+0.0722*a[2]; }
   function _ratio(f,b){ var L1=_lum(f),L2=_lum(b); return (Math.max(L1,L2)+0.05)/(Math.min(L1,L2)+0.05); }
+  /* the paint of one node: a flat colour, or every stop of its gradient */
+  function _paintOf(n){
+    var cs=getComputedStyle(n), bg=_rgb(cs.backgroundColor);
+    if(bg && cs.backgroundColor.indexOf('rgba(0, 0, 0, 0)')<0) return [bg];
+    var img=cs.backgroundImage||'';
+    if(img.indexOf('gradient')>=0){
+      var st=(img.match(/rgba?\([^)]+\)/g)||[]).map(_rgb).filter(Boolean);
+      if(st.length) return st;
+    }
+    return null;
+  }
+  /* WHAT IS BEHIND A RUN OF TEXT IS NOT ALWAYS ITS ANCESTOR.
+     This climbed the parent chain and nothing else, so a word painted on top
+     of an absolutely-positioned SIBLING was measured against whatever panel
+     the pair of them were sitting in. THUD! is cream over a pale gold star and
+     the walker reported the dark bench behind them both: 14.9:1 for a word
+     reading 1.3:1 on screen. A number that high is not a pass, it is a wrong
+     question, and this one had a wrong answer in the safe direction.
+     An overlapping painted sibling is checked FIRST, and only if there is none
+     does the ancestor chain get walked. */
   function _backdrops(el, root){
+    var p = el.parentElement, box = el.getBoundingClientRect();
+    if(p && box.width > 0 && box.height > 0){
+      var cx = box.left + box.width/2, cy = box.top + box.height/2, over = null;
+      for(var i=0; i<p.children.length; i++){
+        var sib = p.children[i];
+        if(sib === el || sib.contains(el)) continue;
+        var sp = getComputedStyle(sib);
+        if(sp.position === 'static' || sp.display === 'none' || parseFloat(sp.opacity) === 0) continue;
+        var sb = sib.getBoundingClientRect();
+        if(cx < sb.left || cx > sb.right || cy < sb.top || cy > sb.bottom) continue;
+        var paint = _paintOf(sib);
+        if(paint) over = paint;          /* later in the DOM paints on top */
+      }
+      if(over) return over;
+    }
     var n=el;
     while(n && n!==root.parentNode){
-      var cs=getComputedStyle(n), bg=_rgb(cs.backgroundColor);
-      if(bg && cs.backgroundColor.indexOf('rgba(0, 0, 0, 0)')<0) return [bg];
-      var img=cs.backgroundImage||'';
-      if(img.indexOf('gradient')>=0){
-        var st=(img.match(/rgba?\([^)]+\)/g)||[]).map(_rgb).filter(Boolean);
-        if(st.length) return st;
-      }
+      var got = _paintOf(n);
+      if(got) return got;
       n=n.parentElement;
     }
     return [[253,248,240]];
@@ -8951,7 +8991,7 @@ MF.validate = function(){
      the threshold, and every run of this group reported clean over them.
      READ THE DENOMINATOR: a green sweep proves only what it mounted, and this
      one was choosing what to mount at random. */
-  Object.keys(MF.SCREENS).concat(['mine-number','forge-poured','toolsheet']).forEach(function(scr){
+  Object.keys(MF.SCREENS).concat(['mine-number','mine-blow','forge-poured','toolsheet']).forEach(function(scr){
     stage.innerHTML='';
     var probe = document.createElement('div');
     stage.appendChild(probe);
@@ -8973,6 +9013,26 @@ MF.validate = function(){
         MF.state.cart=[cNum]; MF.state.selected=cNum;
         MF.state.anvil=MF.anvilInit(cNum); MF.state.anvil.step='break';
         MF.paintMine();
+      } else if(scr==='mine-blow'){
+        /* THE BURST, WHICH EXISTS ONLY IN THE THREE SECONDS AFTER A SWING.
+           Both words - THUD! on a hit, CLANG! on a glance - painted on their
+           own star. Neither had ever been measured: the burst is built by a
+           swing, this sweep never swings, and `.thud` rests at opacity 0 so
+           the walker would have skipped it even if it had been there. They
+           shipped at 1.30:1 and 1.08:1.
+           The opacity is forced because the animation is what raises it, and
+           `art-director`'s instrument pauses animations before it measures -
+           so a state that only exists mid-keyframe is invisible to every
+           instrument this project owns unless it is mounted on purpose. */
+        ['hit','glance'].forEach(function(kind){
+          var cbs = E('div','anvilstage done');
+          cbs.setAttribute('data-anim', kind);
+          cbs.appendChild(MF.anvilScene({kind:'poly',a:1,b:-5,c:6,id:'ctr-blow-'+kind}, {shatter:true}));
+          var cbBurst = MF.thudBurst(kind);
+          cbBurst.style.opacity = '1';
+          cbs.appendChild(cbBurst);
+          probe.appendChild(cbs);
+        });
       } else if(scr==='forge'){
         /* WITH A MOLD OPEN, and with something in it. Mounted cold the forge
            shows an order board and a "the mold is cold" plate - the crucible,

@@ -1067,3 +1067,53 @@ boxes, at the live viewport width. Its control puts the original declaration bac
   nothing is unreadable — so every instrument reports clean.
 - **When you widen a value, re-measure at the narrow end.** The basis went 220 → 240
   for the wide layout and got 20px worse on the phone.
+
+## 64. What is behind a run of text is not always its ancestor
+
+The comic burst on a swing — **THUD!** on a hit, **CLANG!** on a glance — was cream
+lettering with a dark outline, sitting on a star:
+
+| | | |
+|---|---|---|
+| `THUD!` `#FFF3DE` | on the gold star `#FFD27A` / `#E8A33D` / `#C96A1F` | **1.30 / 1.30 / 3.44** |
+| `CLANG!` `#DCE6EE` | on the silver star `#E6EEF4` / `#A9B8C4` / `#6E7E8C` | **1.08 / 1.61 / 3.30** |
+
+The letterforms were doing nothing. The only thing carrying either word was its own
+6px outline, which is a shape around a hole rather than a word.
+
+**The sweep looked straight at it and reported 14.9:1.** `_backdrops` walked the
+**parent chain** — and the star is not an ancestor of the word, it is an
+absolutely-positioned **sibling** underneath it. So the walker climbed past the thing
+actually behind the text and found the dark panel the pair of them were sitting in,
+and cream on a dark panel is excellent.
+
+> **A number that high is not a pass. It is the wrong question with a wrong answer in
+> the safe direction.** Every reading this group produced for text over an art layer
+> was worthless, and nothing in the output distinguished them from the real ones.
+
+Two things were wrong and both had to be fixed:
+
+- `_backdrops` now checks for a **painted, positioned sibling whose box contains the
+  text's centre** before it walks the ancestor chain. Where one exists, that is what
+  is behind the text.
+- The burst is **mounted deliberately**, as `mine-blow`. It exists only in the three
+  seconds after a swing, this sweep never swings, and `.thud` rests at `opacity:0` —
+  so it was unreachable three separate ways. `art-director`'s instrument pauses
+  animations before it measures, which means **a state that only exists mid-keyframe
+  is invisible to every instrument this project owns unless something mounts it on
+  purpose.**
+
+The word is dark now and the halo is light — the fill and the stroke swapped roles.
+Against the star's stops: **11.98 / 7.91 / 4.52** and **14.8 / 8.81 / 4.28**.
+
+Restoring the two original colours fails the build in **four** places at once.
+
+**The rules.**
+
+- **Ask what is painted under the text, not what contains it.** Position, z-index and
+  overlap decide that; the DOM tree only sometimes agrees.
+- **A high contrast reading deserves the same suspicion as a low one.** 14.9:1 for
+  cream text was the tell, and it read like a pass for weeks.
+- **Anything that exists only during an animation has to be mounted by hand.** Three
+  independent mechanisms — never swung, `opacity:0` at rest, animations paused before
+  measurement — each on its own enough to hide it.
