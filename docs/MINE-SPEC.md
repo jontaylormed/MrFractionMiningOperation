@@ -146,7 +146,7 @@ The original §8 listed "gear that appears (decimal dial, assay lamp, deeper pic
 | **Lantern** | three primes | distribution over plain numbers | lights the mold — a live area model of what you hold |
 | **Shifter** | two x-ingots | watching `x·x` become `x²` | the exponent rail: the four products, traced |
 | **Drill** | a matched pair `(x+k)(x−k)` | casting a twin seam on purpose | reads structure across the yard |
-| **Deep Pick** | two x-ingots and a plain metal | — | three lumps a swing |
+| **Prospector's Pick** | three plain metals | — | names what kind of ore a lump is, at the face, before you swing |
 | **Decimal Dial** | any four metals | — | nudges a lump off the whole numbers |
 
 **The casting preview is no longer free.** It let a student nudge numbers until it matched, which made the pour ceremonial and broke §6's one rule. It is now the Lantern's power: before you forge one you pour and the casting teaches you; after, you can see what you are building.
@@ -232,7 +232,7 @@ Everything §8 excludes, unchanged — the guided route, the fully open face, th
 
 | | tool | cast | from |
 |---|---|---|---|
-| 1 | Deep Pick | `12` | 2 · 2 · 3 — plain numbers, one repeated |
+| 1 | Prospector's Pick | `12` | 2 · 2 · 3 — plain numbers, one repeated |
 | 2 | Pit Lantern | `30` | 2 · 3 · 5 — three different primes |
 | 3 | Steel Pick | `3x + 12` | 3 · (x+4) — a metal spread over a bracket |
 | 4 | Decimal Dial | `x² + 3x + 2` | (x+1)(x+2) — two brackets, one apart |
@@ -290,7 +290,7 @@ student's marked open and drawn as `?`.
 
 | rank | tool | the method, by its real name |
 |---|---|---|
-| 1 | Deep Pick | cutting at the face — it has no factoring move, and says so |
+| 1 | Prospector's Pick | testing the rock before you swing — it has no factoring move, and says so |
 | 2 | Lantern | one side lit, one side dark |
 | 3 | Steel Pick | pulling out the common factor (the GCF) |
 | 4 | Decimal Dial | the whole-number test |
@@ -578,3 +578,38 @@ Flat fill, dark outline, no gradients. The whole site is drawn that way and the 
 was not, which made the one object the student looks at hardest the one object that
 looked pasted in. Detail that is not load-bearing comes off; the **silhouette and
 every coordinate the animations are pinned to stay exactly as they are**.
+
+## 17. Every layer pays, and the first tool reads the rock
+
+*User, 2026-08-30. Both reported as defects, and both were.*
+
+### 17a. A tool must change something on screen
+
+The Deep Pick promised three lumps a swing and delivered a different button label —
+`MF.breakRock` never read the belt. **An instrument that costs metal and has no effect
+is worse than no instrument**: the student pays for it and then doubts their own
+reading of the screen.
+
+It is now **The Prospector's Pick**, and it works one step earlier than everything
+else. Held to a lump still in the wall it names the **kind** of ore — shared metal, a
+twin seam, a plain trinomial, a loaded one, an ingot already pure — and stops there.
+It never names a number in the rock, so the rock is still the only judge (§11e).
+Inspecting the face is free and breaks nothing, so the tool turns choosing what to cut
+out into a decision instead of a lottery.
+
+### 17b. Every layer must be able to pay for the starting tools
+
+The pick is `12 = 2·2·3` and the lantern `30 = 2·3·5` — **plain numbers**. A monic
+trinomial cannot produce a plain number even in principle, so layers 4 and 5 produced
+none at all and layer 3 produced no fives. Three of the five layers could not buy the
+lantern at any amount of digging.
+
+A minority of deep-layer lumps now carry a **common metal in front** — `g(x+p)(x+q)`,
+`g((mx)²−n²)`, `g·(loaded)`. That is not a concession to the economy; **it is the move
+that should be taught first**: look for something every term carries before anything
+else. Layer 5's inner quadratic stays genuinely loaded, so the layer is still itself.
+
+> The rates are held low enough that each layer keeps its identity. Layer 4 at 0.32
+> starved the Decimal Dial by thinning the supply of monic trinomials, and the `forge`
+> group caught it. The answer was to salt less, not to widen the sample until the
+> failure went away.

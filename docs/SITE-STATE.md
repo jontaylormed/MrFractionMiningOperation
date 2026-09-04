@@ -22,7 +22,7 @@
 | **Screens** | **eight** — surface, the Stamp Mill, the Casting Shed and its three workshops, the mine, the forge |
 | **Layers** | **five**, all reachable from the first screen, none gated on anything |
 | **Instruments** | **seven**, all made at the forge, none granted |
-| **Validation** | `MF.validate()` → **10,445 checks / 34 groups / 0 errors**, two controls that must fail, and do — **run it at the width you ship from**, because `layout`, `reach`, `hollow` and `cartdraw` measure the live viewport and report it (`VERIFICATION.md` §61, §63, §65). Verified at **380×780, 560×760, 994×700 and 1250×900** |
+| **Validation** | `MF.validate()` → **10,562 checks / 34 groups / 0 errors**, two controls that must fail, and do — **run it at the width you ship from**, because `layout`, `reach`, `hollow` and `cartdraw` measure the live viewport and report it (`VERIFICATION.md` §61, §63, §65). Verified at **380×780, 560×760, 994×700 and 1250×900** |
 
 > **A check is only as wide as the space it sweeps.** The `truthy` group reported 0 errors across 642 checks while **1,970 Decimal Dial states printed a falsehood**, because it tested each lump's original integer coefficients and never nudged `c` — the one thing the dial exists to do. It now sweeps every slider position the control can reach (3,287 checks). Ask of any green result: *what did it not look at?*
 | **Runtime** | Zero dependencies, no build step, no network requests, no storage, runs from `file://` |
@@ -268,7 +268,7 @@ The board used to ask for a *shape* — "three pure ingots", "any four metals at
 
 | rank | tool | cast | from | the method it carries, by its real name |
 |---|---|---|---|---|
-| 1 | **Deep Pick** | `12` | 2 · 2 · 3 | *cutting at the face* — it has no factoring move and says so |
+| 1 | **Prospector's Pick** | `12` | 2 · 2 · 3 | *testing the rock before you swing* — it names the KIND of a lump still in the wall |
 | 2 | **Pit Lantern** | `30` | 2 · 3 · 5 | *one side lit, one side dark* — lights **one** factor, prints `?` for the other |
 | 3 | **Steel Pick** | `3x + 12` | 3 · (x+4) | *pulling out the common factor (the GCF)* |
 | 4 | **Decimal Dial** | `x² + 3x + 2` | (x+1)(x+2) | *the whole-number test* |
@@ -352,7 +352,7 @@ On one column the **work comes first** and the seven-item board follows it, the 
 
 ## The forge, and the instruments
 
-Metals are **spent** here — this is the yard's sink. Forging *is* distributing, and each tool is forged by demonstrating the move it then assists with: the **Lantern** from three primes, the **Shifter** from two x-ingots, the **Drill** from a matched pair. Plus the **Deep Pick** and the **Decimal Dial**.
+Metals are **spent** here — this is the yard's sink. Forging *is* distributing, and each tool is forged by demonstrating the move it then assists with: the **Lantern** from three primes, the **Shifter** from two x-ingots, the **Drill** from a matched pair. Plus the **Prospector's Pick** and the **Decimal Dial**.
 
 **The casting preview is the Lantern's power, not a default.** Before you forge one, the mold is dark and you learn from the casting.
 

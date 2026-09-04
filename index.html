@@ -1649,6 +1649,9 @@ table.rosetta td.rx{font-family:var(--display); font-size:16px; color:var(--ink)
 .inspect .expr{font-family:var(--display); font-size:clamp(22px,3.4vw,34px); color:#FFF3DE; margin:2px 0 6px}
 .inspect .obs{font-size:14px; color:#D9C39C}
 .inspect .obs li{margin:2px 0}
+/* the prospector's pick's whole output: the kind, named, at the face. 7.70:1
+   on the inspect panel's #241D18. */
+.inspect .obs .pickread{color:var(--lamp)}
 
 /* ---- the crucible pour ---- */
 @keyframes moltenfall{0%{transform:scaleY(0); opacity:0}18%{opacity:1}100%{transform:scaleY(1); opacity:1}}
@@ -2134,6 +2137,46 @@ MF.digOre = function(layer, rng){
   return null;
 };
 
+/* THE COMMON METAL SALTED INTO THE DEEP LAYERS, and why it had to exist.
+
+   Tools are paid for in metal off the rack, and the two a student wants first
+   are priced in PLAIN NUMBERS: the pick is 12 = 2·2·3 and the lantern is
+   30 = 2·3·5. Measured over 160 digs a layer, before this existed:
+
+     layer 1 Gravel        115 twos   67 threes   17 fives
+     layer 2 Seam Rock     158        88          25
+     layer 3 Twin Beds      48        26           0
+     layer 4 Trinomial       0         0           0
+     layer 5 Loaded Vein     0         0           0
+
+   Three of the five layers could not pay for the lantern at any amount of
+   digging, and layer 3 never produced a single 5. A student working the
+   interesting rock was locked out of the instrument that tells them whether a
+   lump still has a seam in it, with nothing on screen to say why.
+
+   So a minority of lumps in the deep layers now carry a common metal in front.
+   THIS IS NOT A CONCESSION, it is the move that should be taught first: check
+   for something every term carries before you do anything else. A salted layer
+   4 lump is g(x+p)(x+q) - still a trinomial, and now a two-step one. Layer 5's
+   inner quadratic is still genuinely loaded; the metal comes off in front of
+   it. The `ore` group's identity rule (layer 5 never hands out a===1) holds,
+   because g·A is never 1.
+
+   THE VALUES ARE THE PRIMES THE TWO STARTING TOOLS ARE PRICED IN, weighted by
+   what the tools actually need. The pick is 2·2·3, so it wants TWO twos out of
+   one seam: 4 and 12 carry a pair, and 12 is the pick's whole cast in a single
+   lump. The lantern is 2·3·5 and 5 was the scarcest metal in the mine, so 5,
+   10 and 15 each carry one.
+
+   THE RATES ARE HELD LOW ENOUGH THAT EACH LAYER IS STILL ITSELF. Layer 4 sat
+   at 0.32 for one run and it starved the Decimal Dial - the forge group,
+   which requires every order to be castable from 70 real smelts, could no
+   longer find (x + 1) and (x + 2) in the thinner supply of monic trinomials.
+   That group catching it is the group working; the answer was to salt less,
+   not to widen the sample until the failure went away. */
+var SALT_METALS = [2,3,4,5,6,10,12,15];
+function SALT(rng){ return pick(rng, SALT_METALS); }
+
 MF.rawOre = function(layer, rng){
   var p, qq, g, m, n;
   switch(layer){
@@ -2149,6 +2192,10 @@ MF.rawOre = function(layer, rng){
     case 3:
       if(rng() < 0.30){ return {kind:'poly', a:1, b:0, c:irange(rng,1,12)*irange(rng,1,2)}; }  /* pure: x²+k */
       m = irange(rng,1,3); n = irange(rng,2,9);
+      if(rng() < 0.34){                                   /* g·((mx)²−n²) */
+        g = SALT(rng);
+        return {kind:'poly', a:g*m*m, b:0, c:-g*n*n};
+      }
       return {kind:'poly', a:m*m, b:0, c:-(n*n)};        /* twin: (mx)²−n² */
     case 4:
       if(rng() < 0.16){                                   /* a pure trinomial */
@@ -2156,6 +2203,10 @@ MF.rawOre = function(layer, rng){
       }
       p = irange(rng,-9,9); qq = irange(rng,-9,9);
       if(p===0||qq===0) return null;
+      if(rng() < 0.22){                                   /* g·(x+p)(x+q) — kept LOW so monic trinomials still dominate layer 4 */
+        g = SALT(rng);
+        return {kind:'poly', a:g, b:g*(p+qq), c:g*p*qq};
+      }
       return {kind:'poly', a:1, b:p+qq, c:p*qq};
     case 5:
       m = irange(rng,2,4); n = irange(rng,1,3);
@@ -2165,6 +2216,10 @@ MF.rawOre = function(layer, rng){
       var A=m*n, B=m*qq+n*p, C=p*qq;
       if(gcdAll([A,B,C])>1) return null;
       if(A===1) return null;
+      if(rng() < 0.38){                                   /* g·(loaded) */
+        g = SALT(rng);
+        return {kind:'poly', a:g*A, b:g*B, c:g*C};
+      }
       return {kind:'poly', a:A, b:B, c:C};
   }
   return null;
@@ -2275,7 +2330,7 @@ MF.state = {
      the instrument does for you when you are getting metal out of rock, and
      the object it is cast from gets harder in step:
 
-       1 Deep Pick     12              2 · 2 · 3         plain numbers, one repeated
+       1 Prospector's  12              2 · 2 · 3         plain numbers, one repeated
        2 Pit Lantern   30              2 · 3 · 5         three different primes
        3 Steel Pick    3x + 12         3 · (x + 4)       a metal spread over a bracket
        4 Decimal Dial  x² + 3x + 2     (x+1)(x+2)        two brackets, one apart
@@ -2288,8 +2343,14 @@ MF.state = {
      become an unreachable one. ---- */
 MF.TOOLS = {
   pick: {
-    rank:1, ic:'&#9935;', nm:'The Deep Pick', order:'a heavier pick head',
-    ds:'Brings up three lumps a swing instead of one.',
+    /* WAS 'The Deep Pick', 'three lumps a swing'. MF.breakRock never read
+       hasTool('pick') - the only thing the tool did anywhere in the build was
+       change the swing button's LABEL. It cost 12 metal and cut exactly one
+       lump, same as bare hands, and its own copy said otherwise.
+       A prospector's pick is the real instrument for the job it does now: you
+       test the rock before you commit to digging it. */
+    rank:1, ic:'&#9935;', nm:'The Prospector\'s Pick', order:'a pick you can test rock with',
+    ds:'Names what kind of ore a lump is before you swing at it.',
     cast:{a:0,b:0,c:12}, slots:3,
     forge:'Cast <b>12</b> out of pure metal. Three plain ingots, and one of them turns up twice.',
     teaches:'distribution over plain numbers'
@@ -2372,15 +2433,17 @@ MF.hasTool = function(k){ return !!MF.state.tools[k]; };
    ========================================================================= */
 MF.SCHEMA = {
 
-  /* rank 1. The deep pick has no factoring move - it multiplies what comes up
-     out of the wall. Saying that plainly beats inventing a method for it. */
+  /* rank 1. The prospector's pick has no factoring move - it names the SHAPE
+     of a lump still in the wall and stops there. Saying that plainly beats
+     inventing a method for it. */
   pick: {
-    name: 'Cutting at the face',
-    why: 'This one is about how much rock you bring up, not about what is inside it. Three lumps a swing at the wall; on the floor a swing is still one swing.',
+    name: 'Testing the rock before you swing',
+    why: 'Every other instrument works on a lump you have already dug. This one works one step earlier, at the wall: hold it to a lump in the seam and it names what KIND of ore it is — shared metal, a twin seam, a plain trinomial, a loaded one, or an ingot that is already pure. It tells you nothing about the answer. It tells you which shape you are about to be looking at, so choosing what to cut out is a decision instead of a lottery. Turning lumps over at the face costs nothing and breaks nothing.',
     steps: function(ore){
       return [
-        {act:'At the seam, swing once and three lumps come out of the wall.', shows:'three for one'},
-        {act:'On the anvil it changes nothing. What is in the rock is in the rock.', shows:MF.oreLabel(ore)}
+        {act:'At the seam, pick out a lump and hold the pick to it.', shows:'what kind is this?'},
+        {act:'It names the shape — and stops there. Which numbers are in it is still yours to find.', shows:MF.ASSAY[MF.assayOf(ore)].name},
+        {act:'On the floor it has nothing to say. By then you have the lump.', shows:MF.oreLabel(ore)}
       ];
     },
     practice: {ore:{kind:'number',n:12}, ask:'Name one whole number that runs through 12.', answer:{m:0,k:2}}
@@ -3002,9 +3065,12 @@ MF.TOOL_READ = {
     MF.paintNameSide(host, ore, pieceId);
   },
 
-  /* THE DEEP PICK works at the face, not on the floor. */
+  /* THE PROSPECTOR'S PICK works at the face, not on the floor. Its reading
+     happens one step earlier than every other instrument's - in MF.paintFace,
+     on a lump still in the wall - so by the time a lump is down here the pick
+     has already said everything it has to say. */
   pick: function(host, ore, pieceId){
-    host.appendChild(H('p','hint','<b>This one works at the seam, not on the floor.</b> Three lumps a swing when you are cutting rock out of the wall. Down here a swing is a swing.'));
+    host.appendChild(H('p','hint','<b>This one works at the seam, not on the floor.</b> Hold it to a lump still in the wall and it names what kind of ore is in there before you cut it out. Down here you already have the lump.'));
     MF.methodLine(host, "pick");
   },
 
@@ -6315,12 +6381,22 @@ MF.paintFace = function(){
     var terms = (o.kind==='number') ? 1 : [o.a,o.b,o.c].filter(function(v){ return v!==0; }).length;
     var frontOf = (o.kind==='number') ? 'no x in it at all'
       : (o.a===0 ? 'no x², a flat seam' : (o.a===1 ? 'one x², nothing in front' : num(o.a) + ' in front of the x²'));
+    /* WHAT THE PROSPECTOR'S PICK IS FOR, and the only place it does anything.
+       Without it this line says the kind is not knowable from here. With it,
+       the kind IS the reading — and nothing more: it names the shape you are
+       about to be looking at and never a number in it, so the rock is still
+       the only judge (§11e). Inspecting is free and breaks nothing, so a
+       student with this tool can read the whole seam before cutting once. */
+    var held = MF.hasTool('pick');
     insp.appendChild(H('div','obs',
       '<b>' + (terms===1 ? 'One vein' : terms + ' veins') + '</b> · ' + frontOf +
       ' · layer ' + o.layer + ', ' + MF.LAYERS[o.layer-1].name +
-      '<br><em>Which seam runs through it is not something you can see from here — that is the assay’s job.</em>'));
+      (held
+        ? '<br><b class="pickread">The pick reads it as ' + MF.ASSAY[MF.assayOf(o)].name + '.</b> ' +
+          '<em>' + MF.ASSAY[MF.assayOf(o)].tell + '</em>'
+        : '<br><em>Which seam runs through it is not something you can see from here — that is the assay’s job.</em>')));
     var brow = E('div','row'); brow.style.marginTop='10px';
-    var br = E('button','btn primary big', MF.hasTool('pick') ? 'Swing the deep pick' : 'Swing the pick'); br.type='button';
+    var br = E('button','btn primary big','Swing the pick'); br.type='button';
     on(br,'click',function(){ MF.breakRock(MF.state.inspecting); });
     brow.appendChild(br);
     var skip = E('button','btn','Leave it and look at another'); skip.type='button';
@@ -8014,6 +8090,59 @@ MF.validate = function(){
     }
   }
 
+  /* 3a-ii. EVERY LAYER MUST BE ABLE TO PAY FOR THE TOOLS.
+
+           Tools are bought with metal off the rack, and the two a student
+           wants first are priced in PLAIN NUMBERS - the pick is 12 = 2·2·3,
+           the lantern is 30 = 2·3·5. Nothing checked that the rock a student
+           is standing in front of can produce those. Measured over 160 digs a
+           layer, layers 3, 4 and 5 produced ZERO fives, and layers 4 and 5 no
+           plain metal at all: a student working the interesting rock was
+           locked out of the instrument that tells them whether a lump still
+           has a seam in it, permanently, with nothing on screen to say why.
+
+           So it is asserted. Dig a layer, break every lump the way the engine
+           itself would, and require the yard to hold enough to cast both
+           starting tools - using MF.castableFrom, the forge's own judge,
+           rather than a second opinion about what 12 factors into.
+
+           READ THE DENOMINATOR: 40 digs a layer at one seed. It says a layer
+           CAN pay, not how long a real student takes to get there, and it says
+           nothing about the four tools priced in polynomial metal. */
+  [1,2,3,4,5].forEach(function(layer){
+    var ecoSaved = {yard:MF.state.yard, heap:MF.state.rockpile};
+    MF.state.yard = {}; MF.state.rockpile = [];
+    var ecoRng = makeRng(31337 + layer * 101);
+    for(var d=0; d<40; d++){
+      var lump = MF.digOre(layer, ecoRng);
+      if(!lump) continue;
+      var B = MF.anvilInit(lump), guard = 0;
+      while(!B.floor.every(function(p){ return MF.isNative(p.ore); }) && guard++ < 40){
+        var pc = B.floor[B.at], f = MF.simplestFactor(pc.ore);
+        if(!f) break;
+        B.raw = {m:String(f.m), k:String(f.k)}; B.rawFor = pc.id;
+        MF.swing(B);
+      }
+      B.floor.forEach(function(p){ MF.stow(p.ore); });
+    }
+    ['pick','lantern'].forEach(function(tk){
+      chk('ore');
+      var spec = MF.TOOLS[tk];
+      if(!MF.castableFrom(spec.cast, spec.slots, MF.yardList()))
+        errs.push('ore: 40 lumps out of layer ' + layer + ' (' + MF.LAYERS[layer-1].name +
+          ') cannot pay for ' + spec.nm + ' — a student working this rock can never forge it');
+    });
+    MF.state.yard = ecoSaved.yard; MF.state.rockpile = ecoSaved.heap;
+  });
+  /* CONTROL: a yard with no plain metal in it must fail the same test */
+  chk('ore');
+  var ecoCtl = MF.state.yard;
+  MF.state.yard = {};
+  [[1,2],[1,-3],[2,5]].forEach(function(g){ MF.addToYard({m:g[0],k:g[1]}); });
+  if(MF.castableFrom(MF.TOOLS.lantern.cast, MF.TOOLS.lantern.slots, MF.yardList()))
+    errs.push('CONTROL: a rack holding nothing but x-metal still claims it can cast 30');
+  MF.state.yard = ecoCtl;
+
   /* 3b. BREAKING. The mine's one move, swept the way a student uses it: take
          a real lump, break its true factors off ONE AT A TIME, and assert at
          every step that the two pieces still reconstruct the rock they came
@@ -8173,9 +8302,22 @@ MF.validate = function(){
   var savedYard = MF.state.yard, savedTools = MF.state.tools, savedForge = MF.state.forge;
   MF.state.yard = {}; MF.state.tools = {}; MF.state.forge = {slots:[], picked:null};
 
-  /* stock a yard from real smelts so the metals are ones a student could own */
+  /* stock a yard from real smelts so the metals are ones a student could own.
+
+     THIS WAS 70 SMELTS AND IT WAS A COIN FLIP DRESSED AS AN ASSERTION.
+     70 across five layers is 14 lumps a layer, and the deep orders want very
+     particular metal - the Auger is (3x − 1)(2x + 3). Re-run at fifteen other
+     seeds, 70 smelts failed TEN times: the Auger missing nine of them, the
+     Drill three, the Shifter two. It passed here on the luck of seed 31337
+     alone, and the first change to the ore generator tipped it over - which
+     read like the change breaking the forge, when what it did was reveal that
+     this line had never really been checked.
+
+     At 200 smelts, twenty seeds out of twenty reach all seven. That is also
+     closer to what a student actually digs. The number was chosen by measuring
+     where the failure rate goes to zero, not by nudging it until green. */
   var oreRng = makeRng(31337);
-  for(var d=0; d<70; d++){
+  for(var d=0; d<200; d++){
     var lump = MF.digOre(1 + (d % 5), oreRng);
     if(!lump) continue;
     if(lump.kind==='number'){ primeFactors(lump.n).forEach(function(p){ MF.addToYard({m:0,k:p}); }); }
@@ -8186,7 +8328,29 @@ MF.validate = function(){
   }
   Object.keys(MF.TOOLS).forEach(function(key){
     chk('forge');
-    if(!MF.toolReady(key)) errs.push('forge: "'+MF.TOOLS[key].nm+'" is not forgeable from 70 real smelts - an unreachable order');
+    if(!MF.toolReady(key)) errs.push('forge: "'+MF.TOOLS[key].nm+'" is not forgeable from 200 real smelts - an unreachable order');
+  });
+
+  /* AND NOT ON ONE SEED. Three more independent students, so a single lucky
+     draw can never again be the whole basis of this claim. */
+  [4242, 90210, 606060].forEach(function(seed){
+    var mrSaved = MF.state.yard;
+    MF.state.yard = {};
+    var mrRng = makeRng(seed);
+    for(var i=0; i<200; i++){
+      var ml = MF.digOre(1 + (i % 5), mrRng);
+      if(!ml) continue;
+      if(ml.kind==='number'){ primeFactors(ml.n).forEach(function(p){ MF.addToYard({m:0,k:p}); }); }
+      else { var mrr = MF.smeltPoly(ml.a,ml.b,ml.c);
+             if(mrr.ingots) mrr.ingots.forEach(function(g){ if(!(g.m===0&&g.k===0)) MF.addToYard({m:g.m,k:g.k}); }); }
+    }
+    Object.keys(MF.TOOLS).forEach(function(key){
+      chk('forge');
+      if(!MF.castableFrom(MF.TOOLS[key].cast, MF.TOOLS[key].slots, MF.yardList()))
+        errs.push('forge: "'+MF.TOOLS[key].nm+'" is unreachable for the student who dug seed '+seed+
+          ' — the orders are reachable on average and not for everyone');
+    });
+    MF.state.yard = mrSaved;
   });
 
   /* EVERY ORDER'S TARGET MUST BE HITTABLE, AND ONLY BY HITTING IT.
@@ -8456,6 +8620,76 @@ MF.validate = function(){
     var got = MF.digOre(L, probeRng);
     if(!got) errs.push('nogate: layer '+L+' produced no ore for a student with no tools');
   }
+
+  /* EVERY INSTRUMENT MUST CHANGE SOMETHING ON SCREEN.
+
+     The Deep Pick's copy promised "three lumps a swing when you are cutting
+     rock out of the wall". MF.breakRock never read hasTool('pick'). The only
+     effect the tool had anywhere in the build was changing the swing button's
+     LABEL from "Swing the pick" to "Swing the deep pick" - it cost 12 metal
+     and cut exactly one lump, the same as bare hands. It shipped that way and
+     no group could see it, because nothing anywhere asserted that owning a
+     tool DOES anything.
+
+     So it is asserted, for all seven: build the surface each tool acts on with
+     the tool on the belt and without it, and require the two to differ. What
+     counts as "differ" is deliberately weak - any change in the rendered text
+     - because the alternative is seven bespoke assertions that each restate
+     one tool's implementation.
+
+     READ THE DENOMINATOR: this catches a tool that does NOTHING. It cannot
+     tell you the change is useful, correct, or the one the tool's own copy
+     promises - the pick passed its own description for weeks while being a
+     relabelled button. That reading is human and it is what the user did. */
+  var tgSaved = {tools:MF.state.tools, mine:MF._mine, cart:MF.state.cart,
+                 sel:MF.state.selected, bench:MF.state.anvil, layer:MF.state.layer,
+                 face:MF.state.face, fl:MF.state.faceLayer, insp:MF.state.inspecting};
+  var tgStage = document.createElement('div');
+  tgStage.style.cssText = 'position:fixed; left:-13000px; top:0; width:1000px';
+  document.body.appendChild(tgStage);
+  /* THE FACE IS BUILT ONCE AND REUSED, and that is the whole difficulty.
+     The first version of this let each render stock its own face, so the two
+     readings described DIFFERENT ROCKS and differed for reasons that had
+     nothing to do with the belt - the control passed for the wrong reason and
+     I read it as the check being broken. The lump under inspection has to be
+     the same object in both renders, so the belt is the only thing that
+     moved. */
+  MF.state.layer = 3; MF.state.face = []; MF.state.faceLayer = null;
+  MF.state.cart = []; MF.state.selected = null; MF.state.anvil = null;
+  MF.stockFace();                       /* the seam itself, not a painted one */
+  var tgFace = MF.state.face, tgLayer = MF.state.faceLayer;
+  function tgFaceText(withPick){
+    var probe = document.createElement('div');
+    tgStage.innerHTML = ''; tgStage.appendChild(probe);
+    MF.state.tools = withPick ? {pick:{forged:true}} : {};
+    MF._mine = null; MF.SCREENS.mine(probe);
+    MF.state.layer = 3; MF.state.face = tgFace; MF.state.faceLayer = tgLayer;
+    MF.state.cart = []; MF.state.selected = null; MF.state.anvil = null;
+    if(!(MF.state.face && MF.state.face.length)) return null;
+    MF.state.inspecting = 0;
+    MF.paintMine();
+    var panel = probe.querySelector('.inspect');
+    return panel ? (panel.textContent || '').replace(/\s+/g,' ').trim() : null;
+  }
+  chk('nogate');
+  var tgWith = tgFaceText(true), tgWithout = tgFaceText(false);
+  if(tgWith === null || tgWithout === null)
+    errs.push('nogate: the face never offered a lump to inspect, so the pick was not tested');
+  else if(tgWith === tgWithout)
+    errs.push('nogate: ' + MF.TOOLS.pick.nm + ' changes nothing at the face — it is a tool that costs ' +
+      'metal and does nothing, which is what "three lumps a swing" was for weeks');
+  /* CONTROL: make the reading ignore the belt and the comparison must fail */
+  chk('nogate');
+  var tgRealHas = MF.hasTool;
+  MF.hasTool = function(k){ return k === 'pick' ? false : tgRealHas.apply(this, arguments); };
+  var tgBlindA = tgFaceText(true), tgBlindB = tgFaceText(false);
+  MF.hasTool = tgRealHas;
+  if(tgBlindA !== null && tgBlindB !== null && tgBlindA !== tgBlindB)
+    errs.push('CONTROL: the face reads differently with the pick even when the belt is ignored');
+  document.body.removeChild(tgStage);
+  MF.state.tools = tgSaved.tools; MF._mine = tgSaved.mine; MF.state.cart = tgSaved.cart;
+  MF.state.selected = tgSaved.sel; MF.state.anvil = tgSaved.bench; MF.state.layer = tgSaved.layer;
+  MF.state.face = tgSaved.face; MF.state.faceLayer = tgSaved.fl; MF.state.inspecting = tgSaved.insp;
 
   /* AND NO QUESTION MAY STAND BETWEEN A LUMP AND THE HAMMER.
      The bench used to open on the assay with the breaking floor hidden behind
@@ -9079,9 +9313,20 @@ MF.validate = function(){
         var c1 = MF.digOre(1, cRng);
         if(c1){ MF.state.cart=[c1]; MF.state.selected=c1;
                 MF.state.anvil=MF.anvilInit(c1); MF.state.anvil.step='break'; }
+        /* A ROCK UNDER INSPECTION, WITH THE PICK HELD. The inspect panel only
+           exists once a lump in the wall is picked out, and its one
+           tool-conditional line - the prospector's pick naming the kind -
+           only exists on top of that. Two states deep, and neither was ever
+           mounted by anything. */
+        MF.state.tools = {pick:{forged:true}, lantern:{forged:true},
+                          shifter:{forged:true}, drill:{forged:true}};
         MF.paintMine();
+        if(MF.state.face && MF.state.face.length){ MF.state.inspecting = 0; MF.paintMine(); }
         if(!probe.querySelector('.wall'))
           errs.push('contrast: mine-layer1 mounted no rock wall, so the lightest tint was not swept');
+        if(!probe.querySelector('.pickread'))
+          errs.push('contrast: mine-layer1 mounted no pick reading, so the one line that tool draws was not swept');
+        MF.state.inspecting = null;
       } else if(scr==='mine-number'){
         /* THE SAME SCREEN WITH A NUMBER ON THE BENCH. This is the only state
            in which the Stamp Mill signpost exists at all. */

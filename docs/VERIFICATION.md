@@ -1327,3 +1327,81 @@ cannot see it, and only one of those is a problem.
   rule is decoration.
 - **Text that carries its own halo cannot be measured against its backdrop** — the
   halo is the backdrop. Assert the halo instead, and say that is what you did.
+
+## 69. A tool that cost metal and did nothing, and a check that was a coin flip
+
+Two user reports, one session: *"the deep Pick is not useful"* and *"there are no
+factors of 3 for me to get the lantern"*. Both were true, and neither was visible to
+any group.
+
+### The Deep Pick was a relabelled button
+
+`MF.breakRock` never read `hasTool('pick')`. The **entire** effect of owning the tool
+was that the swing button said *"Swing the deep pick"* instead of *"Swing the pick"*.
+It cost 12 metal, cut exactly one lump — the same as bare hands — and its own copy
+said *"three lumps a swing when you are cutting rock out of the wall."*
+
+**Nothing anywhere asserted that owning a tool does anything.** Every group checked
+that a tool's *reading* was true, that its panel drew, that its method was named —
+and a tool with no effect passes all of that, because its panel is fine. The property
+nobody owned was *does the belt change the screen*.
+
+`nogate` now renders the surface each tool acts on with the tool on the belt and
+without it, and requires the two to differ. Its control makes `hasTool('pick')` blind
+and the comparison fails by name.
+
+> **The check was wrong first, and the way it was wrong is the lesson.** Each render
+> stocked its own face, so the two readings described *different rocks* and differed
+> for reasons that had nothing to do with the belt. The control passed — and I read
+> that as the check being broken rather than the control being useless. The lump has
+> to be the same object in both renders, so the belt is the only thing that moved.
+
+### The metal economy locked students out, measurably
+
+Tools are bought in metal, and the two you want first are priced in plain numbers:
+the pick is `12 = 2·2·3`, the lantern `30 = 2·3·5`. Over 160 digs a layer:
+
+| | 2s | 3s | 5s | could afford the lantern |
+|---|---|---|---|---|
+| 1 Gravel | 115 | 67 | 17 | 7 of 8 |
+| 2 Seam Rock | 158 | 88 | 25 | 7 of 8 |
+| 3 Twin Beds | 48 | 26 | **0** | **0 of 8** |
+| 4 Trinomial | **0** | **0** | **0** | **0 of 8** |
+| 5 Loaded Vein | **0** | **0** | **0** | **0 of 8** |
+
+Three of five layers could not pay for the lantern at **any** amount of digging, and a
+monic trinomial cannot produce plain metal even in principle — its factors are both
+linear. A student working the interesting rock was permanently locked out of the
+instrument that tells them whether a lump still has a seam, with nothing on screen to
+say why.
+
+The deep layers are now salted with a common metal — `g(x+p)(x+q)`, `g((mx)²−n²)`,
+`g·(loaded)` — which is also the move that should be taught first. `ore` asserts that
+40 lumps out of **every** layer can pay for both starting tools, using `castableFrom`,
+the forge's own judge. Its control empties the rack of plain metal.
+
+### And the check that had never really run
+
+Adding the salt broke `forge`: the Decimal Dial was *"not forgeable from 70 real
+smelts"*. That looked like the change breaking the forge. It was not.
+
+**70 smelts across five layers is 14 lumps a layer, and at fifteen other seeds it
+failed ten times** — the Auger missing nine, the Drill three, the Shifter two. The
+assertion had been passing on the luck of seed 31337 alone. My change tipped a coin
+that had always been in the air.
+
+At 200 smelts, twenty seeds of twenty reach all seven. The number was chosen by
+measuring where the failure rate goes to zero, and three further seeds are now checked
+outright, so one lucky draw can never again be the whole basis of the claim.
+
+**The rules.**
+
+- **Assert that a feature has an effect, not just that its output is true.** A tool
+  whose panel is correct and whose behaviour is absent passes every content check.
+- **When a change breaks a check, ask whether the check was ever load-bearing.**
+  "Green before, red after" is not proof the change caused it — re-run the old check
+  at other seeds before believing it.
+- **Raising a sample until a failure disappears is not a fix.** Measure where the
+  failure rate actually goes to zero, and say that is what you did.
+- **A control that does not hold everything else still tells you nothing.** Two
+  renders of two different rocks differ no matter what the belt says.
