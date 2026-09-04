@@ -654,3 +654,39 @@ one belongs."*
 *nothing to break* are the same sentence — and it still never names a factor. It just
 says it in the language of the choice the student is about to make. Without the tool,
 the face says the choice exists and that the pick reads which is which.
+
+## 19. A tool is a lens over the ore, not a panel beside it
+
+*User, 2026-08-30: "the tools need to act like tools not text boxes… Students should
+see ore in front of them, apply a tool, and the visual of the ore changes… literally
+making the ore data appear different giving clues to how to properly factor."*
+
+Every instrument used to open a sheet **next to** the lump, so the rock sat there
+unchanged while a panel talked about it. A tool is a **lens**: applied to a lump it
+re-draws *that lump*, so the structure the tool is about becomes visible in the ore.
+
+| tool | the lump | what it becomes |
+|---|---|---|
+| **Steel Pick** | `6x² + 15x` | `3·2x² + 3·5x` — the shared metal written **inside every term** |
+| **Core Drill** | `x² − 5x + 6` | the X, built from this lump's own two numbers |
+| **Powered Auger** | `6x² + 7x − 3` | the middle term **split** — `6x² + 9x − ?x − 3` — then boxed |
+| **Exponent Rail** | `x² + 8x + 16` | the same terms re-laid as a 2×2 area |
+| **Pit Lantern** | any | `( x − 2 ) × ( ? )` — one side lit, one dark |
+| **Decimal Dial** | `x² + 3x + 2` | the tail on a dial: turn it and the lump's own `c` changes |
+| **Prospector's Pick** | at the face | names the kind (§17a) — it has already spoken by the floor |
+
+### 19a. The binding rule: a lens rearranges and never adds
+
+Whatever arithmetic a lens puts on screen must reconstruct the lump it was handed. A
+panel that is wrong is wrong *about* the ore; **a lens that is wrong IS the ore** as far
+as the student can see. The `lens` group checks every reading against the engine.
+
+And §13 still holds: at least one number stays a `?`.
+
+### 19b. Compact everywhere, expanded on click
+
+Eight pieces share the breaking floor and a 2×2 box is far taller than a line of
+expression. Each lens is a **head plus a body**: the head carries the tool's icon and
+the one line it found — *"every term carries 3"* — and the click opens the full form.
+**The finding is never behind the click**, only the detail; the piece under the pick
+opens expanded.
