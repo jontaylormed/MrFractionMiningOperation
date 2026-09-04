@@ -1405,3 +1405,21 @@ outright, so one lucky draw can never again be the whole basis of the claim.
   failure rate actually goes to zero, and say that is what you did.
 - **A control that does not hold everything else still tells you nothing.** Two
   renders of two different rocks differ no matter what the belt says.
+
+## 70. Pulling a branch out of a timer so it can be checked at all
+
+The face's new cart-or-yard choice put the routing decision inside `MF.breakRock`'s
+900ms landing timer. **A branch inside a timer is unreachable to anything synchronous**,
+and an unreachable branch is one nothing asserts — which is exactly how the Deep Pick
+went unchecked for weeks (§69).
+
+It is `MF.placeCut(o, dest)` now: four lines, called by the timer, callable by a check.
+`nogate` asserts that a native lump cut to the yard lands on the **rack**, that a seamed
+one lands on the **heap**, and that neither touches the cart on the way — plus that the
+face offers both buttons at all. Controls: the yard route wired straight to the cart
+(caught by name, twice), and the second button relabelled (caught with the button list
+printed).
+
+**The rule.** *If a behaviour lives somewhere a check cannot reach, move the behaviour
+— do not settle for asserting the thing next to it.* The refactor is smaller than the
+excuse.

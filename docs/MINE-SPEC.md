@@ -613,3 +613,44 @@ else. Layer 5's inner quadratic stays genuinely loaded, so the layer is still it
 > starved the Decimal Dial by thinning the supply of monic trinomials, and the `forge`
 > group caught it. The answer was to salt less, not to widen the sample until the
 > failure went away.
+
+## 18. The yard is a place you can see, and the face asks where a lump goes
+
+*User, 2026-08-30.*
+
+### 18a. The yard is drawn on the surface
+
+Four of the five places a student goes are buildings they can see from the valley. The
+**yard** — where every metal they have broken out is kept, and the only thing the forge
+spends from — was drawn nowhere. *"Carry the metal to the yard"* named somewhere they
+had never seen.
+
+It stands in the **bottom-left corner** of the operation: a fenced enclosure, a rack of
+steel bars, a heap of rock with a seam still in it, and a nameplate. **The rack and the
+heap are the two answers to the question the face now asks**, so they are drawn to be
+told apart at a glance — steel against rock-brown-with-an-orange-seam.
+
+> **Scenery with a nameplate, not a door.** The yard is not a screen; it lives in the
+> mine's right-hand column. The Windmill is labelled the same way for the same reason:
+> a nameplate says *this is a thing in the world*, and only a hotspot says *this is a
+> way in*.
+
+### 18b. The choice happens at the face, not afterwards
+
+Cutting a lump out of the wall now asks **where it goes**: *into the cart* to work it,
+or *straight to the yard* to set it aside. The decision lands at the moment the rock is
+acquired, which is when it is actually a decision — not after it is already in the cart
+and the student has to undo something.
+
+Both routes go through `MF.stow`, the one place that decides rack or heap (§15b).
+
+### 18c. And the Prospector's Pick informs it
+
+The pick's reading (§17a) now carries a second line in the words of the decision:
+*"A seam runs through it. Worth carting."* or *"Nothing to break. The yard is where this
+one belongs."*
+
+**That adds no information the kind did not already carry** — *already an element* and
+*nothing to break* are the same sentence — and it still never names a factor. It just
+says it in the language of the choice the student is about to make. Without the tool,
+the face says the choice exists and that the pick reads which is which.

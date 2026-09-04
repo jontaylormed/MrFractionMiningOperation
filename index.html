@@ -1652,6 +1652,10 @@ table.rosetta td.rx{font-family:var(--display); font-size:16px; color:var(--ink)
 /* the prospector's pick's whole output: the kind, named, at the face. 7.70:1
    on the inspect panel's #241D18. */
 .inspect .obs .pickread{color:var(--lamp)}
+/* the line under the cart/yard choice. --ink-soft is a LIGHT-surface colour and
+   this panel is #241D18, so .hint's default would be measured against the wrong
+   ground entirely; #E4D5BB reads 10.7:1 on it. */
+.inspect .yardhint{color:#E4D5BB; margin-top:8px; font-size:13px}
 
 /* ---- the crucible pour ---- */
 @keyframes moltenfall{0%{transform:scaleY(0); opacity:0}18%{opacity:1}100%{transform:scaleY(1); opacity:1}}
@@ -3895,6 +3899,58 @@ MF.surfaceScene = function(){
   /* a second cart parked on a spur, already loaded */
   /* the parked spur cart is gone: two carts on one stretch of track, one of
      them permanently motionless, read as a dropped prop rather than scenery */
+
+  /* ---- THE YARD, IN THE BOTTOM-LEFT CORNER OF THE OPERATION ----
+
+     Four of the five places a student goes are buildings they can see from
+     here. The YARD - where every metal they have ever broken out is kept, and
+     the only place the forge spends from - was drawn nowhere at all. It
+     existed as a panel inside the mine and as a word on the order board, so
+     "carry the metal to the yard" named somewhere the student had never seen.
+
+     IT IS SCENERY WITH A NAMEPLATE, NOT A DOOR. The yard is not a screen -
+     it lives in the mine's right-hand column - so it gets no `hot` target.
+     The Windmill is already labelled the same way and for the same reason:
+     on this surface a nameplate says "this is a thing in the world", and only
+     a hotspot says "this is a way in". Adding a second hotspot to `mine`
+     would also have overwritten `doors['mine']`, which is keyed by screen.
+
+     THE BOX IS x 20..112, y 322..380, measured rather than guessed: the
+     windmill's drawn body starts at x=126, the cart track's first sleeper at
+     x=155, and the only things already inside this box are grass tufts and
+     pebbles, which the yard now stands on. */
+  var yd = S('g',{transform:'translate(20,322)'});
+  /* worn ground inside the fence */
+  yd.appendChild(S('ellipse',{cx:'46',cy:'27',rx:'44',ry:'9',fill:'#7A6244',opacity:'.5'}));
+  /* the fence: posts and two rails, the same timber as the yard fence east of
+     the sheds so the two read as one operation */
+  [2,24,46,68,90].forEach(function(fx){
+    yd.appendChild(S('rect',{x:String(fx),y:'6',width:'3.5',height:'22',fill:'#6B5A47'}));
+  });
+  yd.appendChild(S('rect',{x:'2',y:'11',width:'91',height:'3',fill:'#6B5A47'}));
+  yd.appendChild(S('rect',{x:'2',y:'21',width:'91',height:'3',fill:'#6B5A47'}));
+  /* THE RACK, which is what a yard IS: metal off the anvil, stood up in rows.
+     Flat steel in the same two tones as the .ingot bars in the mine. */
+  yd.appendChild(S('rect',{x:'8',y:'23',width:'29',height:'3.5',fill:'#5A4230'}));
+  [[9,12],[16,9],[23,13],[30,10]].forEach(function(bar){
+    yd.appendChild(S('rect',{x:String(bar[0]),y:String(23-bar[1]),width:'5.5',height:String(bar[1]),
+      rx:'1',fill:'#C4CED8',stroke:'#5A6570','stroke-width':'1.2'}));
+  });
+  /* THE HEAP beside it: rock that still has a seam in it, waiting. The rack and
+     the heap are the two answers to the question the face now asks, so the two
+     have to be told apart at a glance - it is drawn in the ROCK browns with a
+     dark outline and an orange seam through it, the same signal the mine uses,
+     rather than the fence's timber. Without the outline it was the ground. */
+  yd.appendChild(S('path',{d:'M50 27 q8 -12 17 -5 q7 -7 14 1 q5 4 3 8 Z',
+    fill:'#6B5A47',stroke:'#3A2E22','stroke-width':'1.6','stroke-linejoin':'round'}));
+  yd.appendChild(S('path',{d:'M55 22 q9 -4 17 -1 q6 2 10 5',fill:'none',
+    stroke:'#C96A1F','stroke-width':'1.8','stroke-linecap':'round'}));
+  [[57,24],[68,22],[77,25]].forEach(function(r){
+    yd.appendChild(S('circle',{cx:String(r[0]),cy:String(r[1]),r:'2.4',fill:'#5A4B3C',
+      stroke:'#3A2E22','stroke-width':'1'}));
+  });
+  nameplate(yd, 46, 32, 'The Yard');
+  svg.appendChild(yd);
 
   /* a wheelbarrow, sacks, stacked timber and a trough - the clutter of a
      place that is worked rather than drawn */
@@ -6393,17 +6449,41 @@ MF.paintFace = function(){
       ' · layer ' + o.layer + ', ' + MF.LAYERS[o.layer-1].name +
       (held
         ? '<br><b class="pickread">The pick reads it as ' + MF.ASSAY[MF.assayOf(o)].name + '.</b> ' +
-          '<em>' + MF.ASSAY[MF.assayOf(o)].tell + '</em>'
+          '<em>' + MF.ASSAY[MF.assayOf(o)].tell + '</em>' +
+          /* AND WHAT THAT MEANS FOR THE CHOICE BELOW. This adds no information
+             the kind did not already carry - "already an element" and "there is
+             nothing to break" are the same sentence - it just says it in the
+             words of the decision the student is about to make. It still never
+             names a factor. */
+          '<br><b class="pickread">' + (MF.isNative(o)
+            ? 'Nothing to break. The yard is where this one belongs.'
+            : 'A seam runs through it. Worth carting.') + '</b>'
         : '<br><em>Which seam runs through it is not something you can see from here — that is the assay’s job.</em>')));
+
+    /* ---- WHERE DOES IT GO? The choice is made HERE, at the moment the lump
+            is acquired, because that is when it is actually a decision. The
+            cart is for rock you mean to work; the yard is for setting a lump
+            aside. Sending it straight to the yard used to mean digging it,
+            finding it in the cart and clicking a second control - and before
+            that, it meant putting it on the bench first. */
     var brow = E('div','row'); brow.style.marginTop='10px';
-    var br = E('button','btn primary big','Swing the pick'); br.type='button';
-    on(br,'click',function(){ MF.breakRock(MF.state.inspecting); });
+    var br = E('button','btn primary big','Cut it into the cart'); br.type='button';
+    br.setAttribute('aria-label','Cut ' + MF.oreText(o) + ' out of the seam and into the cart, to work it');
+    on(br,'click',function(){ MF.breakRock(MF.state.inspecting, 'cart'); });
     brow.appendChild(br);
+    var toYard = E('button','btn big','Cut it straight to the yard'); toYard.type='button';
+    toYard.style.background='#241D18'; toYard.style.color='#E4D5BB'; toYard.style.borderColor='#6B5B48';
+    toYard.setAttribute('aria-label','Cut ' + MF.oreText(o) + ' out of the seam and set it aside in the yard');
+    on(toYard,'click',function(){ MF.breakRock(MF.state.inspecting, 'yard'); });
+    brow.appendChild(toYard);
     var skip = E('button','btn','Leave it and look at another'); skip.type='button';
     skip.style.background='#241D18'; skip.style.color='#E4D5BB'; skip.style.borderColor='#6B5B48';
     on(skip,'click',function(){ MF.state.inspecting=null; MF.paintMine(); });
     brow.appendChild(skip);
     insp.appendChild(brow);
+    insp.appendChild(H('div','hint yardhint', held
+      ? 'The cart is for rock you mean to break. The yard is for setting one aside — the pick has told you which this is.'
+      : 'The cart is for rock you mean to break; the yard is for setting one aside. <b>The Prospector’s Pick reads which is which before you cut.</b>'));
   }
   wall.appendChild(insp);
   wall.appendChild(scanRow);          /* seam navigation, below what it acts on */
@@ -6544,7 +6624,24 @@ MF.knockLump = function(id){
    the cart. Under prefers-reduced-motion every duration collapses and the
    lump simply arrives - the sequence still completes, it just does not perform.
    ========================================================================= */
-MF.breakRock = function(idx){
+/* WHERE A CUT LUMP LANDS, pulled out of MF.breakRock's 900ms timer so it can be
+   checked at all. Inside the timer it was unreachable to anything synchronous,
+   and an unreachable branch is one nothing asserts - which is how the whole
+   Deep Pick went by (§69).
+
+   The YARD route goes through MF.stow, the one place that decides rack or heap
+   (§15b), and does NOT touch the cart or the bench: setting a lump aside is the
+   entire point of having chosen it. */
+MF.placeCut = function(o, dest){
+  if(dest === 'yard'){ MF.stow(o); return; }
+  MF.state.cart.push(o);
+  if(!MF.state.selected) MF.state.selected = o;
+};
+
+/* `dest` is 'cart' (work it) or 'yard' (set it aside), chosen at the face
+   before the swing. It defaults to the cart, because every caller that predates
+   the choice meant the cart. */
+MF.breakRock = function(idx, dest){
   var rocks = MF.state.face, o = rocks[idx];
   if(!o || MF.state.breaking) return;
   MF.state.breaking = true;
@@ -6592,8 +6689,7 @@ MF.breakRock = function(idx){
     MF.state.face.splice(at,1);
     MF.state.inspecting = null;
     o.fresh = true;
-    MF.state.cart.push(o);
-    if(!MF.state.selected) MF.state.selected = o;
+    MF.placeCut(o, dest);
     MF.state.breaking = false;
     MF.paintMine();
     setTimeout(function(){ o.fresh = false; }, 500);
@@ -8686,6 +8782,56 @@ MF.validate = function(){
   MF.hasTool = tgRealHas;
   if(tgBlindA !== null && tgBlindB !== null && tgBlindA !== tgBlindB)
     errs.push('CONTROL: the face reads differently with the pick even when the belt is ignored');
+  /* AND THE CHOICE THE FACE NOW OFFERS MUST GO WHERE IT SAYS.
+     Two buttons on a lump still in the wall: into the cart to work it, or
+     straight to the yard to set it aside. The yard route is the one that can
+     go wrong quietly - it must reach MF.stow and land on the RACK if the lump
+     is already metal and on the HEAP if a seam runs through it, and it must
+     not put anything in the cart on the way. */
+  chk('nogate');
+  var cyBtns = null;
+  (function(){
+    var probe = document.createElement('div');
+    tgStage.innerHTML = ''; tgStage.appendChild(probe);
+    MF.state.tools = {}; MF._mine = null; MF.SCREENS.mine(probe);
+    MF.state.layer = 3; MF.state.face = tgFace; MF.state.faceLayer = tgLayer;
+    MF.state.inspecting = 0; MF.paintMine();
+    var panel = probe.querySelector('.inspect');
+    cyBtns = panel ? [].slice.call(panel.querySelectorAll('button')).map(function(b){
+      return (b.textContent||'').trim(); }) : [];
+  })();
+  if(!cyBtns.some(function(t){ return /cart/i.test(t); }) ||
+     !cyBtns.some(function(t){ return /yard/i.test(t); }))
+    errs.push('nogate: the face offers no choice between the cart and the yard — it read ' +
+      JSON.stringify(cyBtns));
+  [[{kind:'number', n:41, id:'cy-native'}, 'rack'],
+   [{kind:'poly', a:1, b:-5, c:6, id:'cy-seamed'}, 'heap']].forEach(function(t){
+    chk('nogate');
+    var cySaved = {yard:MF.state.yard, heap:MF.state.rockpile, cart:MF.state.cart, sel:MF.state.selected};
+    MF.state.yard = {}; MF.state.rockpile = []; MF.state.cart = []; MF.state.selected = null;
+    MF.placeCut(t[0], 'yard');
+    var onRack = MF.yardList().length, onHeap = MF.state.rockpile.length, inCart = MF.state.cart.length;
+    if(inCart)
+      errs.push('nogate: ' + MF.oreText(t[0]) + ' cut straight to the yard went into the cart instead');
+    else if(t[1] === 'rack' && !onRack)
+      errs.push('nogate: ' + MF.oreText(t[0]) + ' is native metal and cutting it to the yard did not rack it');
+    else if(t[1] === 'heap' && !onHeap)
+      errs.push('nogate: ' + MF.oreText(t[0]) + ' still has a seam and cutting it to the yard did not heap it');
+    MF.state.yard = cySaved.yard; MF.state.rockpile = cySaved.heap;
+    MF.state.cart = cySaved.cart; MF.state.selected = cySaved.sel;
+  });
+  /* CONTROL: a yard route that quietly carts must be caught */
+  chk('nogate');
+  var cyReal = MF.stow, cyCtl = {yard:MF.state.yard, heap:MF.state.rockpile, cart:MF.state.cart};
+  MF.state.yard = {}; MF.state.rockpile = []; MF.state.cart = [];
+  MF.stow = function(o){ MF.state.cart.push(o); };
+  MF.placeCut({kind:'number', n:41, id:'cy-ctl'}, 'yard');
+  var cyLeaked = MF.state.cart.length;
+  MF.stow = cyReal;
+  MF.state.yard = cyCtl.yard; MF.state.rockpile = cyCtl.heap; MF.state.cart = cyCtl.cart;
+  if(!cyLeaked)
+    errs.push('CONTROL: a yard route wired straight to the cart is not reported as carting');
+
   document.body.removeChild(tgStage);
   MF.state.tools = tgSaved.tools; MF._mine = tgSaved.mine; MF.state.cart = tgSaved.cart;
   MF.state.selected = tgSaved.sel; MF.state.anvil = tgSaved.bench; MF.state.layer = tgSaved.layer;
