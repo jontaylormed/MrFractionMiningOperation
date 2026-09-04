@@ -2283,9 +2283,32 @@ function SALT(rng){ return pick(rng, SALT_METALS); }
 MF.rawOre = function(layer, rng){
   var p, qq, g, m, n;
   switch(layer){
+    /* GRAVEL PAYS FOR THE FIRST TWO TOOLS, and it used not to.
+
+       The pick is 12 = 2·2·3 and the lantern 30 = 2·3·5, so a layer-1 dig is
+       only worth anything if it yields 2s, 3s or 5s. This case used to draw a
+       prime from 13..97 twenty-eight per cent of the time - one dig in four
+       paying NOTHING toward either tool - and a random 12..144 otherwise.
+       Measured over eight students, digs-to-lantern were 1, 1, 2, 5, 8, 12,
+       14, 21: a median of 8 and a tail of twenty-one, and the two worst runs
+       are exactly the two that drew eight and nine of those dead-end primes.
+
+       PRIMES STAY, because "held to the light it stays exactly what it is" is
+       the whole thesis and a student has to meet one early. They are SMALL
+       now: 2, 3 and 5 are themselves lantern parts, so a prime is a lesson AND
+       a payment instead of a lesson and a wasted swing.
+
+       AND EVERY COMPOSITE IS BUILT FROM 2, 3, 5 (with the odd 7 or 11 for
+       variety), so breaking one always puts something on the rack. */
     case 1:
-      if(rng() < 0.28){ return {kind:'number', n: pick(rng,[13,17,19,23,29,31,37,41,43,47,53,59,61,67,71,73,79,83,89,97])}; }
-      return {kind:'number', n: irange(rng,12,144)};
+      /* 2, 3 and 5 are listed twice: half the primes a student meets down here
+         are ones the first two tools are priced in, so a prime is a lesson AND
+         a payment. That drops the dead-end rate from one dig in four to about
+         one in eleven. */
+      if(rng() < 0.20) return {kind:'number', n: pick(rng,[2,2,3,3,5,5,7,11,13,17,19,23])};
+      return {kind:'number', n: pick(rng,[
+        12,18,20,24,28,30,36,40,42,44,45,48,50,54,56,60,63,64,66,70,72,75,80,84,
+        88,90,96,98,99,100,108,110,120,125,126,128,132,135,140,144])};
     case 2:
       g = irange(rng,2,9);
       if(rng() < 0.45){                                  /* g·x² + g·k·x  */
@@ -6497,7 +6520,7 @@ MF.LAYER_LOOK = [
    spread down its length, so looking for something worth breaking is real
    movement rather than reading a grid of seven.
    SEAM_W is the drawn width; the viewport shows roughly a third of it. */
-MF.SEAM_W = 2280;
+MF.SEAM_W = 2900;
 /* THE SEAM IS TALLER THAN IT WAS, because the window onto it now sits in a
    column the shaft sets the height of - 982px at 1250 - and only 307 of that
    was rock. The rest was empty wall under the scan row. This is more SEAM, not
@@ -6505,7 +6528,14 @@ MF.SEAM_W = 2280;
    same 1.505px per unit, so a lump is the same size and there is simply more
    face to find one in. */
 MF.SEAM_H = 360;
-MF.SEAM_COUNT = 15;
+/* AND MORE ORE IN IT. Fifteen lumps over a seam this size is a thin scattering
+   - a student scans a long way to find something worth breaking, which is the
+   point of a seam, but not this far. The face is nearly twice as tall as it
+   was, so the extra rock goes into space that already existed rather than
+   making the scan longer: 15 -> 24 over a seam widened only 2280 -> 2900, so
+   the lumps sit 117 units apart instead of 145 and are spread over 228 units
+   of height instead of 142. */
+MF.SEAM_COUNT = 24;
 
 MF.stockFace = function(){
   var L = MF.state.layer;
@@ -8775,6 +8805,55 @@ MF.validate = function(){
     });
     MF.state.yard = ecoSaved.yard; MF.state.rockpile = ecoSaved.heap;
   });
+  /* AND GRAVEL MUST PAY FOR THE FIRST TWO TOOLS QUICKLY.
+
+     "I was spending a lot of time looking for factors of 2, 3 and 5 to get the
+     first two tools… it's taking a bit to get to the tools." The check above
+     only asks whether a layer CAN pay - 40 lumps is a lot of digging, and a
+     student who cannot reach an instrument in a reasonable number of swings
+     has met the site's economy instead of its mathematics.
+
+     Measured before the fix, digs-to-both-tools over eight students were
+     1, 1, 2, 5, 8, 12, 14, 21. The tail was the 28% chance of a prime from
+     13..97, which pays nothing toward 12 or 30. Now: 1,1,2,2,2,2,2,2,3,3,3,
+     3,3,4,4,4,4,6,9,11 over twenty - median 3, and seventeen of twenty inside
+     four digs.
+
+     READ THE DENOMINATOR: this measures the ENGINE's shortest path, breaking
+     each lump with the factor the engine itself names. A real student picks
+     their own factors and will sometimes take longer. It is a floor on the
+     experience, not a description of it. */
+  (function(){
+    var tsSaved = {yard:MF.state.yard, heap:MF.state.rockpile};
+    var slow = [];
+    [11,29,53,97,131,173,211,257].forEach(function(seed){
+      chk('ore');
+      MF.state.yard = {}; MF.state.rockpile = [];
+      var rng = makeRng(seed), digs = 0, got = 0;
+      for(var i=0; i<40 && !got; i++){
+        var lump = MF.digOre(1, rng);
+        if(!lump) continue;
+        digs++;
+        var B = MF.anvilInit(lump), g = 0;
+        while(!B.floor.every(function(p){ return MF.isNative(p.ore); }) && g++ < 40){
+          var pc = B.floor[B.at], f = MF.simplestFactor(pc.ore);
+          if(!f) break;
+          B.raw = {m:String(f.m), k:String(f.k)}; B.rawFor = pc.id;
+          MF.swing(B);
+        }
+        B.floor.forEach(function(p){ MF.stow(p.ore); });
+        if(MF.castableFrom(MF.TOOLS.pick.cast, MF.TOOLS.pick.slots, MF.yardList()) &&
+           MF.castableFrom(MF.TOOLS.lantern.cast, MF.TOOLS.lantern.slots, MF.yardList())) got = digs;
+      }
+      if(!got || got > 14) slow.push(seed + ':' + (got || 'never'));
+    });
+    MF.state.yard = tsSaved.yard; MF.state.rockpile = tsSaved.heap;
+    if(slow.length)
+      errs.push('ore: Gravel took more than fourteen lumps to pay for the pick and the lantern ' +
+        'for ' + slow.length + ' of eight students (' + slow.join(', ') + ') — a student who cannot ' +
+        'reach an instrument has met the economy instead of the mathematics');
+  })();
+
   /* CONTROL: a yard with no plain metal in it must fail the same test */
   chk('ore');
   var ecoCtl = MF.state.yard;

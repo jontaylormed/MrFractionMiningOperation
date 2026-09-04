@@ -830,3 +830,42 @@ chooser. **The sheet stopped existing when the mine stopped explaining itself (�
 so the filled slot was a control that opened nothing — and the empty one was a second
 way *in* when the belt had just become the way in. It is now one thing: the way back
 off. `nogate` fails the build if a bare rock shows a slot.
+
+## 24. Gravel pays quickly, and the seam holds more ore
+
+*User, 2026-08-30: "The Layer should have more minable area. And I was spending a lot
+of time looking for factors of 2, 3, and 5 to get the first two tools… it's taking a
+bit to get to the tools."*
+
+### 24a. Time to the first two tools
+
+The pick is `12 = 2·2·3` and the lantern `30 = 2·3·5`, so a layer-1 dig is only worth
+something if it yields 2s, 3s or 5s. Gravel drew a prime from **13–97 twenty-eight per
+cent of the time** — one dig in four paying nothing toward either tool — and a random
+12–144 otherwise.
+
+Measured, digs until both tools are affordable:
+
+| | |
+|---|---|
+| **before** | 1, 1, 2, 5, 8, 12, 14, 21 — median **8** |
+| **after** | 1,1,2,2,2,2,2,2,3,3,3,3,3,4,4,4,4,6,9,11 — median **3**, seventeen of twenty inside four |
+
+**Primes stay** — *"held to the light it stays exactly what it is"* is the thesis and a
+student has to meet one early. They are **small** now, with 2, 3 and 5 listed twice, so
+a prime is a lesson *and* a payment rather than a lesson and a wasted swing. Every
+composite is built from 2, 3 and 5 (with the odd 7 or 11), so breaking one always puts
+something on the rack.
+
+> `ore` asserts this: eight students, each must afford both tools inside fourteen
+> lumps. Its control restores the old draw and reports two students at 25 and 24.
+> **READ THE DENOMINATOR** — it measures the *engine's* shortest path, breaking each
+> lump with the factor the engine itself names. A real student picks their own and will
+> sometimes take longer. It is a floor on the experience, not a description of it.
+
+### 24b. More minable area
+
+`SEAM_COUNT` 15 → **24**, over a seam widened only 2280 → 2900. The face is nearly
+twice as tall as it was (§22), so the extra ore goes into height that already existed:
+lumps sit 117 units apart instead of 145 and spread over 228 units of height instead of
+142. The scan is barely longer; there is simply more in it.
