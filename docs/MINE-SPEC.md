@@ -869,3 +869,42 @@ something on the rack.
 twice as tall as it was (§22), so the extra ore goes into height that already existed:
 lumps sit 117 units apart instead of 145 and spread over 228 units of height instead of
 142. The scan is barely longer; there is simply more in it.
+
+## 25. The breaking floor is the work, and every tool marks the rock
+
+*User, 2026-08-30: "The top part, text, and buttons above the anvil and hammer need to
+be removed. As the prospector pick has no effect on the ore in the mine and will appear
+to be a useless tool, tools just click away in the mine."*
+
+### 25a. Nothing above the two work boxes
+
+The bench head is gone: the ore as a 76px headline, the Stamp Mill signpost, the assay
+offer, and the line of instruction under them. Each was defensible alone; together they
+were a screen of furniture between a student and the hammer. The bench is now
+`panel-tag > workpair`.
+
+The **headline had become a duplicate** — the lump is drawn on the stone in the floor
+box (§22), so the number was on screen twice and the larger copy was the one you could
+not act on.
+
+**The assay is not deleted, it is unreachable from here.** Naming the rock was already
+optional (§15a), and the Prospector's Pick reads the kind at the face (§17a) — one step
+earlier, where it stands between nothing.
+
+### 25b. A tool with no effect on the ore is a useless tool
+
+Now that an instrument's whole visible job is re-spelling the rock it is dropped on, a
+tool that re-spells nothing is the Deep Pick's original sin under a new name (§17a).
+The Prospector's Pick gets the cheapest reading there is, which suits the cheapest tool:
+**is this a product or an element**, naming neither side.
+
+| | |
+|---|---|
+| `6x + 15` | `( ? )( ? )` |
+| `x² + 4` | `x² + 4 ◆` |
+
+The lantern lights one side; this only says there *is* one.
+
+> `nogate` follows the capability rather than the button: it required an assay offer on
+> the bench, and now requires the pick to have something to say about every shape.
+> Muting the pick fails the build by name.

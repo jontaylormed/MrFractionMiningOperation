@@ -741,11 +741,13 @@ input::placeholder, textarea::placeholder{color:#6B5B48; opacity:1}
 .lensed .ldark{opacity:.72}
 .lensed .lqm{color:var(--ore-t)}
 .lensed .ldial{color:var(--ore-t)}
+/* the prospector's pick's mark for an element: nothing left in it */
+.lensed .lfinal{color:var(--ore-t)}
 /* on the DARK chips of the cart and the breaking floor the ink has to invert:
    --ore-t is #8F4712 and reads 1.6:1 on #4A3F34. --lamp is 6.9:1 on it. */
-.lump .lensed .lop,.lump .lensed .lshared,.lump .lensed .lsplit,
+.lump .lensed .lop,.lump .lensed .lshared,.lump .lensed .lsplit,.lump .lensed .lfinal,
 .lump .lensed .lqm,.lump .lensed .ldial,
-.piece.rock .lensed .lop,.piece.rock .lensed .lshared,.piece.rock .lensed .lsplit,
+.piece.rock .lensed .lop,.piece.rock .lensed .lshared,.piece.rock .lensed .lsplit,.piece.rock .lensed .lfinal,
 .piece.rock .lensed .lqm,.piece.rock .lensed .ldial{color:var(--lamp)}
 .lump .lensed .ldot,.piece.rock .lensed .ldot{color:#C9B695}
 /* a lensed lump carries more characters than a bare one, so the chip's text
@@ -3249,9 +3251,34 @@ MF.LENS.dial = function(ore){
   };
 };
 
-/* THE PROSPECTOR'S PICK reads at the FACE (§17a), on a lump still in the wall,
-   so by the time one is in the cart it has already spoken. */
-MF.LENS.pick = function(){ return null; };
+/* THE PROSPECTOR'S PICK: does this come apart at all?
+
+   USER, 2026-08-30: "the prospector pick has no effect on the ore in the mine
+   and will appear to be a useless tool". It read at the FACE only (§17a), so
+   in the cart and on the floor it did nothing - and now that an instrument's
+   whole visible job is re-spelling the rock it is dropped on, a tool that
+   re-spells nothing is the Deep Pick's original sin wearing a new name.
+
+   Its reading is the cheapest one there is, which is right for the cheapest
+   tool: it says whether the lump is a PRODUCT or an ELEMENT, and names
+   neither side. The lantern lights one side; this only says there is one.
+     6x + 15  ->  ( ? )( ? )
+     x² + 4   ->  x² + 4, marked as final
+   Distinct from every other lens, honest about how little it knows, and it
+   leaves everything open. */
+MF.LENS.pick = function(ore){
+  if(MF.isNative(ore)){
+    return {
+      html: lensMark('lfinal', MF.oreLabel(ore)) + lensMark('lop',' ') + lensMark('lfinal','&#9670;'),
+      found: 'nothing moves in there'
+    };
+  }
+  return {
+    html: lensMark('ldark','( ' + lensMark('lqm','?') + ' )') +
+          lensMark('ldark','( ' + lensMark('lqm','?') + ' )'),
+    found: 'it comes apart'
+  };
+};
 
 /* WHAT A LENS IS ALLOWED TO CLAIM. Handed a lump and a tool, either a reading
    or null - and null is a real answer, not a failure: an instrument that has
@@ -7201,6 +7228,23 @@ MF.anvilInit = function(ore){
            raw:{m:'1', k:'0'},        /* what the student typed, kept verbatim */
            last:null, swings:0 };
 };
+/* THE BREAKING FLOOR IS THE WORK AND NOTHING ELSE.
+
+   USER, 2026-08-30: "The top part, text, and buttons above the anvil and
+   hammer need to be removed."
+
+   Everything that used to sit above the two work boxes is gone: the ore as a
+   76px headline, the Stamp Mill signpost, the assay offer, and the line of
+   instruction under them. Each was defensible on its own and together they
+   were a screen of furniture between a student and the hammer.
+
+   The headline in particular had become a DUPLICATE - the lump is drawn on
+   the stone in the floor box now (§22), so the number was on screen twice and
+   the larger copy was the one you could not act on.
+
+   The assay is not deleted, it is unreachable from here: naming the rock was
+   already optional (§15a) and the Prospector's Pick reads the kind at the face
+   (§17a), which is one step earlier and does not stand between anything. */
 MF.paintAnvil = function(host){
   var ore = MF.state.selected;
   if(!MF.state.anvil || MF.state.anvil.ore.id !== ore.id) MF.state.anvil = MF.anvilInit(ore);
@@ -7208,49 +7252,6 @@ MF.paintAnvil = function(host){
 
   var bench = E('div','bench');
   bench.appendChild(H('div','panel-tag','THE BREAKING FLOOR'));
-
-  /* NO TOOL RACK HERE ANY MORE. This was an inert list of names, and the real
-     belt was in the far right column - so dragging a tool onto a lump meant
-     crossing the whole page, and on a narrow screen it meant scrolling, which
-     you cannot do mid-drag. The belt now hangs inside the floorbox itself,
-     directly above the pieces it acts on. */
-  /* THE HEAD OF THE BENCH: the lump on the left, large, because it is the
-     thing the whole screen is about - and the Stamp Mill in the top right
-     corner with its line of explanation UNDER the button, so the suggestion
-     reads as a signpost in the corner rather than a paragraph across the work.
-     The assay follows underneath both. */
-  var head = E('div','benchhead');
-  head.appendChild(H('div','eq benchore', MF.oreLabel(ore)));
-
-  /* A PLAIN NUMBER POINTS AT THE STAMP MILL. Numbers still break here - the
-     whole thesis is that 72 and x² − 5x + 6 are one job - but the room built
-     for factor trees and primes is one click away from the bench that needs
-     it, instead of two screens and a guess. */
-  /* THE CORNER COLUMN. Both asides on this bench live in it, stacked: the
-     Stamp Mill signpost, and under it the offer to name the rock. The assay
-     used to run the full width of the bench directly under the ore, which put
-     an optional question between the student and the hammer - the exact shape
-     of the gate §15 took out. In the corner it reads as what it is. */
-  var corner = E('div','benchcorner');
-  if(ore.kind === 'number'){
-    var sm = E('div','millpoint');
-    var mj = E('button','btn mpbtn'); mj.type='button';
-    mj.innerHTML = 'Stamp Mill &rarr;';
-    mj.setAttribute('aria-label','Go to the Stamp Mill, the room built for breaking numbers apart');
-    on(mj,'click',function(){ MF.go('workshop-ore'); });
-    sm.appendChild(mj);
-    sm.appendChild(H('span','mpt','Numbers come apart the same way rock does.'));
-    corner.appendChild(sm);
-  }
-  MF.assayOffer(corner, B);
-  if(corner.childNodes.length) head.appendChild(corner);
-  bench.appendChild(head);
-
-  /* NO STEP STRIP. Two numbered stages with the second greyed out is a gate
-     drawn as furniture: it says you are not allowed here yet even when you
-     are. The one act on this bench is BREAK, and the assay sits inside it as
-     something you may reach for. */
-  MF.paintAssay(bench, B);
   MF.paintBreak(bench, B);
 
   host.appendChild(bench);
@@ -7583,12 +7584,10 @@ MF.paintBreak = function(host, B){
   var anim = B.anim;
   B.anim = null;
 
-  /* the lead line over the floor. It carries a class and a reserved height
-     because its two versions are different lengths, and the shorter one let
-     the whole row jump 21px up at the moment the lump finished. */
-  host.appendChild(H('p','hint floorlead', pieces.length===1
-    ? '<b>Name one thing that is in there, and swing.</b> If the seam runs, the lump comes apart and both pieces land on the floor. Nothing here tells you beforehand whether it will.'
-    : '<b>Anything still rock goes back under the pick.</b> Break it again.'));
+  /* NO LEAD LINE. It said "name one thing that is in there, and swing", which
+     is what the hammer bar says on its own label three inches below - and it
+     was the last of the text above the work (§25). The reserved height it
+     carried went with it; there is nothing left up here to jump. */
 
   /* ---- the floor: every piece this lump has come apart into ---- */
   var fl = E('div','floorbox');
@@ -9679,11 +9678,31 @@ MF.validate = function(){
     chk('nogate');
     if(host.querySelectorAll('.choices .choice').length)
       errs.push('nogate: the bench opens on the assay question for ' + MF.oreText(ore) + ' rather than offering it');
-    chk('nogate');
-    if(!host.querySelector('.assayoffer'))
-      errs.push('nogate: the assay is not offered at all on ' + MF.oreText(ore) + ' — the step has been deleted, not ungated');
+    /* THE ASSAY IS OFF THE BENCH, AND THE CAPABILITY MOVED RATHER THAN DIED.
+
+       This used to require an `.assayoffer` on the bench. The bench's whole
+       head - the ore as a headline, the Stamp Mill signpost, the assay button
+       and the line under them - was removed as furniture between a student and
+       the hammer (§25), so that assertion would now fail for a good change.
+
+       What it was really protecting is that a student can still find out WHAT
+       KIND of rock they are holding without being made to. That capability is
+       the Prospector's Pick, one step earlier, at the face (§17a) - so the
+       check follows it there. Deleting the pick's reading fails this. */
     ngStage.removeChild(host);
   });
+  chk('nogate');
+  (function(){
+    var kinds = [{kind:'poly',a:1,b:-5,c:6}, {kind:'poly',a:6,b:15,c:0}, {kind:'poly',a:1,b:0,c:4}];
+    var mute = kinds.filter(function(o){
+      var read = MF.lensFor(o, 'pick');
+      return !read || !String(read.found || '').trim();
+    });
+    if(mute.length)
+      errs.push('nogate: the prospector\'s pick says nothing about ' + mute.length + ' of ' +
+        kinds.length + ' shapes — naming what kind of rock this is left the bench (§25) and ' +
+        'the pick is where it went, so a silent pick means the capability was deleted, not moved');
+  })();
   /* CONTROL: put the gate back and the sweep must fail.
      THE GATE WAS NEVER THE step FIELD - it was a conditional wrapped
      round paintBreak. Setting the field alone left the hammer on screen and
@@ -11528,10 +11547,15 @@ MF.validate = function(){
           errs.push('lens: the lantern lit ' + ingotText(one) + ' on ' + MF.oreText(ore) +
             ', and it does not come out');
       }
-      /* AND §13 STILL HOLDS: something is left open. steel and dial MARK
-         rather than ask, and say so - they have no unknown in them. */
+      /* AND §13 STILL HOLDS: something is left open. Three exemptions, each
+         because there is genuinely nothing to ask:
+           steel and dial MARK rather than ask - no unknown in them;
+           and ANY lens on native metal, because an element does not come
+           apart, so "here is what is still hidden in it" would be a lie. The
+           prospector's pick is the one that reads a native lump at all, and
+           its whole reading there is that nothing moves. */
       chk('lens');
-      if(tk !== 'steel' && tk !== 'dial' && plain.indexOf('?') < 0)
+      if(tk !== 'steel' && tk !== 'dial' && !MF.isNative(ore) && plain.indexOf('?') < 0)
         errs.push('lens: ' + tk + ' on ' + MF.oreText(ore) + ' fills every number in — a lens shows part');
     });
   });
@@ -11604,13 +11628,27 @@ MF.validate = function(){
       MF.state.anvil = MF.anvilInit(hoOre); MF.state.anvil.step = 'break';
       MF.paintMine();
     } catch(e){ errs.push('hollow: the mine threw while building: ' + e.message); return; }
-    var lab = probe.querySelector('.benchore');
-    if(!lab){ errs.push('hollow: the bench has no ore label on it at all'); return; }
-    var box = lab.getBoundingClientRect().height, txt = hoTextH(lab);
-    if(txt > 0 && box > txt * 1.6 + 12)
-      errs.push('hollow: at ' + document.documentElement.clientWidth + 'px the ore label "' +
-        (lab.textContent||'').trim() + '" draws ' + Math.round(txt) + 'px of text in a ' +
-        Math.round(box) + 'px box — ' + Math.round(box - txt) + 'px of the bench is empty');
+    /* THE SUBJECT MOVED. This measured `.benchore`, the 76px ore headline at
+       the top of the breaking floor - and that headline was removed with the
+       rest of the bench head (§25), because the lump is drawn on the stone in
+       the floor box now and the headline had become the same number twice.
+
+       The FAULT it was written for is not gone: a flex-basis is still a height
+       once a container's direction turns at a breakpoint, and the cart's cells
+       are the biggest boxes in the mine. So the assertion follows the hazard
+       rather than the element - and the synthetic control below still proves
+       the measurement can see one. */
+    var cells = probe.querySelectorAll('.lumpcell');
+    if(!cells.length){ errs.push('hollow: the cart drew no cell to measure'); return; }
+    [].forEach.call(cells, function(cell){
+      var box = cell.getBoundingClientRect().height;
+      var inner = 0;
+      [].forEach.call(cell.children, function(n){ inner += n.getBoundingClientRect().height; });
+      if(inner > 0 && box > inner * 1.5 + 40)
+        errs.push('hollow: at ' + document.documentElement.clientWidth + 'px a cart cell holds ' +
+          Math.round(inner) + 'px of rock and controls in a ' + Math.round(box) + 'px box — ' +
+          Math.round(box - inner) + 'px of the cart is empty');
+    });
   });
   /* CONTROL: put the fault back and watch it fail. This is the exact
      declaration that shipped it - a flex-basis on the turned axis. */
