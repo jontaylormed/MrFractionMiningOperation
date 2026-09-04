@@ -1423,3 +1423,36 @@ printed).
 **The rule.** *If a behaviour lives somewhere a check cannot reach, move the behaviour
 — do not settle for asserting the thing next to it.* The refactor is smaller than the
 excuse.
+
+## 71. `draggable="true"` cancels the pointer events the drag is built on
+
+The user reported that instruments could not be dragged onto ore in the cart. Every
+probe said they could — a synthetic `pointerdown` → `pointermove` → `pointerup` from a
+belt tool to a lump applied the tool and re-spelt the stone, every time.
+
+Both were true. Each belt tool carried **`draggable="true"`** while the gesture is built
+entirely on **pointer** events. On a real mouse-down-and-move the browser starts its own
+HTML5 drag, which cancels the pointer stream the handlers are listening to. **Synthetic
+PointerEvents never trip that**, because no native `dragstart` fires — so the probe
+exercised a code path no student could reach.
+
+> **A simulated gesture is not the gesture.** Dispatching the events a handler listens
+> for skips everything the browser does *around* them: native drag, scroll, text
+> selection, pointer capture, `touch-action`. The check was measuring its own input.
+
+The attribute is gone (nothing here uses HTML5 drag-and-drop), and `nogate` now fails
+the build if any control carries it, with a control that puts one back.
+
+### And a drag with no click path is half a control
+
+It is the only gesture on this site needing a pointer that can be held down and moved
+precisely — and in the cart it was the **only** way to use a tool at all. Clicking an
+instrument now picks it up (`MF.state.armedTool`), clicking a rock uses it, and both
+the belt loop and every eligible rock say so. `nogate` drives that path end to end.
+
+**The rules.**
+
+- **Never let a synthetic event be the only proof a gesture works.** Ask what the
+  browser does around the events, not just with them.
+- **Every drag needs a click path**, and the check should exercise the click path —
+  it is the one a keyboard and a touch screen can reach.

@@ -1085,6 +1085,11 @@ input::placeholder, textarea::placeholder{color:#6B5B48; opacity:1}
   background:linear-gradient(170deg,#4A4038,#2E2620); color:#FFF3DE; border:2px solid #8A6A45;
   border-radius:8px; padding:8px 10px; min-height:44px; min-width:62px; touch-action:none;
   font-family:var(--body)}
+/* the instrument in hand, for the click path */
+.belttool[data-armed]{border-color:var(--lamp); background:linear-gradient(170deg,#6B5335,#4A3B24);
+  box-shadow:0 0 0 3px rgba(232,163,61,.35)}
+/* and every rock that will take it */
+.lump[data-tooldrop],.piece[data-tooldrop]{outline:3px dashed var(--lamp); outline-offset:3px}
 .belttool .bic{font-size:19px; line-height:1}
 .belttool .bnm{font-family:var(--display); font-size:10px; letter-spacing:.04em}
 .belttool:hover{border-color:var(--lamp); filter:brightness(1.15)}
@@ -1650,7 +1655,7 @@ table.rosetta td.rx{font-family:var(--display); font-size:16px; color:var(--ink)
    the same lumps are half again as big, which is what "extend it vertically"
    buys. The width scales with it, so you scan a little less seam per screen
    and see a great deal more of what is in it. */
-.seamview svg{width:auto; max-width:none; height:286px}
+.seamview svg{width:auto; max-width:none; height:542px}
 .seamview::-webkit-scrollbar{height:10px}
 .seamview::-webkit-scrollbar-track{background:#241D18}
 .seamview::-webkit-scrollbar-thumb{background:var(--lamp); border-radius:999px}
@@ -2388,6 +2393,7 @@ MF.state = {
   cart:[],            /* raw ore held, unsmelted - you may hoard freely */
   yard:{},            /* ingotKey -> {ingot, count} - NATIVE METAL only */
   rockpile:[],        /* ore tipped in the yard still carrying a seam */
+  armedTool:null,     /* the instrument in hand — the click path beside the drag */
   selected:null,
   anvil:null,         /* the lump under the pick, and the floor around it */
   tools:{},           /* forged instruments - never granted, always made */
@@ -6486,7 +6492,13 @@ MF.LAYER_LOOK = [
    movement rather than reading a grid of seven.
    SEAM_W is the drawn width; the viewport shows roughly a third of it. */
 MF.SEAM_W = 2280;
-MF.SEAM_H = 190;
+/* THE SEAM IS TALLER THAN IT WAS, because the window onto it now sits in a
+   column the shaft sets the height of - 982px at 1250 - and only 307 of that
+   was rock. The rest was empty wall under the scan row. This is more SEAM, not
+   more zoom: the viewBox grows and the rendered height grows with it at the
+   same 1.505px per unit, so a lump is the same size and there is simply more
+   face to find one in. */
+MF.SEAM_H = 360;
 MF.SEAM_COUNT = 15;
 
 MF.stockFace = function(){
@@ -6507,7 +6519,7 @@ MF.stockFace = function(){
     var span = (MF.SEAM_W - 200) / (MF.SEAM_COUNT - 1);
     o.slot = MF.nextSeamSlot();
     o.px = 100 + o.slot * span + (rng() - 0.5) * span * 0.6;
-    o.py = 50 + rng() * 142;
+    o.py = 46 + rng() * (MF.SEAM_H - 132);
     o.sz = 26 + rng() * 24;
     o.rot = rng() * Math.PI * 2;
     /* its own silhouette: a different number of faces, each pulled in or out
@@ -6891,7 +6903,22 @@ MF.paintCart = function(){
     b.appendChild(H('span','lay','LAYER ' + o.layer));
     if(MF.state.selected && MF.state.selected.id===o.id) b.setAttribute('aria-current','true');
     b.setAttribute('aria-label', MF.oreDisplayText(o) + ', layer ' + o.layer +
-      '. Drop an instrument on it, or send it on with the two controls below.');
+      (MF.state.armedTool
+        ? '. Click to use the ' + MF.TOOLS[MF.state.armedTool].nm + ' on it.'
+        : '. Drop an instrument on it, or send it on with the two controls below.'));
+    if(MF.state.armedTool) b.setAttribute('data-tooldrop','open');
+    on(b,'click',function(){
+      if(!MF.state.armedTool) return;
+      var k = MF.state.armedTool;
+      MF.state.armedTool = null;
+      MF.applyToolToOre(k, o.id);
+    });
+    on(b,'keydown',function(e){
+      if(e.key!=='Enter' && e.key!==' ') return;
+      if(!MF.state.armedTool) return;
+      e.preventDefault();
+      var k = MF.state.armedTool; MF.state.armedTool = null; MF.applyToolToOre(k, o.id);
+    });
     cell.appendChild(b);
     /* ---- WHERE IT GOES, in two controls under the rock ---- */
     var route = E('div','lumproute');
@@ -7541,7 +7568,15 @@ MF.paintBreak = function(host, B){
     b.setAttribute('aria-label', MF.oreDisplayText(p.ore) + (nat
       ? ' — native metal. Nothing in it comes apart.'
       : ' — still rock. Put it under the pick.'));
+    if(MF.state.armedTool) b.setAttribute('data-tooldrop','open');
     on(b,'click',function(){
+      /* AN INSTRUMENT IN HAND GOES ON THE ROCK, and does not also move the
+         pick. One click, one act. */
+      if(MF.state.armedTool){
+        var k = MF.state.armedTool; MF.state.armedTool = null;
+        MF.applyTool(k, p.id);
+        return;
+      }
       if(nat) B.last = {ok:false, native:true,
         why:'Nothing left in that one. ' + MF.oreText(p.ore) + ' does not come apart — it is an element.'};
       else { B.at = idx; B.last = null; }
@@ -8167,19 +8202,37 @@ MF.paintBelt = function(host, atWork){
     return;
   }
 
-  box.appendChild(H('div', atWork ? 'beltnote' : 'hint',
-    'Drag one onto a lump and the lump changes. <b>how?</b> opens the room that teaches it.'));
+  box.appendChild(H('div', atWork ? 'beltnote' : 'hint', MF.state.armedTool
+    ? '<b>' + MF.TOOLS[MF.state.armedTool].nm + ' is in your hand.</b> Click a rock to use it.'
+    : 'Click one, then click a rock — or drag it onto one. <b>how?</b> opens the room that teaches it.'));
   var strap = E('div','beltstrap');
   owned.forEach(function(k){
     var t = MF.TOOLS[k];
     var loop = E('div','beltloop');
     var b = E('button','belttool'); b.type='button';
     b.setAttribute('data-tool', k);
-    b.setAttribute('draggable','true');
+    /* NO draggable="true". This whole gesture is built on POINTER events, and
+       the HTML5 drag attribute makes the browser start its own native drag on
+       a real mouse-down-and-move - which cancels the pointer stream the code
+       is listening to. Synthetic PointerEvents never trip it, so every probe
+       said the drag worked while no student could actually perform it. */
     b.appendChild(H('span','bic', t.ic));
     b.appendChild(H('span','bnm', t.nm.replace(/^The /,'')));
-    b.setAttribute('aria-label', t.nm + '. ' + t.ds + ' Drag it onto a lump to use it.');
+    /* ONE CLICK DOES IT TOO. Click the instrument to pick it up, click a rock
+       to use it - the same thing the drag does. A drag with no click path is a
+       control half the users cannot reach: it is the only gesture on this site
+       that needs a pointer that can be held down and moved precisely, and it
+       was ALSO the only way to use a tool in the cart. */
+    if(MF.state.armedTool === k) b.setAttribute('data-armed','yes');
+    b.setAttribute('aria-pressed', MF.state.armedTool === k ? 'true' : 'false');
+    b.setAttribute('aria-label', t.nm + '. ' + t.ds +
+      (MF.state.armedTool === k ? ' In your hand — click a rock to use it, or click again to put it back.'
+                                : ' Click to pick it up, then click a rock. Or drag it onto one.'));
     b.title = t.ds;
+    on(b,'click',function(){
+      MF.state.armedTool = (MF.state.armedTool === k) ? null : k;
+      MF.paintMine();
+    });
     MF.dragTool(b, k);
     loop.appendChild(b);
     /* THE WAY OUT, ON THE TOOL ITSELF. The mine does not explain instruments
@@ -8464,7 +8517,6 @@ MF.paintYard = function(){
     MF.state.rockpile.forEach(function(o, idx){
       var b = E('button','heaprock'); b.type='button';
       b.setAttribute('data-heap', idx);
-      b.setAttribute('draggable','true');
       b.appendChild(H('span','hv', MF.oreLabel(o)));
       b.setAttribute('aria-label', MF.oreText(o) + ' — still rock. Put it back under the pick.');
       b.title = 'Put it back under the pick';
@@ -9298,6 +9350,59 @@ MF.validate = function(){
     MF.state.cart = ngSave.cart; MF.state.selected = ngSave.sel;
     if(!caught)
       errs.push('CONTROL: a cut that auto-selects the lump is not reported as opening the floor');
+  })();
+
+  /* AN INSTRUMENT MUST BE USABLE BY CLICK, AND MUST NOT CARRY draggable.
+
+     The belt's drag is built on POINTER events, and every belt tool also
+     carried `draggable="true"` - so a real mouse-down-and-move started the
+     browser's own HTML5 drag and cancelled the pointer stream the code was
+     listening to. Synthetic PointerEvents never trip that, which is why every
+     probe reported the drag working while no student could perform it: the
+     instrument simply would not go onto the ore.
+
+     And a drag needs a click path beside it regardless. It is the only gesture
+     on this site that wants a pointer held down and moved precisely, and in
+     the cart it was the ONLY way to use a tool at all. */
+  chk('nogate');
+  (function(){
+    var probe = document.createElement('div');
+    tgStage.innerHTML = ''; tgStage.appendChild(probe);
+    MF.state.tools = {steel:{forged:true}}; MF.state.armedTool = null;
+    MF._mine = null; MF.SCREENS.mine(probe);
+    MF.state.layer = 2; MF.state.face = tgFace; MF.state.faceLayer = tgLayer;
+    MF.state.cart = [{kind:'poly', a:6, b:15, c:0, layer:2, id:'ng-tool'}];
+    MF.state.selected = null; MF.state.anvil = null;
+    MF.paintMine();
+    var dragAttrs = probe.querySelectorAll('[draggable]').length;
+    if(dragAttrs)
+      errs.push('nogate: ' + dragAttrs + ' control(s) carry draggable="true" — the browser will ' +
+        'start its own drag and kill the pointer events the belt actually uses');
+    var tool = probe.querySelector('.belttool[data-tool="steel"]');
+    var rock = probe.querySelector('.lump[data-ore="ng-tool"]');
+    chk('nogate');
+    if(!tool || !rock){ errs.push('nogate: the cart drew no instrument and rock to test the click path on'); }
+    else {
+      tool.click();
+      if(MF.state.armedTool !== 'steel')
+        errs.push('nogate: clicking an instrument does not pick it up, so there is no way to use ' +
+          'one without a drag');
+      else {
+        probe.querySelector('.lump[data-ore="ng-tool"]').click();
+        chk('nogate');
+        if(MF.state.cart[0].tool !== 'steel')
+          errs.push('nogate: clicking a rock with an instrument in hand did not put it on the rock');
+      }
+    }
+    MF.state.armedTool = null;
+  })();
+  /* CONTROL: put draggable back */
+  chk('nogate');
+  (function(){
+    var d = document.createElement('div');
+    d.innerHTML = '<button draggable="true">x</button>';
+    if(!d.querySelectorAll('[draggable]').length)
+      errs.push('CONTROL: the draggable sweep cannot see a draggable attribute');
   })();
 
   /* AND THE INSTRUMENTS MUST BE THERE TOO. A cart with ore in it and no belt
