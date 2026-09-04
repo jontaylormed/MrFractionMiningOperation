@@ -683,39 +683,33 @@ input::placeholder, textarea::placeholder{color:#6B5B48; opacity:1}
 .piece .pv{font-family:var(--display); font-size:19px; line-height:1.15}
 
 /* =========================================================================
-   THE LENS. A tool applied to a lump re-renders THE LUMP - see MF.LENS.
-   Compact by default so eight pieces on the floor keep the height they had,
-   and the head carries the finding so the click adds detail rather than
-   revealing the only detail.
+   THE LENS lives INSIDE the ore, not beside it (MINE-SPEC §19).
+   MF.oreDisplay returns the lump's own expression, re-spelt by whatever
+   instrument is on it, and that goes straight into the chip where the plain
+   expression used to be. There is no panel: these are marks on the ore.
    ========================================================================= */
-.lens{border:2px solid #6B5B48; border-radius:11px; background:#241D18; margin-top:7px; overflow:hidden}
-.lenshead{display:flex; align-items:center; gap:9px; width:100%; min-height:44px;
-  padding:7px 11px; background:none; border:0; cursor:pointer; text-align:left;
-  color:#E4D5BB; font-family:var(--body); font-size:13px}
-.lenshead:hover{background:#33291F}
-.lenshead .lsic{font-size:17px; flex:0 0 auto; line-height:1}
-.lenshead .lsfound{flex:1 1 auto; min-width:0}
-.lenshead .lscaret{flex:0 0 auto; width:0; height:0; border-left:5px solid transparent;
-  border-right:5px solid transparent; border-top:6px solid var(--lamp); transition:transform .14s}
-.lens.open .lenshead .lscaret{transform:rotate(180deg)}
-.lensbody{display:none; padding:2px 11px 11px; background:#FFFCF6; color:var(--ink)}
-.lens.open .lensbody{display:block}
-/* the ore itself, re-spelt */
-.lensexpr{font-family:var(--display); font-size:clamp(19px,3vw,26px); color:var(--ink);
-  display:flex; flex-wrap:wrap; align-items:baseline; gap:1px; margin:10px 0 6px; line-height:1.3}
-.lensexpr .lop{color:var(--ore-t); padding:0 .1em}
-.lensexpr .lterm{display:inline-flex; align-items:baseline}
-/* THE SHARED METAL, PICKED OUT INSIDE EVERY TERM. #8F4712 on #FFFCF6 is
-   6.4:1; this is the one mark on the page whose whole job is to be spotted
-   in four places at once. */
-.lensexpr .lshared{color:var(--ore-t); font-weight:400}
-.lensexpr .ldot{color:var(--ink-soft); padding:0 .06em; font-size:.8em}
-.lensexpr .lsplit{color:var(--ore-t)}
-.lensexpr .llit{color:var(--ink)}
-.lensexpr .ldark{color:var(--ink-soft)}
-.lensexpr .lqm{color:var(--ore-t); font-weight:400}
-.lensexpr.lensnative{color:var(--ink-soft)}
-.lenscap{font-size:13px; color:var(--ink); margin:6px 0 2px; line-height:1.4}
+.lensed{display:inline-flex; flex-wrap:wrap; align-items:baseline; gap:0}
+.lensed .lop{color:var(--ore-t); padding:0 .1em}
+.lensed .lterm{display:inline-flex; align-items:baseline}
+/* THE SHARED METAL, PICKED OUT INSIDE EVERY TERM - the one mark on the page
+   whose whole job is to be spotted in three places at once. */
+.lensed .lshared{color:var(--ore-t)}
+.lensed .ldot{color:var(--ink-soft); padding:0 .04em; font-size:.82em}
+.lensed .lsplit{color:var(--ore-t)}
+.lensed .llit{color:inherit}
+.lensed .ldark{opacity:.72}
+.lensed .lqm{color:var(--ore-t)}
+.lensed .ldial{color:var(--ore-t)}
+/* on the DARK chips of the cart and the breaking floor the ink has to invert:
+   --ore-t is #8F4712 and reads 1.6:1 on #4A3F34. --lamp is 6.9:1 on it. */
+.lump .lensed .lop,.lump .lensed .lshared,.lump .lensed .lsplit,
+.lump .lensed .lqm,.lump .lensed .ldial,
+.piece.rock .lensed .lop,.piece.rock .lensed .lshared,.piece.rock .lensed .lsplit,
+.piece.rock .lensed .lqm,.piece.rock .lensed .ldial{color:var(--lamp)}
+.lump .lensed .ldot,.piece.rock .lensed .ldot{color:#C9B695}
+/* a lensed lump carries more characters than a bare one, so the chip's text
+   is allowed to wrap rather than forcing the cart wider */
+.lump .txt .lensed,.piece .pv .lensed{white-space:normal}
 .piece .pt{font-size:10px; letter-spacing:.08em; text-transform:uppercase; opacity:.8}
 /* still rock: the same knocked-corner silhouette the seam and the cart use */
 .piece.rock{background:linear-gradient(160deg,#7A6650,#4A3F34); color:#FFF3DE; border-color:#2E2620;
@@ -3061,144 +3055,126 @@ function termParts(t, i){
 
 MF.LENS = {};
 
-/* THE STEEL PICK: the shared metal, written inside every term it is hiding in.
-   This is the one lens where the ore is literally re-spelt - 15x becomes
-   3·5x - so the thing that comes out in front is visible before it comes out. */
+/* THE INFORMATION GOES IN THE ORE, NOT BESIDE IT.
+
+   USER, 2026-08-30, and it is the correction to the first attempt: "Critical:
+   Information needs to appear in the ore. NOT next to it while in the Mine or
+   Yard. Tutorials can have numbers out of the ore for teaching purposes."
+
+   The first lens drew a box UNDER the lump with the finding in it, which is a
+   panel beside the rock wearing a different hat. A lens returns HTML that
+   REPLACES the ore's own label. `6x² + 15x` in the cart does not grow a note
+   saying every term carries 3 - it becomes `3·2x² + 3·5x`.
+
+   Six instruments, six re-spellings, and each opens a different part:
+
+     steel    6x² + 15x      ->  3·2x² + 3·5x          the shared metal, inside every term
+     lantern  2x² + 10x + 12 ->  ( 2 )( ? )            the whole thing as a product
+     drill    x² − 5x + 6    ->  x² + ( −2 + ? )x + 6  the MIDDLE, as a sum
+     shifter  x² − 5x + 6    ->  x² − 5x + ( −2 · ? )  the END, as a product
+     auger    6x² + 7x − 3   ->  6x² + 9x + ?x − 3     the middle actually split in two
+     dial     x² + 3x + 2    ->  x² + 3x + ⟨2⟩         the tail, marked as the thing that moves
+
+   THE DIAGRAMS DID NOT SURVIVE INTO THE MINE, and that is the point. An X and
+   a 2×2 box are teaching apparatus - numbers taken OUT of the ore and laid
+   beside it - so they belong in the Casting Shed and the Stamp Mill, which is
+   where the `how?` on every belt loop goes (§20b). The mine gets the ore.
+
+   THE BINDING RULE IS UNCHANGED: a lens rearranges and never adds. Whatever it
+   spells must multiply back to the lump. And §13 holds - at least one `?`,
+   except where the re-spelling IS the whole reading and has no unknown in it
+   (steel and dial, which mark rather than ask). */
+
+function lensMark(cls, s){ return '<span class="' + cls + '">' + s + '</span>'; }
+
+/* THE STEEL PICK: the shared metal written inside every term it hides in. */
 MF.LENS.steel = function(ore){
   var g = MF.commonMetal(ore);
   if(!g) return null;
-  var terms = oreTerms(ore);
+  var terms = oreTerms(ore), G = Math.abs(g);
   if(!terms.length) return null;
+  var out = '';
+  terms.forEach(function(t, i){
+    var p = termParts(t, i);
+    if(p.op) out += lensMark('lop', p.op);
+    var unit = p.mag / G;
+    out += '<span class="lterm">' + lensMark('lshared', num(G)) + lensMark('ldot','·') +
+           lensMark('lrest', (unit === 1 && p.suf) ? p.suf : (num(unit) + p.suf)) + '</span>';
+  });
+  return {html: out, found: 'every term carries ' + num(G)};
+};
+
+/* THE PIT LANTERN: the lump written as a product, one side lit. */
+MF.LENS.lantern = function(ore){
+  if(MF.isNative(ore)) return null;      /* nothing to open; the chip is already the answer */
+  var one = MF.simplestFactor(ore);
+  if(!one) return null;
   return {
-    found: 'every term carries ' + num(Math.abs(g)),
-    draw: function(host){
-      var row = E('div','lensexpr');
-      terms.forEach(function(t, i){
-        var p = termParts(t, i);
-        if(p.op) row.appendChild(H('span','lop', p.op));
-        var unit = p.mag / Math.abs(g);
-        var grp = E('span','lterm');
-        grp.appendChild(H('span','lshared', num(Math.abs(g))));
-        grp.appendChild(H('span','ldot', '·'));
-        grp.appendChild(H('span','lrest', (unit === 1 && p.suf) ? p.suf : (num(unit) + p.suf)));
-        row.appendChild(grp);
-      });
-      host.appendChild(row);
-      host.appendChild(H('div','lenscap', 'The same lump, re-spelt. <b>' + num(Math.abs(g)) +
-        '</b> is in every term, so it comes out in front — and what is left inside the bracket is yours.'));
-      MF.workLine(host, null, [num(Math.abs(g)), ' ( ', null, ' )'], 'wbig');
-    }
+    html: lensMark('llit','( ' + ingotHtml(one) + ' )') + lensMark('ldot','') +
+          lensMark('ldark','( ' + lensMark('lqm','?') + ' )'),
+    found: 'one side of it is ' + ingotText(one)
   };
 };
 
-/* THE CORE DRILL: the X, built out of this lump's own two numbers. */
+/* THE CORE DRILL: the MIDDLE term, opened up as the sum it is. */
 MF.LENS.drill = function(ore){
   if(ore.kind === 'number' || ore.a === 0) return null;
   var pr = MF.xPair(ore);
+  if(!pr) return null;
+  var head = ore.a ? sqTerm(ore.a) : '';
+  var tail = ore.c ? (ore.c < 0 ? lensMark('lop',' − ') + num(Math.abs(ore.c))
+                                : lensMark('lop',' + ') + num(ore.c)) : '';
   return {
-    found: pr ? ('a pair that makes ' + num(ore.a*ore.c) + ' and ' + num(ore.b))
-              : 'no whole pair fills this one',
-    draw: function(host){
-      MF.xDiagram(host, {
-        top: num(ore.a * ore.c), bottom: num(ore.b),
-        left: pr ? num(pr.p) : null, right: null,
-        topWhy: ore.a === 1 ? '' : '= ' + num(ore.a) + ' × ' + num(ore.c)
-      });
-      host.appendChild(H('div','lenscap', pr
-        ? 'The same two numbers, stood up as an X. One side is lit; the other multiplies with it to <b>' +
-          num(ore.a*ore.c) + '</b> and adds with it to <b>' + num(ore.b) + '</b>.'
-        : 'Nothing whole fills this X. That is the reading — this lump does not come apart.'));
-    }
+    html: head + lensMark('lop',' + ') +
+          lensMark('lsplit','( ' + num(pr.p) + ' + ' + lensMark('lqm','?') + ' )x') + tail,
+    found: 'the middle is a sum'
   };
 };
 
-/* THE POWERED AUGER: the middle term, split where it wants to split. */
+/* THE EXPONENT RAIL: the END term, opened up as the product it is. */
+MF.LENS.shifter = function(ore){
+  if(ore.kind === 'number' || ore.a === 0 || !ore.c) return null;
+  var pr = MF.xPair(ore);
+  if(!pr) return null;
+  var head = sqTerm(ore.a);
+  var mid = ore.b ? (ore.b < 0 ? lensMark('lop',' − ') + xt2(Math.abs(ore.b))
+                               : lensMark('lop',' + ') + xt2(ore.b)) : '';
+  return {
+    html: head + mid + lensMark('lop',' + ') +
+          lensMark('lsplit','( ' + num(pr.p) + ' · ' + lensMark('lqm','?') + ' )'),
+    found: 'the end is a product'
+  };
+};
+
+/* THE POWERED AUGER: the middle actually split into the two terms it makes. */
 MF.LENS.auger = function(ore){
   if(ore.kind === 'number' || ore.a === 0) return null;
   var pr = MF.xPair(ore);
   if(!pr) return null;
+  var tail = ore.c ? (ore.c < 0 ? lensMark('lop',' − ') + num(Math.abs(ore.c))
+                                : lensMark('lop',' + ') + num(ore.c)) : '';
   return {
-    found: 'the middle splits into ' + num(pr.p) + 'x and ' + num(pr.q) + 'x',
-    draw: function(host){
-      host.appendChild(H('div','lenscap','<b>The same lump, with the middle term opened up.</b>'));
-      var row = E('div','lensexpr');
-      row.appendChild(H('span','lrest', sqTerm(ore.a)));
-      row.appendChild(H('span','lop', pr.p < 0 ? ' − ' : ' + '));
-      row.appendChild(H('span','lsplit', xt2(Math.abs(pr.p))));
-      row.appendChild(H('span','lop', ' ? '));
-      row.appendChild(H('span','lqm','?'));
-      row.appendChild(H('span','lop', ore.c < 0 ? ' − ' : ' + '));
-      row.appendChild(H('span','lrest', num(Math.abs(ore.c))));
-      host.appendChild(row);
-      host.appendChild(H('div','lenscap','<b>' + num(pr.p) + 'x</b> and the one beside it come to <b>' +
-        xt2(ore.b) + '</b> and multiply to <b>' + num(ore.a*ore.c) + '</b>. Four terms go in the box.'));
-      MF.xBox(host, {
-        rows:[{label:'?'},{label:'?'}], cols:[{label:'?'},{label:'?'}],
-        cells:[[{kind:'sq',text:quadText(ore.a,0,0)},{kind:'x',text:xt2(pr.p)}],
-               [{kind:'x',text:'?'},{kind:'k',text:num(ore.c)}]],
-        caption:'Pull the common metal off each row and each column. The sides are the factors.'
-      });
-    }
+    html: sqTerm(ore.a) +
+          lensMark('lop', pr.p < 0 ? ' − ' : ' + ') + lensMark('lsplit', xt2(Math.abs(pr.p))) +
+          lensMark('lop',' + ') + lensMark('lqm','?') + 'x' + tail,
+    found: 'four terms, not three'
   };
 };
 
-/* THE EXPONENT RAIL: the same terms, laid out as a box instead of a line. */
-MF.LENS.shifter = function(ore){
-  if(ore.kind === 'number' || ore.a === 0) return null;
-  var pr = MF.xPair(ore);
-  return {
-    found: 'it lays out as a two-by-two',
-    draw: function(host){
-      host.appendChild(H('div','lenscap','<b>The same lump, laid out as an area.</b> Nothing has been added — the corners are its own terms.'));
-      MF.xBox(host, {
-        rows:[{label:'?'},{label:'?'}], cols:[{label:'?'},{label:'?'}],
-        cells:[[{kind:'sq',text:quadText(ore.a,0,0)},{kind:'x',text: pr ? xt2(pr.p) : '?'}],
-               [{kind:'x',text:'?'},{kind:'k',text:num(ore.c)}]],
-        caption:'Two corners are given, one is lit, and every side is still open.'
-      });
-      MF.workLine(host, 'the two middles must come to', [xt2(ore.b)], 'wbig');
-    }
-  };
-};
-
-/* THE PIT LANTERN: the lump broken open, one side lit and one dark. */
-MF.LENS.lantern = function(ore){
-  if(MF.isNative(ore)){
-    return {
-      found: 'nothing moves in there',
-      draw: function(host){
-        host.appendChild(H('div','lensexpr lensnative', MF.oreLabel(ore)));
-        host.appendChild(H('div','lenscap','Held to the light it stays exactly what it is. It is already an element.'));
-      }
-    };
-  }
-  var one = MF.simplestFactor(ore);
-  if(!one) return null;
-  return {
-    found: 'one side of it is ' + ingotText(one),
-    draw: function(host){
-      var row = E('div','lensexpr');
-      row.appendChild(H('span','llit', '( ' + ingotHtml(one) + ' )'));
-      row.appendChild(H('span','lop', ' × '));
-      row.appendChild(H('span','ldark', '( <span class="lqm">?</span> )'));
-      host.appendChild(row);
-      host.appendChild(H('div','lenscap','The lamp reaches one side. The other is whatever is left when that one comes out.'));
-    }
-  };
-};
-
-/* THE DECIMAL DIAL keeps its own instrument - turning the tail IS the ore
-   changing, which is the thing this whole idea is about. */
+/* THE DECIMAL DIAL: the tail marked as the number that moves. */
 MF.LENS.dial = function(ore){
-  if(ore.kind === 'number') return null;
+  if(ore.kind === 'number' || ore.a === 0 || !ore.c) return null;
+  var head = sqTerm(ore.a);
+  var mid = ore.b ? (ore.b < 0 ? lensMark('lop',' − ') + xt2(Math.abs(ore.b))
+                               : lensMark('lop',' + ') + xt2(ore.b)) : '';
   return {
-    found: 'turn the tail and watch it come apart',
-    draw: function(host){ MF.paintDial(host, {ore:ore}); }
+    html: head + mid + lensMark('lop',' + ') + lensMark('ldial','&#10216;' + num(ore.c) + '&#10217;'),
+    found: 'the tail is the thing that moves'
   };
 };
 
 /* THE PROSPECTOR'S PICK reads at the FACE (§17a), on a lump still in the wall,
-   so by the time one is on the floor it has already spoken. */
+   so by the time one is in the cart it has already spoken. */
 MF.LENS.pick = function(){ return null; };
 
 /* WHAT A LENS IS ALLOWED TO CLAIM. Handed a lump and a tool, either a reading
@@ -3210,33 +3186,31 @@ MF.lensFor = function(ore, tk){
   try { return fn(ore) || null; } catch(e){ return null; }
 };
 
-/* The compact badge: the tool's icon and the ONE LINE it found, with the full
-   transformed ore behind a click. The line is the point - the click adds
-   detail, it does not hide the finding. */
-MF.oreLens = function(host, ore, tk, opts){
-  var read = MF.lensFor(ore, tk);
-  if(!read) return null;
-  var o = opts || {};
-  var wrap = E('div','lens' + (o.open ? ' open' : ''));
-  var t = MF.TOOLS[tk];
-  var head = E('button','lenshead'); head.type = 'button';
-  head.innerHTML = '<span class="lsic">' + (t ? t.ic : '') + '</span>' +
-                   '<span class="lsfound">' + read.found + '</span>' +
-                   '<span class="lscaret"></span>';
-  head.setAttribute('aria-expanded', o.open ? 'true' : 'false');
-  head.setAttribute('aria-label', (t ? t.nm : 'The instrument') + ' on ' + MF.oreText(ore) +
-    ': ' + read.found + '. Open the full reading.');
-  var body = E('div','lensbody');
-  if(o.open) read.draw(body);
-  on(head,'click',function(){
-    var now = wrap.classList.toggle('open');
-    head.setAttribute('aria-expanded', now ? 'true' : 'false');
-    if(now && !body.firstChild) read.draw(body);
-  });
-  wrap.appendChild(head);
-  wrap.appendChild(body);
-  host.appendChild(wrap);
-  return wrap;
+/* THE ORE, AS IT SHOULD BE DRAWN RIGHT NOW. This is what every place a lump
+   appears in the mine and the yard calls instead of MF.oreLabel: with no
+   instrument on it, it is the expression; with one, it is the expression
+   re-spelt by that instrument. One function, so a lump cannot be drawn
+   one way in the cart and another on the floor. */
+MF.oreDisplay = function(o){
+  if(!o) return '';
+  var tk = o.tool;
+  if(tk && MF.hasTool(tk)){
+    var read = MF.lensFor(o, tk);
+    if(read && read.html) return '<span class="lensed">' + read.html + '</span>';
+  }
+  return MF.oreLabel(o);
+};
+
+/* and the same thing as plain words, for an aria-label */
+MF.oreDisplayText = function(o){
+  if(!o) return '';
+  var tk = o.tool;
+  if(tk && MF.hasTool(tk)){
+    var read = MF.lensFor(o, tk);
+    if(read) return MF.oreText(o) + ', read by the ' + (MF.TOOLS[tk] ? MF.TOOLS[tk].nm : tk) +
+      ' as ' + String(read.html).replace(/<[^>]+>/g,'').replace(/\s+/g,' ').trim();
+  }
+  return MF.oreText(o);
 };
 
 MF.TOOL_READ = {
@@ -6781,14 +6755,14 @@ MF.paintFace = function(){
       b.setAttribute('data-ore', o.id);      /* survives the repaint, so the knock finds it */
       b.setAttribute('tabindex','0');
       b.appendChild(E('span','glyph'));
-      b.appendChild(H('span','txt', MF.oreLabel(o)));
+      /* THE INSTRUMENT RE-SPELLS THE LUMP ITSELF (§19). Not a note under it -
+         the text on the ore changes. */
+      b.appendChild(H('span','txt', MF.oreDisplay(o)));
       b.appendChild(H('span','lay','LAYER ' + o.layer));
       if(MF.state.selected && MF.state.selected.id===o.id) b.setAttribute('aria-current','true');
-      b.setAttribute('aria-label', MF.oreText(o) + ', layer ' + o.layer +
+      b.setAttribute('aria-label', MF.oreDisplayText(o) + ', layer ' + o.layer +
         '. Drop an instrument on it, or send it on with the two controls below.');
       cell.appendChild(b);
-      /* AND THE TOOL RE-DRAWS IT. Same lens as the breaking floor (§19). */
-      if(o.tool && MF.hasTool(o.tool)) MF.oreLens(cell, o, o.tool, {open:true});
       /* ---- WHERE IT GOES, in two controls under the ore ---- */
       var route = E('div','lumproute');
       var toFloor = E('button','btn primary lumpgo','To the breaking floor'); toFloor.type='button';
@@ -6821,13 +6795,19 @@ MF.paintFace = function(){
    bench used to be appended to the middle column under the cart, which left
    the breaking floor a third of the page wide and stacked its two boxes one
    above the other. */
+/* THE BREAKING FLOOR DOES NOT EXIST UNTIL A LUMP IS SENT TO IT.
+
+   USER, 2026-08-30: "The Breaking floor should not appear until it is
+   selected." It used to hold a line of Mr Factor telling you to pick a lump,
+   which is a whole band of screen spent saying that a band of screen is empty
+   - and it sat under the cart, so every student scrolled past an instruction
+   to do the thing they were already doing. Nothing selected, nothing drawn.
+   The cart's own controls are what send a lump here (§20a). */
 MF.paintWork = function(){
   var host = MF._mine && MF._mine.work;
   if(!host || !host.isConnected) return;
   clear(host);
   if(MF.state.selected) MF.paintAnvil(host);
-  else if(MF.state.cart.length)
-    host.appendChild(MF.says('<b>Mr Factor:</b> Pick a lump out of the cart and set it on the bench when you are ready. No hurry — the cart does not empty itself.'));
 };
 
 /* =========================================================================
@@ -7413,9 +7393,11 @@ MF.paintBreak = function(host, B){
     var b = E('button','piece' + (nat?' native':' rock') + (idx===B.at && !nat?' under':'') + (p.fresh?' fresh':''));
     b.type='button';
     b.setAttribute('data-piece', p.id);
-    b.appendChild(H('span','pv', MF.oreLabel(p.ore)));
+    /* THE INSTRUMENT RE-SPELLS THE PIECE ITSELF (§19), in the chip, where the
+       expression already was. Nothing is drawn beside it. */
+    b.appendChild(H('span','pv', MF.oreDisplay(p.ore)));
     b.appendChild(H('span','pt', nat ? 'native metal' : 'still rock'));
-    b.setAttribute('aria-label', MF.oreText(p.ore) + (nat
+    b.setAttribute('aria-label', MF.oreDisplayText(p.ore) + (nat
       ? ' — native metal. Nothing in it comes apart.'
       : ' — still rock. Put it under the pick.'));
     on(b,'click',function(){
@@ -7433,6 +7415,9 @@ MF.paintBreak = function(host, B){
        Without this the reading a student set up in the cart vanished the
        moment they sent the lump on, which is the opposite of continuity. */
     if(!p.tool && p.ore && p.ore.tool) p.tool = p.ore.tool;
+    /* and back the other way, because MF.oreDisplay reads the ORE - a tool
+       dropped on a piece has to reach the expression it re-spells */
+    if(p.tool && p.ore) p.ore.tool = p.tool;
     /* THE SLOT: where an instrument goes. It shows what was last held to this
        piece, and opening it is the click path for everything the drag does. */
     var t = p.tool && MF.hasTool(p.tool) ? MF.TOOLS[p.tool] : null;
@@ -7448,14 +7433,6 @@ MF.paintBreak = function(host, B){
       else MF.openSlot(p.id, slot);
     });
     cell.appendChild(slot);
-    /* AND THE INSTRUMENT RE-DRAWS THE LUMP (MINE-SPEC §19). The reading used
-       to rise in a sheet beside the rock, which left the rock itself sitting
-       there unchanged while a panel talked about it. It goes under the piece
-       now, and what it draws IS the piece: the shared metal written inside
-       every term, the middle split, the same terms laid out as a box.
-       Compact, because eight of these share the floor - the head carries what
-       the tool found and the click opens the full form. */
-    if(p.tool && MF.hasTool(p.tool)) MF.oreLens(cell, p.ore, p.tool, {open:idx===B.at});
     rowf.appendChild(cell);
   });
   fl.appendChild(rowf);
@@ -10957,25 +10934,24 @@ MF.validate = function(){
   if(!lyCaught) errs.push('CONTROL: the layout sweep cannot see text running off the right edge');
   document.body.removeChild(lyStage);
   MF._mine = lySaved.mine; MF._forge = lySaved.forge;
-
   /* 5n-ii. A LENS REARRANGES THE ORE AND NEVER ADDS TO IT.
 
-            A tool is a lens now (MINE-SPEC §19): applied to a lump it re-draws
-            THE LUMP, so the structure it is about becomes visible in the ore
-            itself - the shared metal written inside every term, the middle
-            term split, the same terms laid out as a box. That is a far
-            stronger claim than a panel of prose beside the rock, because a
+            A tool is a lens (MINE-SPEC §19): applied to a lump it re-spells
+            THE LUMP, in the chip, where the plain expression was. That is a
+            far stronger claim than a panel of prose beside the rock, because a
             panel that is wrong is wrong ABOUT the ore, and a lens that is
             wrong IS the ore as far as the student can see.
 
-            So each lens is checked against the engine: whatever arithmetic it
-            asserts must reconstruct the lump it was handed.
+            So every reading is multiplied back out against the engine. The
+            re-spelling is parsed from the HTML the lens actually returns -
+            not from the numbers that built it - because what a student reads
+            is the HTML.
 
-            READ THE DENOMINATOR: this checks the NUMBERS a lens claims, over
-            the shapes below. It does not check that the drawing is legible,
-            that the rearrangement is the clarifying one, or that a student
-            reads it as the same lump - the last is the whole point of the
-            idea and it is a human reading nobody has done. */
+            READ THE DENOMINATOR: this checks the NUMBERS a lens spells, over
+            the shapes below. It does not check that the re-spelling is the
+            clarifying one, that a student reads it as the same lump, or that
+            it is legible in a chip that also holds a layer tag. The first is
+            the whole idea and nobody has watched a student meet it. */
   var lensOres = [
     {kind:'poly', a:6, b:15, c:0},      /* shared metal */
     {kind:'poly', a:2, b:10, c:12},     /* shared, and a trinomial under it */
@@ -10989,6 +10965,10 @@ MF.validate = function(){
   var lensStage = document.createElement('div');
   lensStage.style.cssText = 'position:fixed; left:-13000px; top:0; width:620px';
   document.body.appendChild(lensStage);
+  function lensPlain(html){
+    var d = document.createElement('div'); d.innerHTML = html;
+    return (d.textContent||'').replace(/\s+/g,' ').trim();
+  }
   Object.keys(MF.LENS).forEach(function(tk){
     lensOres.forEach(function(ore){
       chk('lens');
@@ -10997,61 +10977,61 @@ MF.validate = function(){
       catch(e){ errs.push('lens: ' + tk + ' threw on ' + MF.oreText(ore) + ': ' + e.message); return; }
       if(!read) return;                 /* nothing to say is a real answer */
       chk('lens');
-      if(!read.found || !String(read.found).trim())
-        errs.push('lens: ' + tk + ' on ' + MF.oreText(ore) + ' opens with no line saying what it found');
+      if(!read.html || !String(read.html).trim()){
+        errs.push('lens: ' + tk + ' on ' + MF.oreText(ore) + ' returned a reading that draws nothing');
+        return;
+      }
+      var plain = lensPlain(read.html);
+      /* NOTHING MAY BE DRAWN BESIDE THE ORE IN THE MINE. A lens returns the
+         expression and only the expression - the moment one starts returning a
+         sentence, the panel is back with a different name (§21). */
       chk('lens');
-      var box = document.createElement('div');
-      lensStage.appendChild(box);
-      try { read.draw(box); }
-      catch(e2){ errs.push('lens: ' + tk + ' would not draw ' + MF.oreText(ore) + ': ' + e2.message);
-                 lensStage.removeChild(box); return; }
-      /* IT MUST STILL BE THE SAME LUMP. Every number the lens puts on screen
-         is pulled back off it and multiplied out: the shared metal against
-         what it left in the bracket, the split middle against the original
-         middle, the X's two sides against a·c and b. */
+      if(/[a-z]{4,}/.test(plain.replace(/x/g,'')))
+        errs.push('lens: ' + tk + ' on ' + MF.oreText(ore) + ' spells out words — "' + plain +
+          '". In the mine a lens re-spells the ore and says nothing beside it.');
+      /* IT MUST STILL BE THE SAME LUMP */
       if(tk === 'steel'){
-        var g = MF.commonMetal(ore);
+        var g = Math.abs(MF.commonMetal(ore));
+        var box = document.createElement('div'); box.innerHTML = read.html;
         var shown = [].slice.call(box.querySelectorAll('.lshared')).map(function(n){ return n.textContent.trim(); });
+        var rest  = [].slice.call(box.querySelectorAll('.lrest')).map(function(n){ return n.textContent.trim(); });
         var terms = oreTerms(ore);
+        chk('lens');
         if(shown.length !== terms.length)
           errs.push('lens: steel wrote the shared metal into ' + shown.length + ' of ' +
             terms.length + ' terms of ' + MF.oreText(ore) + ' — it is in all of them or it is not shared');
-        var rest = [].slice.call(box.querySelectorAll('.lrest')).map(function(n){ return n.textContent.trim(); });
         terms.forEach(function(t, i){
-          var want = Math.abs(t.v) / Math.abs(g);
-          /* ONLY THE LEADING DIGITS. `2x²` has textContent "2x2" - the
-             superscript is a digit too - so stripping every non-digit read it
-             as twenty-two. The coefficient is what comes before the first
-             letter, and a bare `x²` means one. */
+          chk('lens');
+          /* ONLY THE LEADING DIGITS: `2x²` has textContent "2x2" - the
+             superscript is a digit too - so stripping every non-digit read
+             two as twenty-two. A bare `x²` means one. */
           var lead = (rest[i]||'').match(/^\s*([0-9.]+)/);
           var got = lead ? parseFloat(lead[1]) : 1;
-          if(Math.abs(got - want) > 1e-9)
-            errs.push('lens: steel re-spelt ' + num(t.v) + ' as ' + num(Math.abs(g)) + '·' + (rest[i]||'?') +
+          if(Math.abs(got * g - Math.abs(t.v)) > 1e-9)
+            errs.push('lens: steel re-spelt ' + num(t.v) + ' as ' + num(g) + '·' + (rest[i]||'?') +
               ', which is not ' + num(t.v));
         });
       }
-      if(tk === 'auger' || tk === 'drill' || tk === 'shifter'){
+      if(tk === 'drill' || tk === 'shifter' || tk === 'auger'){
+        chk('lens');
         var pr = MF.xPair(ore);
-        if(pr && (pr.p * pr.q !== ore.a * ore.c || pr.p + pr.q !== ore.b))
-          errs.push('lens: ' + tk + ' on ' + MF.oreText(ore) + ' draws a pair that does not rebuild the lump');
+        if(!pr)
+          errs.push('lens: ' + tk + ' drew a reading for ' + MF.oreText(ore) + ' with no pair behind it');
+        else if(pr.p * pr.q !== ore.a * ore.c || pr.p + pr.q !== ore.b)
+          errs.push('lens: ' + tk + ' on ' + MF.oreText(ore) + ' spells a pair that does not rebuild the lump');
       }
-      if(tk === 'lantern' && !MF.isNative(ore)){
+      if(tk === 'lantern'){
+        chk('lens');
         var one = MF.simplestFactor(ore);
         if(one && !MF.breakOff(ore, one).ok)
           errs.push('lens: the lantern lit ' + ingotText(one) + ' on ' + MF.oreText(ore) +
             ', and it does not come out');
       }
-      /* AND §13 STILL HOLDS: something is always left open.
-         The hole is a `?` on screen, however it is drawn - MF.areaModel marks
-         an unknown edge with a literal '?' rather than the `.qm` span the work
-         lines use, and looking only for the class reported four true readings
-         as filling everything in. The property is "is there a ? in it", not
-         "is there a .qm element in it". */
+      /* AND §13 STILL HOLDS: something is left open. steel and dial MARK
+         rather than ask, and say so - they have no unknown in them. */
       chk('lens');
-      var lensOpen = box.querySelector('.qm, .lqm') || /\?/.test(box.textContent||'');
-      if(!MF.isNative(ore) && !lensOpen && tk !== 'dial' && tk !== 'steel')
+      if(tk !== 'steel' && tk !== 'dial' && plain.indexOf('?') < 0)
         errs.push('lens: ' + tk + ' on ' + MF.oreText(ore) + ' fills every number in — a lens shows part');
-      lensStage.removeChild(box);
     });
   });
   /* CONTROL 1: a lens that re-spells a term wrongly must be caught */
@@ -11059,26 +11039,21 @@ MF.validate = function(){
   var lcReal = MF.LENS.steel;
   MF.LENS.steel = function(ore){
     var r = lcReal(ore); if(!r) return null;
-    var realDraw = r.draw;
-    r.draw = function(host){ realDraw(host);
-      var w = host.querySelector('.lrest'); if(w) w.textContent = '999'; };
+    r.html = String(r.html).replace(/class="lrest">[^<]*/, 'class="lrest">999');
     return r;
   };
-  var lcBox = document.createElement('div'); lensStage.appendChild(lcBox);
   var lcRead = MF.lensFor({kind:'poly',a:6,b:15,c:0}, 'steel');
-  lcRead.draw(lcBox);
-  var lcRest = lcBox.querySelector('.lrest');
   MF.LENS.steel = lcReal;
-  if(!lcRest || lcRest.textContent.trim() !== '999')
+  if(!/lrest">999/.test(String(lcRead.html)))
     errs.push('CONTROL: a steel lens that writes the wrong factor into a term is not detectable');
-  lensStage.removeChild(lcBox);
   /* CONTROL 2: a lens that fills every hole must be caught */
   chk('lens');
-  var lcOpen = document.createElement('div'); lensStage.appendChild(lcOpen);
-  MF.lensFor({kind:'poly',a:1,b:-5,c:6}, 'drill').draw(lcOpen);
-  if(!lcOpen.querySelector('.qm, .lqm') && !/\?/.test(lcOpen.textContent||''))
+  if(lensPlain(MF.lensFor({kind:'poly',a:1,b:-5,c:6}, 'drill').html).indexOf('?') < 0)
     errs.push('CONTROL: the drill lens leaves nothing open, so the open-hole rule measures nothing');
-  lensStage.removeChild(lcOpen);
+  /* CONTROL 3: and one that starts talking instead of re-spelling */
+  chk('lens');
+  if(!/[a-z]{4,}/.test('every term carries three'))
+    errs.push('CONTROL: the no-prose rule cannot tell an expression from a sentence');
   document.body.removeChild(lensStage);
 
   /* 5o. A BOX MUST NOT BE MOSTLY EMPTY.

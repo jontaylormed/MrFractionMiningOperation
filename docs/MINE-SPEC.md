@@ -724,3 +724,40 @@ ore, re-drawn. The lesson is not deleted — every instrument's belt loop carrie
 small **how?** that opens the room built to teach it: the **Stamp Mill** for the tools
 priced in plain numbers, the **Casting Shed** for the rest. A student who wants the
 why gets a room; a student who does not gets a working tool.
+
+## 21. The information is in the ore
+
+*User, 2026-08-30: "Critical: Information needs to appear in the ore. NOT next to it
+while in the Mine or Yard. Tutorials can have numbers out of the ore for teaching
+purposes."*
+
+This is the correction to §19's first build, which drew a box **under** the lump with
+the finding in it — a panel beside the rock wearing a different hat.
+
+**A lens returns the ore's own expression, re-spelt, and that goes where the plain
+expression was.** `6x² + 15x` in the cart does not grow a note saying every term
+carries 3. It *becomes* `3·2x² + 3·5x`.
+
+| tool | the lump | the lump, with the tool on it |
+|---|---|---|
+| **Steel Pick** | `6x² + 15x` | `3·2x² + 3·5x` |
+| **Pit Lantern** | `2x² + 10x + 12` | `( 2 )( ? )` |
+| **Core Drill** | `x² − 5x + 6` | `x² + ( −2 + ? )x + 6` — the **middle**, as a sum |
+| **Exponent Rail** | `x² − 5x + 6` | `x² − 5x + ( −2 · ? )` — the **end**, as a product |
+| **Powered Auger** | `6x² + 7x − 3` | `6x² + 9x + ?x − 3` — the middle actually split |
+| **Decimal Dial** | `x² + 3x + 2` | `x² + 3x + ⟨2⟩` — the tail, marked as what moves |
+
+### 21a. The diagrams did not survive into the mine, and that is the point
+
+An X and a 2×2 box are **teaching apparatus** — numbers taken *out* of the ore and laid
+beside it. They belong in the Casting Shed and the Stamp Mill, which is where the
+`how?` on every belt loop goes (§20b). **The mine gets the ore.**
+
+`lens` enforces it: a reading whose text contains words rather than an expression fails
+the build. A lens that starts explaining is the panel coming back under a new name.
+
+### 21b. The breaking floor does not exist until a lump is sent to it
+
+It used to hold a line telling you to pick a lump — a whole band of screen spent saying
+that a band of screen was empty, sitting under the cart, so every student scrolled past
+an instruction to do the thing they were already doing. Nothing selected, nothing drawn.
