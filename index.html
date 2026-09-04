@@ -1031,7 +1031,13 @@ input::placeholder, textarea::placeholder{color:#6B5B48; opacity:1}
 .beltempty{font-size:13px; font-style:italic; color:#E8D6BC}
 /* the belt hanging on the breaking floor: it sits INSIDE the dark floorbox,
    so its labels are set for that ground rather than for cream */
-.gearbox.atwork{margin:0 0 11px}
+/* THE BELT CARRIES ITS OWN GROUND. It was styled for the breaking floor's dark
+   box and nothing else, so putting the same belt in the CART - a light panel -
+   printed its label at 1.85:1, its line at 1.70 and every "how?" at 3.67. A
+   component that assumes a background has to bring one, which is §66 in the
+   other direction. */
+.gearbox.atwork{margin:0 0 11px; background:#241D18; border:2px solid #4A3B2C;
+  border-radius:12px; padding:9px 11px 11px}
 .gearbox.atwork .beltlab{font-family:var(--display); font-size:10px; letter-spacing:.11em;
   color:var(--lamp); margin-bottom:4px}
 .gearbox.atwork .beltnote{font-size:12px; color:#C9B695; margin-top:6px}
@@ -1238,6 +1244,18 @@ table.rosetta td.rx{font-family:var(--display); font-size:16px; color:var(--ink)
    cart - so cream would fail the build at 11px. Near-black on --ore is
    4.9:1. */
 .lumpcell{display:flex; flex-direction:column; gap:5px; align-items:stretch}
+/* WHERE A LUMP GOES, in two controls under the ore itself (§20). Not a tab
+   under a chip any more: the two destinations are the decision the cart is
+   for, so they are the same weight and they are side by side. */
+.lumproute{display:flex; gap:7px; flex-wrap:wrap; margin-top:2px}
+.lumproute .lumpgo{flex:1 1 132px; font-size:13px; min-height:40px; padding:8px 10px}
+/* the tool's quiet door to the room that teaches it */
+/* --lamp is 3.67:1 on the belt's LEATHER, not on the panel behind it — the
+   strap is its own surface and it is lighter than the box. #FFE9C4 is 6.67. */
+.beltwhy{display:block; width:100%; margin-top:3px; padding:3px 6px; min-height:24px;
+  background:none; border:0; cursor:pointer; font-size:11px; letter-spacing:.06em;
+  color:#FFE9C4; text-decoration:underline; text-underline-offset:2px}
+.beltwhy:hover{color:#FFF7EA}
 .tuyard{align-self:center; font-size:14px; letter-spacing:.05em;
   padding:9px 20px; min-height:40px; background:var(--ore); color:#1A120B;
   border:2px solid var(--lamp); border-radius:999px; cursor:pointer;
@@ -6722,30 +6740,21 @@ MF.paintFace = function(){
             : 'A seam runs through it. Worth carting.') + '</b>'
         : '<br><em>Which seam runs through it is not something you can see from here — that is the assay’s job.</em>')));
 
-    /* ---- WHERE DOES IT GO? The choice is made HERE, at the moment the lump
-            is acquired, because that is when it is actually a decision. The
-            cart is for rock you mean to work; the yard is for setting a lump
-            aside. Sending it straight to the yard used to mean digging it,
-            finding it in the cart and clicking a second control - and before
-            that, it meant putting it on the bench first. */
+    /* ---- CUTTING FILLS THE CART, AND THAT IS THE WHOLE DECISION HERE ----
+            A yard shortcut lived on this panel for one session. The choice
+            moved to the CART (§20), because that is where the instruments are:
+            you put a tool on the lump, watch it change, and THEN decide where
+            it goes. Choosing before you can read the rock was choosing early. */
     var brow = E('div','row'); brow.style.marginTop='10px';
-    var br = E('button','btn primary big','Cut it into the cart'); br.type='button';
-    br.setAttribute('aria-label','Cut ' + MF.oreText(o) + ' out of the seam and into the cart, to work it');
+    var br = E('button','btn primary big','Swing the pick'); br.type='button';
+    br.setAttribute('aria-label','Cut ' + MF.oreText(o) + ' out of the seam and into the cart');
     on(br,'click',function(){ MF.breakRock(MF.state.inspecting, 'cart'); });
     brow.appendChild(br);
-    var toYard = E('button','btn big','Cut it straight to the yard'); toYard.type='button';
-    toYard.style.background='#241D18'; toYard.style.color='#E4D5BB'; toYard.style.borderColor='#6B5B48';
-    toYard.setAttribute('aria-label','Cut ' + MF.oreText(o) + ' out of the seam and set it aside in the yard');
-    on(toYard,'click',function(){ MF.breakRock(MF.state.inspecting, 'yard'); });
-    brow.appendChild(toYard);
     var skip = E('button','btn','Leave it and look at another'); skip.type='button';
     skip.style.background='#241D18'; skip.style.color='#E4D5BB'; skip.style.borderColor='#6B5B48';
     on(skip,'click',function(){ MF.state.inspecting=null; MF.paintMine(); });
     brow.appendChild(skip);
     insp.appendChild(brow);
-    insp.appendChild(H('div','hint yardhint', held
-      ? 'The cart is for rock you mean to break. The yard is for setting one aside — the pick has told you which this is.'
-      : 'The cart is for rock you mean to break; the yard is for setting one aside. <b>The Prospector’s Pick reads which is which before you cut.</b>'));
   }
   wall.appendChild(insp);
   wall.appendChild(scanRow);          /* seam navigation, below what it acts on */
@@ -6757,36 +6766,45 @@ MF.paintFace = function(){
   if(!MF.state.cart.length){
     cartPanel.appendChild(H('p','hint','Empty. Swing the pick above — and dig as much as you want before you smelt anything.'));
   } else {
-    cartPanel.appendChild(H('p','hint','Raw ore you are carrying. Put one on the bench to work it — or send it straight to the yard and come back to it later.'));
+    cartPanel.appendChild(H('p','hint','Raw ore you are carrying. <b>Drag an instrument onto a lump</b> and the lump changes — then send it to the breaking floor or set it aside in the yard.'));
+    /* THE BELT IS IN THE CART, which is where a student first has a lump and
+       nothing to do with it. It only existed on the bench before, so the
+       instruments were a screen away from the ore they read (§20). */
+    MF.paintBelt(cartPanel, true);
     var body = E('div','cartbody');
     var cart = E('div','cart');
     MF.state.cart.forEach(function(o){
       var cell = E('div','lumpcell');
-      var b = E('button','lump' + (o.fresh?' fresh':'')); b.type='button';
+      /* THE LUMP IS THE DROP TARGET, not a button that moves it. Where it goes
+         is the two controls underneath; this is the rock itself. */
+      var b = E('div','lump' + (o.fresh?' fresh':''));
       b.setAttribute('data-ore', o.id);      /* survives the repaint, so the knock finds it */
+      b.setAttribute('tabindex','0');
       b.appendChild(E('span','glyph'));
       b.appendChild(H('span','txt', MF.oreLabel(o)));
       b.appendChild(H('span','lay','LAYER ' + o.layer));
       if(MF.state.selected && MF.state.selected.id===o.id) b.setAttribute('aria-current','true');
-      b.setAttribute('aria-label', MF.oreText(o) + ' — put it on the bench');
-      on(b,'click',function(){
-        /* picking up the lump ALREADY on the bench rebuilds the bench, which is
-           a real thing to have done - but off-screen, below the cart, so the
-           click looked like nothing. It knocks now. */
+      b.setAttribute('aria-label', MF.oreText(o) + ', layer ' + o.layer +
+        '. Drop an instrument on it, or send it on with the two controls below.');
+      cell.appendChild(b);
+      /* AND THE TOOL RE-DRAWS IT. Same lens as the breaking floor (§19). */
+      if(o.tool && MF.hasTool(o.tool)) MF.oreLens(cell, o, o.tool, {open:true});
+      /* ---- WHERE IT GOES, in two controls under the ore ---- */
+      var route = E('div','lumproute');
+      var toFloor = E('button','btn primary lumpgo','To the breaking floor'); toFloor.type='button';
+      toFloor.setAttribute('aria-label','Put ' + MF.oreText(o) + ' on the breaking floor and work it');
+      on(toFloor,'click',function(){
         MF.state.selected = o;
         MF.state.anvil = null;
         MF.paintMine();
         MF.knockLump(o.id);
       });
-      cell.appendChild(b);
-      /* STRAIGHT TO THE YARD. The bench was the only door out of the cart, so
-         putting a lump down meant picking it up first. */
-      var y = E('button','tuyard','&rarr; yard'); y.type='button';
-      y.innerHTML = '&rarr; yard';
-      y.title = 'Send it to the yard without working it';
-      y.setAttribute('aria-label','Send ' + MF.oreText(o) + ' straight to the yard without working it');
+      route.appendChild(toFloor);
+      var y = E('button','btn lumpgo tuyard','To the yard'); y.type='button';
+      y.setAttribute('aria-label','Set ' + MF.oreText(o) + ' aside in the yard without working it');
       on(y,'click',function(){ MF.cartToYard(o.id); });
-      cell.appendChild(y);
+      route.appendChild(y);
+      cell.appendChild(route);
       cart.appendChild(cell);
     });
     body.appendChild(cart);
@@ -7384,7 +7402,10 @@ MF.paintBreak = function(host, B){
      It used to live in the yard column on the far side of the page: the drag
      crossed the whole screen, and under 1080px the columns stack so it was a
      scroll away - and you cannot scroll while you are holding something. */
-  MF.paintBelt(fl, true);
+  /* THE ORE GOES AT THE TOP OF THE BOX AND THE BELT UNDER IT (§20). The belt
+     was first, so the thing a student came here to look at was below a rack of
+     instruments. What you are working is the headline; what you can hold to it
+     follows. */
   var rowf = E('div','pieces');
   pieces.forEach(function(p, idx){
     var nat = MF.isNative(p.ore);
@@ -7406,6 +7427,12 @@ MF.paintBreak = function(host, B){
     });
     cell.appendChild(b);
 
+    /* THE INSTRUMENT RIDES WITH THE ORE. A tool dropped on a lump in the cart
+       is still on it when the lump reaches the floor - it is the same object -
+       so the piece takes its own tool if it has one and the ore's otherwise.
+       Without this the reading a student set up in the cart vanished the
+       moment they sent the lump on, which is the opposite of continuity. */
+    if(!p.tool && p.ore && p.ore.tool) p.tool = p.ore.tool;
     /* THE SLOT: where an instrument goes. It shows what was last held to this
        piece, and opening it is the click path for everything the drag does. */
     var t = p.tool && MF.hasTool(p.tool) ? MF.TOOLS[p.tool] : null;
@@ -7432,6 +7459,7 @@ MF.paintBreak = function(host, B){
     rowf.appendChild(cell);
   });
   fl.appendChild(rowf);
+  MF.paintBelt(fl, true);
   /* THE TWO WORK BOXES GO SIDE BY SIDE. What is on the floor and what is under
      the hammer are the one pairing the whole act depends on - you choose a
      piece and you cut the head to something you can see. Stacked, they could
@@ -8022,8 +8050,7 @@ MF.paintBelt = function(host, atWork){
   }
 
   box.appendChild(H('div', atWork ? 'beltnote' : 'hint',
-    atWork ? 'Drag one onto a piece below, or open its slot and choose.'
-           : 'Drag one onto a piece of rock, or open a slot on the floor and choose it.'));
+    'Drag one onto a lump and the lump changes. <b>how?</b> opens the room that teaches it.'));
   var strap = E('div','beltstrap');
   owned.forEach(function(k){
     var t = MF.TOOLS[k];
@@ -8033,34 +8060,48 @@ MF.paintBelt = function(host, atWork){
     b.setAttribute('draggable','true');
     b.appendChild(H('span','bic', t.ic));
     b.appendChild(H('span','bnm', t.nm.replace(/^The /,'')));
-    b.setAttribute('aria-label', t.nm + '. ' + t.ds + ' Drag it onto a piece of rock, or open a slot on the floor to choose it.');
+    b.setAttribute('aria-label', t.nm + '. ' + t.ds + ' Drag it onto a lump to use it.');
     b.title = t.ds;
-    /* CLICKING A TOOL EXPLAINS IT. It cannot apply it - there is nothing here
-       saying which lump - so it says what it is for and where to put it,
-       rather than being a control that looks live and does nothing. */
-    on(b,'click',function(){ MF.explainTool(k, b); });
     MF.dragTool(b, k);
     loop.appendChild(b);
+    /* THE WAY OUT, ON THE TOOL ITSELF. The mine does not explain instruments
+       any more (§20) - you drag one on and the ore changes. This is the quiet
+       door to the room that teaches WHY, for a student who wants it, and it is
+       small and underneath rather than a box in the way. */
+    var why = E('button','beltwhy','how?'); why.type='button';
+    why.setAttribute('aria-label','How does ' + t.nm + ' work? Go to ' + MF.toolRoomName(k) + '.');
+    why.title = 'How it works — ' + MF.toolRoomName(k);
+    on(why,'click',function(e){ e.stopPropagation(); MF.explainTool(k, b); });
+    loop.appendChild(why);
     strap.appendChild(loop);
   });
   box.appendChild(strap);
   host.appendChild(box);
 };
 
-MF.explainTool = function(key, opener){
+/* WHERE A TOOL IS EXPLAINED, and it is not here.
+
+   USER DECISION, 2026-08-30 (§20): "The students should be able to use a tool
+   without an explanation but have the option to understand why the tool works
+   if they want it... The mine should act with little explanation or clicked
+   boxes... If students want to understand how a tool works, send them to the
+   casting shed or stamp mill."
+
+   So the mine teaches by DOING: drag the instrument onto the lump and the lump
+   changes. The lesson is not deleted - it is in the rooms built to teach it,
+   which is where a student can be given room to read rather than a box over
+   the rock they are working. A tool priced in plain numbers points at the
+   Stamp Mill, which is about numbers; the rest point at the Casting Shed's
+   methods room. */
+MF.toolRoom = function(key){
   var t = MF.TOOLS[key];
-  MF._openSheet({
-    label: t.nm, icon: t.ic, title: t.nm, sub: 'on your belt',
-    closeText: 'Put it back', opener: opener, key: key,
-    fill: function(body){
-      body.appendChild(H('p',null, t.ds));
-      /* THE SAME TUTORIAL THE FORGE GAVE. A lesson that exists only in the
-         three seconds after a pour is a lesson nobody re-reads. */
-      MF.toolLesson(body, key);
-      body.appendChild(H('div','note','<b>To use it:</b> drag it onto a piece of rock on the breaking floor, or open that piece’s slot and choose it from there.'));
-      body.appendChild(H('div','hint','<b>You made this by:</b> ' + t.forge));
-    }
-  });
+  return (t && t.cast && t.cast.a === 0 && t.cast.b === 0) ? 'workshop-ore' : 'shed-methods';
+};
+MF.toolRoomName = function(key){
+  return MF.toolRoom(key) === 'workshop-ore' ? 'the Stamp Mill' : 'the Casting Shed';
+};
+MF.explainTool = function(key, opener){
+  MF.go(MF.toolRoom(key));
 };
 
 /* dragging a tool off the belt. Same shape as the heap drag, and the drop
@@ -8095,7 +8136,12 @@ MF.dragTool = function(node, key){
       var over = MF.pieceAt(e.clientX, e.clientY);
       ghost.parentNode && ghost.parentNode.removeChild(ghost); ghost=null;
       MF.markPieceTargets(false);
-      if(over){ MF.applyTool(key, parseInt(over.getAttribute('data-piece'),10), node); }
+      if(!over) return;
+      /* a floor piece carries data-piece, a cart lump data-ore */
+      if(over.hasAttribute('data-piece'))
+        MF.applyTool(key, parseInt(over.getAttribute('data-piece'),10), node);
+      else
+        MF.applyToolToOre(key, over.getAttribute('data-ore'));
     });
   });
 };
@@ -8108,19 +8154,28 @@ MF.markPieceTargets = function(on_, hot){
     p.setAttribute('data-tooldrop', p===hot ? 'hot' : 'open');
   });
 };
+/* WHAT A TOOL CAN BE DROPPED ON: a piece on the breaking floor, OR a lump in
+   the cart. The cart had no belt and no drop target at all - instruments only
+   existed once ore was already on the bench - so the first thing a student
+   could do with a lump they had just cut was move it somewhere else, and the
+   tools they had paid for were a screen away from the rock they were for.
+   Both live in MF._mine.mid, so one selector reaches both. */
+MF.DROP_SEL = '.piece[data-piece], .lump[data-ore]';
 MF.pieceAt = function(x, y){
   var host = MF._mine && MF._mine.mid;
   if(!host) return null;
   var hit = null;
-  Array.prototype.forEach.call(host.querySelectorAll('.piece'), function(p){
+  Array.prototype.forEach.call(host.querySelectorAll(MF.DROP_SEL), function(p){
     var b = p.getBoundingClientRect();
     if(x>=b.left && x<=b.right && y>=b.top && y<=b.bottom) hit = p;
   });
   return hit;
 };
 
-/* the instrument goes in the piece's slot, the slot lights up, and the panel
-   rises. The slot keeps showing what was last held to that piece. */
+/* THE TOOL GOES ON THE LUMP AND THE LUMP CHANGES. No panel rises any more:
+   the reading IS the ore, re-drawn (MINE-SPEC §19), and the "why" lives in the
+   Casting Shed and the Stamp Mill where it can be taught properly rather than
+   in a box over the rock (§20). */
 MF.applyTool = function(key, pieceId, opener){
   var B = MF.state.anvil;
   if(!B) return;
@@ -8129,8 +8184,19 @@ MF.applyTool = function(key, pieceId, opener){
   if(!p) return;
   p.tool = key;
   MF.paintMine();
-  var slot = MF._mine.mid.querySelector('.toolslot[data-piece="'+pieceId+'"]');
-  MF.openTool(key, p.ore, slot || opener, pieceId);
+  MF.knockPiece && MF.knockPiece(pieceId);
+};
+
+/* the same act on a lump still in the cart. The tool RIDES WITH THE ORE: put
+   the drill on a lump in the cart and it is still on it when the lump reaches
+   the bench, because it is the same object either way. */
+MF.applyToolToOre = function(key, oreId){
+  var found = null;
+  MF.state.cart.forEach(function(o){ if(String(o.id) === String(oreId)) found = o; });
+  if(!found) return;
+  found.tool = key;
+  MF.paintMine();
+  MF.knockLump && MF.knockLump(found.id);
 };
 
 /* opening a slot with no tool in it: choose one, or be told plainly that the
@@ -9052,12 +9118,13 @@ MF.validate = function(){
   MF.hasTool = tgRealHas;
   if(tgBlindA !== null && tgBlindB !== null && tgBlindA !== tgBlindB)
     errs.push('CONTROL: the face reads differently with the pick even when the belt is ignored');
-  /* AND THE CHOICE THE FACE NOW OFFERS MUST GO WHERE IT SAYS.
-     Two buttons on a lump still in the wall: into the cart to work it, or
-     straight to the yard to set it aside. The yard route is the one that can
-     go wrong quietly - it must reach MF.stow and land on the RACK if the lump
-     is already metal and on the HEAP if a seam runs through it, and it must
-     not put anything in the cart on the way. */
+  /* AND THE CHOICE THE CART OFFERS MUST GO WHERE IT SAYS.
+     The flow is: cut ore, it lands in the cart, you put instruments on it
+     there and watch it change, and THEN you send it on (§20). So the two
+     destinations live under the lump IN THE CART - the face is one Swing
+     button again. This assertion moved with the choice rather than being
+     deleted: it used to read the face's buttons, and it would have gone on
+     passing there while the cart shipped with no way out of it at all. */
   chk('nogate');
   var cyBtns = null;
   (function(){
@@ -9065,15 +9132,39 @@ MF.validate = function(){
     tgStage.innerHTML = ''; tgStage.appendChild(probe);
     MF.state.tools = {}; MF._mine = null; MF.SCREENS.mine(probe);
     MF.state.layer = 3; MF.state.face = tgFace; MF.state.faceLayer = tgLayer;
-    MF.state.inspecting = 0; MF.paintMine();
-    var panel = probe.querySelector('.inspect');
-    cyBtns = panel ? [].slice.call(panel.querySelectorAll('button')).map(function(b){
+    MF.state.cart = [{kind:'poly', a:1, b:-5, c:6, layer:4, id:'cy-cart'}];
+    MF.state.selected = null; MF.state.anvil = null;
+    MF.paintMine();
+    var route = probe.querySelector('.lumproute');
+    cyBtns = route ? [].slice.call(route.querySelectorAll('button')).map(function(b){
       return (b.textContent||'').trim(); }) : [];
   })();
-  if(!cyBtns.some(function(t){ return /cart/i.test(t); }) ||
+  if(!cyBtns.some(function(t){ return /floor|bench|break/i.test(t); }) ||
      !cyBtns.some(function(t){ return /yard/i.test(t); }))
-    errs.push('nogate: the face offers no choice between the cart and the yard — it read ' +
+    errs.push('nogate: a lump in the cart offers no choice between the breaking floor and the yard — it read ' +
       JSON.stringify(cyBtns));
+  /* AND THE INSTRUMENTS MUST BE THERE TOO. A cart with ore in it and no belt
+     is what this whole change is about: the first thing a student could do
+     with a lump they had just cut was move it somewhere else. */
+  chk('nogate');
+  (function(){
+    var probe = document.createElement('div');
+    tgStage.innerHTML = ''; tgStage.appendChild(probe);
+    MF.state.tools = {drill:{forged:true}}; MF._mine = null; MF.SCREENS.mine(probe);
+    MF.state.layer = 3; MF.state.face = tgFace; MF.state.faceLayer = tgLayer;
+    MF.state.cart = [{kind:'poly', a:1, b:-5, c:6, layer:4, id:'cy-belt'}];
+    MF.state.selected = null; MF.state.anvil = null;
+    MF.paintMine();
+    var cartPanel = probe.querySelector('.cartbody');
+    var beltAbove = probe.querySelector('.gearbox .belttool');
+    var dropTarget = probe.querySelector('.lump[data-ore]');
+    if(!cartPanel) errs.push('nogate: the cart drew no lumps to check');
+    else if(!beltAbove)
+      errs.push('nogate: there is ore in the cart and no instrument anywhere near it — ' +
+        'the belt is not in the cart');
+    else if(!dropTarget)
+      errs.push('nogate: the cart\'s lumps are not drop targets, so a tool cannot be dragged onto one');
+  })();
   [[{kind:'number', n:41, id:'cy-native'}, 'rack'],
    [{kind:'poly', a:1, b:-5, c:6, id:'cy-seamed'}, 'heap']].forEach(function(t){
     chk('nogate');
@@ -10511,8 +10602,14 @@ MF.validate = function(){
       errs.push('CONTROL: the swing check cannot see an anvil that was never armed');
     MF.thudBurst = swReal;
 
-    /* a lump in the cart is ore too, and clicking the one already on the bench
-       resets it to the assay - a real thing to have done, off-screen */
+    /* A LUMP IN THE CART IS NOT A BUTTON ANY MORE - IT IS THE DROP TARGET.
+       Where a lump goes is the two controls under it (§20), and it is THOSE
+       that have to answer: sending the lump already on the bench back to the
+       breaking floor rebuilds the bench, which is a real thing to have done
+       and happens off-screen below the cart. This assertion moved from the
+       chip to the control that replaced it rather than being deleted - the
+       thing being protected is "a click that changes state must be visible",
+       and that property did not go anywhere. */
     var kRng = makeRng(4242);
     var kl = MF.digOre(3, kRng), kl2 = MF.digOre(3, kRng);
     if(kl && kl2){
@@ -10520,13 +10617,19 @@ MF.validate = function(){
       MF.paintMine();
       var lumpEl = MF._mine.mid.querySelector('.lump[data-ore="'+kl.id+'"]');
       chk('knock');
-      if(!lumpEl){ errs.push('knock: the cart drew no lump to click'); }
+      if(!lumpEl){ errs.push('knock: the cart drew no lump at all'); }
       else {
-        kHit(lumpEl);
-        var after = MF._mine.mid.querySelector('.lump[data-ore="'+kl.id+'"]');
+        var cellEl = lumpEl.parentElement;
+        var goBtn = cellEl && cellEl.querySelector('.lumproute .lumpgo');
         chk('knock');
-        if(!(after && after.classList.contains('knock')))
-          errs.push('knock: clicking the cart lump already on the bench answered nothing');
+        if(!goBtn){ errs.push('knock: the cart lump has no control to send it anywhere'); }
+        else {
+          kHit(goBtn);
+          var after = MF._mine.mid.querySelector('.lump[data-ore="'+kl.id+'"]');
+          chk('knock');
+          if(!(after && after.classList.contains('knock')))
+            errs.push('knock: sending the cart lump to the breaking floor answered nothing');
+        }
       }
     }
   } catch(e){
@@ -11102,7 +11205,22 @@ MF.validate = function(){
     cdSeen[n] = got;
     var first = cdSeen[6];
     if(!first) return;
-    [['wheels','the wheels under the cart'],['rail','the track under the wheels']].forEach(function(part){
+    /* TWO ASSERTIONS, AND THE SECOND ONE WAS MISSING.
+       This compared each cart size against the six-lump reading, which catches
+       a rail that BREATHES - the reported symptom. It cannot catch a rail that
+       is crushed the SAME amount at every size, and adding the belt to the
+       cart made exactly that possible: at 380px the column is over budget with
+       one lump in it, so the fault flattened the track to 0px throughout and
+       both the check and its own control saw a perfectly consistent nothing.
+       "Consistent" was standing in for "correct", and the proxy fails whenever
+       the fault is uniform. The drawn height is asserted too now. */
+    [['wheels','the wheels under the cart', 21],
+     ['rail','the track under the wheels', 5.5]].forEach(function(part){
+      chk('cartdraw');
+      if(got[part[0]] < part[2])
+        errs.push('cartdraw: ' + part[1] + ' is ' + got[part[0]] + 'px with ' + n +
+          ' lump' + (n===1?'':'s') + ' in it — it is drawn at ' + part[2] +
+          'px and something is squeezing it flat');
       chk('cartdraw');
       if(Math.abs(got[part[0]] - first[part[0]]) > 0.5)
         errs.push('cartdraw: ' + part[1] + ' measures ' + got[part[0]] + 'px with ' + n +
@@ -11118,8 +11236,12 @@ MF.validate = function(){
   document.head.appendChild(cdCtl);
   var cdA = cdChrome(6), cdB = cdChrome(1);
   document.head.removeChild(cdCtl);
-  if(Math.abs(cdA.rail - cdB.rail) <= 0.5)
-    errs.push('CONTROL: a track that shrinks under a full cart is not reported as the cart changing shape');
+  /* THE FAULT IS CAUGHT EITHER WAY: as variation between cart sizes where the
+     squeeze varies, and as a flattened track where it does not. The control
+     asks whether EITHER assertion would fire, because at a narrow width the
+     first one cannot - see the note above. */
+  if(Math.abs(cdA.rail - cdB.rail) <= 0.5 && cdA.rail >= 5.5 && cdB.rail >= 5.5)
+    errs.push('CONTROL: a shrinkable track is neither flattened nor made to vary, so nothing here would catch it');
   document.body.removeChild(cdStage);
   MF._mine = cdSaved.mine; MF.state.cart = cdSaved.cart; MF.state.selected = cdSaved.sel;
   MF.state.anvil = cdSaved.bench; MF.state.layer = cdSaved.layer;
@@ -11189,7 +11311,13 @@ MF.validate = function(){
     MF._mine = null;
     try { MF.SCREENS.mine(rcMine); MF.paintMine(); }
     catch(e){ errs.push('reach: the mine threw while being measured: ' + e.message); return; }
-    var rcB = rcSpan(rcMine, '.beltstrap', '.swingbtn');
+    /* THE FLOOR'S BELT, NOT THE CART'S. There are two now (§20) - one in the
+       cart, where a lump first lands, and one on the breaking floor. A bare
+       '.beltstrap' took the first in the DOM, which is the cart's, and
+       reported the bench as 1748px from belt to swing: a true measurement of
+       two things that were never meant to be on one screen together. What this
+       group is about is the belt you reach for WHILE SWINGING. */
+    var rcB = rcSpan(rcMine, '.floorbox .beltstrap', '.swingbtn');
     if(rcB.missing) errs.push('reach: the bench has no ' + rcB.missing + ' to measure at ' + w + 'px');
     else if(rcB.px > rcBudget)
       errs.push('reach: at ' + w + 'px the bench runs ' + rcB.px + 'px from the belt to the swing — ' +

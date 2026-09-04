@@ -690,3 +690,37 @@ expression. Each lens is a **head plus a body**: the head carries the tool's ico
 the one line it found — *"every term carries 3"* — and the click opens the full form.
 **The finding is never behind the click**, only the detail; the piece under the pick
 opens expanded.
+
+## 20. The mine works without explaining itself
+
+*User, 2026-08-30: "The students should be able to use a tool without an explanation
+but have the option to understand why the tool works if they want it… The mine should
+act with little explanation or clicked boxes… If students want to understand how a tool
+works, send them to the casting shed or stamp mill."*
+
+### 20a. The flow
+
+**Cut the ore → it lands in the cart → put instruments on it there → send it to the
+breaking floor or the yard.**
+
+- The **face** is one Swing button again. The cart-or-yard choice that lived there for
+  one session has moved to the cart, because that is where the tools are: you read the
+  lump *before* you decide, rather than deciding and then reading.
+- The **cart has a belt.** It did not before — instruments only existed once ore was on
+  the bench, so the first thing a student could do with a lump they had just cut was
+  move it somewhere else.
+- **A lump in the cart is a drop target, not a button.** Drag an instrument onto it and
+  the lump changes (§19). Where it goes is two controls underneath: *To the breaking
+  floor* / *To the yard*.
+- **The instrument rides with the ore.** A tool dropped on a lump in the cart is still
+  on it when the lump reaches the floor — it is the same object.
+- On the **breaking floor** the ore is at the top of the box and the belt is under it.
+  The belt was first, so the thing a student came to look at sat below a rack of tools.
+
+### 20b. No panel rises, anywhere in the mine
+
+Applying a tool used to open a sheet. It does not any more: the reading **is** the
+ore, re-drawn. The lesson is not deleted — every instrument's belt loop carries a
+small **how?** that opens the room built to teach it: the **Stamp Mill** for the tools
+priced in plain numbers, the **Casting Shed** for the rest. A student who wants the
+why gets a room; a student who does not gets a working tool.
