@@ -805,3 +805,28 @@ times and the panel was hidden twice** while the state behind it was still being
 Hiding a panel cannot beat the thing that opens it. `nogate` now asserts the **state**:
 cutting leaves nothing selected, so a future fix that hides the floor while still
 selecting fails the build.
+
+## 23. An instrument comes off as easily as it goes on
+
+*User, 2026-08-30: "You should be able to select and unselect a tool in the cart and
+breaking floor."*
+
+A tool put on a rock could not be taken off. The stone stayed re-spelt and the only way
+back to the plain expression was to break the lump. **Selecting without unselecting is
+half a control**, on a screen a student is meant to experiment with.
+
+Three gestures, all reversible, in **both** the cart and the breaking floor:
+
+| | |
+|---|---|
+| **on the belt** | click an instrument to pick it up, click it again to put it back |
+| **on a rock** | click the rock to use it — the *same* instrument again takes it off |
+| **the slot** | a rock carrying an instrument shows it with a ×; clicking it takes it off |
+
+### 23a. The slot only exists when something is in it
+
+It used to sit on every piece: filled it re-opened the tool sheet, empty it opened a
+chooser. **The sheet stopped existing when the mine stopped explaining itself (§20b)**,
+so the filled slot was a control that opened nothing — and the empty one was a second
+way *in* when the belt had just become the way in. It is now one thing: the way back
+off. `nogate` fails the build if a bare rock shows a slot.

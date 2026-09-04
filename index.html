@@ -1099,9 +1099,15 @@ input::placeholder, textarea::placeholder{color:#6B5B48; opacity:1}
 
 /* ---- THE SLOT on a piece of rock ---- */
 .piececell{display:flex; flex-direction:column; align-items:center; gap:4px}
-.toolslot{cursor:pointer; width:100%; min-height:26px; padding:2px 6px;
-  background:#241D18; color:#8A7358; border:2px dashed #6B5B48; border-radius:6px;
-  font-family:var(--display); font-size:13px; line-height:1.3}
+/* THE SLOT ONLY EXISTS WHILE AN INSTRUMENT IS ON THE ROCK, and its whole job
+   is taking it off again (§23) - so it reads as a thing you dismiss: the
+   tool's own icon with a × beside it. */
+.toolslot{cursor:pointer; width:100%; min-height:32px; margin-top:5px;
+  display:flex; align-items:center; justify-content:center; gap:7px;
+  padding:3px 8px; background:#241D18; color:#E4D5BB; border:2px solid #6B5B48;
+  border-radius:6px; font-family:var(--display); font-size:13px; line-height:1.3}
+.toolslot .sx{font-size:15px; color:var(--lamp)}
+.toolslot:hover{border-color:var(--lamp); background:#33291F}
 .toolslot .si{display:block}
 .toolslot:hover{border-color:var(--lamp); color:#E4D5BB}
 .toolslot:focus-visible{outline:3px solid var(--lamp); outline-offset:2px}
@@ -6920,6 +6926,18 @@ MF.paintCart = function(){
       var k = MF.state.armedTool; MF.state.armedTool = null; MF.applyToolToOre(k, o.id);
     });
     cell.appendChild(b);
+    /* AND THE SAME WAY BACK OFF AS THE BREAKING FLOOR (§23): a slot that only
+       exists while an instrument is on the rock, and takes it off. */
+    if(o.tool && MF.hasTool(o.tool)){
+      var ot = MF.TOOLS[o.tool];
+      var oslot = E('button','toolslot filled'); oslot.type='button';
+      oslot.setAttribute('data-ore-slot', o.id);
+      oslot.innerHTML = '<span class="si">' + ot.ic + '</span><span class="sx">&times;</span>';
+      oslot.setAttribute('aria-label', ot.nm + ' is on ' + MF.oreText(o) + '. Take it off.');
+      oslot.title = 'Take the ' + ot.nm + ' off';
+      on(oslot,'click',function(e){ e.stopPropagation(); MF.clearTool(o, null); });
+      cell.appendChild(oslot);
+    }
     /* ---- WHERE IT GOES, in two controls under the rock ---- */
     var route = E('div','lumproute');
     var toFloor = E('button','btn primary lumpgo','Break it'); toFloor.type='button';
@@ -7594,21 +7612,25 @@ MF.paintBreak = function(host, B){
     /* and back the other way, because MF.oreDisplay reads the ORE - a tool
        dropped on a piece has to reach the expression it re-spells */
     if(p.tool && p.ore) p.ore.tool = p.tool;
-    /* THE SLOT: where an instrument goes. It shows what was last held to this
-       piece, and opening it is the click path for everything the drag does. */
+    /* THE SLOT IS HOW A TOOL COMES OFF AGAIN (§23). It only exists when one is
+       ON the piece, and clicking it puts the instrument back on the belt and
+       the plain expression back on the stone.
+
+       It used to open a sheet - `openTool` when filled, a chooser when empty -
+       and that sheet stopped existing when the mine stopped explaining itself
+       (§20b), so the filled slot was a control that opened nothing. The empty
+       one is gone too: the belt is how an instrument is picked up now, and a
+       second way in is the "clicked box" this screen has been shedding. */
     var t = p.tool && MF.hasTool(p.tool) ? MF.TOOLS[p.tool] : null;
-    var slot = E('button','toolslot' + (t?' filled':'')); slot.type='button';
-    slot.setAttribute('data-piece', p.id);
-    slot.innerHTML = t ? ('<span class="si">'+t.ic+'</span>') : '<span class="si">+</span>';
-    slot.setAttribute('aria-label', t
-      ? (t.nm + ' is in the slot on ' + MF.oreText(p.ore) + '. Open its reading again.')
-      : ('Empty instrument slot on ' + MF.oreText(p.ore) + '. Choose something to hold to it.'));
-    slot.title = t ? ('Read it again with the ' + t.nm) : 'Hold an instrument to this';
-    on(slot,'click',function(){
-      if(t) MF.openTool(p.tool, p.ore, slot, p.id);
-      else MF.openSlot(p.id, slot);
-    });
-    cell.appendChild(slot);
+    if(t){
+      var slot = E('button','toolslot filled'); slot.type='button';
+      slot.setAttribute('data-piece', p.id);
+      slot.innerHTML = '<span class="si">' + t.ic + '</span><span class="sx">&times;</span>';
+      slot.setAttribute('aria-label', t.nm + ' is on ' + MF.oreText(p.ore) + '. Take it off.');
+      slot.title = 'Take the ' + t.nm + ' off';
+      on(slot,'click',function(e){ e.stopPropagation(); MF.clearTool(p.ore, p); });
+      cell.appendChild(slot);
+    }
     rowf.appendChild(cell);
   });
   fl.appendChild(rowf);
@@ -8353,21 +8375,38 @@ MF.applyTool = function(key, pieceId, opener){
   var p = null;
   B.floor.forEach(function(pc){ if(pc.id===pieceId) p = pc; });
   if(!p) return;
-  p.tool = key;
+  /* the same one twice takes it off, the same as in the cart (§23) */
+  var off = (p.tool === key);
+  p.tool = off ? null : key;
+  if(p.ore) p.ore.tool = p.tool;
   MF.paintMine();
   MF.knockPiece && MF.knockPiece(pieceId);
 };
 
 /* the same act on a lump still in the cart. The tool RIDES WITH THE ORE: put
    the drill on a lump in the cart and it is still on it when the lump reaches
-   the bench, because it is the same object either way. */
+   the bench, because it is the same object either way.
+
+   AND PUTTING THE SAME ONE ON TWICE TAKES IT OFF. Selecting has to be
+   undoable in the same gesture that did it (§23) - otherwise the only way back
+   to the plain expression is to find the slot, and a student who has just
+   dropped the wrong instrument reaches for the one they dropped. */
 MF.applyToolToOre = function(key, oreId){
   var found = null;
   MF.state.cart.forEach(function(o){ if(String(o.id) === String(oreId)) found = o; });
   if(!found) return;
-  found.tool = key;
+  found.tool = (found.tool === key) ? null : key;
   MF.paintMine();
   MF.knockLump && MF.knockLump(found.id);
+};
+
+/* TAKING AN INSTRUMENT OFF, from either place. `ore` is what MF.oreDisplay
+   reads; `piece` is the floor's own record of it, and both have to let go or
+   the next repaint puts it straight back (they are synced in paintBreak). */
+MF.clearTool = function(ore, piece){
+  if(piece) piece.tool = null;
+  if(ore) ore.tool = null;
+  MF.paintMine();
 };
 
 /* opening a slot with no tool in it: choose one, or be told plainly that the
@@ -9403,6 +9442,79 @@ MF.validate = function(){
     d.innerHTML = '<button draggable="true">x</button>';
     if(!d.querySelectorAll('[draggable]').length)
       errs.push('CONTROL: the draggable sweep cannot see a draggable attribute');
+  })();
+
+  /* AN INSTRUMENT MUST COME OFF AS EASILY AS IT WENT ON.
+
+     A tool put on a rock could not be taken off: the stone stayed re-spelt and
+     the only way back to the plain expression was to break the lump. Selecting
+     without unselecting is half a control, and this is a screen a student is
+     meant to experiment on.
+
+     Two ways off, both checked, in both places: the same instrument applied
+     twice takes itself off, and the slot that appears on a tooled rock removes
+     it. The slot's OTHER states are checked by absence - it must not exist on
+     a bare rock, because an empty slot was a second way IN and the belt is the
+     way in now (§20b). */
+  ['cart','floor'].forEach(function(where){
+    chk('nogate');
+    var probe = document.createElement('div');
+    tgStage.innerHTML = ''; tgStage.appendChild(probe);
+    MF.state.tools = {steel:{forged:true}}; MF.state.armedTool = null;
+    MF._mine = null; MF.SCREENS.mine(probe);
+    MF.state.layer = 2; MF.state.face = tgFace; MF.state.faceLayer = tgLayer;
+    var tgOre = {kind:'poly', a:6, b:15, c:0, layer:2, id:'ng-off-'+where};
+    MF.state.cart = [tgOre];
+    if(where === 'floor'){ MF.state.selected = tgOre; MF.state.anvil = MF.anvilInit(tgOre); }
+    else { MF.state.selected = null; MF.state.anvil = null; }
+    MF.paintMine();
+    var scope = where === 'floor' ? '.floorbox ' : '.cartpanel ';
+    if(probe.querySelector(scope + '.toolslot'))
+      errs.push('nogate: the ' + where + ' shows an instrument slot on a bare rock — an empty slot ' +
+        'is a second way in, and the belt is the way in');
+    /* put one on, the way a student does */
+    if(where === 'floor') MF.applyTool('steel', MF.state.anvil.floor[0].id);
+    else MF.applyToolToOre('steel', tgOre.id);
+    chk('nogate');
+    var slot = probe.querySelector(scope + '.toolslot');
+    if(!slot){
+      errs.push('nogate: the ' + where + ' offers no way to take an instrument back off a rock');
+    } else {
+      slot.click();
+      chk('nogate');
+      var stillOn = where === 'floor' ? MF.state.anvil.floor[0].tool : MF.state.cart[0].tool;
+      if(stillOn)
+        errs.push('nogate: clicking the slot on the ' + where + ' left the instrument on the rock');
+    }
+    /* and the same instrument twice takes itself off */
+    chk('nogate');
+    if(where === 'floor'){
+      MF.applyTool('steel', MF.state.anvil.floor[0].id);
+      MF.applyTool('steel', MF.state.anvil.floor[0].id);
+      if(MF.state.anvil.floor[0].tool)
+        errs.push('nogate: the same instrument applied twice on the floor did not take itself off');
+    } else {
+      MF.applyToolToOre('steel', tgOre.id);
+      MF.applyToolToOre('steel', tgOre.id);
+      if(MF.state.cart[0].tool)
+        errs.push('nogate: the same instrument applied twice in the cart did not take itself off');
+    }
+  });
+  /* CONTROL: a set that cannot be unset */
+  chk('nogate');
+  (function(){
+    var ngReal = MF.applyToolToOre, ngSave = MF.state.cart;
+    MF.applyToolToOre = function(key, oreId){
+      var f = null; MF.state.cart.forEach(function(o){ if(String(o.id)===String(oreId)) f = o; });
+      if(f) f.tool = key;                 /* the old behaviour: set, never clear */
+    };
+    MF.state.cart = [{kind:'poly', a:6, b:15, c:0, layer:2, id:'ng-stuck'}];
+    MF.applyToolToOre('steel','ng-stuck');
+    MF.applyToolToOre('steel','ng-stuck');
+    var stuck = MF.state.cart[0].tool === 'steel';
+    MF.applyToolToOre = ngReal; MF.state.cart = ngSave;
+    if(!stuck)
+      errs.push('CONTROL: a tool that can only be set, never cleared, is not reported as stuck on');
   })();
 
   /* AND THE INSTRUMENTS MUST BE THERE TOO. A cart with ore in it and no belt
