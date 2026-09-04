@@ -179,6 +179,18 @@ input::placeholder, textarea::placeholder{color:#6B5B48; opacity:1}
    565px of scrolling nobody needed. They stretch to one row height now and
    their panels fill it, so the band is a rectangle and the work starts
    directly under all three. */
+/* THE MINE IN FOUR FULL-WIDTH BANDS (MINE-SPEC §22). The cart used to be the
+   middle column of a three-column grid - a third of the page - so a lump was a
+   44px list row with nowhere to drop a tool. Only the shaft and the rock face
+   still share a row, because a list of five layers and a scrolling seam
+   genuinely pair. */
+.minetop{display:grid; grid-template-columns:214px minmax(0,1fr); gap:12px; align-items:stretch}
+.minetop > *{min-width:0; display:flex; flex-direction:column}
+.minetop > * > .shaft, .minetop > * > .panel, .minetop > * > .wall{flex:1 1 auto}
+.minetop > * > :last-child{margin-bottom:0}
+@media (max-width:760px){ .minetop{grid-template-columns:minmax(0,1fr)} }
+.mineband{margin-top:12px}
+.mineband > .panel:last-child, .mineband > *:last-child{margin-bottom:0}
 .minegrid{display:grid; grid-template-columns:214px minmax(0,1fr) 232px; gap:12px; align-items:stretch}
 .minegrid > *{min-width:0; display:flex; flex-direction:column}
 /* the panel in each column takes the height the column was given */
@@ -565,12 +577,18 @@ input::placeholder, textarea::placeholder{color:#6B5B48; opacity:1}
 .rockbit.glint{background:linear-gradient(150deg,#8A6E45,#5A4A38); box-shadow:inset 0 0 0 2px rgba(232,163,61,.55)}
 
 /* cart / bench / yard */
-.cart{display:flex; flex-direction:column; gap:7px; max-height:340px; overflow-y:auto}
-.lump{display:flex; gap:9px; align-items:center; width:100%; text-align:left; cursor:pointer;
-  background:#fff; border:2px solid var(--tan); border-radius:11px; padding:9px 11px; min-height:44px;
-  font-family:var(--body); font-size:16px; color:var(--ink)}
-.lump:hover{border-color:var(--ore)}
-.lump[aria-current=true]{border-color:var(--ore); background:#FFF6EA}
+/* THE CART IS A TRAY OF ROCKS, laid out across the band rather than stacked in
+   a narrow column. Each cell is wide enough to read the numbers on the stone
+   and big enough to drop an instrument onto. */
+.cart{display:grid; grid-template-columns:repeat(auto-fill,minmax(190px,1fr));
+  gap:14px; align-items:start; max-height:none}
+/* THE LUMP IS THE STONE, not a list row. It was
+     .lump{background:#fff; border-radius:11px; min-height:44px}
+   - a white row with a 26px glyph and a text label beside it - which is what
+   "information not in the ore" meant (§22). */
+.lump{display:block; width:100%; cursor:grab; background:none; border:0; padding:0;
+  position:relative; text-align:center}
+.lump[aria-current=true] .orerock svg polygon:first-of-type{stroke:var(--lamp)}
 /* an ore chunk, not a rounded square: clipped to an irregular lump */
 .lump .glyph{width:26px; height:26px; flex:0 0 auto; background:linear-gradient(150deg,#8A7358,#4A3F34);
   clip-path:polygon(22% 4%, 74% 0%, 100% 38%, 88% 86%, 44% 100%, 6% 74%, 0% 30%);
@@ -688,8 +706,31 @@ input::placeholder, textarea::placeholder{color:#6B5B48; opacity:1}
    instrument is on it, and that goes straight into the chip where the plain
    expression used to be. There is no panel: these are marks on the ore.
    ========================================================================= */
-.lensed{display:inline-flex; flex-wrap:wrap; align-items:baseline; gap:0}
-.lensed .lop{color:var(--ore-t); padding:0 .1em}
+/* =========================================================================
+   A DRAWN LUMP OF ORE, with its numbers cut into the stone (MF.oreRock).
+   The stone is SVG; every character on it is an HTML span pinned over the
+   middle of it, because SVG <text> paints with `fill` and inherits the
+   `color` a contrast sweep reads (§59) - and a lens marks these in colour.
+   ========================================================================= */
+.orerock{position:relative; width:100%; max-width:230px; margin:0 auto}
+.orerock svg{display:block; width:100%; height:auto}
+.orerock .orelab{position:absolute; left:8%; right:8%; top:44%; transform:translateY(-50%);
+  text-align:center; font-family:var(--display); line-height:1.12;
+  font-size:clamp(15px,2.4vw,21px); color:#FFF3DE;
+  text-shadow:0 2px 0 #241D18, 0 -2px 0 #241D18, 2px 0 0 #241D18, -2px 0 0 #241D18,
+              1px 1px 0 #241D18, -1px -1px 0 #241D18}
+.orerock.native .orelab{color:#2E2208; text-shadow:0 2px 0 #F2DCA4, 0 -2px 0 #F2DCA4,
+  2px 0 0 #F2DCA4, -2px 0 0 #F2DCA4, 1px 1px 0 #F2DCA4, -1px -1px 0 #F2DCA4}
+.orerock.big{max-width:320px}
+.orerock.big .orelab{font-size:clamp(19px,3vw,30px)}
+/* the layer tag sits under the stone, not on it */
+/* --ink-soft is a LIGHT-surface colour and the cart's bed is steel (#5E6A76 to
+   #3E474F), where it reads 1.13:1. */
+.lump .lay{display:block; margin-top:2px; font-size:10px; letter-spacing:.1em;
+  color:#FFF3DE; text-align:center}
+
+.lensed{display:inline-flex; flex-wrap:wrap; align-items:baseline; gap:0; justify-content:center}
+.lensed .lop{color:var(--ore-t); padding:0 .18em}
 .lensed .lterm{display:inline-flex; align-items:baseline}
 /* THE SHARED METAL, PICKED OUT INSIDE EVERY TERM - the one mark on the page
    whose whole job is to be spotted in three places at once. */
@@ -3199,6 +3240,59 @@ MF.oreDisplay = function(o){
     if(read && read.html) return '<span class="lensed">' + read.html + '</span>';
   }
   return MF.oreLabel(o);
+};
+
+/* =========================================================================
+   A LUMP OF ORE, DRAWN, WITH ITS NUMBERS CUT INTO THE STONE.
+
+   USER, 2026-08-30, pointing at the anvil and then at the cart: "This is an
+   example of text inside the ore… This is an example of information not in
+   the ore. You keep getting this wrong and all your tests are failing."
+
+   They were right on both counts. The cart drew a lump as `.lump{background:
+   #fff; border-radius:11px; min-height:44px}` - a white LIST ROW with a small
+   glyph and a text label beside it - while the anvil drew a rock with 37 cut
+   into it. "In the ore" means ON THE STONE, and I had read it three times as
+   "in the ore's text".
+
+   AND THE CHECKS PASSED THROUGHOUT, which is the more serious half. `lens`
+   verified that a re-spelling was arithmetically true and carried no prose. It
+   never asked where the numbers were. A group can be green across two hundred
+   checks and measuring the wrong property the whole way.
+
+   THE NUMBERS ARE HTML PINNED OVER THE SVG, not SVG <text> (§59): a lens marks
+   the shared metal and the open ? in colour, and SVG text paints with `fill`
+   while inheriting the `color` a contrast sweep reads - which is how ten
+   labels once shipped at 1.06:1. The stone is SVG; every character on it is a
+   span.
+   ========================================================================= */
+MF.oreRock = function(o, opts){
+  var op = opts || {};
+  var wrap = E('div','orerock' + (op.native ? ' native' : '') + (op.big ? ' big' : ''));
+  var svg = S('svg',{viewBox:'0 0 150 104', preserveAspectRatio:'xMidYMid meet','aria-hidden':'true'});
+  var body = op.native ? '#D9B45C' : '#7A6650',
+      edge = op.native ? '#8A6A2A' : '#2E2620',
+      face = op.native ? '#F2DCA4' : '#8F7A61';
+  /* the stone: one flat silhouette and a dark outline, the way everything on
+     this site is drawn since the anvil was flattened */
+  svg.appendChild(S('polygon',{
+    points:'10,54 30,24 70,10 116,18 140,44 136,80 98,96 46,94 14,76',
+    fill:body, stroke:edge,'stroke-width':'4','stroke-linejoin':'round'}));
+  /* one lit facet, so it reads as a solid and not a blob */
+  svg.appendChild(S('polygon',{points:'30,24 70,10 116,18 84,40 44,42',fill:face,opacity:'.55'}));
+  /* THE SEAM, and only on rock that still has one. On native metal there is
+     nothing running through it and drawing a seam would be a lie. */
+  /* THE SEAM RUNS UNDER THE NUMBERS, not through them. At y=62 it crossed the
+     label, and an orange stroke behind an expression is noise on the one thing
+     the stone exists to show. */
+  if(!op.native)
+    svg.appendChild(S('path',{d:'M20 80 q30 -12 60 -6 q28 3 52 -7',fill:'none',
+      stroke:'#C96A1F','stroke-width':'4','stroke-linecap':'round'}));
+  wrap.appendChild(svg);
+  var lab = E('div','orelab');
+  lab.innerHTML = MF.oreDisplay(o);
+  wrap.appendChild(lab);
+  return wrap;
 };
 
 /* and the same thing as plain words, for an aria-label */
@@ -6255,14 +6349,39 @@ MF.forgeJudge = function(t, ingots, prod){
    a third of the page, so the pieces you were choosing between and the bar you
    cut the hammer to could not be looked at together - which is the one pairing
    the whole act depends on. */
+/* THE MINE IN FOUR BANDS, and the cart is one of them.
+
+   USER, 2026-08-30: "the cart is not large enough to drag anything or properly
+   see the ore… there should be mostly ores, buttons, and animations on the
+   breaking floor and cart. I am thinking we need to redesign the mine layout."
+
+   The cart used to sit inside the MIDDLE COLUMN of a three-column grid, under
+   the rock face and beside the yard - a third of the page wide, so a lump was
+   a 44px list row and there was nowhere to drop a tool. Every band is the full
+   width now and each one does one job:
+
+     1  the shaft and the rock face, side by side
+     2  THE CART        - drawn rocks, the belt, and where each lump goes
+     3  THE BREAKING FLOOR - and it is not in the DOM until a lump is sent
+     4  THE YARD        - what you have taken out
+
+   The face keeps a column beside the shaft because the shaft is a list of five
+   layers and the face is a scrolling seam; those two genuinely pair. */
 MF.SCREENS.mine = function(host){
-  var grid = E('div','minegrid');
-  var colL = E('div'), colM = E('div'), colR = E('div');
-  grid.appendChild(colL); grid.appendChild(colM); grid.appendChild(colR);
-  host.appendChild(grid);
+  var top = E('div','minetop');
+  var colL = E('div'), colF = E('div');
+  top.appendChild(colL); top.appendChild(colF);
+  host.appendChild(top);
+  var cart = E('div','mineband');
+  host.appendChild(cart);
   var work = E('div','minework');
   host.appendChild(work);
-  MF._mine = {left:colL, mid:colM, right:colR, work:work};
+  var yard = E('div','mineband');
+  host.appendChild(yard);
+  /* `mid` and `right` are kept as names for the face and the yard so the
+     probes and helpers that learned those words still find them. */
+  MF._mine = {root:host, left:colL, mid:colF, face:colF, cart:cart, work:work,
+              right:yard, yard:yard};
   MF.paintMine();
 };
 MF.paintMine = function(){
@@ -6270,7 +6389,7 @@ MF.paintMine = function(){
      navigation away from the mine, and painting into a detached column is the
      silent-failure class that already cost a review cycle (s35) */
   if(!MF._mine || !MF._mine.mid || !MF._mine.mid.isConnected) return;
-  MF.paintShaft(); MF.paintFace(); MF.paintYard(); MF.paintWork();
+  MF.paintShaft(); MF.paintFace(); MF.paintCart(); MF.paintYard(); MF.paintWork();
   MF.drainFlashes();          /* after the repaint, so a message survives it */
 };
 
@@ -6732,64 +6851,79 @@ MF.paintFace = function(){
   }
   wall.appendChild(insp);
   wall.appendChild(scanRow);          /* seam navigation, below what it acts on */
+};
 
-  /* the cart */
-  var cartPanel = E('div','panel');
+/* =========================================================================
+   THE CART - ITS OWN BAND, AND MOSTLY ROCKS.
+
+   Every lump is DRAWN (MF.oreRock) with its expression cut into the stone, at
+   a size you can read and drop a tool onto. Under each one, the two places it
+   can go. Along the top, the belt. There is one sentence in the whole band and
+   it is the instruction for the only gesture that is not obvious.
+   ========================================================================= */
+MF.paintCart = function(){
+  var host = MF._mine && MF._mine.cart;
+  if(!host || !host.isConnected) return;
+  clear(host);
+  var cartPanel = E('div','panel cartpanel');
   cartPanel.appendChild(MF.cartTrack());
   cartPanel.appendChild(H('div','panel-tag','THE CART'));
   if(!MF.state.cart.length){
-    cartPanel.appendChild(H('p','hint','Empty. Swing the pick above — and dig as much as you want before you smelt anything.'));
-  } else {
-    cartPanel.appendChild(H('p','hint','Raw ore you are carrying. <b>Drag an instrument onto a lump</b> and the lump changes — then send it to the breaking floor or set it aside in the yard.'));
-    /* THE BELT IS IN THE CART, which is where a student first has a lump and
-       nothing to do with it. It only existed on the bench before, so the
-       instruments were a screen away from the ore they read (§20). */
-    MF.paintBelt(cartPanel, true);
-    var body = E('div','cartbody');
-    var cart = E('div','cart');
-    MF.state.cart.forEach(function(o){
-      var cell = E('div','lumpcell');
-      /* THE LUMP IS THE DROP TARGET, not a button that moves it. Where it goes
-         is the two controls underneath; this is the rock itself. */
-      var b = E('div','lump' + (o.fresh?' fresh':''));
-      b.setAttribute('data-ore', o.id);      /* survives the repaint, so the knock finds it */
-      b.setAttribute('tabindex','0');
-      b.appendChild(E('span','glyph'));
-      /* THE INSTRUMENT RE-SPELLS THE LUMP ITSELF (§19). Not a note under it -
-         the text on the ore changes. */
-      b.appendChild(H('span','txt', MF.oreDisplay(o)));
-      b.appendChild(H('span','lay','LAYER ' + o.layer));
-      if(MF.state.selected && MF.state.selected.id===o.id) b.setAttribute('aria-current','true');
-      b.setAttribute('aria-label', MF.oreDisplayText(o) + ', layer ' + o.layer +
-        '. Drop an instrument on it, or send it on with the two controls below.');
-      cell.appendChild(b);
-      /* ---- WHERE IT GOES, in two controls under the ore ---- */
-      var route = E('div','lumproute');
-      var toFloor = E('button','btn primary lumpgo','To the breaking floor'); toFloor.type='button';
-      toFloor.setAttribute('aria-label','Put ' + MF.oreText(o) + ' on the breaking floor and work it');
-      on(toFloor,'click',function(){
-        MF.state.selected = o;
-        MF.state.anvil = null;
-        MF.paintMine();
-        MF.knockLump(o.id);
-      });
-      route.appendChild(toFloor);
-      var y = E('button','btn lumpgo tuyard','To the yard'); y.type='button';
-      y.setAttribute('aria-label','Set ' + MF.oreText(o) + ' aside in the yard without working it');
-      on(y,'click',function(){ MF.cartToYard(o.id); });
-      route.appendChild(y);
-      cell.appendChild(route);
-      cart.appendChild(cell);
-    });
-    body.appendChild(cart);
-    cartPanel.appendChild(body);
-    var wheels = E('div','cartwheels');
-    wheels.appendChild(E('i')); wheels.appendChild(E('i'));
-    cartPanel.appendChild(wheels);
-    cartPanel.appendChild(E('div','cartrail'));
+    cartPanel.appendChild(H('p','hint','Empty. Swing the pick at the face above — dig as much as you like before you work any of it.'));
+    host.appendChild(cartPanel);
+    return;
   }
+  /* THE BELT IS IN THE CART, which is where a student first has a lump and
+     nothing to do with it (§20a). */
+  MF.paintBelt(cartPanel, true);
+  cartPanel.appendChild(H('p','hint','<b>Drag an instrument onto a rock</b> and the numbers cut into it change.'));
+  var body = E('div','cartbody');
+  var cart = E('div','cart');
+  MF.state.cart.forEach(function(o){
+    var cell = E('div','lumpcell');
+    var nat = MF.isNative(o);
+    /* THE ROCK IS THE DROP TARGET. Not a button that moves it - where it goes
+       is the two controls underneath; this is the stone itself. */
+    var b = E('div','lump' + (o.fresh?' fresh':'') + (nat?' native':''));
+    b.setAttribute('data-ore', o.id);      /* survives the repaint, so the knock finds it */
+    b.setAttribute('tabindex','0');
+    b.appendChild(MF.oreRock(o, {native:nat}));
+    b.appendChild(H('span','lay','LAYER ' + o.layer));
+    if(MF.state.selected && MF.state.selected.id===o.id) b.setAttribute('aria-current','true');
+    b.setAttribute('aria-label', MF.oreDisplayText(o) + ', layer ' + o.layer +
+      '. Drop an instrument on it, or send it on with the two controls below.');
+    cell.appendChild(b);
+    /* ---- WHERE IT GOES, in two controls under the rock ---- */
+    var route = E('div','lumproute');
+    var toFloor = E('button','btn primary lumpgo','Break it'); toFloor.type='button';
+    toFloor.setAttribute('aria-label','Put ' + MF.oreText(o) + ' on the breaking floor and work it');
+    on(toFloor,'click',function(){
+      MF.state.selected = o;
+      MF.state.anvil = null;
+      MF.paintMine();
+      MF.knockLump(o.id);
+      /* the floor did not exist a moment ago, so say where it went */
+      var w = MF._mine && MF._mine.work;
+      if(w && w.firstChild && w.getBoundingClientRect().bottom > window.innerHeight)
+        w.scrollIntoView({block:'start', behavior:'smooth'});
+    });
+    route.appendChild(toFloor);
+    var y = E('button','btn lumpgo tuyard','To the yard'); y.type='button';
+    y.setAttribute('aria-label','Set ' + MF.oreText(o) + ' aside in the yard without working it');
+    on(y,'click',function(){ MF.cartToYard(o.id); });
+    route.appendChild(y);
+    cell.appendChild(route);
+    cart.appendChild(cell);
+  });
+  body.appendChild(cart);
+  cartPanel.appendChild(body);
+  var wheels = E('div','cartwheels');
+  wheels.appendChild(E('i')); wheels.appendChild(E('i'));
+  cartPanel.appendChild(wheels);
+  cartPanel.appendChild(E('div','cartrail'));
   host.appendChild(cartPanel);
 };
+
 
 /* THE WORK BAND, full width and below the three places you move between. The
    bench used to be appended to the middle column under the cart, which left
@@ -6870,7 +7004,7 @@ MF.knockRock = function(node, o, refused){
 
 /* the same answer for a lump in the cart, which is ore too */
 MF.knockLump = function(id){
-  var host = MF._mine && MF._mine.mid;
+  var host = MF._mine && MF._mine.root;        /* the cart is its own band now */
   var el = host && host.querySelector('.lump[data-ore="'+id+'"]');
   if(!el) return;
   el.classList.remove('knock'); void el.getBoundingClientRect();
@@ -6895,7 +7029,14 @@ MF.knockLump = function(id){
 MF.placeCut = function(o, dest){
   if(dest === 'yard'){ MF.stow(o); return; }
   MF.state.cart.push(o);
-  if(!MF.state.selected) MF.state.selected = o;
+  /* AND IT IS NOT SELECTED. This line used to read
+       if(!MF.state.selected) MF.state.selected = o;
+     which meant the FIRST lump a student ever cut opened the breaking floor
+     by itself. The floor was asked to stay shut three times and I hid the
+     PANEL twice - `paintWork` drawing nothing when nothing is selected - while
+     the state behind it was still being set here. Hiding a panel cannot beat
+     the thing that opens it. The cart's own "Break it" is the only way to the
+     floor now (§22). */
 };
 
 /* `dest` is 'cart' (work it) or 'yard' (set it aside), chosen at the face
@@ -7696,7 +7837,7 @@ MF.augerTrace = function(host, last){
 
 /* every click on a piece is answered, the same rule as the lumps in the seam */
 MF.knockPiece = function(id){
-  var host = MF._mine && MF._mine.mid;
+  var host = MF._mine && MF._mine.root;
   var el = host && host.querySelector('.piece[data-piece="'+id+'"]');
   if(!el) return;
   el.classList.remove('knock'); void el.getBoundingClientRect();
@@ -8124,7 +8265,7 @@ MF.dragTool = function(node, key){
 };
 
 MF.markPieceTargets = function(on_, hot){
-  var host = MF._mine && MF._mine.mid;
+  var host = MF._mine && MF._mine.root;
   if(!host) return;
   Array.prototype.forEach.call(host.querySelectorAll('.piece'), function(p){
     if(!on_){ p.removeAttribute('data-tooldrop'); return; }
@@ -8139,7 +8280,7 @@ MF.markPieceTargets = function(on_, hot){
    Both live in MF._mine.mid, so one selector reaches both. */
 MF.DROP_SEL = '.piece[data-piece], .lump[data-ore]';
 MF.pieceAt = function(x, y){
-  var host = MF._mine && MF._mine.mid;
+  var host = MF._mine && MF._mine.root;
   if(!host) return null;
   var hit = null;
   Array.prototype.forEach.call(host.querySelectorAll(MF.DROP_SEL), function(p){
@@ -8417,13 +8558,13 @@ MF.dragFromHeap = function(node, idx){
 /* the floor lights up while something is in the air, so a drag has somewhere
    it is visibly going rather than being guesswork */
 MF.markDropTargets = function(on_){
-  var host = MF._mine && MF._mine.mid;
+  var host = MF._mine && MF._mine.root;
   var t = host && host.querySelector('.floorbox');
   if(!t) return;
   if(on_) t.setAttribute('data-drop','open'); else t.removeAttribute('data-drop');
 };
 MF.dropTargetAt = function(x, y){
-  var host = MF._mine && MF._mine.mid;
+  var host = MF._mine && MF._mine.root;
   var t = host && host.querySelector('.floorbox');
   if(!t) return null;
   var b = t.getBoundingClientRect();
@@ -9120,6 +9261,45 @@ MF.validate = function(){
      !cyBtns.some(function(t){ return /yard/i.test(t); }))
     errs.push('nogate: a lump in the cart offers no choice between the breaking floor and the yard — it read ' +
       JSON.stringify(cyBtns));
+  /* AND THE BREAKING FLOOR MUST NOT OPEN BY ITSELF.
+
+     Asked for three times, and I fixed the wrong thing twice: `paintWork` was
+     made to draw nothing when nothing is selected, while MF.placeCut still ran
+       if(!MF.state.selected) MF.state.selected = o;
+     so the FIRST lump a student ever cut selected itself and the floor opened
+     behind the guard. Hiding a panel cannot beat the thing that opens it.
+
+     This asserts the STATE, not the panel: cutting ore leaves nothing
+     selected. A future fix that hides the floor while still selecting fails
+     here, which is the whole point. */
+  chk('nogate');
+  (function(){
+    var ngSave = {cart:MF.state.cart, sel:MF.state.selected, bench:MF.state.anvil};
+    MF.state.cart = []; MF.state.selected = null; MF.state.anvil = null;
+    MF.placeCut({kind:'poly', a:6, b:15, c:0, layer:2, id:'ng-cut'}, 'cart');
+    if(MF.state.selected)
+      errs.push('nogate: cutting a lump selected it, so the breaking floor opens before ' +
+        'the student has asked for it — the panel may be hidden, the state is not');
+    MF.state.cart = ngSave.cart; MF.state.selected = ngSave.sel; MF.state.anvil = ngSave.bench;
+  })();
+  /* CONTROL: put the auto-select back */
+  chk('nogate');
+  (function(){
+    var ngReal = MF.placeCut, ngSave = {cart:MF.state.cart, sel:MF.state.selected};
+    MF.placeCut = function(o, dest){
+      if(dest === 'yard'){ MF.stow(o); return; }
+      MF.state.cart.push(o);
+      if(!MF.state.selected) MF.state.selected = o;
+    };
+    MF.state.cart = []; MF.state.selected = null;
+    MF.placeCut({kind:'poly', a:6, b:15, c:0, layer:2, id:'ng-ctl'}, 'cart');
+    var caught = !!MF.state.selected;
+    MF.placeCut = ngReal;
+    MF.state.cart = ngSave.cart; MF.state.selected = ngSave.sel;
+    if(!caught)
+      errs.push('CONTROL: a cut that auto-selects the lump is not reported as opening the floor');
+  })();
+
   /* AND THE INSTRUMENTS MUST BE THERE TOO. A cart with ore in it and no belt
      is what this whole change is about: the first thing a student could do
      with a lump they had just cut was move it somewhere else. */
@@ -9701,9 +9881,34 @@ MF.validate = function(){
         var sib = p.children[i];
         if(sib === el || sib.contains(el)) continue;
         var sp = getComputedStyle(sib);
-        if(sp.position === 'static' || sp.display === 'none' || parseFloat(sp.opacity) === 0) continue;
+        if(sp.display === 'none' || parseFloat(sp.opacity) === 0) continue;
         var sb = sib.getBoundingClientRect();
         if(cx < sb.left || cx > sb.right || cy < sb.top || cy > sb.bottom) continue;
+        /* A DRAWING IS A BACKDROP TOO. The numbers on a lump of ore are HTML
+           pinned over an <svg> of the stone, and the stone's colour is a
+           POLYGON FILL - not a CSS background - so _paintOf finds nothing and
+           the walker climbs out to the panel behind the rock. That reported
+           dark-on-steel at 1.65:1 for ink that is actually sitting on gold.
+           §64 said find what is painted under the text; this is the same rule
+           where the paint is an attribute rather than a stylesheet. */
+        if(sib.tagName && String(sib.tagName).toLowerCase() === 'svg'){
+          var shapeFill = null;
+          sib.querySelectorAll('rect,polygon,path,circle,ellipse').forEach(function(s){
+            var b2 = s.getBoundingClientRect();
+            if(cx < b2.left || cx > b2.right || cy < b2.top || cy > b2.bottom) return;
+            var f = s.getAttribute('fill');
+            if(!f || f === 'none' || f.indexOf('url(') === 0) return;
+            if(parseFloat(s.getAttribute('opacity') || '1') < 0.6) return;
+            shapeFill = f;                   /* last painted wins */
+          });
+          if(shapeFill){
+            var m6 = shapeFill.match(/^#([0-9a-fA-F]{6})$/);
+            var sr = m6 ? [parseInt(m6[1].slice(0,2),16), parseInt(m6[1].slice(2,4),16),
+                           parseInt(m6[1].slice(4,6),16)] : _rgb(shapeFill);
+            if(sr){ over = [sr]; continue; }
+          }
+        }
+        if(sp.position === 'static') continue;
         var paint = _paintOf(sib);
         if(paint) over = paint;          /* later in the DOM paints on top */
       }
@@ -10592,7 +10797,7 @@ MF.validate = function(){
     if(kl && kl2){
       MF.state.cart = [kl, kl2]; MF.state.selected = kl; MF.state.anvil = null;
       MF.paintMine();
-      var lumpEl = MF._mine.mid.querySelector('.lump[data-ore="'+kl.id+'"]');
+      var lumpEl = MF._mine.root.querySelector('.lump[data-ore="'+kl.id+'"]');
       chk('knock');
       if(!lumpEl){ errs.push('knock: the cart drew no lump at all'); }
       else {
@@ -10602,7 +10807,7 @@ MF.validate = function(){
         if(!goBtn){ errs.push('knock: the cart lump has no control to send it anywhere'); }
         else {
           kHit(goBtn);
-          var after = MF._mine.mid.querySelector('.lump[data-ore="'+kl.id+'"]');
+          var after = MF._mine.root.querySelector('.lump[data-ore="'+kl.id+'"]');
           chk('knock');
           if(!(after && after.classList.contains('knock')))
             errs.push('knock: sending the cart lump to the breaking floor answered nothing');
@@ -11203,20 +11408,24 @@ MF.validate = function(){
           'px with 6 — the cart changes shape as it empties');
     });
   });
-  /* CONTROL: put the fault back - a shrinkable track in a capped column - and
-     watch the same six-way comparison catch it. */
+  /* CONTROL: flatten the track and watch the drawn-height assertion catch it.
+
+     THE ORIGINAL FAULT IS NOW ARCHITECTURALLY IMPOSSIBLE, and saying so is the
+     point of this note. The rail used to be squeezed because the cart lived in
+     a column with a 430px cap; the cart is its own full-width band with no cap
+     (§22), so nothing can compress it and `flex:0 1 auto` no longer changes a
+     pixel. A control that cannot introduce its fault proves nothing, so it
+     injects one that IS possible - a track drawn at no height at all - and the
+     group keeps guarding the property that still matters: the cart is drawn
+     the same whatever is in it, at the size it is designed at. */
   chk('cartdraw');
   var cdCtl = document.createElement('style');
-  cdCtl.textContent = '.cartrail{flex:0 1 auto !important}';
+  cdCtl.textContent = '.cartrail{height:0 !important; min-height:0 !important}';
   document.head.appendChild(cdCtl);
   var cdA = cdChrome(6), cdB = cdChrome(1);
   document.head.removeChild(cdCtl);
-  /* THE FAULT IS CAUGHT EITHER WAY: as variation between cart sizes where the
-     squeeze varies, and as a flattened track where it does not. The control
-     asks whether EITHER assertion would fire, because at a narrow width the
-     first one cannot - see the note above. */
-  if(Math.abs(cdA.rail - cdB.rail) <= 0.5 && cdA.rail >= 5.5 && cdB.rail >= 5.5)
-    errs.push('CONTROL: a shrinkable track is neither flattened nor made to vary, so nothing here would catch it');
+  if(cdA.rail >= 5.5 || cdB.rail >= 5.5)
+    errs.push('CONTROL: a track drawn at no height is still reported as its designed 5.5px');
   document.body.removeChild(cdStage);
   MF._mine = cdSaved.mine; MF.state.cart = cdSaved.cart; MF.state.selected = cdSaved.sel;
   MF.state.anvil = cdSaved.bench; MF.state.layer = cdSaved.layer;

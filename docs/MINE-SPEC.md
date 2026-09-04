@@ -761,3 +761,47 @@ the build. A lens that starts explaining is the panel coming back under a new na
 It used to hold a line telling you to pick a lump — a whole band of screen spent saying
 that a band of screen was empty, sitting under the cart, so every student scrolled past
 an instruction to do the thing they were already doing. Nothing selected, nothing drawn.
+
+## 22. The mine, redesigned: four bands and rocks you can read
+
+*User, 2026-08-30, with two screenshots — the anvil labelled "text inside the ore",
+the cart labelled "information not in the ore. You keep getting this wrong and all your
+tests are failing." Plus: "the cart is not large enough to drag anything or properly
+see the ore… for the third time, the Breaking Floor should not show up until the button
+is pushed… mostly ores, buttons, and animations."*
+
+### 22a. Four bands, each doing one job
+
+1. the **shaft** and the **rock face**, side by side
+2. **THE CART** — full width
+3. **THE BREAKING FLOOR** — and it is not in the DOM until a lump is sent
+4. **THE YARD**
+
+The cart used to be the middle column of a three-column grid — a third of the page —
+which is why a lump was a 44px list row with nowhere to drop a tool. It is a tray of
+drawn rocks now, `repeat(auto-fill, minmax(190px, 1fr))`, measured at **216×167** where
+it was 44 tall.
+
+### 22b. A lump is a drawn rock with its numbers cut into the stone
+
+`MF.oreRock` — one renderer, used wherever ore appears. The expression sits **on** the
+stone; an instrument dropped on it changes **those** numbers. `6x² + 15x` becomes
+`3·2x² + 3·5x` with the 3s picked out, on the rock.
+
+> **The numbers are HTML pinned over the SVG**, never SVG `<text>` (§59): a lens marks
+> the shared metal in colour, and SVG text paints with `fill` while inheriting the
+> `color` a sweep reads. The stone is a drawing; every character on it is a span.
+
+> **And `_backdrops` had to learn that a drawing is a backdrop.** The rock's colour is a
+> polygon `fill`, not a CSS background, so the contrast walker climbed past it to the
+> panel behind and reported dark-on-steel at 1.65:1 for ink actually sitting on gold.
+> Same rule as §64, one layer down.
+
+### 22c. Cutting does not select
+
+`MF.placeCut` ran `if(!MF.state.selected) MF.state.selected = o;` — so the first lump a
+student ever cut opened the floor by itself. **The floor was asked to stay shut three
+times and the panel was hidden twice** while the state behind it was still being set.
+Hiding a panel cannot beat the thing that opens it. `nogate` now asserts the **state**:
+cutting leaves nothing selected, so a future fix that hides the floor while still
+selecting fails the build.
