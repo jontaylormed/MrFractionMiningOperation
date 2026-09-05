@@ -1093,3 +1093,60 @@ which lumps get dug.
 > something is drawn in the top 44 and bottom 44 units of each. Controls: a height stated
 > independently of the width — the exact fault that shipped — and a texture group with
 > its head and foot stripped out. Both fail by name.
+
+## 29. One place teaches a tool, and it is not the forge
+
+*User, 2026-09-04: "The Casting Shed should include a section that teaches how to use
+the tools on preselected ores, with an interactive, guided textual explanation. Only
+tools that have been successfully cast should be available as lessons."*
+*And, the same day: "There should no more lessons on the tools in the forge."*
+
+### 29a. What replaced what
+
+| gone | why |
+|---|---|
+| `MF.paintSchemaIndex` | listed all seven methods as folded essays whether or not you owned the tool — a page to read rather than a thing to be walked through |
+| `MF.toolLesson` | ran in the forge three seconds after a pour, when what the student is looking at is the object they just made; and again seven times over in the Shed |
+
+The **working floor** (`MF.paintToolSchool` → `MF.drawLesson`) is what is there now. One
+lesson per instrument **cast**, each walked a step at a time.
+
+### 29b. The walk
+
+The ore is **preselected per tool** and it is `SCHEMA[key].practice.ore` — the lump the
+method was written against, and the one the `schema` group already checks the practice
+answer comes out of. One lump, so the walkthrough and the thing you then try are the
+same rock, and it is **drawn** beside the method's name.
+
+`SCHEMA[key].steps(ore)` is the script; the lesson reveals one step at a time with a
+count and pips saying how long the corridor is. A step the schema marks `open` — *this
+one is yours* — is announced by the control that opens it (*"and then it is yours →"*)
+rather than arriving unlabelled. Back a step is always available and loses nothing. At
+the end, the practice on the same lump, answered by `MF.breakOff` — the engine the anvil
+swings through — so a miss is **described by the rock**, not marked.
+
+Where each student is in each lesson lives on `MF.state.school`, so leaving the room and
+coming back does not send them to step one. The lesson **repaints into its own body**,
+never through `MF.go`, which would rebuild the screen, scroll to the top and close the
+`<details>` they are reading (the `inplace` rule) — and focus is put back deliberately,
+because every control in it is destroyed by that repaint.
+
+### 29c. The gate, and why it is not the gate §10a forbids
+
+The binding constraint is that a tool never gates **descent**: a student with an empty
+belt reaches and works the deepest layer, and `nogate` walks every layer with an empty
+yard to prove it. **Untouched.** What is gated is a *lesson about an instrument you are
+holding*, and a lesson about a tool nobody has is a page about a thing that is not in the
+room. The methods are not secret: each is performed in the mine the instant the
+instrument touches a rock, and the Stamp Mill and the mold room teach the mathematics
+with no tool at all.
+
+**The empty state is not a locked door**, and that is checked: it says where instruments
+come from, says plainly that nothing in the mine is waiting on it, and carries routes to
+the forge and the Stamp Mill.
+
+> `schema` (132) asserts the count follows the belt exactly at 0, 1, 2 and 7 cast, that
+> no lesson is drawn for a tool that has not been cast, that the empty room is not a dead
+> end, and that **the casting carries no lesson**. Controls: `MF.hasTool` unhooked, a
+> `.practice` appended to a casting, and the empty state's routes removed. All fail by
+> name.

@@ -1330,7 +1330,9 @@ ol.ssteps li.open::marker{color:var(--vein)}
 .nssay .hint{color:#C9B695}
 
 /* =========================================================================
-   THE FORGE'S TUTORIAL, and the same block in the Casting Shed.
+   THE GUIDED LESSON on the Casting Shed's working floor. It is not in the
+   forge any more (MINE-SPEC §29) and it is not an essay: the method is walked
+   a step at a time on one preselected lump, and the lump is drawn.
    ========================================================================= */
 .lesson{background:var(--paper); border:3px solid var(--tan); border-radius:14px; padding:15px 17px; margin:14px 0}
 .lesson .lslab{font-family:var(--display); font-size:11px; letter-spacing:.12em; color:var(--ore-t)}
@@ -1339,6 +1341,31 @@ ol.ssteps li.open::marker{color:var(--vein)}
 .lesson .lsic{font-size:26px}
 .lesson .lswhy{font-size:15px; color:var(--ink-soft); max-width:66ch}
 .lesson .schema{background:#fff}
+/* the lump this lesson is about, beside the name of the method */
+.lshead{display:flex; gap:15px; align-items:flex-start; flex-wrap:wrap}
+.lshead .lstext{flex:1 1 260px; min-width:0}
+.lshead .lsrock{flex:0 0 auto; width:170px; max-width:170px; margin:0}
+/* HOW FAR ALONG IT IS. A walkthrough with no sense of length is a corridor
+   with no end in sight - the count and the pips are how long it is. */
+.lsprog{display:flex; align-items:center; gap:10px; margin:11px 0 2px; flex-wrap:wrap}
+.lsprog .lsstep{font-family:var(--display); font-size:12px; letter-spacing:.08em;
+  text-transform:uppercase; color:var(--ore-t)}
+.lspips{display:flex; gap:5px}
+.lspips i{display:block; width:9px; height:9px; border-radius:50%;
+  background:#fff; border:2px solid var(--tan)}
+.lspips i.on{background:var(--ore); border-color:var(--ore-t)}
+/* the step just opened, so the eye lands on the new one and not on step one */
+.ssteps li.now .sact{font-weight:600}
+.ssteps li.now{position:relative}
+.ssteps li.now:after{content:""; position:absolute; left:-20px; top:6px; width:7px; height:7px;
+  border-radius:50%; background:var(--ore)}
+.lsnav{display:flex; gap:9px; align-items:center; flex-wrap:wrap; margin-top:12px}
+.lsnav .hint{flex:1 1 200px; min-width:0}
+.lsback[disabled]{opacity:.4; cursor:default}
+@media (max-width:560px){
+  .lshead .lsrock{width:132px; max-width:132px}
+  .lsnav .btn{flex:1 1 auto}
+}
 .practice{background:#fff; border:2px solid var(--rule); border-radius:12px; padding:13px 15px; margin-top:13px}
 .practice .prlab{font-family:var(--display); font-size:11px; letter-spacing:.12em; color:var(--vein)}
 .practice .eq{margin:2px 0 4px}
@@ -3064,10 +3091,14 @@ MF.simplestFactor = function(ore){
    prose, and it is what the panel opened on. The `visual` group counts the
    prose outside the diagrams and fails the build over it now.
 
-   The reading in the mine DRAWS. The reading that explains lives in the
-   Casting Shed, where MF.paintSchemaIndex still renders every schema in full
-   and MF.toolLesson still teaches it - so nothing was deleted, it moved to the
-   room built for reading. This is the pointer between the two. */
+   The reading in the mine DRAWS. The reading that EXPLAINS lives in the
+   Casting Shed, where MF.drawLesson walks the method a step at a time on a
+   lump chosen for it - so nothing was deleted, it moved to the room built for
+   reading. This is the pointer between the two.
+
+   The lesson at the far end of this button exists only for a tool that has
+   been cast (§29). That is not a problem for this line: it is drawn ON a tool
+   panel, and a tool panel only exists for an instrument in your hand. */
 MF.methodLine = function(host, key){
   var s = MF.SCHEMA[key];
   if(!s) return null;
@@ -5090,30 +5121,264 @@ MF.paintRosetta = function(host){
   return box;
 };
 
-/* every method, readable before you own the tool. NOT GATED: a lesson you have
-   to earn is a lesson locked away from the student who needs it most, which is
-   the same rule §10a's binding constraint states about descent. */
-MF.paintSchemaIndex = function(host){
-  var box = E('div','panel');
-  box.appendChild(H('div','panel-tag','THE SEVEN METHODS'));
-  box.appendChild(H('p','lede','Each instrument at the forge is one way of walking up to a lump. You do not need the tool to read the method — ' +
-    'the method is the part that is worth having, and it works in a notebook with no tool at all.'));
-  MF.toolOrder().forEach(function(key){
+/* =========================================================================
+   THE WORKING FLOOR: WHERE A TOOL IS TAUGHT, ONE STEP AT A TIME.
+
+   USER, 2026-09-04: "The Casting Shed should include a section that teaches
+   how to use the tools on preselected ores, with an interactive, guided
+   textual explanation. Only tools that have been successfully cast should be
+   available as lessons." And, the same day: "There should no more lessons on
+   the tools in the forge."
+
+   So there is now exactly ONE place a tool is taught, and it is not the forge.
+   What the forge does is make the thing; what this room does is teach it.
+
+   WHAT REPLACED WHAT:
+
+   - `MF.paintSchemaIndex` listed all seven methods as folded essays, whether
+     or not you owned the tool, each with `MF.toolLesson` inside it. Both are
+     gone. The index printed the whole method at once, which is a page to read
+     rather than a thing to be walked through.
+   - `MF.toolLesson` also ran in the forge, three seconds after a pour, where
+     a student is looking at the casting they just made. It taught nobody
+     twice and it is where the user asked for it not to be.
+
+   THE GATE, AND WHY IT IS NOT THE GATE §10a FORBIDS. The binding constraint
+   is that a tool never gates DESCENT: a student with an empty belt can reach
+   and work the deepest layer, and `nogate` walks every layer to prove it. That
+   is untouched. What is gated here is a LESSON ABOUT AN INSTRUMENT YOU ARE
+   HOLDING - and a lesson about a tool nobody has is a page about a thing that
+   is not in the room. The methods themselves are not secret: every one of them
+   is performed in the mine the moment the instrument touches a rock, and the
+   Stamp Mill and the mold room teach the mathematics with no tool at all.
+
+   THE ORE IS PRESELECTED, per tool, and it is `SCHEMA[key].practice.ore` -
+   the lump the method was written against and the one the `schema` group
+   already checks the practice answer comes out of. One lump, chosen for the
+   method, so the walkthrough and the thing you then try are the same rock.
+   ========================================================================= */
+MF.paintToolSchool = function(host){
+  var owned = MF.toolOrder().filter(MF.hasTool);
+  var box = E('div','panel school');
+  box.appendChild(H('div','panel-tag','THE WORKING FLOOR'));
+
+  if(!owned.length){
+    /* NOT A LOCKED DOOR, AND IT MUST NOT READ AS ONE. Nothing here is earned
+       and nothing in the mine is behind it - this says where lessons come
+       from and that the mine does not wait for them. */
+    box.appendChild(H('p','lede','<b>Nothing on your belt yet, so there is nothing to teach here.</b> ' +
+      'A lesson appears on this floor for every instrument you have <b>cast</b> — the method it carries, ' +
+      'walked one step at a time on a lump chosen for it, and then one to try yourself.'));
+    box.appendChild(H('div','note','Instruments are not handed out. You make them at the forge, out of metal ' +
+      'you broke out of the rock yourself — so the first lesson here is one you will have earned by factoring. ' +
+      '<b>Nothing in the mine is waiting on it:</b> every layer works with an empty belt, and the rooms above ' +
+      'teach the mathematics with no instrument at all.'));
+    var go = E('div','row'); go.style.marginTop = '10px';
+    go.appendChild(MF.jump('To the forge &rarr;', 'forge'));
+    go.appendChild(MF.jump('The Stamp Mill &rarr;', 'workshop-ore'));
+    box.appendChild(go);
+    host.appendChild(box);
+    return box;
+  }
+
+  box.appendChild(H('p','lede','One lesson for every instrument you have cast. Each is the method that instrument ' +
+    'carries, <b>walked a step at a time</b> on a lump chosen for it — and at the end, the same lump to try ' +
+    'yourself. Nothing here is marked, and the thing that answers you is the engine the anvil swings through.'));
+
+  owned.forEach(function(key, i){
     var t = MF.TOOLS[key], s = MF.SCHEMA[key];
     if(!s) return;
     var d = document.createElement('details');
-    d.className = 'schemadet';
+    d.className = 'schemadet lessondet';
+    if(i === 0) d.setAttribute('open','');       /* the first one is open */
     var sm = document.createElement('summary');
     sm.innerHTML = '<span class="sdic">' + t.ic + '</span><span class="sdnm">' + s.name + '</span>' +
-      '<span class="sdtool">' + t.nm + (MF.hasTool(key) ? ' &middot; on your belt' : '') + '</span>';
+      '<span class="sdtool">' + t.nm + '</span>';
     d.appendChild(sm);
     var body = E('div','sdbody');
-    MF.toolLesson(body, key, {lab:'THE METHOD, AND ONE TO TRY'});
     d.appendChild(body);
     box.appendChild(d);
+    /* THE LESSON REPAINTS INTO ITS OWN BODY. `MF.go` would rebuild the whole
+       screen, scroll to the top, move focus and replay the arrival wipe - the
+       exact fault the `inplace` group exists for - and it would close the
+       `details` the student is reading. */
+    MF.drawLesson(body, key);
   });
+
   host.appendChild(box);
   return box;
+};
+
+/* WHERE EACH STUDENT IS IN EACH LESSON. Kept on MF.state so walking away from
+   the room and coming back does not send them to step one, and so a repaint
+   for any other reason cannot either. */
+MF.lessonState = function(key){
+  if(!MF.state.school) MF.state.school = {};
+  if(!MF.state.school[key]) MF.state.school[key] = {at:0};
+  return MF.state.school[key];
+};
+
+/* ONE LESSON, DRAWN AT WHATEVER STEP IT IS ON.
+   `at` is the index of the LAST revealed step; `at === steps.length` means the
+   walkthrough is done and the practice is out. */
+MF.drawLesson = function(box, key){
+  var t = MF.TOOLS[key], s = MF.SCHEMA[key];
+  if(!t || !s) return null;
+  var ore = s.practice.ore;
+  var steps = [];
+  try { steps = s.steps(ore) || []; } catch(e){ steps = []; }
+  var st = MF.lessonState(key);
+  if(st.at > steps.length) st.at = steps.length;
+  if(st.at < 0) st.at = 0;
+  var done = st.at >= steps.length;
+  var hadFocus = box.contains(document.activeElement);
+
+  clear(box);
+  var wrap = E('div','lesson guided');
+
+  /* ---- THE LUMP THIS LESSON IS ABOUT, DRAWN ---- */
+  var head = E('div','lshead');
+  var rock = MF.oreRock(ore, {native:false});
+  rock.classList.add('lsrock');
+  head.appendChild(rock);
+  var hx = E('div','lstext');
+  hx.appendChild(H('div','lslab','THE METHOD'));
+  hx.appendChild(H('div','lsnm', s.name));
+  /* the reasoning folds away: it is the best paragraph here and it is not what
+     the student came to do, so it opens on the work and not on the essay */
+  var whyD = document.createElement('details');
+  whyD.className = 'swhyfold';
+  var whyS = document.createElement('summary');
+  whyS.textContent = 'why this works';
+  whyD.appendChild(whyS);
+  whyD.appendChild(H('div','swhy', s.why));
+  hx.appendChild(whyD);
+  head.appendChild(hx);
+  wrap.appendChild(head);
+
+  /* ---- THE WALKTHROUGH, AS FAR AS IT HAS BEEN OPENED ---- */
+  var prog = E('div','lsprog');
+  prog.appendChild(H('span','lsstep', done
+    ? 'all ' + steps.length + ' steps out'
+    : 'step ' + (st.at + 1) + ' of ' + steps.length));
+  var pips = E('div','lspips');
+  for(var pi=0; pi<steps.length; pi++)
+    pips.appendChild(E('i', pi <= st.at ? 'on' : null));
+  prog.appendChild(pips);
+  wrap.appendChild(prog);
+
+  var ol = E('ol','ssteps');
+  steps.forEach(function(step, i){
+    if(i > st.at) return;
+    var li = E('li', (step.open ? 'open' : '') + (i === st.at && !done ? ' now' : ''));
+    li.appendChild(H('div','sact', step.act));
+    if(step.shows) li.appendChild(H('div','sshow', step.shows));
+    if(step.draw){ try { step.draw(li); } catch(e2){} }
+    ol.appendChild(li);
+  });
+  wrap.appendChild(ol);
+
+  /* ---- WHAT MOVES YOU ALONG IT ---- */
+  var nav = E('div','lsnav');
+  var back = E('button','btn lsback','&larr; back a step'); back.type='button';
+  back.innerHTML = '&larr; back a step';
+  back.disabled = (st.at === 0);
+  back.setAttribute('aria-label','Go back one step in this method');
+  on(back,'click',function(){ st.at--; MF.drawLesson(box, key); });
+  nav.appendChild(back);
+
+  if(!done){
+    var next = E('button','btn primary lsnext'); next.type='button';
+    var nx = steps[st.at + 1];
+    next.textContent = (nx && nx.open) ? 'and then it is yours →' : 'next step →';
+    next.setAttribute('aria-label','Show the next step of ' + s.name);
+    on(next,'click',function(){ st.at++; MF.drawLesson(box, key); });
+    nav.appendChild(next);
+    nav.appendChild(H('div','hint','Nothing is skipped by going forward, and nothing is lost by going back.'));
+  } else {
+    var again = E('button','btn lsagain','start it over'); again.type='button';
+    on(again,'click',function(){ st.at = 0; MF.drawLesson(box, key); });
+    nav.appendChild(again);
+  }
+  wrap.appendChild(nav);
+
+  /* ---- AND AT THE END OF THE WALK, THE SAME LUMP TO TRY ---- */
+  if(done) MF.lessonPractice(wrap, key);
+
+  wrap.appendChild(H('div','hint','<b>In the mine:</b> click this instrument on your belt, then click a rock — ' +
+    'or drag it onto one. The rock re-spells itself and the numbers on it change.'));
+
+  box.appendChild(wrap);
+  /* KEEP THE KEYBOARD WHERE IT WAS. Every control here is destroyed by the
+     repaint, so a student who is tabbing lands back at the top of the document
+     on the first press of Next unless focus is put back deliberately. */
+  if(hadFocus){
+    var landing = box.querySelector('.lsnext') || box.querySelector('.practice input') ||
+                  box.querySelector('.lsagain') || box.querySelector('.lsback');
+    if(landing && landing.focus) landing.focus({preventScroll:true});
+  }
+  return wrap;
+};
+
+/* THE PRACTICE. One lump, one thing to name, DESCRIBED afterwards.
+
+   IT HAS NO JUDGE OF ITS OWN. What the student names goes to MF.breakOff - the
+   same engine the anvil swings through - so a miss is described by the rock
+   ("the hammer glanced off; 4 does not run through 6x and 15") rather than
+   marked. One engine, one description, no second opinion to drift. */
+MF.lessonPractice = function(host, key){
+  var s = MF.SCHEMA[key];
+  var p = s && s.practice;
+  if(!p) return null;
+  var pr = E('div','practice');
+  pr.appendChild(H('div','prlab','NOW YOU'));
+  pr.appendChild(H('div','eq sm', MF.oreLabel(p.ore)));
+  pr.appendChild(H('div','prask', p.ask));
+
+  var isNum = (p.ore.kind === 'number');
+  var row = E('div','nsrow');
+  var bx = E('div','hbox');
+  var mi = null;
+  if(!isNum){
+    bx.appendChild(H('span','paren','('));
+    mi = document.createElement('input'); mi.type='text'; mi.inputMode='numeric'; mi.placeholder='1';
+    mi.setAttribute('aria-label','how many x — leave it empty for a single x, or put 0 for a plain number');
+    bx.appendChild(mi);
+    bx.appendChild(H('span','paren','x +'));
+  }
+  var ki = document.createElement('input'); ki.type='text'; ki.inputMode='numeric'; ki.placeholder='0';
+  ki.setAttribute('aria-label', isNum ? 'the number you are taking out' : 'the number on the end');
+  bx.appendChild(ki);
+  if(!isNum) bx.appendChild(H('span','paren',')'));
+  row.appendChild(bx);
+
+  var out = E('div','prout');
+  var go = E('button','btn primary','Try it'); go.type='button';
+  on(go,'click',function(){
+    var m = isNum ? 0 : MF.readPickM(mi.value);
+    var k = MF.readInt(ki.value);
+    clear(out);
+    if(!isFinite(m) || !isFinite(k) || isNaN(m) || isNaN(k)){
+      out.appendChild(H('div','note','That is not a whole number, so there is nothing to try yet.'));
+      return;
+    }
+    var got = MF.breakOff(p.ore, {m:m, k:k});
+    if(got.ok){
+      out.appendChild(H('div','note good','<b>The seam runs.</b> <b>' + MF.oreLabel(got.left) +
+        '</b> came out of it, and <b>' + MF.oreLabel(got.right) + '</b> is what was left behind. ' +
+        'That is the move — and it is the same one the anvil makes.'));
+    } else {
+      out.appendChild(H('div','note','<b>' + got.why + '</b> Nothing is lost — the lump is exactly as it was, and you can go again.'));
+    }
+  });
+  on(ki,'keydown',function(e){ if(e.key==='Enter'){ e.preventDefault(); go.click(); } });
+  row.appendChild(go);
+  pr.appendChild(row);
+  pr.appendChild(out);
+  pr.appendChild(H('div','hint','Nothing here is kept and nothing here is a mark. It is the same engine the anvil ' +
+    'swings through, so what it says about the rock is what the rock would say.'));
+  host.appendChild(pr);
+  return pr;
 };
 
 
@@ -5653,12 +5918,12 @@ MF.SCREENS['shed-methods'] = function(host){
   MF.shedHead(host, 'shed-methods');
   host.appendChild(MF.shedArt('methods'));
   host.appendChild(H('p','lede','Seven instruments hang at the forge, and each one carries <b>a method</b> — the box method, factoring by grouping, ' +
-    'pulling out the GCF. The instrument is a convenience. <b>The method is the part worth having</b>, and it works in a notebook with no tool at all, ' +
-    'which is why every one of them is readable here whether or not you own it.'));
+    'pulling out the GCF. The instrument is a convenience. <b>The method is the part worth having</b>, and it works in a notebook with no tool at all. ' +
+    'This is the floor where the ones you have <b>cast</b> get taught.'));
   host.appendChild(H('div','note','<b>A tool shows part of a factorisation and never all of it.</b> ' +
     'The lantern lights one side and prints a <span class="qm">?</span> for the other; the drill lists every pair and marks none. ' +
     'Whatever you name goes to the hammer, and the rock is what answers.'));
-  MF.paintSchemaIndex(host);
+  MF.paintToolSchool(host);
 
   MF.paintQuestions(host, {list:[
     {kind:'pick',
@@ -6429,10 +6694,19 @@ MF.forgePour = function(st){
   if(sound.ok){
     MF.spendFromYard(st.slots.map(function(s){ return s.key; }));
     MF.state.tools[st.picked] = {forged:true};
-    /* THE TUTORIAL LANDS WITH THE TOOL, between the verdict and the belt.
-       A tool handed over with a name and a sentence was first met in the
-       mine, on a lump that mattered. */
-    MF.toolLesson(box, st.picked, {lab:'YOU MADE THIS &mdash; HERE IS WHAT IT DOES'});
+    /* NO LESSON HERE (user, 2026-09-04). The whole method, its reasoning and a
+       practice used to be appended to the casting - three seconds after a
+       pour, when what the student is looking at is the object they just made.
+       The forge makes the thing. What it says about teaching is where to go
+       and that the lesson now exists, which it did not a moment ago. */
+    var toSchool = E('div','note');
+    toSchool.innerHTML = '<b>The lesson for it has opened on the Casting Shed’s working floor.</b> ' +
+      'It walks ' + MF.SCHEMA[st.picked].name.toLowerCase() + ' a step at a time on a lump chosen for it, ' +
+      'and there is one to try at the end. Nothing in the mine is waiting on it.';
+    box.appendChild(toSchool);
+    var goSchool = MF.jump('Read it in the Casting Shed &rarr;', 'shed-methods');
+    goSchool.style.marginRight = '8px';
+    box.appendChild(goSchool);
     var keep = E('button','btn primary','Hang it on your belt'); keep.type='button';
     on(keep,'click',function(){ st.picked=null; st.slots=[]; st.result=null; MF.paintForge(); });
     box.appendChild(keep);
@@ -6452,89 +6726,20 @@ MF.forgePour = function(st){
 };
 
 
-/* =========================================================================
-   THE FORGE'S TUTORIAL. A tool used to be handed over with a name and a
-   sentence, and the student then met it for the first time in the mine on a
-   lump that mattered. This is the short practice that closes that gap: what
-   the move is, WHY it works, and one worked lump to run it on.
+/* THE FORGE STOPPED TEACHING.
 
-   IT IS NOT A ONE-SHOT. A lesson that exists only in the three seconds after
-   a pour is a lesson nobody re-reads, so the same function is appended when
-   the tool is clicked on the belt and when the Casting Shed lists it.
+   USER, 2026-09-04: "There should no more lessons on the tools in the forge."
 
-   THE PRACTICE HAS NO JUDGE OF ITS OWN. It hands what the student names to
-   MF.breakOff - the same engine the anvil swings through - so a miss is
-   DESCRIBED by the rock ("the hammer glanced off; 4 does not run through 6x
-   and 15") rather than marked. One engine, one description, no second
-   opinion to drift.
-   ========================================================================= */
-MF.toolLesson = function(host, key, opts){
-  var t = MF.TOOLS[key], s = MF.SCHEMA[key];
-  if(!t || !s) return null;
-  opts = opts || {};
-  var box = E('div','lesson');
-  box.appendChild(H('div','lslab', opts.lab || 'HOW THIS ONE WORKS'));
-  box.appendChild(H('div','lsnm','<span class="lsic">' + t.ic + '</span>' + s.name));
-  box.appendChild(H('div','lswhy', s.why));
+   `MF.toolLesson` lived here - the whole method, its reasoning and a practice,
+   appended to the casting three seconds after a pour, when what the student is
+   looking at is the object they just made. It was also the block the Casting
+   Shed listed seven times over, for tools nobody owned.
 
-  /* the method, worked on the fixed example rather than on nothing */
-  var p = s.practice;
-  MF.paintSchema(box, key, p.ore);
-
-  /* ---- the practice. One lump, one thing to name, described afterwards ---- */
-  var pr = E('div','practice');
-  pr.appendChild(H('div','prlab','TRY IT ONCE'));
-  pr.appendChild(H('div','eq sm', MF.oreLabel(p.ore)));
-  pr.appendChild(H('div','prask', p.ask));
-
-  var isNum = (p.ore.kind === 'number');
-  var row = E('div','nsrow');
-  var bx = E('div','hbox');
-  var mi = null;
-  if(!isNum){
-    bx.appendChild(H('span','paren','('));
-    mi = document.createElement('input'); mi.type='text'; mi.inputMode='numeric'; mi.placeholder='1';
-    mi.setAttribute('aria-label','how many x — leave it empty for a single x, or put 0 for a plain number');
-    bx.appendChild(mi);
-    bx.appendChild(H('span','paren','x +'));
-  }
-  var ki = document.createElement('input'); ki.type='text'; ki.inputMode='numeric'; ki.placeholder='0';
-  ki.setAttribute('aria-label', isNum ? 'the number you are taking out' : 'the number on the end');
-  bx.appendChild(ki);
-  if(!isNum) bx.appendChild(H('span','paren',')'));
-  row.appendChild(bx);
-
-  var out = E('div','prout');
-  var go = E('button','btn primary','Try it'); go.type='button';
-  on(go,'click',function(){
-    var m = isNum ? 0 : MF.readPickM(mi.value);
-    var k = MF.readInt(ki.value);
-    clear(out);
-    if(!isFinite(m) || !isFinite(k) || isNaN(m) || isNaN(k)){
-      out.appendChild(H('div','note','That is not a whole number, so there is nothing to try yet.'));
-      return;
-    }
-    /* THE ENGINE DESCRIBES IT. No new judge, and no mark. */
-    var got = MF.breakOff(p.ore, {m:m, k:k});
-    if(got.ok){
-      out.appendChild(H('div','note good','<b>The seam runs.</b> <b>' + MF.oreLabel(got.left) +
-        '</b> came out of it, and <b>' + MF.oreLabel(got.right) + '</b> is what was left behind. ' +
-        'That is the move — you will be doing it on real rock in a minute.'));
-    } else {
-      out.appendChild(H('div','note','<b>' + got.why + '</b> Nothing is lost — the lump is exactly as it was, and you can go again.'));
-    }
-  });
-  on(ki,'keydown',function(e){ if(e.key==='Enter'){ e.preventDefault(); go.click(); } });
-  row.appendChild(go);
-  pr.appendChild(row);
-  pr.appendChild(out);
-  pr.appendChild(H('div','hint','Nothing here is kept, and nothing here is a mark. It is the same engine the anvil swings through, so what it says about the rock is what the rock would say.'));
-  box.appendChild(pr);
-
-  box.appendChild(H('div','hint','<b>In the mine:</b> drag this off your belt onto a piece of rock, or open that piece’s slot and choose it.'));
-  host.appendChild(box);
-  return box;
-};
+   It is deleted, not moved: the lesson it carried is now MF.drawLesson on the
+   Casting Shed's working floor, walked a step at a time on a lump chosen for
+   the method, and only for instruments that have actually been cast. What is
+   left in the forge is a line saying where to go, which is the whole of what
+   the forge has to say about teaching. */
 
 /* WHAT MAKES A PART SOUND, and there is now exactly one rule: the casting is
    the object the order named, or it is not.
@@ -11052,7 +11257,7 @@ MF.validate = function(){
      the threshold, and every run of this group reported clean over them.
      READ THE DENOMINATOR: a green sweep proves only what it mounted, and this
      one was choosing what to mount at random. */
-  Object.keys(MF.SCREENS).concat(['mine-layer1','mine-number','mine-blow','mine-done','forge-armed','forge-poured','toolsheet','hammersheet']).forEach(function(scr){
+  Object.keys(MF.SCREENS).concat(['mine-layer1','mine-number','mine-blow','mine-done','forge-armed','forge-poured','toolsheet','hammersheet','shed-taught']).forEach(function(scr){
     stage.innerHTML='';
     var probe = document.createElement('div');
     stage.appendChild(probe);
@@ -11258,6 +11463,37 @@ MF.validate = function(){
         });
         if(cHam < 2)
           errs.push('contrast: the hammer panel opened for ' + cHam + ' of 2 lumps, so it was not swept');
+      } else if(scr==='shed-taught'){
+        /* THE CASTING SHED WITH SOMETHING TO TEACH.
+
+           `shed-methods` is in MF.SCREENS and is swept generically - with
+           whatever `MF.state.tools` happens to hold, which through most of a
+           run is nothing. So the sweep mounted the EMPTY state and measured
+           not one character of a lesson, and the moment the working floor
+           replaced the seven-method index the group's denominator quietly
+           fell by 140 checks while still reporting clean (§26 all over again).
+
+           Every tool cast, every lesson WALKED TO ITS END, because the last
+           step, the practice and the "start it over" control only exist once
+           the walkthrough is finished - three states the first paint has
+           none of. */
+        MF.state.tools = {};
+        MF.toolOrder().forEach(function(tk){ MF.state.tools[tk] = {forged:true}; });
+        MF.state.school = {};
+        MF.SCREENS['shed-methods'](probe);
+        var cWalk = 0;
+        [].forEach.call(probe.querySelectorAll('.lessondet'), function(d){
+          d.setAttribute('open','');                 /* fold-away copy is still copy */
+          for(var g=0; g<12; g++){
+            var nx = d.querySelector('.lsnext');
+            if(!nx) break;
+            nx.dispatchEvent(new MouseEvent('click',{bubbles:true}));
+          }
+          if(d.querySelector('.practice')) cWalk++;
+        });
+        if(cWalk < MF.toolOrder().length)
+          errs.push('contrast: only ' + cWalk + ' of ' + MF.toolOrder().length +
+            ' lessons reached their practice, so the end of the walkthrough was not swept');
       } else { MF.SCREENS[scr](probe); }
     } catch(e){ errs.push('contrast: screen '+scr+' threw: '+e.message); return; }
     MF._measureContrast(probe).forEach(function(m){
@@ -12039,6 +12275,114 @@ MF.validate = function(){
                   ' does not come out of ' + MF.oreText(s.practice.ore) + ' (' + pg.reason + ')');
     }
   });
+  /* A LESSON EXISTS FOR A TOOL YOU HAVE CAST, AND FOR NO OTHER.
+
+     USER, 2026-09-04: "Only tools that have been successfully cast should be
+     available as lessons." And: "There should no more lessons on the tools in
+     the forge."
+
+     THIS IS NOT THE GATE §10a FORBIDS, and the distinction is the whole reason
+     to check it here rather than in `nogate`. The binding constraint is that a
+     tool never gates DESCENT - `nogate` walks every layer with an empty belt
+     and an empty yard to prove that, and it is untouched. What is gated is a
+     LESSON ABOUT AN INSTRUMENT IN YOUR HAND.
+
+     So three things are asserted: the count follows the belt exactly, the room
+     is never a dead end when the belt is empty, and the forge teaches nothing.
+
+     READ THE DENOMINATOR: this counts lessons and looks for a route out of the
+     empty state. It says nothing about whether a lesson is any good - the
+     assertions above, about a method printing at most one of a lump's sides
+     and about its practice coming out of its own ore, are what cover that. */
+  var scStage = document.createElement('div');
+  scStage.style.cssText = 'position:fixed; left:-15000px; top:0; width:900px';
+  document.body.appendChild(scStage);
+  var scSavedTools = MF.state.tools, scSavedSchool = MF.state.school;
+  var scShed = function(tools){
+    var probe = document.createElement('div');
+    scStage.innerHTML = ''; scStage.appendChild(probe);
+    MF.state.tools = tools; MF.state.school = {};
+    try { MF.SCREENS['shed-methods'](probe); } catch(e){ return {err:e.message}; }
+    return {n: probe.querySelectorAll('.lessondet').length,
+            names: [].map.call(probe.querySelectorAll('.lessondet .sdnm'), function(x){ return x.textContent; }),
+            txt: (probe.textContent||'').replace(/\s+/g,' '),
+            routes: probe.querySelectorAll('.school .btn').length,
+            probe: probe};
+  };
+  chk('schema');
+  var scNone = scShed({});
+  if(scNone.err) errs.push('schema: the Casting Shed threw with an empty belt: ' + scNone.err);
+  else {
+    if(scNone.n !== 0)
+      errs.push('schema: the working floor offered ' + scNone.n + ' lessons to a student who has cast nothing');
+    chk('schema');
+    /* AND IT MUST NOT BE A LOCKED DOOR. An empty room with no way on is the
+       hurdle this project keeps taking out; the empty state says where tools
+       come from and carries a route to the forge. */
+    if(!scNone.routes)
+      errs.push('schema: with an empty belt the working floor is a dead end — nothing on it goes anywhere');
+  }
+  [['lantern'], ['lantern','drill'], MF.toolOrder()].forEach(function(set){
+    chk('schema');
+    var tools = {};
+    set.forEach(function(tk){ tools[tk] = {forged:true}; });
+    var got = scShed(tools);
+    if(got.err){ errs.push('schema: the Casting Shed threw with ' + set.length + ' cast: ' + got.err); return; }
+    if(got.n !== set.length)
+      errs.push('schema: ' + set.length + ' instrument(s) cast and the working floor drew ' + got.n + ' lessons');
+    chk('schema');
+    var want = set.map(function(tk){ return MF.SCHEMA[tk].name; });
+    var wrong = got.names.filter(function(nm){ return want.indexOf(nm) < 0; });
+    if(wrong.length)
+      errs.push('schema: the working floor taught ' + wrong.join(', ') + ' to a student who has not cast it');
+  });
+  /* CONTROL: unhook the gate and the count must stop following the belt */
+  chk('schema');
+  var scReal = MF.hasTool;
+  MF.hasTool = function(){ return true; };
+  var scOpen = scShed({lantern:{forged:true}});
+  MF.hasTool = scReal;
+  if(scOpen.err || scOpen.n === 1)
+    errs.push('CONTROL: with the gate unhooked the working floor still drew one lesson, so the count is not following the belt');
+
+  /* AND THE FORGE TEACHES NOTHING. The whole method, its reasoning and a
+     practice used to be appended to the casting three seconds after a pour. */
+  chk('schema');
+  var scForgeSaved = {yard:MF.state.yard, forge:MF.state.forge, tools:MF.state.tools};
+  MF.state.yard = {}; MF.state.tools = {};
+  [{m:0,k:2},{m:0,k:3},{m:0,k:5}].forEach(function(g){ MF.addToYard(g); });
+  MF.state.forge = {picked:'lantern', slots:[], result:null};
+  var scPool = MF.yardList().filter(function(e){ return e.ingot.m===0 && [2,3,5].indexOf(e.ingot.k)>=0; });
+  var scPick = {}, scSlots = [];
+  scPool.forEach(function(e){ if(!scPick[e.ingot.k] && scSlots.length<3){ scPick[e.ingot.k]=1; scSlots.push({yardIdx:e.idx, key:e.key, ingot:e.ingot}); } });
+  MF.state.forge.slots = scSlots;
+  var scCast = null;
+  if(scSlots.length === 3){
+    var scProbe = document.createElement('div');
+    scStage.innerHTML = ''; scStage.appendChild(scProbe);
+    MF._forge = null;
+    try { MF.SCREENS.forge(scProbe); MF.forgePour(MF.state.forge); } catch(e){}
+    scCast = MF.state.forge.result;
+  }
+  if(!scCast){
+    errs.push('schema: the forge poured nothing, so "no lessons in the forge" measured nothing');
+  } else {
+    var scTaught = scCast.querySelector('.practice, .lesson, .ssteps, .schema');
+    if(scTaught)
+      errs.push('schema: the casting carries a lesson (.' + scTaught.className.split(' ')[0] +
+        ') — the forge makes the thing and the Casting Shed teaches it');
+    /* CONTROL: put a lesson back on the casting and the sweep must say so */
+    chk('schema');
+    var scBait = E('div','practice'); scBait.appendChild(H('div','prlab','TRY IT ONCE'));
+    scCast.appendChild(scBait);
+    if(!scCast.querySelector('.practice, .lesson, .ssteps, .schema'))
+      errs.push('CONTROL: the no-lessons-in-the-forge rule cannot see a lesson on the casting');
+    scCast.removeChild(scBait);
+  }
+  MF.state.yard = scForgeSaved.yard; MF.state.forge = scForgeSaved.forge;
+  document.body.removeChild(scStage);
+  MF.state.tools = scSavedTools; MF.state.school = scSavedSchool;
+
   /* CONTROL 1: a method that prints the whole factorisation must be caught */
   chk('schema');
   if(scNamed(function(h,o){

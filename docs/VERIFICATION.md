@@ -1578,3 +1578,32 @@ It just wastes the screen — the axis this project has spent five sessions buyi
 second assertion that something is drawn in the top 44 and bottom 44 units of the rock —
 because **filling the element is not the same as filling the picture**, and both halves
 of the user's report were true.
+
+## §77. Replacing a surface silently drops whatever swept it
+
+Swapping the Casting Shed's seven-method index for the working floor left `MF.validate()`
+reporting **0 errors over 140 fewer checks**, and nothing said so.
+
+The reason is that `contrast` sweeps `Object.keys(MF.SCREENS)` generically, with
+`MF.state.tools` as whatever it happens to hold — which through most of a run is nothing.
+The old index rendered all seven methods regardless, so the sweep measured seven lessons
+by accident. The new floor renders lessons only for tools that have been cast, so the
+same sweep mounted the **empty state** and measured not one character of a lesson.
+
+Both runs were green. The only signal was the denominator moving.
+
+> **Read the denominator on the runs that pass, not only on the ones that fail.** A green
+> group over a shrinking count is a group that has stopped looking at something. This
+> project's rule already says *ask of any pass: what did it not look at?* — §77 adds
+> *and compare it to what it looked at yesterday.*
+
+The fix is a `shed-taught` pass that casts every tool and **walks each lesson to its
+end**, because the last step, the practice and the start-it-over control only exist once
+the walkthrough is finished — three states the first paint has none of. `contrast` is at
+1,883 now, above where it was before the swap.
+
+> **And a generic sweep over a screen list is not coverage of those screens.** It covers
+> them *in whatever state the previous test left behind*. Every state that is reached by
+> doing something — a mold filled, a lump broken all the way down, a panel opened, a
+> lesson walked — has to be mounted on purpose or it is not swept. That list is now nine
+> entries long, and every one of them was added after a real gap.
