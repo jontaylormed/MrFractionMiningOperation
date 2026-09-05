@@ -1150,3 +1150,83 @@ the forge and the Stamp Mill.
 > end, and that **the casting carries no lesson**. Controls: `MF.hasTool` unhooked, a
 > `.practice` appended to a casting, and the empty state's routes removed. All fail by
 > name.
+
+## 30. The Molds show the multiplication, not just the answer
+
+*User, 2026-09-05: "The Molds need to show multiplication in the pour to illustrate
+multiplying terms."*
+
+The mold room drew an area model and one line of algebra, and **the area model only ever
+held one row** — a depth over two parts, `a(b + c)`. That is a number distributed over a
+sum. It is not the move the mine runs backwards all day, which is **two brackets, four
+products, and two middle terms that turn out to be the same kind of thing.**
+
+`MF.pourChain` writes the pour out a line at a time:
+
+```
+( x + 2 )( x + 3 )               what went into the mold
+x·x  +  x·3  +  2·x  +  2·3      every part of one meets every part of the other
+ x²  +   3x  +   2x  +   6       each pair multiplied out
+ x²  +       5x      +   6       3x and 2x are the same kind of thing
+= x² + 5x + 6                    one object comes out
+```
+
+It does **no arithmetic of its own**. Every number and every pairing comes from
+`MF.moldMaths`, which the `mold` group already checks against `ingotProduct` — so this is
+a rendering of a verified computation, and a second copy could not drift from the first
+because there is no second copy. The room gains a third thing you can pour (**two
+brackets**) alongside the two it had, and the one-bracket pours draw the same chain, so
+the modes read as one act at two sizes rather than two lessons.
+
+> `mold` (112) asserts the chain over four pours, that its last line agrees with
+> `ingotProduct`, and that a two-bracket pour shows **both** the pairings and the two
+> middles collapsing. Control: strip the working out of `moldMaths` and the chain must
+> stop showing them.
+
+## 31. A tool lesson is mostly not reading
+
+*User, 2026-09-05: "The Tools modules are similar to the Cart, but there are walkthroughs
+with explicit text about how and why the tool works, with interactive slides and buttons
+to work through the process — but the core of the activity is applying tools to ores."*
+*And: "not every section needs to end with a quiz; maybe add a reflection or a real-world
+example of the tool."*
+
+### 31a. The why is slide one
+
+`SCHEMA[key].why` was behind a `<details>` labelled *why this works* — the best paragraph
+in the lesson, one click away and therefore unread. It is **beat zero of the walk** now:
+why it works, then how, a step at a time, and the button that opens the second slide says
+*now how →*.
+
+### 31b. The bench is the core, and it is not gated behind the walk
+
+Three lumps, the instrument on a hook, and the same gesture the cart uses: pick it up, put
+it on a rock, watch the numbers cut into the stone change. Click the same rock again and
+it comes off. **It is the mine's mechanism, not a demonstration of it** — `MF.oreDisplay`
+reads `ore.tool` and re-spells through `MF.lensFor`, exactly as it does on the anvil.
+
+Two differences, both deliberate. The bench keeps **its own armed flag** rather than
+touching `MF.state.armedTool`, which belongs to the belt in the mine and must not be left
+armed in another room. And it **says what the instrument found, in words, under the
+stone** — which the mine may never do (§21), and which this room may, because the user
+drew that line: *"Tutorials can have numbers out of the ore for teaching purposes."*
+
+The lumps are **copied per lesson**. `MF.oreDisplay` reads `ore.tool`, so applying an
+instrument mutates the lump, and `MF.LESSON_ORES` is a shared literal — two lessons naming
+the same shape would otherwise hold the same object.
+
+### 31c. It ends on a real-world example, not a question
+
+One per instrument: a place the same move is made by somebody who has never heard of this
+site, and a tie-back naming **which part of the method it is** — because "maths is
+everywhere" is a poster and "this is that step, here" is a lesson. The Words room ends on
+a **reflection** instead: a box that is never read, checked or kept, and says so.
+
+> `schema` (165) asserts every bench draws at least three lumps and that holding the
+> instrument to them re-spells at least two — not all three, because one lump on some
+> benches is deliberately a shape the instrument has nothing to say about, and an
+> instrument silent on a hard case is honest while one silent on all three does nothing.
+> It also requires a real-world example per tool with a tie-back long enough to be an
+> argument, and that the Words and Molds rooms close on something **after** their last
+> question. Controls: the bench removed, every reading muted, a tool's example deleted,
+> and the reflection removed — all fail by name.

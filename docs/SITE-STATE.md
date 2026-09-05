@@ -1,7 +1,7 @@
 # What the site is, right now
 ### The single place any brief, agent or session reads to find out what exists
 
-**Last verified 2026-09-04** by `MF.validate()` in a browser over a **local HTTP server** at **380, 560, 994 and 1250px**, by `MF.playthrough(4)` and `(5)`, and by hand-driven contrast sweeps of **145 mine states and 146 forge/workshop states at each of those four widths — 1,164 renders** (`VERIFICATION.md` §67, §68). **`file://` could not be used:** the preview pane renders it as a static snapshot and `MF` never runs, so nothing on the page can be exercised at all.
+**Last verified 2026-09-05** by `MF.validate()` in a browser over a **local HTTP server** at **380, 560, 994 and 1250px**, by `MF.playthrough(4)` and `(5)`, and by hand-driven contrast sweeps of **145 mine states and 146 forge/workshop states at each of those four widths — 1,164 renders** (`VERIFICATION.md` §67, §68). **`file://` could not be used:** the preview pane renders it as a static snapshot and `MF` never runs, so nothing on the page can be exercised at all.
 
 ---
 
@@ -184,7 +184,7 @@ The face is **2280px of rock**, several screens wide, scanned by dragging, scrol
 
 ## The breaking floor: one anvil, the belt over it, and the ore on top
 
-**Measured 2026-09-04, all four widths, 0 errors over 11,103 checks in 35 groups, both controls failing.**
+**Measured 2026-09-05, all four widths, 0 errors over 11,369 checks in 35 groups, both controls failing.**
 
 **There is one box, and the anvil in it is the work.** The `workpair` is gone. It was two boxes: one held a row of chips and the belt, the other held a drawing of an anvil, two number boxes and the swing button — so **the anvil a student was looking at was not the thing their ore was on**, and the drawing was decoration beside the work. What is here now is the gallery you are standing in: the belt overhead, the anvil, the stone on its face, and whatever has come off it lying on the ground. **A first lump has nothing on the ground at all.**
 
@@ -320,6 +320,18 @@ Plain numbers → a metal spread over a bracket → two brackets → a square �
 **One schema, two surfaces.** `MF.SCHEMA` holds each method once — its real name, why it works, `steps(ore)` worked on the lump in front of you, and a **fixed** practice lump. It is drawn in the tool panel in the mine and walked on the Casting Shed's working floor. Two copies would be two chances to drift, which is the reason `_openSheet` builds every dialog and `quad()` prints every expression.
 
 **THE FORGE TEACHES NOTHING.** *"There should no more lessons on the tools in the forge"* (user, 2026-09-04). The whole method, its reasoning and a practice used to be appended to the casting three seconds after a pour, when what the student is looking at is the object they just made. What is left there is a line saying the lesson has opened, and a route to it.
+
+**THE CASTING SHED IS THREE MODULES: The Words, The Molds, The Tools** — the user's own names for them (2026-09-05). The screen keys are unchanged (`shed-words`, `shed-mold`, `shed-methods`) because they are wired into the door table, four check groups and every jump on the site; what changed is what a student reads on the card.
+
+**THE MOLDS SHOW THE MULTIPLICATION.** The room drew an area model and one line of algebra, and the area model **only ever held one row** — a depth over two parts, `a(b + c)`. That is a number distributed over a sum, and it is not the move the mine runs backwards: the mine's job is two brackets, four products, and two middles that turn out to be the same kind of thing. `MF.pourChain` writes the pour out a line at a time — what went in, every part meeting every part, each pair multiplied out, the two middles collapsing, one object — and the room gains a third thing you can pour (**two brackets**). It does **no arithmetic of its own**: every number comes from `MF.moldMaths`, which the `mold` group already checks against `ingotProduct`, so there is no second copy to drift.
+
+> `mold` (112) asserts the chain over four pours, that its last line agrees with `ingotProduct`, and that a two-bracket pour shows **both** the pairings and the two middles collapsing. Control: strip the working out of `moldMaths`.
+
+**THE TOOLS ARE MOSTLY NOT READING.** *"The core of the activity is applying tools to ores."* Every lesson carries a **bench**: three lumps, the instrument on a hook, and the cart's own gesture — pick it up, put it on a rock, the numbers cut into the stone change; click again and it comes off. It is **the mine's mechanism, not a demonstration of it** (`MF.oreDisplay` → `MF.lensFor`, the same path the anvil uses), and it is **not gated behind the walkthrough**, because reading about an instrument is the half a student can skip and using one is not. Two deliberate differences: the bench keeps **its own armed flag** rather than touching `MF.state.armedTool`, which belongs to the belt in the mine; and it **says what the instrument found in words under the stone**, which the mine may never do (§21) and this room may, because the user drew that line — *"Tutorials can have numbers out of the ore for teaching purposes."* The lumps are **copied per lesson**, because applying an instrument mutates the lump and `MF.LESSON_ORES` is a shared literal.
+
+**THE WHY IS SLIDE ONE.** It was behind a `<details>` labelled *why this works* — the best paragraph in the lesson, one click away and therefore unread. Beat zero of the walk now; the button that opens the second slide says *now how →*.
+
+**AND NOT EVERY SECTION ENDS ON A QUESTION.** Each tool lesson closes on a **real-world example** — a place the same move is made by somebody who has never heard of this site, with a tie-back naming *which part of the method it is*, because "maths is everywhere" is a poster and "this is that step, here" is a lesson. The Words room closes on a **reflection**: a box that is never read, checked or kept, and says so. The Molds room closes on why a mold is cut once and every casting out of it is identical — the determinism the mine depends on.
 
 **THE WORKING FLOOR.** One lesson per instrument **cast**, in the Casting Shed. The lump is **preselected per tool** — `SCHEMA[key].practice.ore`, the one the method was written against and the one the `schema` group already checks the practice answer comes out of — so the walkthrough and the thing you then try are the same rock, and it is **drawn** beside the method's name. The method is revealed **one step at a time**, with a count and pips saying how long the corridor is; a step the schema marks `open` is announced by the control that opens it (*"and then it is yours →"*); back a step loses nothing; and at the end the practice on the same lump, answered by `MF.breakOff` — so a miss is described by the rock, not marked.
 

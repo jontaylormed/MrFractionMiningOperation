@@ -1362,15 +1362,93 @@ ol.ssteps li.open::marker{color:var(--vein)}
 .lsnav{display:flex; gap:9px; align-items:center; flex-wrap:wrap; margin-top:12px}
 .lsnav .hint{flex:1 1 200px; min-width:0}
 .lsback[disabled]{opacity:.4; cursor:default}
+.lstool{font-size:14px; color:var(--ink-soft); max-width:60ch; margin-top:2px}
+/* THE WHY IS SLIDE ONE, not a fold. It is the best paragraph in the lesson and
+   behind a `<details>` it was one click away and therefore unread. */
+.ssteps li.whyslide{list-style:none; margin-left:-22px; padding-left:0;
+  background:#FFF6EA; border:2px solid var(--tan); border-radius:11px; padding:11px 13px}
+.ssteps li.whyslide .swhylab{font-family:var(--display); font-size:11px; letter-spacing:.12em;
+  color:var(--ore-t); margin-bottom:4px}
+.ssteps li.whyslide .sact{font-size:15px; color:var(--ink); max-width:66ch}
+.ssteps li.whyslide.now:after{display:none}
+
+/* ---- THE BENCH: the instrument, and ore to hold it to (MINE-SPEC §31) ---- */
+.lbench{background:linear-gradient(180deg,#3A3129,#241D18); border:3px solid var(--rock-3);
+  border-radius:14px; padding:13px 15px 15px; margin-top:14px; color:#F0E2C8}
+.lbench .lblab{font-family:var(--display); font-size:11px; letter-spacing:.11em;
+  color:var(--lamp); margin-bottom:5px}
+.lbench .lbhint{font-size:14px; color:#E4D5BB; max-width:64ch; margin-bottom:9px}
+.lbench .lbhint b{color:#FFE9C4}
+.lbench .hint{color:#C9B695; margin-top:9px}
+.lbench .hint b{color:#E4D5BB}
+.lbhook{margin-bottom:11px}
+.lbhook .lbtool{max-width:180px}
+.lbores{display:flex; flex-wrap:wrap; gap:13px; align-items:flex-start}
+.lbcell{flex:0 1 190px; min-width:150px}
+.lbore{display:block; width:100%; padding:0; margin:0; background:none; border:0;
+  border-radius:10px; cursor:pointer}
+.lbore:focus-visible{outline:3px solid var(--lamp); outline-offset:3px}
+.lbore:hover .orerock{filter:brightness(1.14)}
+.lbore .orerock{max-width:none}
+.lbore.held .orerock{filter:drop-shadow(0 0 0 transparent)}
+.lbore.held{box-shadow:0 0 0 3px var(--lamp), 0 0 14px 3px rgba(232,163,61,.35)}
+.lbfound{font-size:12.5px; line-height:1.35; color:#E4D5BB; margin-top:5px; text-align:center}
+.lbfound b{color:var(--lamp)}
+.lbfound.plain{color:#C9B695; font-style:italic}
+
+/* ---- THE SAME MOVE, OUTSIDE A MINE ---- */
+.realworld{background:#F1F8F5; border:2px solid var(--vein); border-left:6px solid var(--vein);
+  border-radius:12px; padding:12px 15px; margin-top:14px}
+.realworld .rwlab{font-family:var(--display); font-size:11px; letter-spacing:.12em; color:var(--vein)}
+.realworld .rwwhere{font-family:var(--display); font-size:clamp(17px,2.5vw,20px); color:var(--ink); margin:2px 0 5px}
+.realworld .rwbody{font-size:15px; color:var(--ink); max-width:66ch}
+.realworld .rwtie{font-size:14px; color:var(--ink-soft); margin-top:7px; max-width:66ch;
+  border-top:1px dashed var(--rule); padding-top:7px}
+
+/* ---- A REFLECTION, WHICH IS NOT A QUESTION ---- */
+.reflect{background:var(--paper); border:2px dashed var(--tan); border-radius:12px;
+  padding:13px 15px; margin-top:16px}
+.reflect .rflab{font-family:var(--display); font-size:11px; letter-spacing:.12em; color:var(--ore-t)}
+.reflect .rfask{font-size:15px; color:var(--ink); max-width:64ch; margin:3px 0 9px}
+.reflect .rfbox{width:100%; box-sizing:border-box; font-family:var(--body); font-size:15px;
+  padding:10px 12px; border:2px solid var(--rule); border-radius:9px; background:#fff;
+  color:var(--ink); resize:vertical; min-height:88px}
+.reflect .rfbox:focus-visible{outline:3px solid var(--lamp); outline-offset:2px}
+.reflect .rfnote{font-size:12.5px; color:var(--ink-soft); margin-top:7px; max-width:64ch}
+.reflect .rfprompts{margin:8px 0 0; padding-left:20px; font-size:14px; color:var(--ink-soft)}
+.reflect .rfprompts li{margin-bottom:4px; max-width:62ch}
+
 @media (max-width:560px){
   .lshead .lsrock{width:132px; max-width:132px}
   .lsnav .btn{flex:1 1 auto}
+  .lbcell{flex:1 1 100%}
 }
 .practice{background:#fff; border:2px solid var(--rule); border-radius:12px; padding:13px 15px; margin-top:13px}
 .practice .prlab{font-family:var(--display); font-size:11px; letter-spacing:.12em; color:var(--vein)}
 .practice .eq{margin:2px 0 4px}
 .practice .prask{font-size:15px; color:var(--ink); margin-bottom:9px; max-width:62ch}
 .practice .prout{margin-top:4px}
+
+/* =========================================================================
+   THE POUR, WRITTEN OUT. Every part of one metal meets every part of the
+   other, a line at a time, ending in one object (MINE-SPEC §30).
+   ========================================================================= */
+.pourchain{background:#FFFCF6; border:2px solid var(--tan); border-left:6px solid var(--vein);
+  border-radius:12px; padding:12px 14px; margin-top:12px; overflow-x:auto}
+.pourchain .pclab{font-family:var(--display); font-size:11px; letter-spacing:.12em;
+  color:var(--vein); margin-bottom:7px}
+.pcrow{padding:6px 0; border-bottom:1px dashed var(--rule)}
+.pcrow:last-child{border-bottom:0; padding-bottom:0}
+.pcline{font-family:var(--display); font-size:clamp(16px,2.4vw,21px); color:var(--ink);
+  display:flex; flex-wrap:wrap; align-items:baseline; white-space:nowrap}
+.pcline .pcop{color:var(--ore-t); padding:0 .34em}
+/* THE TWO MIDDLES ARE PICKED OUT, because "they are the same kind of thing"
+   is the one claim in the chain a student has to SEE rather than be told. */
+.pcline .pcterm.mid{color:var(--vein)}
+.pcnote{font-size:12.5px; color:var(--ink-soft); margin-top:2px; max-width:62ch; white-space:normal}
+.pcrow.out .pcline{font-size:clamp(18px,2.8vw,24px)}
+.pcrow.out .pcnote{color:var(--vein)}
+.pcrow.in .pcline{color:var(--ore-t)}
 
 /* =========================================================================
    THE TRANSLATION TABLE. Two columns that mean the same thing, and a third
@@ -5227,10 +5305,22 @@ MF.drawLesson = function(box, key){
   var ore = s.practice.ore;
   var steps = [];
   try { steps = s.steps(ore) || []; } catch(e){ steps = []; }
+  /* THE REASONING IS THE FIRST SLIDE, NOT A FOLD.
+
+     USER, 2026-09-05: "there are walkthroughs with explicit text about how and
+     why the tool works, with interactive slides and buttons to work through
+     the process."
+
+     `s.why` was behind a `<details>` labelled "why this works" - the best
+     paragraph in the lesson, one click away and therefore unread. It is beat
+     ZERO of the walk now: WHY it works, then HOW, step by step. The steps
+     themselves are unchanged and still come from MF.SCHEMA, which the `schema`
+     group checks. */
+  var beats = [{kind:'why', act:s.why}].concat(steps);
   var st = MF.lessonState(key);
-  if(st.at > steps.length) st.at = steps.length;
+  if(st.at > beats.length) st.at = beats.length;
   if(st.at < 0) st.at = 0;
-  var done = st.at >= steps.length;
+  var done = st.at >= beats.length;
   var hadFocus = box.contains(document.activeElement);
 
   clear(box);
@@ -5244,33 +5334,28 @@ MF.drawLesson = function(box, key){
   var hx = E('div','lstext');
   hx.appendChild(H('div','lslab','THE METHOD'));
   hx.appendChild(H('div','lsnm', s.name));
-  /* the reasoning folds away: it is the best paragraph here and it is not what
-     the student came to do, so it opens on the work and not on the essay */
-  var whyD = document.createElement('details');
-  whyD.className = 'swhyfold';
-  var whyS = document.createElement('summary');
-  whyS.textContent = 'why this works';
-  whyD.appendChild(whyS);
-  whyD.appendChild(H('div','swhy', s.why));
-  hx.appendChild(whyD);
+  hx.appendChild(H('div','lstool','<b>' + t.nm + '</b> carries it. The method is the part worth having — ' +
+    'it works in a notebook with no instrument at all.'));
   head.appendChild(hx);
   wrap.appendChild(head);
 
   /* ---- THE WALKTHROUGH, AS FAR AS IT HAS BEEN OPENED ---- */
   var prog = E('div','lsprog');
   prog.appendChild(H('span','lsstep', done
-    ? 'all ' + steps.length + ' steps out'
-    : 'step ' + (st.at + 1) + ' of ' + steps.length));
+    ? 'all ' + beats.length + ' slides out'
+    : 'slide ' + (st.at + 1) + ' of ' + beats.length));
   var pips = E('div','lspips');
-  for(var pi=0; pi<steps.length; pi++)
+  for(var pi=0; pi<beats.length; pi++)
     pips.appendChild(E('i', pi <= st.at ? 'on' : null));
   prog.appendChild(pips);
   wrap.appendChild(prog);
 
   var ol = E('ol','ssteps');
-  steps.forEach(function(step, i){
+  beats.forEach(function(step, i){
     if(i > st.at) return;
-    var li = E('li', (step.open ? 'open' : '') + (i === st.at && !done ? ' now' : ''));
+    var li = E('li', (step.kind === 'why' ? 'whyslide ' : '') +
+                     (step.open ? 'open ' : '') + (i === st.at && !done ? 'now' : ''));
+    if(step.kind === 'why') li.appendChild(H('div','swhylab','WHY IT WORKS'));
     li.appendChild(H('div','sact', step.act));
     if(step.shows) li.appendChild(H('div','sshow', step.shows));
     if(step.draw){ try { step.draw(li); } catch(e2){} }
@@ -5280,18 +5365,18 @@ MF.drawLesson = function(box, key){
 
   /* ---- WHAT MOVES YOU ALONG IT ---- */
   var nav = E('div','lsnav');
-  var back = E('button','btn lsback','&larr; back a step'); back.type='button';
-  back.innerHTML = '&larr; back a step';
+  var back = E('button','btn lsback','&larr; back a slide'); back.type='button';
+  back.innerHTML = '&larr; back a slide';
   back.disabled = (st.at === 0);
-  back.setAttribute('aria-label','Go back one step in this method');
+  back.setAttribute('aria-label','Go back one slide in this method');
   on(back,'click',function(){ st.at--; MF.drawLesson(box, key); });
   nav.appendChild(back);
 
   if(!done){
     var next = E('button','btn primary lsnext'); next.type='button';
-    var nx = steps[st.at + 1];
-    next.textContent = (nx && nx.open) ? 'and then it is yours →' : 'next step →';
-    next.setAttribute('aria-label','Show the next step of ' + s.name);
+    var nx = beats[st.at + 1];
+    next.textContent = (st.at === 0) ? 'now how →' : ((nx && nx.open) ? 'and then it is yours →' : 'next slide →');
+    next.setAttribute('aria-label','Show the next slide of ' + s.name);
     on(next,'click',function(){ st.at++; MF.drawLesson(box, key); });
     nav.appendChild(next);
     nav.appendChild(H('div','hint','Nothing is skipped by going forward, and nothing is lost by going back.'));
@@ -5302,11 +5387,21 @@ MF.drawLesson = function(box, key){
   }
   wrap.appendChild(nav);
 
+  /* ---- THE CORE OF IT: HOLD THE INSTRUMENT TO REAL ORE ----
+     USER: "the core of the activity is applying tools to ores." So the bench
+     is NOT behind the walkthrough - it is there from the first slide, because
+     reading about an instrument is the side of this the student can skip and
+     using one is not. */
+  MF.lessonBench(wrap, key);
+
   /* ---- AND AT THE END OF THE WALK, THE SAME LUMP TO TRY ---- */
   if(done) MF.lessonPractice(wrap, key);
 
+  /* ---- WHERE THIS METHOD TURNS UP OUTSIDE A MINE ---- */
+  MF.paintRealWorld(wrap, key);
+
   wrap.appendChild(H('div','hint','<b>In the mine:</b> click this instrument on your belt, then click a rock — ' +
-    'or drag it onto one. The rock re-spells itself and the numbers on it change.'));
+    'or drag it onto one. The rock re-spells itself exactly as it does on the bench above.'));
 
   box.appendChild(wrap);
   /* KEEP THE KEYBOARD WHERE IT WAS. Every control here is destroyed by the
@@ -5379,6 +5474,208 @@ MF.lessonPractice = function(host, key){
     'swings through, so what it says about the rock is what the rock would say.'));
   host.appendChild(pr);
   return pr;
+};
+
+/* =========================================================================
+   THE BENCH: HOLDING THE INSTRUMENT TO REAL ORE, WHICH IS THE ACTIVITY.
+
+   USER, 2026-09-05: "the core of the activity is applying tools to ores."
+
+   Everything above this on a lesson is reading. This is the part that is not:
+   three lumps on a bench, the instrument on a hook, and the same gesture the
+   cart uses - pick it up, put it on a rock, watch the numbers change. Take it
+   off and the rock goes back to plain.
+
+   IT IS THE SAME MECHANISM AS THE MINE'S, DELIBERATELY. `MF.oreDisplay` reads
+   `ore.tool` and re-spells through `MF.lensFor`, so what a student sees here
+   is not a demonstration OF the instrument - it is the instrument, on ore,
+   doing the one thing it does. The only difference is that this bench keeps
+   its own armed flag rather than touching `MF.state.armedTool`, which belongs
+   to the belt in the mine and must not be left armed in another room.
+
+   AND IT SAYS WHAT THE INSTRUMENT FOUND. In the mine nothing may be drawn
+   beside a lump (§21) - the re-spelling has to be the whole reading. Here it
+   may, because the user drew that line themselves: "Tutorials can have numbers
+   out of the ore for teaching purposes." This is the tutorial.
+   ========================================================================= */
+MF.LESSON_ORES = {
+  pick:    [{kind:'poly',a:1,b:-5,c:6}, {kind:'poly',a:1,b:0,c:4}, {kind:'number',n:72}],
+  lantern: [{kind:'poly',a:1,b:-5,c:6}, {kind:'poly',a:0,b:6,c:15}, {kind:'number',n:72}],
+  steel:   [{kind:'poly',a:0,b:6,c:15}, {kind:'poly',a:2,b:10,c:12}, {kind:'poly',a:3,b:12,c:0}],
+  dial:    [{kind:'poly',a:1,b:3,c:2},  {kind:'poly',a:1,b:-5,c:6}, {kind:'poly',a:2,b:7,c:3}],
+  shifter: [{kind:'poly',a:1,b:-5,c:6}, {kind:'poly',a:1,b:8,c:16}, {kind:'poly',a:6,b:7,c:-3}],
+  drill:   [{kind:'poly',a:6,b:7,c:-3}, {kind:'poly',a:1,b:-5,c:6}, {kind:'poly',a:4,b:0,c:-9}],
+  auger:   [{kind:'poly',a:6,b:7,c:-3}, {kind:'poly',a:2,b:7,c:3},  {kind:'poly',a:1,b:-5,c:6}]
+};
+
+MF.lessonBench = function(host, key){
+  var t = MF.TOOLS[key];
+  if(!t) return null;
+  var st = MF.lessonState(key);
+  /* THE ORE IS COPIED ONCE, per lesson. MF.oreDisplay reads `ore.tool`, so
+     applying an instrument MUTATES the lump - and MF.LESSON_ORES is a shared
+     literal. Two lessons that name the same shape would otherwise be holding
+     the same object, and putting the drill on one would put it on both. */
+  if(!st.bench){
+    var src = MF.LESSON_ORES[key] || [MF.SCHEMA[key].practice.ore];
+    st.bench = {armed:false, ores: src.map(function(o, i){
+      var c = {kind:o.kind, id:'ls-' + key + '-' + i};
+      if(o.kind === 'number') c.n = o.n; else { c.a=o.a; c.b=o.b; c.c=o.c; }
+      return c;
+    })};
+  }
+  var b = st.bench;
+
+  var box = E('div','lbench');
+  box.appendChild(H('div','lblab','&#128296; HOLD IT TO THE ORE &mdash; THIS IS THE PART THAT IS NOT READING'));
+  box.appendChild(H('p','lbhint', b.armed
+    ? '<b>' + t.nm + ' is in your hand.</b> Click a lump to hold it there. Click the same lump again and it comes off.'
+    : 'Take <b>' + t.nm + '</b> off the hook, then click a lump. The numbers cut into the rock change — that is the whole of what an instrument does.'));
+
+  /* ---- the instrument, on its hook ---- */
+  var hook = E('div','lbhook');
+  var tb = E('button','belttool lbtool'); tb.type='button';
+  tb.setAttribute('data-tool', key);
+  if(b.armed) tb.setAttribute('data-armed','yes');
+  tb.setAttribute('aria-pressed', b.armed ? 'true' : 'false');
+  tb.appendChild(H('span','bic', t.ic));
+  tb.appendChild(H('span','bnm', t.nm.replace(/^The /,'')));
+  tb.setAttribute('aria-label', t.nm + '. ' + (b.armed
+    ? 'In your hand — click a lump to hold it there, or click again to put it back.'
+    : 'Click to pick it up, then click a lump.'));
+  on(tb,'click',function(){ b.armed = !b.armed; MF.drawLesson(host.parentNode || host, key); });
+  hook.appendChild(tb);
+  box.appendChild(hook);
+
+  /* ---- the ore ---- */
+  var row = E('div','lbores');
+  b.ores.forEach(function(o){
+    var cell = E('div','lbcell');
+    var nat = MF.isNative(o);
+    var btn = E('button','lbore' + (o.tool ? ' held' : '') + (nat ? ' native' : '')); btn.type='button';
+    btn.setAttribute('data-lo', o.id);
+    btn.appendChild(MF.oreRock(o, {native:nat}));
+    btn.setAttribute('aria-label', MF.oreDisplayText(o) +
+      (o.tool ? '. ' + t.nm + ' is on it — click to take it off.' : '. Click to hold ' + t.nm + ' to it.'));
+    on(btn,'click',function(){
+      /* PICK IT UP FIRST. Clicking a lump barehanded is not a silent no-op -
+         it arms the instrument, because a student who clicks the rock has
+         plainly said which rock they want. */
+      if(!b.armed && !o.tool){ b.armed = true; }
+      o.tool = (o.tool === key) ? null : key;
+      MF.drawLesson(host.parentNode || host, key);
+    });
+    cell.appendChild(btn);
+
+    /* WHAT THE INSTRUMENT FOUND, in words, under the stone. Not in the mine -
+       there the re-spelling is the whole reading (§21) - but this is the room
+       where a lesson is allowed to say it out loud. */
+    if(o.tool){
+      var read = null;
+      try { read = MF.lensFor(o, key); } catch(e){ read = null; }
+      cell.appendChild(H('div','lbfound', read && read.found
+        ? '<b>' + t.nm.replace(/^The /,'The ') + ':</b> ' + read.found
+        : '<b>Nothing moves in there.</b>'));
+    } else {
+      cell.appendChild(H('div','lbfound plain','plain rock — nothing on it yet'));
+    }
+    row.appendChild(cell);
+  });
+  box.appendChild(row);
+  box.appendChild(H('div','hint','Nothing here is marked and nothing is spent. Put the instrument on all three — ' +
+    'the point is what it has to say about <b>different shapes of lump</b>, including the one it can say nothing about.'));
+  host.appendChild(box);
+  return box;
+};
+
+/* =========================================================================
+   WHERE THE METHOD TURNS UP OUTSIDE A MINE.
+
+   USER, 2026-09-05: "not every section needs to end with a quiz; maybe add a
+   reflection or a real-world example of the tool."
+
+   So a lesson ends on this rather than on being asked something. Each one is
+   a place the SAME MOVE is made by somebody who has never heard of this site,
+   and the tie-back names which part of the method it is - because "maths is
+   everywhere" is a poster, and "this is that step, here" is a lesson.
+   ========================================================================= */
+MF.REALWORLD = {
+  pick: {
+    where: 'Sorting scrap before it is melted',
+    body: 'A yard that buys scrap metal tests a piece before it goes anywhere near the furnace — a magnet, a spark test, a scratch. None of it says what the piece is <b>worth</b>. It says what <b>kind</b> of thing it is, so the next decision is made on purpose instead of by guessing.',
+    tie: 'That is this method exactly: name the shape before you commit to a move, and accept that naming it tells you nothing about the answer.'
+  },
+  lantern: {
+    where: 'Reading a recipe backwards',
+    body: 'You know a pot of soup fed twelve and you know you used three tins. You do not need to re-derive the whole recipe to work out how much each tin covered — one known part forces the other, because the total is the two of them multiplied.',
+    tie: 'One side lit forces the other. That is why the lantern will not light both: once you have one, the second is not a second question.'
+  },
+  steel: {
+    where: 'Costing a job',
+    body: 'Three parts of a quote come in at £6, £15 and £9. A builder does not read that as three unrelated numbers — they see three threes, and quote it as "three lots of £2, £5 and £3". Pulling the common amount out is how a quote gets checked in your head on a doorstep.',
+    tie: 'That is the GCF, and it is the first thing to try on any lump for the same reason: it makes everything after it smaller.',
+  },
+  dial: {
+    where: 'Cutting stock to length',
+    body: 'A machinist cutting 2.4m lengths out of a 12m bar gets exactly five with nothing left. Ask for 2.5m and you get four and a 2m offcut — the bar has not changed, the number you asked of it has. Whole cuts exist for some lengths and not for others.',
+    tie: 'That is the whole-number test: some lumps come apart on whole numbers and some do not, and no amount of looking harder changes which.'
+  },
+  shifter: {
+    where: 'Laying out a room',
+    body: 'A floor 7m by 5m is 35m². Tile it in two strips — 4m and 3m — and it is 20 + 15, the same floor described twice. Every kitchen fitter and every tiler works in this rectangle, and none of them call it the distributive property.',
+    tie: 'The box method IS that rectangle, run backwards: you know the area, and you are hunting for the two sides.'
+  },
+  drill: {
+    where: 'Fitting a gear pair',
+    body: 'You need two gears whose teeth multiply to a fixed ratio and whose sizes add up to the space in the housing. There is a short list of pairs that multiply right, and only some of them also fit — so you list the pairs first and then check the sum.',
+    tie: 'Multiply to one number, add to another. That is the pair hunt, and it is the same search a gearbox designer runs.'
+  },
+  auger: {
+    where: 'Splitting a bill that will not split evenly',
+    body: 'Six people, an awkward total, and two of them shared a dish. You break the total into parts that group cleanly rather than dividing the whole thing at once — regroup first, and the arithmetic that was ugly becomes two easy sums.',
+    tie: 'That is factoring by grouping: split the middle into two pieces that each share something with a neighbour, then take the common part out of each pair.'
+  }
+};
+
+MF.paintRealWorld = function(host, key){
+  var rw = MF.REALWORLD[key];
+  if(!rw) return null;
+  var box = E('div','realworld');
+  box.appendChild(H('div','rwlab','&#127758; THE SAME MOVE, OUTSIDE A MINE'));
+  box.appendChild(H('div','rwwhere', rw.where));
+  box.appendChild(H('p','rwbody', rw.body));
+  box.appendChild(H('div','rwtie', rw.tie));
+  host.appendChild(box);
+  return box;
+};
+
+/* =========================================================================
+   A REFLECTION, WHICH IS NOT A QUESTION.
+
+   Nothing is submitted, nothing is checked, nothing is stored, and it says so
+   in the box. It is here because a room can end by asking a student to put
+   something in their own words without also asking whether they got it right -
+   and because `nogrades` would fail the build over anything that scored it.
+   ========================================================================= */
+MF.paintReflection = function(host, o){
+  var box = E('div','reflect');
+  box.appendChild(H('div','rflab', o.lab || '&#9998; BEFORE YOU GO'));
+  box.appendChild(H('p','rfask', o.prompt));
+  var ta = document.createElement('textarea');
+  ta.className = 'rfbox';
+  ta.rows = 4;
+  ta.placeholder = o.placeholder || 'In your own words…';
+  ta.setAttribute('aria-label', o.a11y || 'A space to write in. Nothing you write here is read, checked or kept.');
+  box.appendChild(ta);
+  box.appendChild(H('div','rfnote','<b>Nothing here is read, checked or kept.</b> It is not sent anywhere and it ' +
+    'is gone when you leave the page. The point of writing it is the writing.'));
+  if(o.prompts && o.prompts.length){
+    var ul = E('ul','rfprompts');
+    o.prompts.forEach(function(p){ ul.appendChild(H('li', null, p)); });
+    box.appendChild(ul);
+  }
+  host.appendChild(box);
+  return box;
 };
 
 
@@ -5690,16 +5987,21 @@ MF.QUIZ_CLAIMS = [
    holds:function(){ return MF.isNative({kind:'poly',a:1,b:0,c:4}) && MF.isNative({kind:'number',n:7}); }}
 ];
 
+/* THE THREE MODULES, NAMED THE WAY THE USER NAMES THEM (2026-09-05):
+   "The Casting Shed is where students will learn about The Words, The Molds,
+   and The Tools." The screen keys are unchanged - they are wired into the
+   door table, four check groups and every jump on the site - but what a
+   student reads on the card is the name they were given. */
 MF.SHED = [
-  {key:'shed-mold',    ic:'&#127981;', nm:'The Mold',
-   tag:'THE FORGE&rsquo;S MOVE',
-   why:'Pour two metals in and <b>one formed object</b> comes out. That is distributing, and it is the move every check you make runs on.'},
   {key:'shed-words',   ic:'&#128220;', nm:'The Words',
    tag:'MINING &rarr; MATHEMATICS',
    why:'Every word this place uses is a real mathematical thing with a real name. <b>A seam is a factor.</b> Learn one column and you have learned half of it.'},
-  {key:'shed-methods', ic:'&#128296;', nm:'The Methods',
-   tag:'SEVEN WAYS UP TO A LUMP',
-   why:'The box method, factoring by grouping, pulling out the GCF. <b>Each instrument is one of them</b>, and the method is the part worth having.'}
+  {key:'shed-mold',    ic:'&#127981;', nm:'The Molds',
+   tag:'MULTIPLYING, WRITTEN OUT',
+   why:'Pour two metals in and <b>one formed object</b> comes out. Every part of one meets every part of the other &mdash; and the mine runs that backwards all day.'},
+  {key:'shed-methods', ic:'&#128296;', nm:'The Tools',
+   tag:'ONE LESSON PER INSTRUMENT CAST',
+   why:'Why each instrument works and how to use it, walked a slide at a time &mdash; and <b>ore on a bench to hold it to</b>, which is the part that is not reading.'}
 ];
 
 MF.SCREENS['workshop-mold'] = function(host){
@@ -5794,7 +6096,12 @@ MF.SCREENS['shed-mold'] = function(host){
   var mw = E('div'); mw.style.flex='1 1 180px'; mw.style.minWidth='0';
   mw.appendChild(H('div','hint','What is in the mold'));
   var seg = E('div','row');
-  [['num','plain metal'],['x','metal with an x in it']].forEach(function(m){
+  /* THREE THINGS YOU CAN POUR, and the third one is the mine's own job.
+     The room had two - a depth over two plain parts, and a depth over an x -
+     and both are ONE metal distributed over a sum. Two brackets is the shape
+     every lump on layers 3 to 5 came out of, and the room that exists to
+     explain the pour did not have it. */
+  [['num','two plain parts'],['x','a part with an x in it'],['two','two brackets']].forEach(function(m){
     var b=E('button','btn',m[1]); b.type='button';
     on(b,'click',function(){ st.mode=m[0]; draw(); });
     seg.appendChild(b); b.dataset.mode=m[0];
@@ -5802,6 +6109,7 @@ MF.SCREENS['shed-mold'] = function(host){
   mw.appendChild(seg); ctrls.appendChild(mw);
   panel.appendChild(ctrls);
   var stageHost = E('div'); panel.appendChild(stageHost);
+  var chainHost = E('div'); panel.appendChild(chainHost);
   var eq = E('div','eq'); panel.appendChild(eq);
   panel.appendChild(MF.says('<b>Mr Factor:</b> Remember this shape. In the mine you will run it backwards — ' +
     'you will have the casting and be hunting for the metals that made it.'));
@@ -5842,17 +6150,53 @@ MF.SCREENS['shed-mold'] = function(host){
      }}
   ]});
 
+  /* THE ROOM DOES NOT END ON A QUESTION (user, 2026-09-05). The questions are
+     still above; what closes the room is somewhere the same move is made by
+     people who have never heard of a mold. */
+  var mrw = E('div','realworld');
+  mrw.appendChild(H('div','rwlab','&#127758; THE SAME MOVE, OUTSIDE A MINE'));
+  mrw.appendChild(H('div','rwwhere','A mold is cut once, and every casting out of it is identical'));
+  mrw.appendChild(H('p','rwbody','That is the whole reason foundries use them. Nobody inspects each casting to find ' +
+    'out what shape it turned out to be — the shape was decided when the mold was cut, and the metal has no say in it. ' +
+    'A bakery tray, an injection mold, a stamped car panel: all of them are worth the cost of the tooling ' +
+    '<b>because the result is determined</b>.'));
+  mrw.appendChild(H('div','rwtie','That determinism is what makes the mine possible. If a pour could come out two ' +
+    'different ways, running it backwards would have no answer to hunt for — and factoring would not be a thing you could do.'));
+  host.appendChild(mrw);
+
   MF.shedFoot(host, 'shed-mold');
 
   function draw(){
-    var a=st.a,b=st.b,c=st.c,isX=(st.mode==='x');
-    bw.style.display = isX?'none':'';
+    var a=st.a,b=st.b,c=st.c,isX=(st.mode==='x'),isTwo=(st.mode==='two');
+    bw.style.display = (isX || isTwo) ? 'none' : '';
     Array.prototype.forEach.call(seg.children,function(btn){
       btn.style.background = (btn.dataset.mode===st.mode)?'var(--ore-t)':'var(--paper)';
       btn.style.color = (btn.dataset.mode===st.mode)?'#FFF7EA':'var(--ink)';
       btn.style.borderColor = (btn.dataset.mode===st.mode)?'var(--ore-t)':'var(--tan)';
     });
     clear(stageHost);
+    clear(chainHost);
+
+    if(isTwo){
+      /* TWO BRACKETS: a box with two rows and two columns, which is where the
+         four products and the two middles actually live. `a` is the first
+         bracket's number and `c` the second's, so the sliders keep meaning
+         what their labels say. */
+      MF.areaModel(stageHost,{
+        rows:[{label:'x'},{label:num(a)}],
+        cols:[{label:'x'},{label:num(c)}],
+        cells:[[{kind:'x2',text:'x²'},        {kind:'x',text:num(c)+'x'}],
+               [{kind:'x',text:num(a)+'x'},   {kind:'k',text:num(a*c)}]],
+        sideMode:'show',
+        caption:'Four corners, because every part of one bracket meets every part of the other. The two x corners are the same kind of thing.',
+        a11y:'A mold cut as ( x + '+num(a)+' ) by ( x + '+num(c)+' ), showing four products.'
+      });
+      MF.pourChain(chainHost, [{m:1,k:a},{m:1,k:c}]);
+      eq.innerHTML = '( x + '+num(a)+' )( x + '+num(c)+' ) <span class="op">=</span> ' +
+        quadText(1, a + c, a * c);
+      return;
+    }
+
     MF.areaModel(stageHost,{
       rows:[{label:num(a)}],
       cols:[{label:isX?'x':num(b)},{label:num(c)}],
@@ -5861,6 +6205,9 @@ MF.SCREENS['shed-mold'] = function(host){
       caption:'Both sides of the mold are set, so every part of the casting follows from them.',
       a11y:'A mold of depth '+num(a)+' split into a part of width '+(isX?'x':num(b))+' and a part of width '+num(c)+'.'
     });
+    /* THE SAME CHAIN ON THE ONE-BRACKET POUR, so the two modes are visibly the
+       same act at different sizes rather than two different lessons. */
+    MF.pourChain(chainHost, isX ? [{m:0,k:a},{m:1,k:c}] : [{m:0,k:a},{m:0,k:b+c}]);
     eq.innerHTML = isX
       ? num(a)+'( x + '+num(c)+' ) <span class="op">=</span> '+num(a)+'x <span class="op">+</span> '+num(a*c)
       : num(a)+'( '+num(b)+' + '+num(c)+' ) <span class="op">=</span> '+num(a*b)+' <span class="op">+</span> '+num(a*c)+
@@ -5927,6 +6274,21 @@ MF.SCREENS['shed-words'] = function(host){
        return {ok:false, why:'<b>' + got.why + '</b> Look at what 18 and 24 both divide by.'};
      }}
   ]});
+
+  /* AND THIS ROOM ENDS ON A REFLECTION rather than on another question. The
+     questions above check whether you can pick the right word; this asks you
+     to put the pair in your own, which is the thing that survives the site. */
+  MF.paintReflection(host, {
+    lab:'&#9998; IN YOUR OWN WORDS',
+    prompt:'Pick <b>one</b> pair off the table — the mine\'s word and the mathematical one — and write down what they ' +
+      'have in common in a sentence you would actually say out loud.',
+    placeholder:'A seam is a factor because…',
+    prompts:[
+      'Which of the two names tells you more about what the thing <em>does</em>?',
+      'Is there a pair on that table where the mining word is genuinely worse than the real one?',
+      'If you had to explain <b>native metal</b> to somebody who had never seen this site, would you use the word "prime" or not?'
+    ]
+  });
 
   MF.shedFoot(host, 'shed-words');
 };
@@ -6499,6 +6861,84 @@ MF.moldMaths = function(ingots, prod){
   }
   out.terms = [{t:out.single, from:'', mid:false}];
   return out;
+};
+
+/* =========================================================================
+   THE POUR, WRITTEN OUT: EVERY PART OF ONE METAL MEETS EVERY PART OF THE OTHER.
+
+   USER, 2026-09-05: "The Molds need to show multiplication in the pour to
+   illustrate multiplying terms."
+
+   The mold room drew an area model and one line of algebra, and the area model
+   only ever held ONE ROW - a depth over two parts, a·(b + c). That is a number
+   distributed over a sum, and it is not the move the mine runs backwards all
+   day: the mine's job is two brackets, four products, and two middle terms
+   that turn out to be the same kind of thing and collapse.
+
+   So the pour is written out as a chain, a line at a time:
+
+       ( x + 2 )( x + 3 )        what went in
+       x·x  +  x·3  +  2·x  +  2·3    every part meets every part
+        x²  +   3x  +   2x  +   6     each one multiplied out
+        x²  +      5x       +   6     the two middles are the same kind
+       = x² + 5x + 6                  one object
+
+   IT DOES NOT DO ITS OWN ARITHMETIC. Every number and every pairing comes from
+   MF.moldMaths, which the `mold` group already checks against ingotProduct -
+   so this is a rendering of a computation that is already verified, and a
+   second copy of the multiplication could not drift from the first because
+   there is no second copy. */
+MF.pourChain = function(host, ingots){
+  var prod = ingotProduct(ingots);
+  var m = MF.moldMaths(ingots, prod);
+  var box = E('div','pourchain');
+  box.appendChild(H('div','pclab','THE POUR, WRITTEN OUT'));
+
+  var row = function(cls, cells, note){
+    var r = E('div','pcrow ' + cls);
+    var line = E('div','pcline');
+    cells.forEach(function(c, i){
+      if(i) line.appendChild(H('span','pcop', c.op || '+'));
+      line.appendChild(H('span','pcterm' + (c.mid ? ' mid' : ''), c.t));
+    });
+    r.appendChild(line);
+    if(note) r.appendChild(H('div','pcnote', note));
+    box.appendChild(r);
+    return r;
+  };
+
+  row('in', [{t: m.into.join(' '), op:''}], 'what went into the mold');
+  if(m.single === 'over'){
+    box.appendChild(H('div','pcnote','That is more metal than the mold holds.'));
+    host.appendChild(box);
+    return box;
+  }
+
+  /* every part meets every part - the pairings, before they are multiplied */
+  var pairs = m.terms.filter(function(t){ return t.from; });
+  if(pairs.length > 1)
+    row('pairs', pairs.map(function(t){ return {t:t.from, mid:t.mid}; }),
+      'every part of one metal meets every part of the other');
+
+  /* each pairing multiplied out */
+  if(m.terms.length > 1)
+    row('terms', m.terms.map(function(t){ return {t:t.t, mid:t.mid}; }),
+      pairs.length > 1 ? 'each pair multiplied out' : 'the depth reaches every part');
+
+  /* the two middles are the same kind of thing, so they collapse */
+  if(m.merge){
+    var collapsed = [];
+    var midSeen = false;
+    m.terms.forEach(function(t){
+      if(t.mid){ if(!midSeen){ collapsed.push({t:m.merge, mid:true}); midSeen = true; } }
+      else collapsed.push({t:t.t});
+    });
+    row('merged', collapsed,
+      m.mergeFrom + ' are the same kind of thing, so they are one term');
+  }
+  row('out', [{t:m.single, op:''}], 'one object comes out');
+  host.appendChild(box);
+  return box;
 };
 
 MF.moldScene = function(key, pour){
@@ -10014,6 +10454,76 @@ MF.validate = function(){
   }
   MF.moldMaths = mReal;
 
+  /* THE POUR SHOWS THE MULTIPLICATION, TERM BY TERM.
+
+     USER, 2026-09-05: "The Molds need to show multiplication in the pour to
+     illustrate multiplying terms."
+
+     The mold room drew an area model and one line of algebra, and the area
+     model only ever held ONE ROW - a depth over two parts. That is a number
+     distributed over a sum, and it is not the move the mine runs backwards:
+     the mine's job is two brackets, four products, and two middle terms that
+     turn out to be the same kind of thing and collapse into one.
+
+     So `MF.pourChain` writes it out a line at a time, and this asserts the
+     lines are actually there AND that the last one agrees with `ingotProduct`
+     - because a chain of working that ends somewhere the engine does not is
+     worse than no chain at all.
+
+     READ THE DENOMINATOR: four pours - two brackets, a number over a bracket,
+     two plain metals, and one with no middle to merge. It checks the SHAPE of
+     the working and its final value. It says nothing about whether the
+     intermediate lines are in a helpful order. */
+  [[[{m:1,k:2},{m:1,k:3}],  true,  'two brackets'],
+   [[{m:1,k:3},{m:1,k:-3}], false, 'a twin seam, whose middles cancel'],
+   [[{m:0,k:4},{m:1,k:3}],  false, 'a number over a bracket'],
+   [[{m:0,k:3},{m:0,k:5}],  false, 'two plain metals']
+  ].forEach(function(cse){
+    chk('mold');
+    var pcHost = document.createElement('div');
+    try { MF.pourChain(pcHost, cse[0]); }
+    catch(e){ errs.push('mold: the pour chain threw on ' + cse[2] + ': ' + e.message); return; }
+    var rows = pcHost.querySelectorAll('.pcrow');
+    if(rows.length < 2){
+      errs.push('mold: the pour chain on ' + cse[2] + ' drew ' + rows.length + ' lines of working');
+      return;
+    }
+    chk('mold');
+    /* the last line must be what the engine says the pour comes to */
+    var prod = ingotProduct(cse[0]);
+    var want = quadText(prod.a, prod.b, prod.c);
+    var last = rows[rows.length-1];
+    var got = ((last.querySelector('.pcline')||{}).textContent||'').replace(/\s+/g,' ').trim();
+    if(got !== want.replace(/\s+/g,' ').trim())
+      errs.push('mold: the pour chain on ' + cse[2] + ' ends at "' + got +
+        '" and the engine says the casting is "' + want + '"');
+    chk('mold');
+    /* TWO BRACKETS MUST SHOW THE PAIRINGS. This is the whole ask: not the
+       answer, but every part of one metal meeting every part of the other. */
+    var pairs = pcHost.querySelector('.pcrow.pairs');
+    if(cse[1] && !pairs)
+      errs.push('mold: ' + cse[2] + ' pours without showing which part multiplied which — ' +
+        'that pairing IS the multiplication of terms');
+    chk('mold');
+    /* and the two middles must be shown collapsing, when there are two */
+    var merged = pcHost.querySelector('.pcrow.merged');
+    if(cse[1] && !merged)
+      errs.push('mold: ' + cse[2] + ' never shows its two middle terms becoming one');
+  });
+  /* CONTROL: a chain that skips straight to the answer must be caught */
+  chk('mold');
+  var pcReal = MF.moldMaths;
+  MF.moldMaths = function(ings, prod){
+    var r = pcReal(ings, prod);
+    r.terms = [{t:r.single, from:'', mid:false}]; r.merge = null; r.mergeFrom = null;
+    return r;
+  };
+  var pcCtl = document.createElement('div');
+  MF.pourChain(pcCtl, [{m:1,k:2},{m:1,k:3}]);
+  MF.moldMaths = pcReal;
+  if(pcCtl.querySelector('.pcrow.pairs') || pcCtl.querySelector('.pcrow.merged'))
+    errs.push('CONTROL: a pour chain with its working stripped out still showed the pairings');
+
   /* a correct forge SPENDS its metal - exactly what went in, and no more */
   chk('forge');
   var lanternSet = MF.castableFrom(MF.TOOLS.lantern.cast, MF.TOOLS.lantern.slots, MF.yardList());
@@ -12388,6 +12898,121 @@ MF.validate = function(){
   MF.hasTool = scReal;
   if(scOpen.err || scOpen.n === 1)
     errs.push('CONTROL: with the gate unhooked the working floor still drew one lesson, so the count is not following the belt');
+
+  /* THE CORE OF A LESSON IS APPLYING THE INSTRUMENT TO ORE.
+
+     USER, 2026-09-05: "the core of the activity is applying tools to ores."
+
+     A lesson that is only a walkthrough is a page, and the whole point of the
+     working floor is that it is not one. So for every instrument: the bench
+     must exist, it must put real ore on it, and holding the instrument to that
+     ore must CHANGE WHAT IS DRAWN ON THE STONE.
+
+     At least two of the three, not all three, because one lump on some benches
+     is deliberately a shape the instrument has nothing to say about - the
+     prospector's pick on native metal, the steel head on a lump with no common
+     metal. An instrument that is silent on a hard case is honest; one that is
+     silent on all three does nothing.
+
+     READ THE DENOMINATOR: seven instruments, three lumps each, and the test is
+     "the drawn label changed". It says nothing about whether the new label is
+     the RIGHT reading - the `lens` group (225) is what checks that against the
+     engine. */
+  Object.keys(MF.TOOLS).forEach(function(tk){
+    chk('schema');
+    var lbHost = document.createElement('div');
+    scStage.innerHTML = ''; scStage.appendChild(lbHost);
+    MF.state.tools = {}; MF.state.tools[tk] = {forged:true};
+    MF.state.school = {};
+    var lbBox;
+    try { lbBox = MF.lessonBench(lbHost, tk); }
+    catch(e){ errs.push('schema: the bench for ' + tk + ' threw: ' + e.message); return; }
+    var lbOres = lbHost.querySelectorAll('.lbore');
+    if(!lbBox || lbOres.length < 3){
+      errs.push('schema: ' + tk + '\'s lesson puts ' + lbOres.length +
+        ' lumps on the bench — the core of the activity is applying the instrument to ore');
+      return;
+    }
+    chk('schema');
+    /* hold it to each lump through the real state, and read the stone back */
+    var stB = MF.lessonState(tk).bench;
+    if(!stB || !stB.bench && !stB.ores){
+      errs.push('schema: ' + tk + '\'s bench drew lumps but kept no state for them');
+      return;
+    }
+    var moved = 0;
+    stB.ores.forEach(function(o){
+      var before = MF.oreDisplay(o);
+      o.tool = tk;
+      var after = MF.oreDisplay(o);
+      o.tool = null;
+      if(String(after) !== String(before)) moved++;
+    });
+    if(moved < 2)
+      errs.push('schema: holding ' + MF.TOOLS[tk].nm + ' to its own bench changed ' + moved +
+        ' of ' + stB.ores.length + ' lumps — an instrument that re-spells nothing is a text box');
+  });
+  /* CONTROL: an instrument whose reading never reaches the stone must be caught */
+  chk('schema');
+  var scLensReal = MF.lensFor;
+  MF.lensFor = function(){ return null; };
+  var scMute = 0;
+  MF.state.school = {};
+  var scMuteHost = document.createElement('div');
+  scStage.innerHTML = ''; scStage.appendChild(scMuteHost);
+  MF.state.tools = {lantern:{forged:true}};
+  MF.lessonBench(scMuteHost, 'lantern');
+  var scMuteB = MF.lessonState('lantern').bench;
+  ((scMuteB && scMuteB.ores) || []).forEach(function(o){
+    var before = MF.oreDisplay(o);
+    o.tool = 'lantern';
+    if(String(MF.oreDisplay(o)) !== String(before)) scMute++;
+    o.tool = null;
+  });
+  MF.lensFor = scLensReal;
+  if(scMute >= 2)
+    errs.push('CONTROL: with every reading muted the bench still re-spelt its ore');
+
+  /* AND EVERY LESSON ENDS ON SOMETHING THAT IS NOT A QUESTION.
+
+     USER: "not every section needs to end with a quiz; maybe add a reflection
+     or a real-world example of the tool." Each instrument carries one place
+     the same move is made by somebody who has never heard of this site. */
+  Object.keys(MF.TOOLS).forEach(function(tk){
+    chk('schema');
+    var rw = MF.REALWORLD[tk];
+    if(!rw || !rw.where || !rw.body || !rw.tie){
+      errs.push('schema: ' + tk + ' has no real-world example to end its lesson on');
+      return;
+    }
+    chk('schema');
+    /* the tie-back must name the METHOD, not just gesture at usefulness -
+       "maths is everywhere" is a poster and "this is that step, here" is a
+       lesson. Cheapest honest test: it is long enough to be an argument. */
+    if(String(rw.tie).replace(/<[^>]+>/g,'').trim().length < 60)
+      errs.push('schema: ' + tk + '\'s real-world example ties back in ' +
+        String(rw.tie).length + ' characters — that is a gesture, not a tie');
+  });
+  /* AND THE TWO READING ROOMS DO NOT END ON A QUESTION EITHER */
+  [['shed-words', '.reflect', 'a reflection'],
+   ['shed-mold',  '.realworld', 'a real-world example']].forEach(function(pair){
+    chk('schema');
+    var rwProbe = document.createElement('div');
+    scStage.innerHTML = ''; scStage.appendChild(rwProbe);
+    try { MF.SCREENS[pair[0]](rwProbe); }
+    catch(e){ errs.push('schema: ' + pair[0] + ' threw: ' + e.message); return; }
+    var closer = rwProbe.querySelector(pair[1]);
+    if(!closer){ errs.push('schema: ' + pair[0] + ' does not end on ' + pair[2]); return; }
+    chk('schema');
+    /* and it must come AFTER the questions, or it is not what closes the room */
+    var asks = rwProbe.querySelectorAll('.asks');
+    if(asks.length){
+      var lastAsk = asks[asks.length-1];
+      if(!(lastAsk.compareDocumentPosition(closer) & Node.DOCUMENT_POSITION_FOLLOWING))
+        errs.push('schema: ' + pair[0] + ' still ends on a question — ' + pair[2] +
+          ' is above the last one');
+    }
+  });
 
   /* AND THE FORGE TEACHES NOTHING. The whole method, its reasoning and a
      practice used to be appended to the casting three seconds after a pour. */
