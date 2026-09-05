@@ -374,8 +374,30 @@ input::placeholder, textarea::placeholder{color:#6B5B48; opacity:1}
    a light stroke behind them so they hold up over sand as well as over metal. */
 .mdnum{opacity:0; paint-order:stroke; stroke:#FFE9A8; stroke-width:4px; stroke-linejoin:round}
 .mdfrom{stroke-width:3px}
-@keyframes mdin{ 0%{opacity:0; transform:translateY(6px)} 100%{opacity:.66; transform:translateY(0)} }
-.moldwrap[data-pour] .mdin{transform-box:fill-box; animation:mdin 420ms ease-out 1.5s forwards}
+/* THE TERMS RIDE THE STREAM, SO THEY LEAVE WITH IT. Two animations: they fall
+   in a beat apart (the delay is set per token in MF.moldScene) and then go at
+   2.25s, which is inside the window `mdstream` fades in. Left `forwards` on
+   the first one alone they hung in mid-air after the metal had stopped
+   falling, over sand, labelling nothing. */
+/* ONE KEYFRAME FOR THE WHOLE LIFE OF A TOKEN: in, hold, out. It was two
+   animations, both filling `forwards` on the same property, and they spent the
+   pour arguing about which one owned the opacity - sampled at 0.82 a third of
+   a second after the fade-out should have finished it. One animation is one
+   delay and one answer, and it holds the term on screen for 1.3s rather than
+   the 0.9 that survived the argument. */
+@keyframes mdin{
+  0%{opacity:0; transform:translateY(-8px)}
+  14%{opacity:.85; transform:translateY(0)}
+  76%{opacity:.85; transform:translateY(0)}
+  100%{opacity:0; transform:translateY(5px)}
+}
+.moldwrap[data-pour] .mdin{transform-box:fill-box; animation:mdin 1900ms ease-out forwards}
+/* the sign between them is quieter than the metals it separates */
+.mdinx{opacity:0}
+.moldwrap[data-pour] .mdinx{stroke-width:3px}
+/* the bright core of the stream is a highlight, not a second stream */
+@keyframes mdcore{ 0%{opacity:0} 14%{opacity:.5} 80%{opacity:.5} 100%{opacity:0} }
+.moldwrap[data-pour] .mdstream.mdcore{animation:mdcore 2600ms linear .25s backwards}
 @keyframes mdterm{ 0%{opacity:0; transform:scale(.6)} 60%{opacity:.74; transform:scale(1.12)} 100%{opacity:.66; transform:scale(1)} }
 .moldwrap[data-pour] .mdterm,.moldwrap[data-pour] .mdfrom{transform-box:fill-box; transform-origin:center;
   animation:mdterm 380ms cubic-bezier(.3,1.5,.5,1) forwards}
@@ -403,7 +425,13 @@ input::placeholder, textarea::placeholder{color:#6B5B48; opacity:1}
   .moldwrap[data-pour] .mdrevrect,.moldwrap[data-pour] .mdnum{animation:none}
   /* the casting is full, the tool is up, and the maths is there; it arrives */
   .moldwrap[data-pour] .mdrun,.moldwrap[data-pour] .mdtrough{opacity:1}
-  .moldwrap[data-pour] .mdstream{opacity:0}
+  /* THE STREAM STAYS UP. It used to be hidden here, because a stream frozen in
+     mid-air over a flat channel looked like a mistake. Coming off the lip of a
+     tipped ladle it is a pour held still, which is a picture - and the terms
+     being multiplied are IN it, so hiding it would take them with it and leave
+     a reduced-motion student with no sight of what went in. */
+  .moldwrap[data-pour] .mdstream{opacity:1}
+  .moldwrap[data-pour] .mdstream.mdcore{opacity:.5}
   /* the cavity is FULL, not half filled and not wiped part way across */
   .moldwrap[data-pour] .mdrevrect{ y:111px; height:150px }
   .moldwrap[data-pour] .mdnum{opacity:.66}
@@ -7053,42 +7081,113 @@ MF.moldScene = function(key, pour){
     svg.appendChild(S('path',{d:'M0 '+(16+gn*30)+' q130 '+((gn%2)?5:-5)+' 400 '+((gn%3)?3:-3),
       fill:'none',stroke:'#1B130D','stroke-width':'2',opacity:'.35'}));
 
-  /* the block of sand, rammed and struck off flat */
-  svg.appendChild(S('rect',{x:26,y:74,width:348,height:208,rx:11,fill:'url(#'+uid+'sand)',
+  /* the block of sand, rammed and struck off flat.
+     IT STARTS AT 96, NOT 74. The ladle above it is a vessel seen in three
+     quarters rather than a flat channel, and it needs the height. The cavity
+     glyph runs 111..261, so the sand still clears it at both ends. */
+  svg.appendChild(S('rect',{x:26,y:96,width:348,height:186,rx:11,fill:'url(#'+uid+'sand)',
     stroke:'#6E6053','stroke-width':'3'}));
   for(var sp=0; sp<110; sp++)
-    svg.appendChild(S('circle',{cx:String(34+((sp*97)%332)), cy:String(82+((sp*53)%192)),
+    svg.appendChild(S('circle',{cx:String(34+((sp*97)%332)), cy:String(104+((sp*53)%170)),
       r:String(0.7+((sp*7)%3)*0.5), fill:'#6E6053', opacity:'.26'}));
 
-  /* ---- THE TROUGH: an open iron channel the metal runs down ---- */
-  var tr = S('g',{});
-  tr.appendChild(S('path',{d:'M-14 6 L124 30 L124 66 L-14 42 Z',fill:'url(#'+uid+'iron)',
-    stroke:'#2A3138','stroke-width':'3','stroke-linejoin':'round'}));
-  tr.appendChild(S('path',{d:'M-14 14 L118 36 L118 44 L-14 22 Z',fill:'#2A3138',opacity:'.55'}));
-  [0,1,2].forEach(function(rb){
-    tr.appendChild(S('rect',{x:String(6+rb*38),y:String(14+rb*6),width:'6',height:'34',rx:'2',
-      fill:'#8A9AA6',opacity:'.5', transform:'rotate(9.8 '+(9+rb*38)+' '+(31+rb*6)+')'}));
-  });
-  /* the lip it runs off */
-  tr.appendChild(S('path',{d:'M118 30 L136 34 L136 70 L118 66 Z',fill:'#5A626A',
-    stroke:'#2A3138','stroke-width':'2.5','stroke-linejoin':'round'}));
-  svg.appendChild(tr);
-  /* the metal running down the trough, and the fall off the lip */
-  svg.appendChild(S('path',{class:'mdtrough', d:'M-14 20 L120 44 L120 56 L-14 32 Z',fill:'url(#'+uid+'hot)'}));
-  svg.appendChild(S('path',{class:'mdstream', d:'M120 46 q10 26 -14 44 q-12 9 -18 16 l-16 -12 q8 -8 18 -17 q16 -14 12 -33 Z',
-    fill:'url(#'+uid+'hot)'}));
+  /* ======================================================================
+     THE LADLE, TIPPED, WITH THE METAL COMING OFF THE LIP.
 
-  /* the pouring basin and the runner that feeds the shape */
-  svg.appendChild(S('circle',{cx:78,cy:120,r:27,fill:'#5A4B3C'}));
-  svg.appendChild(S('circle',{cx:78,cy:120,r:20,fill:'#3A3129'}));
-  svg.appendChild(S('path',{d:'M92 104 L182 152 L182 176 L92 138 Z',fill:'#3A3129'}));
-  svg.appendChild(S('path',{d:'M92 104 L182 152',fill:'none',stroke:'#D6C6A8','stroke-width':'2',opacity:'.4'}));
+     USER, 2026-09-05, with a reference image: "The illustration around the
+     pouring molds needs to look more realistic, 3D... and inside the stream
+     there should be visible text of terms being multiplied."
+
+     What was here was a flat iron channel: two quadrilaterals and three rivets,
+     seen from the same overhead angle as the sand. It read as a gutter.
+
+     This is the vessel from the reference - a bucket seen in three quarters and
+     tipped over, so the mouth is an ELLIPSE rather than an edge, the far wall
+     shows behind the near one, and the metal inside it is a pool you can see
+     the surface of. The depth comes from the shading: a body gradient across
+     the barrel, a lighter band on the rim, a dark inner wall, and a hot glow
+     thrown onto the sand beneath it.
+
+     THE ART-STYLE RULE IS RELAXED HERE ON PURPOSE. `MF.anvilScene` is flat
+     fill and a dark outline, and it says so at length - the anvil was cut back
+     to that because it was the only rendered object on the site. The user has
+     now asked for this one to be rendered, with a picture. It is one object,
+     in one room, and the anvil is not it.
+
+     THE TIP IS ONE TRANSFORM ON A STATIC GROUP. Nothing in here animates, so
+     the attribute is safe (s5g is about ANIMATED elements, where a CSS
+     transform would replace it). The pool and the stream inside animate their
+     OPACITY only, and neither carries a transform of its own. */
+  grad(uid+'body', [['0%','#8E9AA6'],['26%','#5E6A76'],['62%','#39424B'],['100%','#20262C']], true);
+  grad(uid+'rim',  [['0%','#B6C2CE'],['48%','#7E8A96'],['100%','#39424B']], true);
+  grad(uid+'pool', [['0%','#FFF6D8'],['42%','#FFC24A'],['100%','#E2600F']]);
+  var glow = S('radialGradient',{id:uid+'glow'});
+  glow.appendChild(S('stop',{offset:'0%','stop-color':'#FFB347','stop-opacity':'.55'}));
+  glow.appendChild(S('stop',{offset:'62%','stop-color':'#E2600F','stop-opacity':'.20'}));
+  glow.appendChild(S('stop',{offset:'100%','stop-color':'#E2600F','stop-opacity':'0'}));
+  defs.appendChild(glow);
+
+  /* the heat it throws, behind everything */
+  svg.appendChild(S('ellipse',{cx:112,cy:96,rx:132,ry:96,fill:'url(#'+uid+'glow)'}));
+
+  var lad = S('g',{class:'mdladle', transform:'rotate(38 70 56)'});
+  /* the barrel: tapered, with the near wall lit and the base in shadow */
+  lad.appendChild(S('path',{d:'M28 18 L38 94 Q70 106 102 94 L112 18 Z',
+    fill:'url(#'+uid+'body)', stroke:'#161B20','stroke-width':'3.5','stroke-linejoin':'round'}));
+  /* two bands round the barrel, which is what makes it read as a vessel rather
+     than a cup - and the pair of them is what gives it a curved surface */
+  [46, 72].forEach(function(by){
+    lad.appendChild(S('path',{d:'M32 '+by+' Q70 '+(by+12)+' 108 '+by,
+      fill:'none',stroke:'#20262C','stroke-width':'6',opacity:'.7'}));
+    lad.appendChild(S('path',{d:'M32 '+(by-3)+' Q70 '+(by+9)+' 108 '+(by-3),
+      fill:'none',stroke:'#A2AEBA','stroke-width':'2.2',opacity:'.4'}));
+  });
+  /* the light down the near edge, and the shadow down the far one */
+  lad.appendChild(S('path',{d:'M40 24 L48 90',fill:'none',stroke:'#D4DEE8','stroke-width':'5',
+    opacity:'.32','stroke-linecap':'round'}));
+  lad.appendChild(S('path',{d:'M104 24 L96 90',fill:'none',stroke:'#0E1216','stroke-width':'7',
+    opacity:'.34','stroke-linecap':'round'}));
+  /* THE MOUTH IS AN ELLIPSE, which is the whole of why this reads as a vessel:
+     a rim with a lit top edge, the dark inner wall behind it, and a pool of
+     metal standing in the bottom that you are looking down into. */
+  lad.appendChild(S('ellipse',{cx:70,cy:18,rx:42,ry:15,fill:'url(#'+uid+'rim)',
+    stroke:'#161B20','stroke-width':'3.5'}));
+  lad.appendChild(S('path',{d:'M31 13 A42 15 0 0 1 109 13',fill:'none',
+    stroke:'#D4DEE8','stroke-width':'2.5',opacity:'.5'}));
+  lad.appendChild(S('ellipse',{cx:70,cy:19,rx:34,ry:11,fill:'#161B20'}));
+  /* the metal standing in it - the first thing that arrives in the pour */
+  lad.appendChild(S('ellipse',{class:'mdtrough', cx:70,cy:21,rx:30,ry:9,fill:'url(#'+uid+'pool)'}));
+  /* the bail: a bracket each side and a pin through it */
+  lad.appendChild(S('path',{d:'M27 34 L13 39 L18 54',fill:'none',stroke:'#39424B','stroke-width':'6',
+    'stroke-linecap':'round','stroke-linejoin':'round'}));
+  lad.appendChild(S('path',{d:'M113 34 L127 39 L122 54',fill:'none',stroke:'#39424B','stroke-width':'6',
+    'stroke-linecap':'round','stroke-linejoin':'round'}));
+  lad.appendChild(S('circle',{cx:13,cy:39,r:5,fill:'#7E8A96',stroke:'#161B20','stroke-width':'2'}));
+  lad.appendChild(S('circle',{cx:127,cy:39,r:5,fill:'#7E8A96',stroke:'#161B20','stroke-width':'2'}));
+  svg.appendChild(lad);
+
+  /* ---- THE STREAM, AND THE TERMS RIDING DOWN IT ----
+     The lip lands at about (116,46) once the group is tipped; the basin is
+     directly under it, so the metal falls the way metal falls. */
+  svg.appendChild(S('path',{class:'mdstream',
+    d:'M105 48 C100 76, 100 102, 102 128 L136 128 C138 102, 138 74, 139 50 Z',
+    fill:'url(#'+uid+'pool)'}));
+  /* the bright core of it */
+  svg.appendChild(S('path',{class:'mdstream mdcore',
+    d:'M114 50 C111 76, 111 104, 113 128 L127 128 C129 104, 128 74, 128 50 Z',
+    fill:'#FFF6D8'}));
+
+  /* the pouring basin and the runner that feeds the shape, under the lip */
+  svg.appendChild(S('circle',{cx:116,cy:150,r:27,fill:'#5A4B3C'}));
+  svg.appendChild(S('circle',{cx:116,cy:150,r:20,fill:'#3A3129'}));
+  svg.appendChild(S('path',{d:'M130 132 L206 172 L206 196 L130 168 Z',fill:'#3A3129'}));
+  svg.appendChild(S('path',{d:'M130 132 L206 172',fill:'none',stroke:'#D6C6A8','stroke-width':'2',opacity:'.4'}));
   var clip = S('clipPath',{id:uid+'run'});
-  clip.appendChild(S('circle',{cx:78,cy:120,r:20}));
-  clip.appendChild(S('path',{d:'M92 104 L182 152 L182 176 L92 138 Z'}));
+  clip.appendChild(S('circle',{cx:116,cy:150,r:20}));
+  clip.appendChild(S('path',{d:'M130 132 L206 172 L206 196 L130 168 Z'}));
   defs.appendChild(clip);
   var runMetal = S('g',{'clip-path':'url(#'+uid+'run)'});
-  runMetal.appendChild(S('rect',{class:'mdrun', x:50,y:90,width:150,height:100,fill:'url(#'+uid+'hot)'}));
+  runMetal.appendChild(S('rect',{class:'mdrun', x:88,y:120,width:130,height:100,fill:'url(#'+uid+'hot)'}));
   svg.appendChild(runMetal);
 
   /* ---- THE CAVITY: the tool's own icon, blacked out ----
@@ -7180,8 +7279,31 @@ MF.moldScene = function(key, pour){
       n.textContent = s;
       return n;
     };
-    /* what went in, with the multiplication sign in it */
-    svg.appendChild(txt(256, 112, m.into.join(' × '), 'mdnum mdin', 21));
+    /* ---- WHAT WENT IN, RIDING DOWN THE STREAM ----
+
+       USER: "inside the stream there should be visible text of terms being
+       multiplied."
+
+       It used to be one line laid across the casting - `(x + 2) × (x + 3)`
+       printed over the shape it was about to become, which says the answer and
+       the question in the same place. In the stream it is the metal ARRIVING:
+       the two brackets and the × between them fall into the mold, and what
+       comes out of the mold is underneath.
+
+       Spaced down the fall and centred on it, smaller when there are more
+       tokens - a three-metal order is five tokens and they still have to fit
+       between the lip and the basin. */
+    var tokens = [];
+    m.into.forEach(function(s, i){ if(i) tokens.push('×'); tokens.push(s); });
+    var top = 66, bot = 120, fs = tokens.length > 3 ? 10.5 : 13;
+    tokens.forEach(function(tok, i){
+      var y = tokens.length === 1 ? 92 : (top + i * ((bot - top) / (tokens.length - 1)));
+      var el = txt(120, y, tok, 'mdnum mdin' + (tok === '×' ? ' mdinx' : ''), fs);
+      /* each one falls a beat after the one above it, and the keyframe carries
+         its own hold and exit - so this is the only delay there is */
+      el.style.animationDelay = (0.5 + i * 0.13) + 's';
+      svg.appendChild(el);
+    });
     /* the products, each above the pair that made it */
     var n2 = m.terms.length, span = 196, x0 = 256 - span/2;
     m.terms.forEach(function(tm, i){
@@ -11029,6 +11151,96 @@ MF.validate = function(){
     if(cse[1] && !merged)
       errs.push('mold: ' + cse[2] + ' never shows its two middle terms becoming one');
   });
+  /* THE TERMS BEING MULTIPLIED ARE IN THE STREAM.
+
+     USER, 2026-09-05, with a reference image: "The illustration around the
+     pouring molds needs to look more realistic, 3D... and inside the stream
+     there should be visible text of terms being multiplied."
+
+     They used to be one line laid across the casting - `(x + 2) × (x + 3)`
+     printed over the shape it was about to become, which puts the question and
+     the answer in the same place. In the stream they are the metal ARRIVING.
+
+     Measured as geometry, not as presence: every token's centre must fall
+     inside the stream's own box. A token that says the right thing in the
+     wrong place is the state this replaced, and a presence check would pass on
+     it.
+
+     READ THE DENOMINATOR: two pours - two brackets and a three-metal order,
+     which is five tokens rather than three and the case that has to shrink to
+     fit. It checks WHERE the text is and that it spells what went in. It says
+     nothing about how long it is on screen for, which is a timing question and
+     is recorded in SITE-STATE rather than asserted. */
+  /* IT NEEDS A STAGE, because `getBBox` is geometry and geometry needs layout.
+     The mold checks above read ATTRIBUTES off a detached scene, which is why
+     they never needed one - and why none of them could have caught text in the
+     wrong place. */
+  var mStage = document.createElement('div');
+  mStage.style.cssText = 'position:fixed; left:-16000px; top:0; width:430px';
+  document.body.appendChild(mStage);
+  [[[{m:1,k:2},{m:1,k:3}], 'two brackets'],
+   [[{m:0,k:2},{m:0,k:3},{m:0,k:5}], 'three plain metals']
+  ].forEach(function(mc){
+    chk('mold');
+    var mProd = ingotProduct(mc[0]);
+    var mSc = MF.moldScene('lantern', {ok:true, maths:MF.moldMaths(mc[0], mProd)});
+    mSc.setAttribute('data-pour','sound');
+    mStage.appendChild(mSc);
+    var mSvg = mSc.querySelector('svg');
+    var mStream = mSvg && mSvg.querySelector('.mdstream');
+    var mToks = mSvg ? [].slice.call(mSvg.querySelectorAll('.mdin')) : [];
+    if(!mStream || !mToks.length){
+      errs.push('mold: the pour on ' + mc[1] + ' drew ' + mToks.length +
+        ' terms in the stream and ' + (mStream ? 'a' : 'no') + ' stream');
+      mStage.removeChild(mSc); return;
+    }
+    var sBox = mStream.getBBox();
+    var outside = mToks.filter(function(n){
+      var b = n.getBBox(), cx = b.x + b.width/2, cy = b.y + b.height/2;
+      return cx < sBox.x || cx > sBox.x + sBox.width ||
+             cy < sBox.y || cy > sBox.y + sBox.height;
+    });
+    if(outside.length)
+      errs.push('mold: ' + outside.length + ' of ' + mToks.length + ' terms on ' + mc[1] +
+        ' sit outside the stream — "' + outside.map(function(n){ return n.textContent; }).join(' ') +
+        '" is printed somewhere else on the picture');
+    /* and they must spell what actually went in */
+    chk('mold');
+    var said = mToks.map(function(n){ return n.textContent; }).join(' ').replace(/\s+/g,' ').trim();
+    var want = MF.moldMaths(mc[0], mProd).into.join(' × ');
+    if(said !== want)
+      errs.push('mold: the stream on ' + mc[1] + ' reads "' + said + '" and what went in was "' + want + '"');
+    /* AND THE POUR COMES OUT OF A VESSEL. The channel it replaced was two flat
+       quadrilaterals seen from the same angle as the sand; what makes this read
+       as three-quarter and tipped is that the mouth is an ELLIPSE. */
+    chk('mold');
+    var mLadle = mSvg.querySelector('.mdladle');
+    if(!mLadle || !mLadle.querySelector('ellipse'))
+      errs.push('mold: the metal on ' + mc[1] + ' is not coming out of anything — ' +
+        'the pour needs a vessel with a mouth, not a channel');
+    mStage.removeChild(mSc);
+  });
+  /* CONTROL: put the terms back over the casting and the sweep must say so */
+  chk('mold');
+  (function(){
+    var cProd = ingotProduct([{m:1,k:2},{m:1,k:3}]);
+    var cSc = MF.moldScene('lantern', {ok:true, maths:MF.moldMaths([{m:1,k:2},{m:1,k:3}], cProd)});
+    cSc.setAttribute('data-pour','sound');
+    mStage.appendChild(cSc);
+    var cSvg = cSc.querySelector('svg');
+    var cStream = cSvg.querySelector('.mdstream');
+    [].forEach.call(cSvg.querySelectorAll('.mdin'), function(n){ n.setAttribute('x','256'); });
+    var cBox = cStream.getBBox();
+    var cOut = [].slice.call(cSvg.querySelectorAll('.mdin')).filter(function(n){
+      var b = n.getBBox(), cx = b.x + b.width/2;
+      return cx < cBox.x || cx > cBox.x + cBox.width;
+    });
+    mStage.removeChild(cSc);
+    if(!cOut.length)
+      errs.push('CONTROL: the stream sweep cannot see terms printed away from the stream');
+  })();
+  document.body.removeChild(mStage);
+
   /* CONTROL: a chain that skips straight to the answer must be caught */
   chk('mold');
   var pcReal = MF.moldMaths;

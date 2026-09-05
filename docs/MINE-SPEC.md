@@ -1356,3 +1356,55 @@ height buys is a lump at **58–111px** instead of 39–75.
 > Control: pin the window back to a fixed 542px and it reports 282px of empty wall.
 > It says nothing about the stacked layout under 900px, where there is no shaft beside it
 > to match.
+
+## 35. The metal comes out of a ladle, and the terms ride down the stream
+
+*User, 2026-09-05, with a reference image: "The illustration around the pouring molds needs
+to look more realistic, 3D, as the example shows, and inside the stream there should be
+visible text of terms being multiplied."*
+
+### 35a. A vessel, not a channel
+
+What was there was a flat iron gutter — two quadrilaterals and three rivets, seen from the
+same overhead angle as the sand. This is the ladle from the reference: a bucket seen in
+three quarters and **tipped over**, so the mouth is an **ellipse** rather than an edge, the
+metal in it is a pool you look down into, and the depth comes from shading — a gradient
+across the barrel, two bands round it, a lit near edge, a shadowed far one, a rim with a
+highlight on its top arc, and a hot glow thrown onto the sand.
+
+**The flat-art rule is relaxed here on purpose.** `MF.anvilScene` is flat fill and a dark
+outline, and it says so at length — the anvil was cut back to that *because it was the only
+rendered object on the site*. The user has now asked for this one to be rendered. It is one
+object, in one room, and the anvil is not it.
+
+The tip is **one transform on a static group**. Nothing in the ladle animates, so the
+attribute is safe — §5g is about *animated* elements, where a CSS transform would replace
+it. The pool and the stream animate their opacity only and carry no transform.
+
+### 35b. The terms are the metal arriving
+
+`(x + 2)` `×` `(x + 3)` fall **down the stream**, a beat apart, into the mold. They used to
+be one line laid across the casting — the question printed over the shape that answers it.
+Five tokens (a three-metal order) shrink to fit between the lip and the basin.
+
+> **One keyframe for the whole life of a token: in, hold, out.** It was two animations, both
+> filling `forwards` on the same property, and they spent the pour arguing about which owned
+> the opacity — sampled at 0.82 a third of a second *after* the fade-out should have finished
+> it. One animation is one delay and one answer, and it holds each term on screen for 1.4s
+> instead of the 0.9 that survived the argument.
+
+**Reduced motion keeps the stream up.** It used to be hidden — a stream frozen in mid-air
+over a flat channel looked like a mistake. Coming off the lip of a tipped ladle it is a pour
+held still, and the terms are *in* it, so hiding it would leave a reduced-motion student with
+no sight of what went in.
+
+> `mold` (119) asserts every token's centre falls **inside the stream's own box** and that
+> together they spell what went in, over two pours — two brackets, and the five-token
+> three-metal order that has to shrink. Measured as geometry, not presence: a token that
+> says the right thing in the wrong place is the state this replaced, and a presence check
+> would pass on it. It also requires the pour to come out of a vessel with a mouth. Control:
+> put the terms back over the casting and it reports 3 of 3 and 5 of 5 outside the stream.
+>
+> The check needed **its own stage** — `getBBox` is geometry and geometry needs layout. The
+> mold checks above it read attributes off a detached scene, which is why they never needed
+> one, and why none of them could have caught text in the wrong place.
