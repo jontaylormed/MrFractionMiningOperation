@@ -227,30 +227,10 @@ input::placeholder, textarea::placeholder{color:#6B5B48; opacity:1}
    the floor holds the pieces you choose between and the bar holds the head you
    cut, and choosing without seeing what you are cutting to is the hurdle this
    removes. */
-/* THE TWO WORK BOXES STAY LEVEL AND STAY SIDE BY SIDE.
-
-   They were `align-items:start`, so each was its own height, and the hammer box
-   grew whenever the anvil stage did - which is every swing. The pair drifted
-   apart exactly when a student was watching it. stretch keeps both boxes the
-   full height of the taller one, so the swing changes what is INSIDE the box
-   and never the shape of the row. */
-.workpair{display:grid; grid-template-columns:minmax(0,1fr) minmax(0,1fr); gap:14px; align-items:stretch}
-.workpair > *{min-width:0}
-/* and the hammer box carries no top margin in here - it had 12px from the days
-   it sat UNDER the floor box, which pushed it 12px lower than its partner */
-.workpair > .cutbar{margin-top:0}
-/* THE ANVIL STAGE HAS A RESERVED HEIGHT. It is the tallest thing in the hammer
-   box and it changes size while the blow plays, so without a floor under it the
-   box breathed in and out on every swing. */
-.workpair .anvilstage{min-height:186px; justify-content:flex-end}
-/* AND THE ROW KEEPS ITS HEIGHT WHEN THE LUMP IS FINISHED. The hammer bar is
-   genuinely gone at that point - no boxes, nothing to type - so the right box
-   lost 166px and the whole row collapsed under the student at the exact moment
-   of the last blow. A floor under the pair means the end of a lump changes
-   what is IN the box and never the shape of it. */
-@media (min-width:901px){ .workpair{min-height:524px} }
-.floorlead{min-height:3.1em}
-@media (max-width:900px){ .workpair{grid-template-columns:minmax(0,1fr)} }
+/* THE TWO WORK BOXES ARE ONE BOX NOW, so `.workpair` and everything that kept
+   its two columns level went with them. What replaced the pair is not a
+   narrower version of it: the anvil IS the work, the ore sits on it, and there
+   is no second column for a picture of an anvil to live in. */
 /* minmax(0,1fr), NOT 1fr: a bare 1fr column has min-width:auto and grows to
    fit its widest child, so the 2280px seam stretched the whole page sideways
    in the single-column layout instead of scrolling inside its viewport. */
@@ -682,9 +662,33 @@ input::placeholder, textarea::placeholder{color:#6B5B48; opacity:1}
 /* ---- the breaking floor: rock on one side of a swing, metal on the other.
        A piece must SAY which it is without being read - rock is dark and
        knocked about, native metal is a cast bar with a lit edge. ---- */
+/* THE HAMMER IS IN YOUR HAND WHILE YOU ARE STANDING HERE.
+
+   USER, 2026-09-04: "the mouse cursor in the layer should be a hammer."
+
+   It is the whole affordance for the thing that replaced the permanent swing
+   bar: there is no longer a button on screen saying what this floor is for, so
+   the pointer has to say it. The hotspot is the striking face, at (5,10).
+
+   It is declared as a custom property because `cursor` is inherited and
+   `.piece` sets its own - the ore on the anvil is exactly where the hammer
+   most needs to be showing, so that rule has to be able to ask for it by name.
+   Everything on the belt keeps a plain pointer: you are picking an instrument
+   up there, not hitting anything. */
 .floorbox{position:relative; overflow:hidden;
+  --hammer:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='32' height='32'%3E%3Cpath d='M13 12L27 26L24 29L10 15Z' fill='%238A6A45' stroke='%23241D18' stroke-width='2' stroke-linejoin='round'/%3E%3Cpath d='M3 6L14 2L19 9L8 13Z' fill='%23A9B5C0' stroke='%23241D18' stroke-width='2' stroke-linejoin='round'/%3E%3C/svg%3E") 5 10, pointer;
+  cursor:var(--hammer);
   background:linear-gradient(180deg,#3A3129,#241D18); border:3px solid var(--rock-3);
   border-radius:14px; padding:14px; color:#F0E2C8}
+.floorbox .piece,.floorbox .piece.rock{cursor:var(--hammer)}
+.floorbox .gearbox,.floorbox .gearbox *,.floorbox .btn,.floorbox .toolslot,
+.floorbox .piece.native{cursor:pointer}
+/* the cue under the anvil, which is the only instruction left on this floor */
+.anvilcue{margin-top:10px; text-align:center; color:#E4D5BB; font-size:14px}
+.anvilcue b{color:#FFE9C4}
+/* and what stands in its place when the lump is finished */
+.spentnote{margin-top:10px; text-align:center; color:#E4D5BB; font-size:14px; line-height:1.45}
+.spentnote b{color:var(--lamp)}
 /* the corner of the mine this happens in, drawn along the top and inert */
 .anvilart{position:absolute; left:0; right:0; top:0; height:64px; pointer-events:none; opacity:.55}
 .anvilart svg{display:block; width:100%; height:64px}
@@ -792,14 +796,41 @@ input::placeholder, textarea::placeholder{color:#6B5B48; opacity:1}
 /* the whole anvil scene, hammer included, is one drawing now - the hammer used
    to be a CSS box floating over the svg because it held the input boxes */
 .anvilstage{position:relative; width:100%; display:flex; flex-direction:column; align-items:center;
-  padding:0; overflow:visible}
-/* 260, not 340. The stage is the tallest thing on the bench and it sits below
-   the swing button now; at 340 it still pushed the belt and the pieces off the
-   top of a laptop screen when the blow landed. The `reach` group is what says
-   whether this number is small enough. */
-.anvilsvg{width:100%; max-width:260px}
+  padding:0; overflow:visible; min-height:210px; justify-content:flex-end}
+/* 420, not 260. It was capped at 260 because it was the tallest thing in a
+   two-column bench and it pushed the belt off a laptop screen. It is the ONLY
+   thing in the box now, and the ore standing on it has to be readable at arm's
+   length, so it gets the width back. The `reach` group is what says whether
+   this number is small enough. */
+.anvilsvg{position:relative; width:100%; max-width:420px}
 .anvilsvg svg{display:block; width:100%; height:auto; overflow:visible}
 .anvilsvg svg *{pointer-events:none}
+
+/* ---- THE ORE, ON TOP OF THE ANVIL ----
+   The mount is pinned over the anvil's face in percentages of the scene's own
+   340x232 viewBox - the face runs x 112..262 and its top is y 154, so the
+   stone's bottom sits at 33% up from the foot of the stage and it is a little
+   wider than the face, the way a lump of rock lies on one.
+   POSITION HERE, ANIMATION ON THE LUMP INSIDE (s5g). */
+.anvilmount{position:absolute; left:32%; right:26%; bottom:33%; z-index:3}
+/* the stone is a `.piece`, so the belt's drag and MF.pieceAt find it exactly
+   as they find a chip on the ground - but it must not LOOK like a chip. The
+   chip's own plate, clip-path and padding all come off; what is left is the
+   drawn rock and a hit area round it. */
+.piece.anvilore{display:block; width:100%; padding:0; min-width:0; min-height:0;
+  background:none; border:none; border-radius:0; clip-path:none; box-shadow:none;
+  gap:0; filter:none}
+.piece.rock.anvilore,.piece.native.anvilore{background:none; border-color:transparent; clip-path:none}
+.piece.rock.anvilore:hover .orerock,.piece.native.anvilore:hover .orerock{filter:brightness(1.14)}
+.piece.anvilore:focus-visible{outline:3px solid var(--lamp); outline-offset:4px}
+.piece.anvilore .orerock{max-width:none}
+/* and the instrument's tag rides on the top corner of the stone */
+/* `width:100%` on the base rule is for the slot under a chip on the ground,
+   where it is the chip's own footer. On the stone it is a tag pinned to the
+   corner, so it takes its own width back. */
+.toolslot.onanvil{position:absolute; right:-4px; top:-16px; z-index:4;
+  width:auto; margin-top:0; padding:5px 9px; display:inline-flex; align-items:center; gap:5px}
+.toolslot.onanvil .si{display:inline}
 
 /* ---- what you cut the head to ---- */
 .hrow{display:flex; align-items:center; justify-content:center; gap:9px; flex-wrap:wrap; margin-top:4px}
@@ -884,6 +915,12 @@ input::placeholder, textarea::placeholder{color:#6B5B48; opacity:1}
   76%{opacity:.3; transform:scale(1.6,.42)}
   84%,100%{opacity:0; transform:scale(1.9,.3)}
 }
+/* AND A SHATTERED LUMP IS GONE WHETHER OR NOT ANYTHING IS PLAYING. The class
+   is set by the paint, not by the animation, so a repaint of a finished bench -
+   or reduced motion, or coming back to the lump later - used to draw the stone
+   sitting whole on the anvil again. The keyframes above declare opacity at
+   every step, so they still drive it while the blow runs. */
+.anvilrock.shatter{opacity:0}
 .anvilstage[data-anim=hit] .anvilrock.shatter{transform-box:fill-box; transform-origin:center bottom;
   animation:rockgone 3000ms ease-out 1 forwards}
 
@@ -1365,9 +1402,31 @@ table.rosetta td.rx{font-family:var(--display); font-size:16px; color:var(--ink)
   text-align:right; gap:4px; margin:0; max-width:100%}
 .benchcorner .assaybtn{font-size:12px; padding:7px 12px; min-height:38px}
 .benchcorner .assayhint{font-size:12px; line-height:1.3; color:var(--ink)}
-/* the finishing blow lives in the hammer box's place, so the row never changes
-   shape between the last swing and the end of the lump */
-.endbar .anvilstage{min-height:186px}
+/* `.endbar` is gone with the second anvil it drew. The finishing blow lands on
+   the one anvil, like every other blow, and the stage's own min-height is what
+   keeps the box from changing shape between the last swing and the end. */
+
+/* ---- THE HAMMER PANEL, which is where the swing bar went ----
+   It is the bench's dark plate lifted into the dialog, so every colour in it -
+   the echo, the hints, the parens on the steel head - is the one that was
+   measured against #241D18 rather than against the panel's paper. */
+.hammerask{margin-top:0}
+.hammerask .askrock{max-width:230px; margin:8px auto 4px}
+.hammerask .swingrow{justify-content:center}
+.hammerask .swingbtn{width:100%}
+/* AND IT HAS TO FIT ITS OWN BOX ON A PHONE. The panel is capped at 88vh and
+   scrolls, so anything past the cap puts the swing button below the fold of a
+   dialog - which does not look like a thing that scrolls. Measured, not
+   guessed: the `reach` group caught this at 380px at 870px of content in a
+   681px box, and these are the numbers that brought it under. */
+@media (max-width:620px){
+  .hammerask .askrock{max-width:148px; margin:4px auto 2px}
+  .hammerask .hrow{gap:6px; margin-top:2px}
+  .hammerask .hecho{margin-top:5px}
+  .hammerask .hint{font-size:12.5px; line-height:1.35}
+  .toolsheet .hammerask{padding:10px 11px}
+  .scrim{padding:10px}
+}
 @media (max-width:560px){
   .benchhead{flex-direction:column}
   /* FLEX-BASIS IS A HEIGHT ONCE THE AXIS TURNS. .benchore carries
@@ -7481,6 +7540,7 @@ MF.echoHammer = function(B){
    Scenery, and inert: the `overlay` group asserts nothing in here takes a click.
    ========================================================================= */
 MF.anvilScene = function(ore, opts){
+  var op = opts || {};
   var wrap = E('div','anvilsvg');
   var W=340, VH=232;
   var svg = S('svg',{viewBox:'0 0 '+W+' '+VH,'aria-hidden':'true'});
@@ -7514,26 +7574,18 @@ MF.anvilScene = function(ore, opts){
      read as an anvil rather than as a grey block */
   svg.appendChild(S('rect',{x:232,y:158,width:11,height:9,rx:1,fill:'#2A3138'}));
 
-  /* ---- THE LUMP, on the face where the hammer lands ----
-     `shatter` is the finishing blow: the last piece breaks up under the hammer
-     and LEAVES THE ANVIL BARE. Drawing it still sitting there afterwards said
-     there was ore left to work when there was none - the whole point of that
-     blow is that the lump is finished. */
-  var g = S('g',{class:'anvilrock' + (opts && opts.shatter ? ' shatter' : '')});
-  g.appendChild(S('ellipse',{cx:186,cy:153,rx:56,ry:5,fill:'#1B2126',opacity:'.45'}));
-  g.appendChild(S('polygon',{
-    points:'140,112 176,100 214,106 234,124 228,144 190,152 148,148 130,130',
-    fill:'#6B5A47',stroke:'#2E2620','stroke-width':'3','stroke-linejoin':'round'}));
-  /* the seam, which is the only mark on it that means anything */
-  g.appendChild(S('path',{d:'M138 122 q26 -9 50 -3 q22 6 44 -4',fill:'none',stroke:'#C96A1F','stroke-width':'3.5','stroke-linecap':'round'}));
-  var label = S('text',{x:'182',y:'134','text-anchor':'middle',
-    'font-family':"'Black Han Sans','Arial Black',Impact,sans-serif",fill:'#FFF3DE',
-    'paint-order':'stroke',stroke:'#241D18','stroke-width':'5','stroke-linejoin':'round'});
-  label.textContent = MF.oreText(ore);
-  var chars = label.textContent.length;
-  label.setAttribute('font-size', String(chars > 11 ? Math.max(11, 20 - (chars-11)*1.05) : 20));
-  g.appendChild(label);
-  svg.appendChild(g);
+  /* THE LUMP IS NOT DRAWN INSIDE THIS SVG ANY MORE.
+     It used to be a polygon with an SVG <text> on it, and that could not be
+     what the user asked for on 2026-09-04: "the ore should be on top of the
+     anvil, and its text should change as different [tools] are applied and
+     unapplied". An SVG <text> cannot carry the coloured spans an instrument's
+     re-spelling is made of (MF.oreDisplay), and it paints with `fill` while
+     inheriting the `color` a contrast sweep reads (VERIFICATION s59).
+
+     So the ore on the anvil is MF.oreRock - the same drawn lump the seam and
+     the cart already show, with the expression cut into the stone as HTML
+     pinned over it - mounted below, over the anvil's face. It still carries
+     the class `anvilrock`, so the squash and the shatter find it unchanged. */
 
   /* ---- THE HAMMER: upright, face down, standing over the work ----
      The pivot is the hand at (176,10). Positioning lives on this outer mount;
@@ -7556,6 +7608,58 @@ MF.anvilScene = function(ore, opts){
   svg.appendChild(mount);
 
   wrap.appendChild(svg);
+
+  /* ---- THE ORE, STANDING ON THE ANVIL FACE ----
+
+     `.anvilmount` is the POSITIONING - an absolute box pinned over the anvil's
+     face in percentages of the scene's own viewBox - and the lump inside it is
+     what ANIMATES. Position on the outer mount, animate the inner: the rule
+     s5g exists for, and the reason the stone does not fly off the anvil the
+     instant it is struck.
+
+     If `opts.piece` is given, the lump is LIVE: a `.piece` carrying data-piece,
+     so the belt's drag and MF.pieceAt reach it exactly as they reach a piece
+     lying on the floor, and a click on it brings the hammer. Without it the
+     scene is what it always was - scenery, and inert. */
+  var seat = E('div','anvilmount');
+  var pc = op.piece || null;
+  var nat = MF.isNative(ore);
+  var rock = MF.oreRock(ore, {native:nat});
+  rock.classList.add('anvilrock');
+  if(op.shatter) rock.classList.add('shatter');
+  if(pc){
+    var hit = E('button','piece anvilore ' + (nat ? 'native' : 'rock')); hit.type='button';
+    hit.setAttribute('data-piece', pc.id);
+    hit.setAttribute('aria-label', MF.oreDisplayText(ore) +
+      ' — on the anvil. Click it to bring the hammer down on it.');
+    if(MF.state.armedTool) hit.setAttribute('data-tooldrop','open');
+    on(hit,'click',function(){
+      /* AN INSTRUMENT IN HAND GOES ON THE ROCK, and does not also swing.
+         One click, one act - the same rule the floor pieces follow. */
+      if(MF.state.armedTool){
+        var k = MF.state.armedTool; MF.state.armedTool = null;
+        MF.applyTool(k, pc.id);
+        return;
+      }
+      MF.openHammer(MF.state.anvil, hit);
+    });
+    hit.appendChild(rock);
+    seat.appendChild(hit);
+    /* AND THE WAY AN INSTRUMENT COMES OFF AGAIN (s23), on the stone itself. */
+    var tl = pc.tool && MF.hasTool(pc.tool) ? MF.TOOLS[pc.tool] : null;
+    if(tl){
+      var slot = E('button','toolslot filled onanvil'); slot.type='button';
+      slot.setAttribute('data-piece', pc.id);
+      slot.innerHTML = '<span class="si">' + tl.ic + '</span><span class="sx">&times;</span>';
+      slot.setAttribute('aria-label', tl.nm + ' is on ' + MF.oreText(ore) + '. Take it off.');
+      slot.title = 'Take the ' + tl.nm + ' off';
+      on(slot,'click',function(e){ e.stopPropagation(); MF.clearTool(ore, pc); });
+      seat.appendChild(slot);
+    }
+  } else {
+    seat.appendChild(rock);
+  }
+  wrap.appendChild(seat);
   return wrap;
 };
 
@@ -7565,13 +7669,42 @@ MF.anvilScene = function(ore, opts){
    (x)" - a shape nobody had chosen, sitting there looking like a suggestion. */
 MF.pickDefault = function(ore){ return {m:'', k:''}; };
 
+/* =========================================================================
+   THE BREAKING FLOOR: ONE ANVIL, THE BELT OVER IT, AND THE ORE ON TOP.
+
+   USER, 2026-09-04: "after the breaking floor has been selected from the cart,
+   an anvil should appear with a tool belt above it. The ore should be on top of
+   the anvil, and its text should change as different [tools] are applied and
+   unapplied. Then the mouse cursor in the layer should be a hammer. When the
+   mouse clicks on the ore, a pop-up box should ask what factor to hammer into
+   the ore. And then it should split for this process to be repeated."
+
+   WHAT WENT, AND WHY IT WAS IN THE WAY:
+
+   - THE TWO-COLUMN `workpair`. One box held a row of chips and the belt; the
+     other held a picture of an anvil, the type-in boxes and the swing button.
+     So the anvil a student was looking at was NOT the thing their ore was on -
+     the ore was a chip in the other box - and the picture was decoration
+     beside the work rather than the work itself.
+   - THE PERMANENT HAMMER BAR. Two number boxes, a label, an echo line, a hint
+     and a button, sitting under the anvil at all times whether or not the
+     student had chosen anything to hit. It is a question, and a question that
+     is always on screen stops reading as one. It is asked now, once, when the
+     ore is struck.
+   - THE SECOND ANVIL. `endbar` drew a whole second stage for the last blow.
+     There is one anvil, and the last blow lands on it like every other.
+
+   What is here is the physical loop and nothing else: the belt you reach up
+   to, the anvil you work on, the stone on it, and whatever has already come
+   off it lying on the ground.
+   ========================================================================= */
 MF.paintBreak = function(host, B){
   var pieces = B.floor;
   var done = pieces.every(function(p){ return MF.isNative(p.ore); });
 
-  /* THE PICK NEVER RESTS ON FINISHED METAL. Without this the swing bar sat
-     over an ingot and every swing came back "nothing left in that one",
-     which reads as a broken control rather than as a finished piece. */
+  /* THE HAMMER NEVER RESTS ON FINISHED METAL. Without this the anvil held an
+     ingot and every swing came back "nothing left in that one", which reads as
+     a broken control rather than as a finished piece. */
   if(!done && (B.at >= pieces.length || MF.isNative(pieces[B.at].ore))){
     for(var i=0;i<pieces.length;i++){ if(!MF.isNative(pieces[i].ore)){ B.at=i; break; } }
   }
@@ -7579,98 +7712,114 @@ MF.paintBreak = function(host, B){
   /* READ THE SWING FLAG ONCE, AT THE TOP, AND CLEAR IT HERE.
      It used to be consumed by the floorbox partway down this function, and the
      anvil stage - built further down still - then read it as null. So the
-     burst fired and THE HAMMER NEVER MOVED: a flash, and a THUD in the box
-     above the hammer. Two readers, one flag, and whichever ran first won. */
+     burst fired and THE HAMMER NEVER MOVED. Two readers, one flag, and
+     whichever ran first won. There is one stage now, but the flag is still
+     read once and cleared once, because that is what made it safe. */
   var anim = B.anim;
   B.anim = null;
 
-  /* NO LEAD LINE. It said "name one thing that is in there, and swing", which
-     is what the hammer bar says on its own label three inches below - and it
-     was the last of the text above the work (§25). The reserved height it
-     carried went with it; there is nothing left up here to jump. */
+  /* THE INSTRUMENT RIDES WITH THE ORE. A tool dropped on a lump in the cart is
+     still on it when the lump reaches the floor - it is the same object - so
+     the piece takes its own tool if it has one and the ore's otherwise, and
+     the ore takes the piece's back, because MF.oreDisplay reads the ORE.
 
-  /* ---- the floor: every piece this lump has come apart into ---- */
+     THIS RUNS OVER EVERY PIECE, BEFORE ANYTHING IS DRAWN. It used to sit inside
+     the chip loop, and the lump on the anvil is not drawn by that loop any
+     more - so the instrument a student put on the ore in the cart would have
+     reached the chips on the ground and not the stone in front of them. */
+  pieces.forEach(function(p){
+    if(!p.tool && p.ore && p.ore.tool) p.tool = p.ore.tool;
+    if(p.tool && p.ore) p.ore.tool = p.tool;
+  });
+
   var fl = E('div','floorbox');
   fl.appendChild(MF.anvilArt());
-  fl.appendChild(H('h4',null, pieces.length===1 ? 'On the anvil' : 'On the floor'));
-  /* THE BELT HANGS HERE, inside the floorbox and directly above the pieces.
-     It used to live in the yard column on the far side of the page: the drag
-     crossed the whole screen, and under 1080px the columns stack so it was a
-     scroll away - and you cannot scroll while you are holding something. */
-  /* THE ORE GOES AT THE TOP OF THE BOX AND THE BELT UNDER IT (§20). The belt
-     was first, so the thing a student came here to look at was below a rack of
-     instruments. What you are working is the headline; what you can hold to it
-     follows. */
-  var rowf = E('div','pieces');
-  pieces.forEach(function(p, idx){
-    var nat = MF.isNative(p.ore);
-    var cell = E('div','piececell');
-    var b = E('button','piece' + (nat?' native':' rock') + (idx===B.at && !nat?' under':'') + (p.fresh?' fresh':''));
-    b.type='button';
-    b.setAttribute('data-piece', p.id);
-    /* THE INSTRUMENT RE-SPELLS THE PIECE ITSELF (§19), in the chip, where the
-       expression already was. Nothing is drawn beside it. */
-    b.appendChild(H('span','pv', MF.oreDisplay(p.ore)));
-    b.appendChild(H('span','pt', nat ? 'native metal' : 'still rock'));
-    b.setAttribute('aria-label', MF.oreDisplayText(p.ore) + (nat
-      ? ' — native metal. Nothing in it comes apart.'
-      : ' — still rock. Put it under the pick.'));
-    if(MF.state.armedTool) b.setAttribute('data-tooldrop','open');
-    on(b,'click',function(){
-      /* AN INSTRUMENT IN HAND GOES ON THE ROCK, and does not also move the
-         pick. One click, one act. */
-      if(MF.state.armedTool){
-        var k = MF.state.armedTool; MF.state.armedTool = null;
-        MF.applyTool(k, p.id);
-        return;
-      }
-      if(nat) B.last = {ok:false, native:true,
-        why:'Nothing left in that one. ' + MF.oreText(p.ore) + ' does not come apart — it is an element.'};
-      else { B.at = idx; B.last = null; }
-      MF.paintMine();
-      MF.knockPiece(p.id);
-    });
-    cell.appendChild(b);
 
-    /* THE INSTRUMENT RIDES WITH THE ORE. A tool dropped on a lump in the cart
-       is still on it when the lump reaches the floor - it is the same object -
-       so the piece takes its own tool if it has one and the ore's otherwise.
-       Without this the reading a student set up in the cart vanished the
-       moment they sent the lump on, which is the opposite of continuity. */
-    if(!p.tool && p.ore && p.ore.tool) p.tool = p.ore.tool;
-    /* and back the other way, because MF.oreDisplay reads the ORE - a tool
-       dropped on a piece has to reach the expression it re-spells */
-    if(p.tool && p.ore) p.ore.tool = p.tool;
-    /* THE SLOT IS HOW A TOOL COMES OFF AGAIN (§23). It only exists when one is
-       ON the piece, and clicking it puts the instrument back on the belt and
-       the plain expression back on the stone.
-
-       It used to open a sheet - `openTool` when filled, a chooser when empty -
-       and that sheet stopped existing when the mine stopped explaining itself
-       (§20b), so the filled slot was a control that opened nothing. The empty
-       one is gone too: the belt is how an instrument is picked up now, and a
-       second way in is the "clicked box" this screen has been shedding. */
-    var t = p.tool && MF.hasTool(p.tool) ? MF.TOOLS[p.tool] : null;
-    if(t){
-      var slot = E('button','toolslot filled'); slot.type='button';
-      slot.setAttribute('data-piece', p.id);
-      slot.innerHTML = '<span class="si">' + t.ic + '</span><span class="sx">&times;</span>';
-      slot.setAttribute('aria-label', t.nm + ' is on ' + MF.oreText(p.ore) + '. Take it off.');
-      slot.title = 'Take the ' + t.nm + ' off';
-      on(slot,'click',function(e){ e.stopPropagation(); MF.clearTool(p.ore, p); });
-      cell.appendChild(slot);
-    }
-    rowf.appendChild(cell);
-  });
-  fl.appendChild(rowf);
+  /* ---- THE BELT, ABOVE THE ANVIL ----
+     It hung under the pieces before, which put a rack of instruments between
+     the ore and the ground it was lying on. Over the anvil is where a belt
+     hangs and where a hand reaches: you take an instrument down onto the work.
+     The `reach` group measures that the belt and the stone are on one screen. */
   MF.paintBelt(fl, true);
-  /* THE TWO WORK BOXES GO SIDE BY SIDE. What is on the floor and what is under
-     the hammer are the one pairing the whole act depends on - you choose a
-     piece and you cut the head to something you can see. Stacked, they could
-     not be looked at together. */
-  var pair = E('div','workpair');
-  pair.appendChild(fl);
-  host.appendChild(pair);
+
+  /* ---- THE ANVIL, AND THE ORE ON TOP OF IT ---- */
+  var onIt = done ? (B.last && B.last.struck ? B.last.struck : pieces[0].ore)
+                  : pieces[B.at].ore;
+  var stage = E('div','anvilstage');
+  if(anim) stage.setAttribute('data-anim', anim);
+  /* the piece is handed in ONLY while there is something to break: it is what
+     makes the stone live, and a finished lump leaves the anvil bare */
+  stage.appendChild(MF.anvilScene(onIt, {shatter:done, piece: done ? null : pieces[B.at]}));
+  /* THE BURST BELONGS WHERE THE HAMMER LANDS. */
+  stage.appendChild(MF.thudBurst(anim));
+  fl.appendChild(stage);
+
+  if(done){
+    fl.appendChild(H('div','spentnote','<b>Every piece is native metal.</b> ' +
+      'Nothing in any of them comes apart further. That is the end of the lump &mdash; ' +
+      'not a failure to get further into it.'));
+  } else {
+    B._pieceIsNum = (pieces[B.at].ore.kind === 'number');
+    fl.appendChild(H('div','anvilcue','<b>Click the ore.</b> The hammer will ask what you are cutting out of it.'));
+  }
+
+  /* ---- WHAT HAS ALREADY COME OFF, LYING ON THE GROUND ----
+     Only ever the pieces that are NOT on the anvil, so the stone in front of
+     the student appears exactly once. A first lump has nothing down here at
+     all, which is the state the user described: an anvil, a belt, and the ore
+     on top of it. */
+  var rest = [];
+  pieces.forEach(function(p, idx){ if(done || idx !== B.at) rest.push({p:p, i:idx}); });
+  if(rest.length){
+    fl.appendChild(H('h4',null,'On the floor'));
+    var rowf = E('div','pieces');
+    rest.forEach(function(e){
+      var p = e.p, idx = e.i;
+      var nat = MF.isNative(p.ore);
+      var cell = E('div','piececell');
+      var b = E('button','piece' + (nat?' native':' rock') + (p.fresh?' fresh':''));
+      b.type='button';
+      b.setAttribute('data-piece', p.id);
+      /* THE INSTRUMENT RE-SPELLS THE PIECE ITSELF, in the chip, where the
+         expression already was. Nothing is drawn beside it. */
+      b.appendChild(H('span','pv', MF.oreDisplay(p.ore)));
+      b.appendChild(H('span','pt', nat ? 'native metal' : 'still rock'));
+      b.setAttribute('aria-label', MF.oreDisplayText(p.ore) + (nat
+        ? ' — native metal. Nothing in it comes apart.'
+        : ' — still rock. Click it to put it on the anvil.'));
+      if(MF.state.armedTool) b.setAttribute('data-tooldrop','open');
+      on(b,'click',function(){
+        if(MF.state.armedTool){
+          var k = MF.state.armedTool; MF.state.armedTool = null;
+          MF.applyTool(k, p.id);
+          return;
+        }
+        /* A PIECE ON THE GROUND GOES ON THE ANVIL. It does not also open the
+           hammer: picking a rock up and deciding what to hit it with are two
+           acts, and running them together would ask the question about a stone
+           the student had not yet seen sitting on the anvil. */
+        if(nat) B.last = {ok:false, native:true,
+          why:'Nothing left in that one. ' + MF.oreText(p.ore) + ' does not come apart — it is an element.'};
+        else { B.at = idx; B.last = null; }
+        MF.paintMine();
+        MF.knockPiece(p.id);
+      });
+      cell.appendChild(b);
+      var t = p.tool && MF.hasTool(p.tool) ? MF.TOOLS[p.tool] : null;
+      if(t){
+        var slot = E('button','toolslot filled'); slot.type='button';
+        slot.setAttribute('data-piece', p.id);
+        slot.innerHTML = '<span class="si">' + t.ic + '</span><span class="sx">&times;</span>';
+        slot.setAttribute('aria-label', t.nm + ' is on ' + MF.oreText(p.ore) + '. Take it off.');
+        slot.title = 'Take the ' + t.nm + ' off';
+        on(slot,'click',function(ev){ ev.stopPropagation(); MF.clearTool(p.ore, p); });
+        cell.appendChild(slot);
+      }
+      rowf.appendChild(cell);
+    });
+    fl.appendChild(rowf);
+  }
+  host.appendChild(fl);
 
   /* ---- what the last swing did. A description of the rock, every time ---- */
   if(B.last){
@@ -7679,7 +7828,7 @@ MF.paintBreak = function(host, B){
         '</b> came out of it, and <b>' + MF.oreLabel(B.last.right) + '</b> is what was left behind.'));
       /* the auger traces the division it just watched run */
       if(MF.hasTool('auger')) MF.augerTrace(host, B.last);
-      /* the rail, if it is on the belt: where the x² in that lump came from */
+      /* the rail, if it is on the belt: where the x squared in that lump came from */
       var l=B.last.left, r=B.last.right, flat = function(o){ return o.kind==='number' || o.a===0; };
       if(MF.hasTool('shifter') && flat(l) && flat(r))
         MF.paintShifterRail(host, MF.oreToIngot(l), MF.oreToIngot(r));
@@ -7687,134 +7836,8 @@ MF.paintBreak = function(host, B){
       host.appendChild(H('div','note','<b>' + B.last.why + '</b>' +
         (B.last.swung ? ' The hammer was cut to <b>' +
             (B.last.swung.m===0 ? num(B.last.swung.k) : '(' + ingotHtml(B.last.swung) + ')') + '</b>.' : '') +
-        (B.last.native ? '' : ' Nothing is lost — the rock is exactly as it was, and you can swing again.')));
+        (B.last.native ? '' : ' Nothing is lost &mdash; the rock is exactly as it was, and you can swing again.')));
     }
-  }
-
-  /* ---- the swing, or the end of the lump ---- */
-  if(done){
-    /* THE FINISHING BLOW LANDS IN THE HAMMER BOX, where every other blow has
-       landed. It used to be appended to the BENCH - below the pair entirely -
-       so the last and best swing of a lump played out underneath the floor,
-       after the two boxes, and the whole column grew a stage taller to hold it.
-       It goes in the same box the hammer bar occupied, so the pair keeps its
-       two columns and neither box moves or changes size at any point in the
-       life of a lump. */
-    var endBox = E('div','cutbar endbar');
-    endBox.appendChild(H('div','cutlab','THE LAST BLOW'));
-    if(anim && B.last && B.last.struck){
-      var endStage = E('div','anvilstage done');
-      endStage.setAttribute('data-anim', anim);
-      endStage.appendChild(MF.anvilScene(B.last.struck, {shatter:true}));
-      endStage.appendChild(MF.thudBurst(anim));
-      endBox.appendChild(endStage);
-    } else {
-      /* no blow to replay (a repaint, or reduced motion): the box still has to
-         be there and still has to be the same size, or the row collapses */
-      var restStage = E('div','anvilstage done');
-      restStage.appendChild(MF.anvilScene(B.last && B.last.struck ? B.last.struck : pieces[0].ore, {shatter:true}));
-      endBox.appendChild(restStage);
-    }
-    endBox.appendChild(H('div','note good','<b>Every piece is native metal.</b> ' +
-      'Nothing in any of them comes apart further. That is the end of the lump — ' +
-      'not a failure to get further into it.'));
-    pair.appendChild(endBox);
-  } else {
-    var t = pieces[B.at];
-    /* the boxes are cut for the lump under the pick: an x-shaped pick on a
-       number is a swing that can never land */
-    if(B.rawFor !== t.id){ B.raw = MF.pickDefault(t.ore); B.rawFor = t.id; }
-
-    /* ---- THE HAMMER BAR: THE CONTROLS, THEN THE PICTURE ----
-       Back to typing it. The drag-a-tile-into-the-head version made the head a
-       wide plate that had to hold two sign toggles, two number boxes and two
-       remove buttons - it stopped looking like a hammer and it overflowed the
-       column.
-
-       WHAT SURVIVED FROM THE TILES, because it was the actual fix and not the
-       mechanism: an empty x-part box means ONE, not nought (MF.readPickM), and
-       the bar echoes what the head is cut to before you swing it. Those are
-       what stop a cleared box swinging 6 at a lump you meant to hit with
-       (x + 6).
-
-       AND THE PICTURE IS NOW BELOW THE CONTROLS RATHER THAN ABOVE THEM. The
-       anvil-and-hammer stage is the tallest thing on the bench, and it sat
-       between the pieces and the boxes you type into - so the belt, the piece
-       under the pick and the swing button could not be on one screen together
-       and every swing meant scrolling back up to check what you were hitting.
-       The order is the order of the work now: choose a piece, cut the head,
-       swing - and the blow plays out underneath the button that fired it.
-       The `reach` group measures that the three fit in one viewport. */
-    var cut = E('div','cutbar');
-    cut.appendChild(H('div','cutlab','UNDER THE HAMMER'));
-
-    var stage = E('div','anvilstage');
-    if(anim) stage.setAttribute('data-anim', anim);
-    stage.appendChild(MF.anvilScene(t.ore));
-    /* THE BURST BELONGS WHERE THE HAMMER LANDS. It was drawn in the floorbox
-       above, so the noise came from one box and the blow from another. */
-    stage.appendChild(MF.thudBurst(anim));
-
-    var isNum = t.ore.kind==='number';
-    B._pieceIsNum = isNum;
-
-    var inner = E('div','hrow');
-    inner.appendChild(H('span','hlab','cut the head to'));
-    var box = E('div','hbox');
-    if(!isNum){
-      box.appendChild(H('span','paren','('));
-      var mi = document.createElement('input'); mi.type='text'; mi.inputMode='numeric';
-      mi.value = B.raw.m; mi.placeholder = '1';
-      mi.setAttribute('aria-label','how many x — leave it empty for a single x, or put 0 for a plain number');
-      on(mi,'input',function(){ B.raw.m = mi.value; MF.echoHammer(B); });
-      on(mi,'keydown',function(e){ if(e.key==='Enter'){ e.preventDefault(); MF.swing(B); } });
-      box.appendChild(mi);
-      box.appendChild(H('span','paren','x +'));
-    }
-    var ki = document.createElement('input'); ki.type='text'; ki.inputMode='numeric';
-    ki.value = B.raw.k; ki.placeholder = '0';
-    ki.setAttribute('aria-label', isNum ? 'the number you are taking out' : 'the number on the end');
-    on(ki,'input',function(){ B.raw.k = ki.value; MF.echoHammer(B); });
-    on(ki,'keydown',function(e){ if(e.key==='Enter'){ e.preventDefault(); MF.swing(B); } });
-    box.appendChild(ki);
-    if(!isNum) box.appendChild(H('span','paren',')'));
-    inner.appendChild(box);
-    cut.appendChild(inner);
-
-    var echo = E('div','hecho');
-    cut.appendChild(echo);
-    B._echo = echo;
-    MF.echoHammer(B);
-
-    cut.appendChild(H('div','hint', isNum
-      ? 'A whole number that runs through it.'
-      : 'An empty x-part is a single x. Put 0 there to take out a plain number instead.'));
-
-    var swr = E('div','row swingrow'); swr.style.marginTop='10px';
-    var sw = E('button','btn primary big swingbtn','Bring the hammer down'); sw.type='button';
-    on(sw,'click',function(){ MF.swing(B); });
-    swr.appendChild(sw);
-    swr.appendChild(H('div','hint','Nothing here says whether it will run. The rock does.'));
-    cut.appendChild(swr);
-    /* THE ANVIL GOES IN LAST. It is the tallest thing here and it is a
-       PICTURE - the blow lands under the button that fired it. */
-    cut.appendChild(stage);
-    /* the LOCAL pair, not one cached on B. B outlives the call, so a cached
-       node is last paint's node - detached - and the hammer bar would be built
-       into a DOM nothing is showing. That is the fault class that already cost
-       a review cycle (VERIFICATION s35). */
-    pair.appendChild(cut);
-    B._cutbar = cut;
-    B._stage = stage;
-
-    /* THE PAIR SCANNER IS NOT FREE ANY MORE. It is the Core Drill's reading,
-       held to the piece you choose - the same move §10a already made with the
-       casting preview, and for the same reason: a list of every pair sitting
-       permanently under the lump did the looking for you. It also made this
-       column long enough that the swing button fell below the fold.
-       Without the drill you are not stuck: you name something and swing. */
-    if(!MF.hasTool('drill'))
-      cut.appendChild(H('div','hint','<span style="opacity:.8">No instrument on this one. A core drill would read the pairs out of it — the forge knows how to make one.</span>'));
   }
 
   /* ---- the ways off the floor. Always at least one. ---- */
@@ -7836,6 +7859,116 @@ MF.paintBreak = function(host, B){
   on(leave,'click',function(){ MF.state.selected = null; MF.paintMine(); });
   exits.appendChild(leave);
   host.appendChild(exits);
+};
+
+/* =========================================================================
+   THE HAMMER, ASKED FOR ONCE.
+
+   USER: "When the mouse clicks on the ore, a pop-up box should ask what factor
+   to hammer into the ore. And then it should split for this process to be
+   repeated."
+
+   Everything in here was on the bench permanently until this commit: the two
+   number boxes, the echo of what the head is cut to, the line about an empty
+   x-part meaning one, and the swing itself. None of it is new and none of it
+   changed - what changed is WHEN it is on screen. A question that is always
+   showing is not being asked.
+
+   IT CLOSES BEFORE IT SWINGS. MF.swing repaints the mine, which destroys the
+   button that opened this panel; leaving the scrim up over a repainted bench
+   would cover the blow the student just struck. Closing first also means one
+   panel is one blow - a glance comes back as a note beside the anvil and the
+   ore is still sitting there to be clicked again, which is the loop.
+   ========================================================================= */
+MF.openHammer = function(B, opener){
+  if(!B) return;
+  var t = B.floor[B.at];
+  if(!t || MF.isNative(t.ore)) return;
+  var ore = t.ore, isNum = ore.kind === 'number';
+  /* the boxes are cut for the lump under the hammer: an x-shaped head on a
+     plain number is a swing that can never land */
+  if(B.rawFor !== t.id){ B.raw = MF.pickDefault(ore); B.rawFor = t.id; }
+  B._pieceIsNum = isNum;
+
+  MF._openSheet({
+    label: 'The hammer, over ' + MF.oreDisplayText(ore),
+    icon: '🔨',
+    /* SHORT, BECAUSE THE HEAD IS 155px OF A 680px BOX AT 380px OTHERWISE.
+       "What are you cutting out of it?" wrapped to three lines beside a
+       three-line close button, and between them they were most of the reason
+       the swing button fell below the fold of a dialog. This is the mine's own
+       phrase for the act, and it fits on one. */
+    title: 'Name one thing in it',
+    sub: '<b>' + MF.oreLabel(ore) + '</b>',
+    closeText: 'Put it down',
+    opener: opener,
+    foot: 'The rock decides, not this panel. <b>Esc</b> puts the hammer down.',
+    fill: function(body){
+      var cut = E('div','cutbar hammerask');
+      /* NO `cutlab` HERE. The panel's own title asks the question and the row
+         below labels the boxes; a third heading saying the same thing again is
+         the furniture this whole redesign is taking off the floor - and on a
+         phone it was 22px of the overflow the `reach` group caught. */
+
+      /* THE ORE ITSELF, IN THE PANEL. The question is about this stone, and the
+         numbers belong on it - not restated as a sentence beside it. */
+      var shown = MF.oreRock(ore, {native:false});
+      shown.classList.add('askrock');
+      cut.appendChild(shown);
+
+      var inner = E('div','hrow');
+      inner.appendChild(H('span','hlab','cut the head to'));
+      var box = E('div','hbox');
+      var fire = function(e){ if(e.key==='Enter'){ e.preventDefault(); MF.closeTool(); MF.swing(B); } };
+      if(!isNum){
+        box.appendChild(H('span','paren','('));
+        var mi = document.createElement('input'); mi.type='text'; mi.inputMode='numeric';
+        mi.value = B.raw.m; mi.placeholder = '1';
+        mi.setAttribute('aria-label','how many x — leave it empty for a single x, or put 0 for a plain number');
+        on(mi,'input',function(){ B.raw.m = mi.value; MF.echoHammer(B); });
+        on(mi,'keydown',fire);
+        box.appendChild(mi);
+        box.appendChild(H('span','paren','x +'));
+      }
+      var ki = document.createElement('input'); ki.type='text'; ki.inputMode='numeric';
+      ki.value = B.raw.k; ki.placeholder = '0';
+      ki.setAttribute('aria-label', isNum ? 'the number you are taking out' : 'the number on the end');
+      on(ki,'input',function(){ B.raw.k = ki.value; MF.echoHammer(B); });
+      on(ki,'keydown',fire);
+      box.appendChild(ki);
+      if(!isNum) box.appendChild(H('span','paren',')'));
+      inner.appendChild(box);
+      cut.appendChild(inner);
+
+      var echo = E('div','hecho');
+      cut.appendChild(echo);
+      B._echo = echo;
+      MF.echoHammer(B);
+
+      cut.appendChild(H('div','hint', isNum
+        ? 'A whole number that runs through it.'
+        : 'An empty x-part is a single x. Put 0 there to take out a plain number instead.'));
+
+      var swr = E('div','row swingrow'); swr.style.marginTop='10px';
+      var sw = E('button','btn primary big swingbtn','Bring the hammer down'); sw.type='button';
+      on(sw,'click',function(){ MF.closeTool(); MF.swing(B); });
+      swr.appendChild(sw);
+      cut.appendChild(swr);
+
+      /* THE PAIR SCANNER IS NOT FREE. It is the Core Drill's reading, held to
+         the piece you chose - a list of every pair sitting permanently under
+         the lump did the looking for you. Without the drill you are not stuck:
+         you name something and swing. */
+      if(!MF.hasTool('drill'))
+        cut.appendChild(H('div','hint','<span style="opacity:.8">A core drill would read the pairs out of this one.</span>'));
+
+      body.appendChild(cut);
+    }
+  });
+  /* AND THE CURSOR LANDS IN THE BOX. The panel opened because the student
+     clicked the ore meaning to hit it; the next thing they do is type. */
+  var first = MF._sheet && MF._sheet.sheet.querySelector('.hbox input');
+  if(first) first.focus();
 };
 
 /* THE SWING. The only thing in the mine that decides anything, and all it
@@ -9671,10 +9804,26 @@ MF.validate = function(){
     ngStage.appendChild(host);
     try { MF.paintAnvil(host); }
     catch(e){ errs.push('nogate: the bench threw on ' + MF.oreText(ore) + ': ' + e.message); ngStage.removeChild(host); return; }
-    var swing = [].slice.call(host.querySelectorAll('button')).filter(function(b){
-      return /bring the hammer down/i.test(b.textContent||''); })[0];
-    if(!swing)
-      errs.push('nogate: a freshly dug ' + MF.oreText(ore) + ' lands on a bench with no way to swing — something is gating the hammer');
+    /* THE SWING IS ONE CLICK AWAY, AND THE CLICK IS THE ORE ITSELF (§26).
+       The permanent hammer bar went with the two-column bench: the question is
+       asked once, in a panel, when the student strikes the stone. So this
+       WALKS THE ROUTE rather than hunting for a button on the page. The
+       property being protected has not changed - nothing may stand between a
+       lump and the hammer - and a route that cannot be walked fails it exactly
+       as a gate would. Looking for the old button would now fail for a good
+       change, and looking only for the ore would pass on a stone that opens
+       nothing. */
+    var ngOre = host.querySelector('.anvilore[data-piece]');
+    if(!ngOre){
+      errs.push('nogate: a freshly dug ' + MF.oreText(ore) + ' lands on a bench with no ore on the anvil to strike');
+    } else {
+      ngOre.dispatchEvent(new MouseEvent('click',{bubbles:true}));
+      var swing = [].slice.call(document.querySelectorAll('.scrim .toolsheet button')).filter(function(b){
+        return /bring the hammer down/i.test(b.textContent||''); })[0];
+      if(!swing)
+        errs.push('nogate: a freshly dug ' + MF.oreText(ore) + ' lands on a bench with no way to swing — something is gating the hammer');
+      MF.closeTool();
+    }
     chk('nogate');
     if(host.querySelectorAll('.choices .choice').length)
       errs.push('nogate: the bench opens on the assay question for ' + MF.oreText(ore) + ' rather than offering it');
@@ -9717,8 +9866,17 @@ MF.validate = function(){
   MF.state.selected = {kind:'poly',a:1,b:-5,c:6,id:'ngctl',layer:4};
   MF.state.anvil = MF.anvilInit(MF.state.selected);
   MF.paintAnvil(ngGated);
-  var ngSwing = [].slice.call(ngGated.querySelectorAll('button')).filter(function(b){
-    return /bring the hammer down/i.test(b.textContent||''); }).length;
+  /* AND THE CONTROL WALKS THE SAME ROUTE. A gate is now "the ore is not there
+     to be struck, or striking it opens nothing", so the control has to be
+     measured the way the sweep above is measured or it proves nothing about it. */
+  var ngSwing = 0;
+  var ngCtlOre = ngGated.querySelector('.anvilore[data-piece]');
+  if(ngCtlOre){
+    ngCtlOre.dispatchEvent(new MouseEvent('click',{bubbles:true}));
+    ngSwing = [].slice.call(document.querySelectorAll('.scrim .toolsheet button')).filter(function(b){
+      return /bring the hammer down/i.test(b.textContent||''); }).length;
+    MF.closeTool();
+  }
   MF.anvilInit = ngReal; MF.paintBreak = ngBreak;
   ngStage.removeChild(ngGated);
   if(ngSwing) errs.push('CONTROL: the gate check cannot see a bench that hides the hammer behind the assay');
@@ -10289,7 +10447,7 @@ MF.validate = function(){
      the threshold, and every run of this group reported clean over them.
      READ THE DENOMINATOR: a green sweep proves only what it mounted, and this
      one was choosing what to mount at random. */
-  Object.keys(MF.SCREENS).concat(['mine-layer1','mine-number','mine-blow','mine-done','forge-armed','forge-poured','toolsheet']).forEach(function(scr){
+  Object.keys(MF.SCREENS).concat(['mine-layer1','mine-number','mine-blow','mine-done','forge-armed','forge-poured','toolsheet','hammersheet']).forEach(function(scr){
     stage.innerHTML='';
     var probe = document.createElement('div');
     stage.appendChild(probe);
@@ -10367,7 +10525,7 @@ MF.validate = function(){
           MF.swing(cdB);
         }
         MF.paintMine();
-        if(!probe.querySelector('.endbar'))
+        if(!probe.querySelector('.spentnote'))
           errs.push('contrast: mine-done never reached the end of a lump, so the finished bench was not swept');
       } else if(scr==='mine-blow'){
         /* THE BURST, WHICH EXISTS ONLY IN THE THREE SECONDS AFTER A SWING.
@@ -10464,6 +10622,37 @@ MF.validate = function(){
           });
           MF.closeTool();
         });
+      } else if(scr==='hammersheet'){
+        /* THE PANEL THE HAMMER IS ASKED FOR IN (§26). The whole swing bar moved
+           into it - the label, the steel head, the echo of what the head is cut
+           to, the hint about an empty x-part, and the button - and it is
+           appended to document.body when a student clicks the ore, so mounting
+           the five screens measures none of it. Exactly the denominator hole
+           the `toolsheet` pass above was added to close, opened again the day
+           the bar stopped being on the bench.
+           TWO LUMPS, because a plain number draws one box and a hint of its
+           own, and a student with no drill draws a third line neither of the
+           others has. */
+        MF.state.tools = {};
+        MF.state.layer=4; MF.state.face=[]; MF.state.faceLayer=null;
+        var cHam = 0;
+        [{kind:'poly', a:6, b:7, c:-3, layer:4, id:'ctr-ham'},
+         {kind:'number', n:72, layer:4, id:'ctr-hamn'}].forEach(function(hOre){
+          MF.state.cart=[hOre]; MF.state.selected=hOre;
+          MF.state.anvil=MF.anvilInit(hOre);
+          MF.openHammer(MF.state.anvil, null);
+          var hs = document.querySelector('.scrim .toolsheet');
+          if(!hs) return;
+          cHam++;
+          MF._measureContrast(hs).forEach(function(m){
+            chk('contrast');
+            if(m.ratio < m.need) contrastFails.push('hammer panel on ' + MF.oreText(hOre) +
+              ': "'+m.text+'" ('+m.cls+') at '+m.ratio+':1, needs '+m.need);
+          });
+          MF.closeTool();
+        });
+        if(cHam < 2)
+          errs.push('contrast: the hammer panel opened for ' + cHam + ' of 2 lumps, so it was not swept');
       } else { MF.SCREENS[scr](probe); }
     } catch(e){ errs.push('contrast: screen '+scr+' threw: '+e.message); return; }
     MF._measureContrast(probe).forEach(function(m){
@@ -11047,14 +11236,24 @@ MF.validate = function(){
       if(ch2) kHit(ch2);
       return MF._mine.work;
     };
+    /* THE BOXES ARE NOT ON THE BENCH ANY MORE (§26). Clicking the ore on the
+       anvil opens the hammer panel and the boxes are in THAT - so this drives
+       the route a student drives: strike the stone, type into what comes up,
+       swing. Hunting `.hbox input` on the bench would report "the hammer bar
+       drew no boxes to type in", which is true of the node and false of the
+       app. */
     var swHit = function(m2, xs, ks){
-      var ins = m2.querySelectorAll('.hbox input');
-      if(!ins.length) return null;
+      var ao = m2.querySelector('.anvilore[data-piece]');
+      if(!ao) return null;
+      kHit(ao);
+      var sheet = document.querySelector('.scrim .toolsheet');
+      if(!sheet) return null;
+      var ins = sheet.querySelectorAll('.hbox input');
+      if(!ins.length){ MF.closeTool(); return null; }
       ins[0].value = xs; ins[0].dispatchEvent(new Event('input',{bubbles:true}));
       if(ins[1]){ ins[1].value = ks; ins[1].dispatchEvent(new Event('input',{bubbles:true})); }
-      var btn = [].slice.call(m2.querySelectorAll('.cutbar .btn')).filter(function(b){
-        return /hammer/i.test(b.textContent); })[0];
-      if(btn) kHit(btn);
+      var btn = sheet.querySelector('.swingbtn');
+      if(btn) kHit(btn); else MF.closeTool();
       return MF._mine.work;
     };
     [['a swing that leaves work to do', 2,10,12, '0','2'],
@@ -11064,7 +11263,14 @@ MF.validate = function(){
       var m2 = swSetup(t[1],t[2],t[3]);
       m2 = swHit(m2, t[4], t[5]);
       chk('swing');
-      if(!m2){ errs.push('swing: ' + t[0] + ' — the hammer bar drew no boxes to type in'); return; }
+      if(!m2){ errs.push('swing: ' + t[0] + ' — clicking the ore on the anvil opened no hammer to type into'); return; }
+      /* AND THE PANEL LETS GO OF THE SCREEN BEFORE THE BLOW LANDS. It is a
+         scrim over the whole page; left up, it covers the anvil, the burst and
+         the pieces that just came off - the student answers the question and
+         sees nothing happen. */
+      chk('swing');
+      if(document.querySelector('.scrim'))
+        errs.push('swing: ' + t[0] + ' — the hammer panel is still over the page, so the blow it struck is behind a scrim');
       var stg = m2.querySelector('.anvilstage[data-anim]');
       if(!stg){ errs.push('swing: ' + t[0] + ' left the anvil with no swing on it — the hammer would not move'); return; }
       chk('swing');
@@ -11074,9 +11280,13 @@ MF.validate = function(){
       chk('swing');
       if(!stg.querySelector('.thud'))
         errs.push('swing: ' + t[0] + ' — the burst is not at the anvil where the hammer lands');
+      /* NO BURST ANYWHERE BUT AT THE ANVIL. This used to read "no .thud inside
+         .floorbox", because the anvil was in the OTHER box; there is one box
+         now, and the stage is inside it, so the same rule has to be stated as
+         a relationship rather than as two container names. */
       chk('swing');
-      if(m2.querySelector('.floorbox .thud'))
-        errs.push('swing: ' + t[0] + ' — a burst is drawn in the floorbox, away from the blow');
+      if([].slice.call(m2.querySelectorAll('.thud')).filter(function(n){ return !n.closest('.anvilstage'); }).length)
+        errs.push('swing: ' + t[0] + ' — a burst is drawn away from the anvil, where the hammer is not');
       /* THE FINISHING BLOW MUST LEAVE THE ANVIL BARE, and only that one. If
          there is ore still lying on it when every piece is native, the picture
          says there is work left when there is none. */
@@ -11089,15 +11299,17 @@ MF.validate = function(){
       if(!finished && rk && rk.classList.contains('shatter'))
         errs.push('swing: ' + t[0] + ' cleared the anvil while there is still rock to break');
     });
-    /* CONTROL: put the two-readers bug back and the check must say so */
+    /* CONTROL: put the two-readers bug back and the check must say so.
+       IT QUERIED `.mid`, WHICH NEVER HELD THE BENCH. So it could not fire
+       whatever the code did - a control that cannot fail, which is the one
+       thing a control must never be. It reads the band the bench is actually
+       painted into now. */
     chk('swing');
-    var swReal = MF.thudBurst;
-    var swMid = swSetup(2,10,12);
+    swSetup(2,10,12);
     MF.state.anvil.anim = null;              /* exactly what the floorbox used to do */
     MF.paintMine();
-    if(MF._mine.mid.querySelector('.anvilstage[data-anim]'))
+    if(MF._mine.work.querySelector('.anvilstage[data-anim]'))
       errs.push('CONTROL: the swing check cannot see an anvil that was never armed');
-    MF.thudBurst = swReal;
 
     /* A LUMP IN THE CART IS NOT A BUTTON ANY MORE - IT IS THE DROP TARGET.
        Where a lump goes is the two controls under it (§20), and it is THOSE
@@ -11835,18 +12047,47 @@ MF.validate = function(){
        reported the bench as 1748px from belt to swing: a true measurement of
        two things that were never meant to be on one screen together. What this
        group is about is the belt you reach for WHILE SWINGING. */
-    var rcB = rcSpan(rcMine, '.floorbox .beltstrap', '.swingbtn');
+    /* AND THE FAR END OF THE CLUSTER IS THE STONE, NOT A BUTTON (§26).
+       The swing button is in the hammer panel now, which is a fixed dialog
+       centred on the viewport - the distance to it is not a property of the
+       bench and measuring it would report a pass no matter how long the bench
+       got. What a student has to see at once is what they are HOLDING and what
+       they are HITTING: the belt, and the ore on the anvil. */
+    var rcB = rcSpan(rcMine, '.floorbox .beltstrap', '.floorbox .anvilore');
     if(rcB.missing) errs.push('reach: the bench has no ' + rcB.missing + ' to measure at ' + w + 'px');
     else if(rcB.px > rcBudget)
-      errs.push('reach: at ' + w + 'px the bench runs ' + rcB.px + 'px from the belt to the swing — ' +
+      errs.push('reach: at ' + w + 'px the bench runs ' + rcB.px + 'px from the belt to the ore on the anvil — ' +
                 (rcB.px - rcBudget) + 'px more than one ' + rcBudget + 'px screen, so a student cannot see ' +
-                'what they are holding, what they are hitting and the button that hits it at the same time');
-    /* the swing must come BEFORE the anvil picture, not after it */
+                'what they are holding and what they are hitting at the same time');
+    /* THE BELT HANGS OVER THE ANVIL, which is the user's own words for it
+       (2026-09-04) and the reason it moved: an instrument is something you
+       reach up for and bring down onto the work. Under the anvil it was a rack
+       between the stone and the ground the pieces land on. */
     chk('reach');
-    var rcSw = rcMine.querySelector('.swingbtn'), rcAnv = rcMine.querySelector('.cutbar .anvilstage');
-    if(rcSw && rcAnv && rcSw.getBoundingClientRect().top > rcAnv.getBoundingClientRect().top)
-      errs.push('reach: the anvil picture is above the swing button again — it is the tallest thing on the bench ' +
-                'and it pushes the belt and the pieces off the screen');
+    var rcBelt = rcMine.querySelector('.floorbox .beltstrap'),
+        rcAnv = rcMine.querySelector('.floorbox .anvilstage');
+    if(rcBelt && rcAnv && rcBelt.getBoundingClientRect().top > rcAnv.getBoundingClientRect().top)
+      errs.push('reach: the belt has gone back under the anvil — it hangs above the work, ' +
+                'so a hand goes up to it and comes down onto the stone');
+    /* AND THE QUESTION MUST FIT IN ITS OWN PANEL. The swing lives in a dialog
+       now; the dialog is capped at 88vh and scrolls, so a panel that outgrows
+       it puts the button that answers the question below the fold of a box
+       that does not look like it scrolls. Measured as content against box,
+       because the box's own height can never exceed the cap. */
+    chk('reach');
+    (function(){
+      var ao = rcMine.querySelector('.floorbox .anvilore');
+      if(!ao){ errs.push('reach: there is no ore on the anvil to open the hammer with'); return; }
+      ao.dispatchEvent(new MouseEvent('click',{bubbles:true}));
+      var sh = document.querySelector('.scrim .toolsheet');
+      if(!sh){ errs.push('reach: clicking the ore on the anvil opened no hammer panel'); return; }
+      if(!sh.querySelector('.swingbtn'))
+        errs.push('reach: the hammer panel opened with no swing in it');
+      else if(sh.scrollHeight > sh.clientHeight + 2)
+        errs.push('reach: at ' + w + 'px the hammer panel holds ' + sh.scrollHeight + 'px of question in a ' +
+                  sh.clientHeight + 'px box — the swing button is below the fold of a dialog');
+      MF.closeTool();
+    })();
 
     /* ---- the forge: target -> slots -> rack -> pour ---- */
     chk('reach');
@@ -11907,7 +12148,8 @@ MF.validate = function(){
     }
   });
 
-  /* CONTROL 1: the bench cluster must overflow if the anvil goes back on top */
+  /* CONTROL 1: the bench cluster must overflow if the belt and the stone are
+     pushed a screen apart */
   chk('reach');
   rcStage.style.width = '1280px';
   rcStage.innerHTML = '';
@@ -11917,11 +12159,25 @@ MF.validate = function(){
   rcTall.style.cssText = 'height:900px';
   rcCtl.appendChild(H('div','beltstrap','belt'));
   rcCtl.appendChild(rcTall);
-  var rcBtn = E('button','swingbtn','swing');
-  rcCtl.appendChild(rcBtn);
-  var rcCheck = rcSpan(rcCtl, '.beltstrap', '.swingbtn');
+  rcCtl.appendChild(H('div','anvilore','ore'));
+  var rcCheck = rcSpan(rcCtl, '.beltstrap', '.anvilore');
   if(rcCheck.missing || rcCheck.px <= rcBudget)
     errs.push('CONTROL: the reach check cannot see a cluster taller than one screen');
+  /* CONTROL 3: and a hammer panel whose content runs past the bottom of it */
+  chk('reach');
+  MF.state.selected = {kind:'poly', a:6, b:7, c:-3, id:'reach-ctl'};
+  MF.state.anvil = MF.anvilInit(MF.state.selected);
+  MF.openHammer(MF.state.anvil, null);
+  var rcSheet = document.querySelector('.scrim .toolsheet');
+  if(!rcSheet){
+    errs.push('CONTROL: the hammer panel would not open, so the fits-its-own-box rule measured nothing');
+  } else {
+    var rcPad = document.createElement('div'); rcPad.style.height = '4000px';
+    rcSheet.querySelector('.tsbody').appendChild(rcPad);
+    if(!(rcSheet.scrollHeight > rcSheet.clientHeight + 2))
+      errs.push('CONTROL: the reach check cannot see a hammer panel whose content runs past the bottom of it');
+  }
+  MF.closeTool();
   /* CONTROL 2: an out-of-order craft floor must be caught */
   chk('reach');
   rcStage.innerHTML = '';

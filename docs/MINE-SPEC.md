@@ -415,9 +415,11 @@ the page scrolled 155px sideways (`VERIFICATION` §57), and reach decays the sam
 — every panel added between two controls pushes them apart by exactly as much as
 nobody measured.
 
-**So reach is a budget, and the `reach` group enforces it.** The bench (belt →
-pieces → swing) and the craft floor (target → mold → slots → rack → pour) must each
-fit inside one 800px screen, measured at two widths, with controls that must fail.
+**So reach is a budget, and the `reach` group enforces it.** The bench (belt → **the
+ore on the anvil**, §26) and the craft floor (target → mold → slots → rack → pour) must
+each fit inside one screen-height, measured at the live viewport, with controls that
+must fail. The hammer panel is measured separately, as content against its own capped
+box (`VERIFICATION.md` §74).
 
 ### 15a. The pour button arms on FULL, and never on CORRECT
 
@@ -908,3 +910,65 @@ The lantern lights one side; this only says there *is* one.
 > `nogate` follows the capability rather than the button: it required an assay offer on
 > the bench, and now requires the pick to have something to say about every shape.
 > Muting the pick fails the build by name.
+
+## 26. One anvil, the belt over it, and the ore on top
+
+*User, 2026-09-04: "after the breaking floor has been selected from the cart, an anvil
+should appear with a tool belt above it. The ore should be on top of the anvil, and its
+text should change as different [tools] are applied and unapplied. Then the mouse cursor
+in the layer should be a hammer. When the mouse clicks on the ore, a pop-up box should
+ask what factor to hammer into the ore. And then it should split for this process to be
+repeated."*
+
+### 26a. The anvil is the work, not a picture beside it
+
+The `workpair` is gone. It was two boxes: one held a row of chips and the belt, the
+other held a drawing of an anvil, two number boxes and the swing button. So **the anvil
+a student was looking at was not the thing their ore was on** — the ore was a chip in
+the other box — and the drawing was decoration.
+
+There is one box now, and it is the gallery you are standing in: the belt overhead, the
+anvil, the stone on its face, and whatever has already come off it lying on the ground.
+A first lump has nothing on the ground at all.
+
+### 26b. The ore on the anvil is `MF.oreRock`, and it is a live piece
+
+It used to be an SVG polygon with an SVG `<text>` on it, which could not do what was
+asked. An SVG `<text>` cannot carry the coloured spans an instrument's re-spelling is
+made of, and it paints with `fill` while inheriting the `color` a contrast sweep reads
+(VERIFICATION §59).
+
+So the stone is the same drawn lump the seam and the cart already show — expression cut
+into the rock, numbers as HTML pinned over it (§22) — mounted over the anvil's face. It
+carries `.piece[data-piece]`, so the belt's drag, `MF.pieceAt` and `MF.applyTool` reach
+it exactly as they reach a chip on the ground, and **a tool dropped on it re-spells the
+stone in place**. It keeps the class `anvilrock`, so the squash and the shatter find it.
+
+Position lives on the outer `.anvilmount`, animation on the lump inside it (§5g).
+
+### 26c. The hammer is asked for, once
+
+The permanent swing bar — a label, two boxes, an echo line, two hints and a button,
+sitting under the anvil whether or not the student had chosen anything to hit — is now
+`MF.openHammer`, a dialog that opens when the ore is struck. **A question that is always
+on screen has stopped reading as one.** Nothing in it changed except when it exists.
+
+It closes *before* it swings: the scrim covers the whole page, and left up it would hide
+the blow the student just struck. One panel is one blow — a glance comes back as a note
+beside the anvil and the stone is still there to click again, which is the loop.
+
+The cursor over the whole floor is a hammer. It is the only affordance left saying what
+this place is for, now that there is no button on screen saying it.
+
+### 26d. What the checks had to do about it
+
+| | |
+|---|---|
+| `nogate` | walked the route instead of hunting a button: the ore must be on the anvil, and striking it must open a panel with a swing in it |
+| `swing` | drives the same route; asserts the panel lets go of the screen before the blow, and that no burst is drawn outside the anvil stage |
+| `reach` | belt → **the ore**, not belt → a button that now lives in a fixed dialog; and the panel's content must fit its own box |
+| `contrast` | a new `hammersheet` pass — the whole swing bar moved into a node appended to `document.body`, which mounting the five screens does not see |
+
+> The `reach` panel check earned itself immediately: at 380px the hammer panel held
+> 870px of question in a 681px box, putting the swing button below the fold of a dialog
+> that does not look like it scrolls. The panel was cut down until it fit, not the check.

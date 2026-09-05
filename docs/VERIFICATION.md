@@ -1456,3 +1456,64 @@ the belt loop and every eligible rock say so. `nogate` drives that path end to e
   browser does around the events, not just with them.
 - **Every drag needs a click path**, and the check should exercise the click path —
   it is the one a keyboard and a touch screen can reach.
+
+## §72. A control that queries the wrong node cannot fail
+
+The `swing` group's control put the two-readers bug back — the one where `B.anim` was
+consumed by one box and read as `null` by another — and then asserted:
+
+```js
+if(MF._mine.mid.querySelector('.anvilstage[data-anim]'))
+  errs.push('CONTROL: the swing check cannot see an anvil that was never armed');
+```
+
+`.mid` is the face column. **The bench has never been painted into it.** So the query
+returned nothing whatever the code did, the control never pushed, and it read as passing
+for the entire life of the group. It was proving nothing about anything.
+
+It reads `MF._mine.work` now, and forcing a repaint to arm the anvil fires it by name.
+
+> **A control that has never been seen to fail has not been tested.** The rule was
+> already written down. What this adds is the failure mode where the control *looks*
+> tested because the group around it is green: the group is green partly *because* the
+> control is inert. Re-point a check at a moved element and re-point its control with it,
+> in the same edit, and prove the pair together.
+
+## §73. Ask where the button went before you assert it is missing
+
+Four groups broke at once when the swing bar moved into a dialog, and every one of them
+reported the same shape of falsehood:
+
+| group | what it said | what was true |
+|---|---|---|
+| `nogate` | "no way to swing — something is gating the hammer" | nothing gated it; the swing was one click away |
+| `swing` | "the hammer bar drew no boxes to type in" | the boxes were in a panel appended to `document.body` |
+| `reach` | "the bench has no `.swingbtn` to measure" | it was in a fixed dialog, where the distance is not a bench property |
+| `contrast` | "mine-done never reached the end of a lump" | it did; the class marking the end had been renamed |
+
+Each one was a **true statement about the node it was holding and a false statement about
+the app.** Three of them would have gone on passing if the button had merely been deleted
+rather than moved, because they were looking for a *name*, not for a *capability*.
+
+> **A check anchored on a selector measures the selector.** When a control moves, decide
+> what the check was protecting before you decide where to re-point it — and prefer
+> walking the student's route to querying for the thing at the end of it. `nogate` now
+> clicks the ore and looks in what opens; it would catch both a moved button and a
+> deleted one.
+
+## §74. A dialog that scrolls hides the button that answers it
+
+`.toolsheet` is capped at `max-height:88vh` with `overflow-y:auto`. So measuring the
+panel's own height can never report a problem — the cap is the answer, every time.
+
+The hammer panel at 380px held **870px of content in a 681px box**. Everything was
+present, nothing overflowed the page, no contrast failed, and `layout` and `reach` both
+passed: the swing button was simply below the fold of a box that does not look like it
+scrolls, on a phone.
+
+Measured as `scrollHeight > clientHeight`, it fails immediately. The fix was to cut the
+panel — a shorter title, a shorter close, one heading fewer, a smaller stone under 620px
+— until it fit with room to spare, rather than to raise a threshold.
+
+> **When a box caps itself, measure the content against the box.** Any check that reads
+> the box's own dimension is reading the cap you wrote, not the thing you wanted to know.
