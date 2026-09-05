@@ -6839,10 +6839,10 @@ MF.SCREENS['workshop-ore'] = function(host){
   panel.appendChild(box);
   host.appendChild(panel);
   MF.drawMill(box);
-
-  var go = E('div','row'); go.style.marginTop='14px';
-  go.appendChild(MF.jump('Into the mine &rarr;','mine'));
-  host.appendChild(go);
+  /* NO "INTO THE MINE" BUTTON (user, 2026-09-05). The room ends on the bench.
+     It is not a dead end: the masthead carries every screen on the site, so
+     the way out is where it is on every other page rather than an extra door
+     at the bottom of this one. */
 };
 
 /* =========================================================================
