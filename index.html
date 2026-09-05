@@ -1495,6 +1495,88 @@ ol.ssteps li.open::marker{color:var(--vein)}
 .practice .prout{margin-top:4px}
 
 /* =========================================================================
+   THE STAMP MILL (MINE-SPEC §38): a lump on a bench, a press over it, and a
+   lever you pull. The mine's own loop, in numbers 2-100.
+   ========================================================================= */
+.millpanel{padding-top:14px}
+.millstage{position:relative; width:100%; display:flex; justify-content:center; margin-bottom:12px}
+.millsvg{position:relative; width:100%; max-width:400px}
+.millsvg svg{display:block; width:100%; height:auto; overflow:visible}
+.millsvg svg *{pointer-events:none}
+/* the lump on the bench, pinned over the drawing the way the anvil's is */
+.millmount{position:absolute; left:34%; right:34%; bottom:20%; z-index:2}
+.millmount .orerock{max-width:none}
+.millmount .orelab{font-size:clamp(17px,2.6vw,26px)}
+
+/* THE PRESS COMES DOWN. A transform on the group, which is why the group
+   carries no transform attribute of its own (s5g). */
+@keyframes stampdrop{
+  0%,26%{transform:translateY(0)}
+  46%{transform:translateY(6px)}          /* it gathers before it falls */
+  58%{transform:translateY(52px)}         /* THE BLOW */
+  66%{transform:translateY(46px)}
+  100%{transform:translateY(0)}
+}
+@keyframes stampmiss{
+  0%,26%{transform:translateY(0)}
+  46%{transform:translateY(6px)}
+  58%{transform:translateY(52px)}
+  64%{transform:translateY(30px)}         /* it bounces straight back off */
+  72%{transform:translateY(42px)}
+  100%{transform:translateY(0)}
+}
+.millstage[data-stamp=hit] .stamphead{animation:stampdrop 1100ms cubic-bezier(.4,0,.6,1) 1}
+.millstage[data-stamp=miss] .stamphead{animation:stampmiss 1100ms cubic-bezier(.4,0,.6,1) 1}
+/* the lever turns on its pin, and the pin is the transform-origin */
+@keyframes leverpull{
+  0%,20%{transform:rotate(0)}
+  50%{transform:rotate(38deg)}
+  70%{transform:rotate(34deg)}
+  100%{transform:rotate(0)}
+}
+.stamplever{transform-origin:298px 57px}
+.millstage[data-stamp] .stamplever{animation:leverpull 1100ms cubic-bezier(.4,0,.6,1) 1}
+/* the lump takes the blow */
+.millstage[data-stamp=hit] .millrock{transform-box:fill-box; transform-origin:center bottom;
+  animation:rockcrack 1100ms ease-out 1}
+.millstage[data-stamp=miss] .millrock{transform-box:fill-box; transform-origin:center bottom;
+  animation:pieceknock 420ms cubic-bezier(.3,1.4,.4,1) .55s 1}
+
+.millask{background:#FFFCF6; border:2px solid var(--tan); border-left:6px solid var(--ore);
+  border-radius:12px; padding:12px 14px}
+.millask .mlab,.millpanel .mlab{font-family:var(--display); font-size:11px; letter-spacing:.12em;
+  color:var(--ore-t); margin-bottom:3px}
+.millask .meq{font-family:var(--display); font-size:clamp(28px,5vw,42px); line-height:1.05; color:var(--ink)}
+.millask .mhint,.millpick .mhint{font-size:13.5px; color:var(--ink-soft); max-width:62ch; margin-top:4px}
+.millrow{margin-top:10px; gap:9px; align-items:center}
+.millin{width:110px; text-align:center; font-family:var(--display); font-size:22px;
+  padding:8px 6px; min-height:48px}
+.leverbtn{min-height:48px}
+/* what is on the bench: ore is rough and dark, an ingot is a cast bar */
+.millfloor{display:flex; flex-wrap:wrap; gap:8px; margin:5px 0 14px}
+.millpiece{font-family:var(--display); font-size:19px; min-height:44px; min-width:52px;
+  padding:8px 14px; border-radius:8px; cursor:pointer; border:2px solid transparent}
+/* #7A6650, NOT #8A7358. The sweep failed this on its first run at 4.09:1 -
+   and the file already had the answer written down: the yard's rough chips hit
+   exactly the same wall, and #7A6650 is 4.94:1 against the same cream. It is
+   also the brown the rock pieces on the breaking floor start from, so a lump
+   of ore is one colour everywhere it is drawn. */
+.millpiece.ore{background:linear-gradient(160deg,#7A6650,#4A3F34); color:#FFF3DE; border-color:#3A2A1C;
+  clip-path:polygon(8% 6%, 78% 0%, 100% 30%, 94% 84%, 58% 100%, 12% 92%, 0% 40%)}
+.millpiece.ore:hover{filter:brightness(1.15)}
+.millpiece.ingot{cursor:default}
+.millpiece.under{box-shadow:0 0 0 3px var(--ore), 0 0 10px 2px rgba(201,106,31,.35)}
+.millpiece:focus-visible{outline:3px solid var(--lamp); outline-offset:2px}
+.millpiece.fresh{animation:piecedrop 420ms cubic-bezier(.2,.8,.3,1) 1}
+.millpick{border-top:2px dashed var(--rule); padding-top:11px; margin-top:2px}
+.millpick .meq{font-family:var(--display); font-size:26px; color:var(--ink); min-width:2.4em}
+.millslide{flex:1 1 200px; min-width:0}
+@media (prefers-reduced-motion:reduce){
+  .millstage[data-stamp] .stamphead,.millstage[data-stamp] .stamplever,
+  .millstage[data-stamp] .millrock,.millpiece.fresh{animation:none}
+}
+
+/* =========================================================================
    THE POUR, WRITTEN OUT. Every part of one metal meets every part of the
    other, a line at a time, ending in one object (MINE-SPEC §30).
    ========================================================================= */
@@ -6481,91 +6563,286 @@ MF.jump = function(label, screen){
 /* =========================================================================
    WORKSHOP 2 - ORE AND INGOTS. Play, no questions.
    ========================================================================= */
+/* =========================================================================
+   THE STAMP MILL: A LUMP ON A BENCH, A PRESS OVER IT, AND A LEVER.
+
+   USER, 2026-09-05: "The Stamp floor needs updating. First remove nothing to
+   play text. The Ore needs to sit on a bench and have a press come on it.
+   While the pedagogical focus is teaching the factors of numbers 1-100. It
+   needs to be more interactive as if the student is pressing a lever to stamp
+   the ore."
+
+   WHAT WENT. A slider, a number box, and a row of buttons listing EVERY factor
+   pair of the number - which is the pair scanner the mine took away from the
+   face for doing the looking for you (§10a), sitting here doing it for free.
+   Picking one drew a static tree. Nothing was pressed, nothing moved, and the
+   panel was labelled "PLAY - NOTHING TO ANSWER", which is a sign on a room
+   saying there is nothing in it.
+
+   WHAT IS HERE. The same loop the breaking floor runs, in numbers: a lump on
+   the bench, you name something you think is in it, you PULL THE LEVER, and
+   the press comes down. It splits or it does not. What comes off stays on the
+   bench and can be stamped again. When nothing left will split, every piece is
+   an ingot and the row of them is every metal in the number.
+
+   The mill is the mine's own mechanism at 1-100, which is the whole thesis:
+   breaking a number and breaking a trinomial are one job (§8a).
+   ========================================================================= */
+MF.MILL_MIN = 2;
+MF.MILL_MAX = 100;
+
+MF.millInit = function(n){
+  return {n:n, floor:[{n:n, id:1}], seq:1, at:0, raw:'', last:null, anim:null};
+};
+/* kept on MF.state so walking out of the room and back does not tip the bench */
+MF.millState = function(){
+  if(!MF.state.mill) MF.state.mill = MF.millInit(72);
+  return MF.state.mill;
+};
+
+/* ---- THE MILL ITSELF: frame, press, bench, lever ----
+   The press slides between the uprights and the lever turns on a pin. Both are
+   animated by CSS transforms, so NEITHER may carry a transform attribute - the
+   attribute would be replaced rather than composed with (s5g). Everything in
+   here is drawn where it stands. */
+MF.millScene = function(M){
+  var wrap = E('div','millsvg');
+  var W=340, VH=214, uid='ml'+(MF._millSeq = (MF._millSeq||0)+1);
+  var svg = S('svg',{viewBox:'0 0 '+W+' '+VH,'aria-hidden':'true'});
+  var defs = S('defs',{});
+  function mgrad(id, stops, horiz){
+    var g = S('linearGradient',{id:id,x1:'0',y1:'0',x2:(horiz?'1':'0'),y2:(horiz?'0':'1')});
+    stops.forEach(function(s){ g.appendChild(S('stop',{offset:s[0],'stop-color':s[1]})); });
+    defs.appendChild(g);
+  }
+  mgrad(uid+'iron', [['0%','#8E9AA6'],['40%','#5E6A76'],['100%','#2E353C']], true);
+  mgrad(uid+'head', [['0%','#A2AEBA'],['34%','#6E7A86'],['100%','#333B43']], true);
+  mgrad(uid+'wood', [['0%','#8A6142'],['46%','#6B4A32'],['100%','#3F2C1D']]);
+  svg.appendChild(defs);
+
+  /* the wall behind it, so the frame has something to stand against */
+  svg.appendChild(S('rect',{x:0,y:0,width:W,height:VH,fill:'#3A3129'}));
+  for(var b=0;b<5;b++)
+    svg.appendChild(S('path',{d:'M0 '+(16+b*34)+' q120 '+((b%2)?4:-4)+' 340 '+((b%3)?3:-2),
+      fill:'none',stroke:'#2E2620','stroke-width':'2',opacity:'.5'}));
+
+  /* ---- the frame: two uprights and a crown ---- */
+  svg.appendChild(S('rect',{x:40,y:26,width:24,height:132,rx:3,fill:'url(#'+uid+'iron)',
+    stroke:'#20262C','stroke-width':'2.5'}));
+  svg.appendChild(S('rect',{x:276,y:26,width:24,height:132,rx:3,fill:'url(#'+uid+'iron)',
+    stroke:'#20262C','stroke-width':'2.5'}));
+  svg.appendChild(S('rect',{x:32,y:8,width:276,height:26,rx:4,fill:'url(#'+uid+'iron)',
+    stroke:'#20262C','stroke-width':'2.5'}));
+  [52,288].forEach(function(bx){
+    svg.appendChild(S('circle',{cx:bx,cy:21,r:4,fill:'#A2AEBA',stroke:'#20262C','stroke-width':'1.6'}));
+  });
+
+  /* ---- THE PRESS: a shaft down from the crown and a heavy shoe on it ---- */
+  var press = S('g',{class:'stamphead'});
+  press.appendChild(S('rect',{x:158,y:30,width:24,height:44,fill:'url(#'+uid+'iron)',
+    stroke:'#20262C','stroke-width':'2.5'}));
+  press.appendChild(S('rect',{x:100,y:70,width:140,height:38,rx:4,fill:'url(#'+uid+'head)',
+    stroke:'#20262C','stroke-width':'3'}));
+  press.appendChild(S('rect',{x:104,y:74,width:132,height:5,rx:2,fill:'#C4CED8',opacity:'.5'}));
+  /* the striking face, the polished underside */
+  press.appendChild(S('rect',{x:110,y:106,width:120,height:9,rx:2,fill:'#B6C2CE',
+    stroke:'#20262C','stroke-width':'2.5'}));
+  svg.appendChild(press);
+
+  /* ---- THE BENCH the lump sits on ---- */
+  svg.appendChild(S('rect',{x:26,y:158,width:288,height:22,rx:4,fill:'url(#'+uid+'wood)',
+    stroke:'#33240F','stroke-width':'2.5'}));
+  svg.appendChild(S('rect',{x:26,y:158,width:288,height:4,fill:'#A57A50',opacity:'.45'}));
+  [56,262].forEach(function(lx){
+    svg.appendChild(S('rect',{x:lx,y:180,width:18,height:28,fill:'#4A3524',stroke:'#33240F','stroke-width':'2'}));
+  });
+  svg.appendChild(S('ellipse',{cx:170,cy:208,rx:130,ry:6,fill:'#1B1511',opacity:'.4'}));
+
+  /* ---- THE LEVER: a pin on the near upright and a bar you pull ---- */
+  var lev = S('g',{class:'stamplever'});
+  lev.appendChild(S('rect',{x:296,y:52,width:52,height:11,rx:5,fill:'url(#'+uid+'iron)',
+    stroke:'#20262C','stroke-width':'2.5'}));
+  lev.appendChild(S('circle',{cx:344,cy:57,r:9,fill:'#8A6142',stroke:'#33240F','stroke-width':'2.5'}));
+  svg.appendChild(lev);
+  svg.appendChild(S('circle',{cx:298,cy:57,r:6,fill:'#39424B',stroke:'#20262C','stroke-width':'2.5'}));
+
+  wrap.appendChild(svg);
+
+  /* ---- THE LUMP, ON THE BENCH, UNDER THE PRESS ----
+     Same construction as the anvil (§26b): the stone is MF.oreRock, HTML
+     pinned over the drawing, because the number on it has to be able to change
+     and an SVG <text> cannot carry what MF.oreDisplay returns. */
+  var piece = M.floor[M.at];
+  var seat = E('div','millmount');
+  if(piece){
+    var ore = {kind:'number', n:piece.n, id:'mill-'+piece.id};
+    var rock = MF.oreRock(ore, {native: isPrime(piece.n)});
+    rock.classList.add('millrock');
+    seat.appendChild(rock);
+  }
+  wrap.appendChild(seat);
+  return wrap;
+};
+
+/* ---- ONE PULL OF THE LEVER ---- */
+MF.millStamp = function(M, box){
+  var piece = M.floor[M.at];
+  if(!piece) return;
+  var d = parseInt(String(M.raw).trim(), 10);
+  if(!isFinite(d) || isNaN(d)){
+    M.last = {ok:false, why:'The stamp is cut to a whole number. Put one in the box and pull again.'};
+    M.anim = 'miss'; MF.drawMill(box); return;
+  }
+  if(isPrime(piece.n)){
+    M.last = {ok:false, why:num(piece.n) + ' is already an ingot. Nothing comes off it, however hard the stamp falls.'};
+    M.anim = 'miss'; MF.drawMill(box); return;
+  }
+  if(d < 2 || d >= piece.n || piece.n % d !== 0){
+    M.last = {ok:false,
+      why:'<b>The stamp bounced.</b> ' + num(d) + ' does not divide ' + num(piece.n) + ' — ' +
+          num(piece.n) + ' ÷ ' + num(d) + ' leaves ' +
+          (d >= 2 ? 'a remainder of ' + num(((piece.n % d) + d) % d) : 'nothing to work with') +
+          '. Nothing is lost; the lump is exactly as it was.'};
+    M.anim = 'miss'; MF.drawMill(box); return;
+  }
+  /* IT SPLITS. Both halves land on the bench and either can be stamped again. */
+  var a = {n:d, id:++M.seq, fresh:true}, c = {n:piece.n/d, id:++M.seq, fresh:true};
+  M.floor.splice(M.at, 1, a, c);
+  M.last = {ok:true, from:piece.n, why:'<b>' + num(piece.n) + ' came apart into ' + num(d) +
+    ' and ' + num(piece.n/d) + '.</b>'};
+  M.raw = '';
+  /* the press moves itself to the next thing that is still ore */
+  var nx = -1;
+  for(var i=0;i<M.floor.length;i++){ if(!isPrime(M.floor[i].n)){ nx = i; break; } }
+  M.at = nx >= 0 ? nx : 0;
+  M.anim = 'hit';
+  MF.drawMill(box);
+  setTimeout(function(){ a.fresh = false; c.fresh = false; }, 1200);
+};
+
+/* ---- THE WHOLE ROOM, REDRAWN IN PLACE ----
+   Never through MF.go: that rebuilds the screen, scrolls to the top and
+   replays the arrival wipe, which is the fault the `inplace` group is for. */
+MF.drawMill = function(box){
+  var M = MF.millState();
+  if(M.at >= M.floor.length) M.at = 0;
+  var anim = M.anim; M.anim = null;
+  var done = M.floor.every(function(p){ return isPrime(p.n); });
+  var hadFocus = box.contains(document.activeElement);
+  clear(box);
+
+  /* ---- the mill, with the lump under the press ---- */
+  var stage = E('div','millstage');
+  if(anim) stage.setAttribute('data-stamp', anim);
+  stage.appendChild(MF.millScene(M));
+  box.appendChild(stage);
+
+  var piece = M.floor[M.at];
+
+  if(done){
+    box.appendChild(H('div','note good','<b>Every piece is an ingot.</b> ' +
+      'Nothing left on the bench will come apart — and that row is <b>every metal in ' +
+      num(M.n) + '</b>, however you chose to cut it.'));
+  } else {
+    /* ---- NAME SOMETHING, AND PULL ---- */
+    var ask = E('div','millask');
+    ask.appendChild(H('div','mlab','UNDER THE STAMP'));
+    ask.appendChild(H('div','meq', num(piece.n)));
+    ask.appendChild(H('div','mhint','Name a whole number you think divides it, then pull the lever. ' +
+      'Nothing here says whether it will — the stamp does.'));
+    var row = E('div','row millrow');
+    var inp = document.createElement('input');
+    inp.type='text'; inp.inputMode='numeric'; inp.value = M.raw; inp.placeholder='2';
+    inp.className = 'millin';
+    inp.setAttribute('aria-label','A whole number you think divides ' + piece.n);
+    on(inp,'input',function(){ M.raw = inp.value; });
+    on(inp,'keydown',function(e){ if(e.key==='Enter'){ e.preventDefault(); MF.millStamp(M, box); } });
+    row.appendChild(inp);
+    var pull = E('button','btn primary big leverbtn','Pull the lever'); pull.type='button';
+    pull.setAttribute('aria-label','Bring the stamp down on ' + piece.n);
+    on(pull,'click',function(){ MF.millStamp(M, box); });
+    row.appendChild(pull);
+    ask.appendChild(row);
+    box.appendChild(ask);
+  }
+
+  if(M.last)
+    box.appendChild(H('div','note' + (M.last.ok ? ' good' : ''), M.last.why));
+
+  /* ---- WHAT IS ON THE BENCH ---- */
+  var lab = E('div','mlab'); lab.innerHTML = done ? 'EVERY METAL IN ' + num(M.n) : 'ON THE BENCH';
+  box.appendChild(lab);
+  var row2 = E('div','millfloor');
+  M.floor.forEach(function(p, i){
+    var prime = isPrime(p.n);
+    var b = E('button','millpiece' + (prime?' ingot pure':' ore') +
+                        (i===M.at && !done ? ' under' : '') + (p.fresh?' fresh':''));
+    b.type='button';
+    b.setAttribute('data-mp', p.id);
+    b.textContent = num(p.n);
+    b.setAttribute('aria-label', prime
+      ? num(p.n) + ' — an ingot. Nothing in it comes apart.'
+      : num(p.n) + ' — still ore. Click to put it under the stamp.');
+    on(b,'click',function(){
+      if(prime){
+        M.last = {ok:false, why:'<b>' + num(p.n) + ' is an ingot.</b> It is prime — nothing divides it but 1 and itself.'};
+      } else { M.at = i; M.last = null; M.raw = ''; }
+      MF.drawMill(box);
+    });
+    row2.appendChild(b);
+  });
+  box.appendChild(row2);
+
+  /* ---- A NEW LUMP ON THE BENCH ---- */
+  var pick = E('div','millpick');
+  pick.appendChild(H('div','mlab','PUT A NEW LUMP ON THE BENCH'));
+  var prow = E('div','row');
+  var sl = document.createElement('input');
+  sl.type='range'; sl.min=MF.MILL_MIN; sl.max=MF.MILL_MAX; sl.step=1; sl.value=M.n;
+  sl.className='millslide';
+  sl.setAttribute('aria-label','Choose a number between ' + MF.MILL_MIN + ' and ' + MF.MILL_MAX);
+  var shows = H('div','meq sm', num(M.n));
+  on(sl,'input',function(){ shows.textContent = num(parseInt(sl.value,10)); });
+  on(sl,'change',function(){
+    MF.state.mill = MF.millInit(parseInt(sl.value,10));
+    MF.drawMill(box);
+  });
+  prow.appendChild(shows);
+  prow.appendChild(sl);
+  pick.appendChild(prow);
+  pick.appendChild(H('div','mhint','Anything from ' + MF.MILL_MIN + ' to ' + MF.MILL_MAX +
+    '. Some of them come apart four times over and some will not move at all.'));
+  box.appendChild(pick);
+
+  box.appendChild(MF.says(done
+    ? '<b>Mr Factor:</b> That row is the whole of it. Two miners who cut in a different order still end up with those same ingots — which is why a number has one set of metals in it.'
+    : '<b>Mr Factor:</b> Keep stamping until every piece is an ingot. That is all this is, and it is exactly what you will do to a trinomial down the mine.'));
+
+  if(hadFocus){
+    var back = box.querySelector('.millin') || box.querySelector('.leverbtn');
+    if(back && back.focus) back.focus({preventScroll:true});
+  }
+};
+
 MF.SCREENS['workshop-ore'] = function(host){
-  var st = {n:72, cutA:null, cutB:null};
   host.appendChild(MF.roomScene('stamps'));
   host.appendChild(H('h2',null,'The Stamp Mill'));
   host.appendChild(H('p','lede','The stamps <b>break ore apart</b>, and they keep going until what is left will not break. ' +
     'Some lumps come out of here unchanged — nothing came off them, because they are already an element. Those are <b>native metal</b>. ' +
     'In numbers we call them primes; further down the mine you will meet polynomial ones, and they are the same thing.'));
 
-  var panel = E('div','panel light');
-  panel.appendChild(H('div','panel-tag play','PLAY &mdash; NOTHING TO ANSWER'));
-  var row = E('div','row');
-  var w=E('div'); w.style.flex='1 1 240px';
-  w.appendChild(H('div','hint','Ore on the bench'));
-  var val=H('div','eq', num(st.n)); w.appendChild(val);
-  var r=document.createElement('input');
-  r.type='range'; r.min=2; r.max=144; r.step=1; r.value=st.n; r.setAttribute('aria-label','Number to break up');
-  w.appendChild(r); row.appendChild(w);
-  var w2=E('div'); w2.style.flex='0 0 auto';
-  w2.appendChild(H('div','hint','or type one'));
-  var box=document.createElement('input'); box.type='number'; box.min=2; box.max=9999; box.value=st.n;
-  box.setAttribute('aria-label','Type a number to break up'); box.style.width='120px';
-  w2.appendChild(box); row.appendChild(w2);
-  panel.appendChild(row);
-  var out = E('div'); panel.appendChild(out);
+  /* NO "PLAY - NOTHING TO ANSWER" TAG (user, 2026-09-05). It was a sign on a
+     room saying there was nothing in it - and it was true of the room it was
+     labelling, which is what changed. */
+  var panel = E('div','panel light millpanel');
+  var box = E('div');
+  panel.appendChild(box);
   host.appendChild(panel);
-
-  on(r,'input',function(){ setN(parseInt(r.value,10)); });
-  on(box,'input',function(){ var v=parseInt(box.value,10); if(isFinite(v)&&v>=2&&v<=9999) setN(v,true); });
-  function setN(v,fromBox){ st.n=v; st.cutA=null; st.cutB=null; val.textContent=num(v);
-    if(!fromBox) box.value=v; if(v<=144) r.value=v; draw(); }
+  MF.drawMill(box);
 
   var go = E('div','row'); go.style.marginTop='14px';
   go.appendChild(MF.jump('Into the mine &rarr;','mine'));
   host.appendChild(go);
-
-  function draw(){
-    clear(out);
-    var n=st.n, prime=isPrime(n), pairs=factorPairs(n).filter(function(p){ return p[0]!==1; });
-    var m = E('div','note ' + (prime?'warn':'good'));
-    m.innerHTML = prime
-      ? '<b>' + num(n) + ' is already an ingot.</b> Put it in the crucible and it comes out unchanged — nothing separates. ' +
-        'That is not the smelter failing. It is the most refined thing in the mine.'
-      : '<b>' + num(n) + ' is ore.</b> There are metals in it. Pick a first cut below — <em>any</em> first cut — and keep going.';
-    out.appendChild(m);
-
-    if(!prime){
-      out.appendChild(H('div','hint','<b>Choose a first cut.</b> Two miners who cut differently still reach the same metals.'));
-      var chips=E('div','chips');
-      pairs.forEach(function(p){
-        var b=E('button','btn', num(p[0])+' × '+num(p[1])); b.type='button';
-        b.style.minHeight='44px';
-        on(b,'click',function(){
-          if(!st.cutA) st.cutA=p;
-          else if(!st.cutB && p[0]!==st.cutA[0]) st.cutB=p;
-          else { st.cutA=p; st.cutB=null; }
-          draw();
-        });
-        chips.appendChild(b);
-      });
-      out.appendChild(chips);
-      if(st.cutA) out.appendChild(MF.cutTree(n, st.cutA, 'First cut'));
-      if(st.cutB) out.appendChild(MF.cutTree(n, st.cutB, 'A different first cut'));
-      if(st.cutA && st.cutB){
-        var A=primeFactors(st.cutA[0]).concat(primeFactors(st.cutA[1])).sort(function(a,b){return a-b;}).join(' · ');
-        var B=primeFactors(st.cutB[0]).concat(primeFactors(st.cutB[1])).sort(function(a,b){return a-b;}).join(' · ');
-        out.appendChild(H('div','note ' + (A===B?'good':'bad'),
-          A===B ? '<b>Same metals.</b> Two different first cuts, the same ingots at the bottom. Nothing you choose at the top can change what is down there — which is why a lump of ore has one set of metals in it, however you start cutting.'
-                : '<b>These disagree, which cannot happen.</b> If you are seeing this, the arithmetic is wrong.'));
-      }
-      out.appendChild(H('div','eq sm','<span class="dim">the metals in '+num(n)+':</span> ' + primeFactors(n).join(' · ')));
-    }
-    out.appendChild(MF.says(prime
-      ? '<b>Mr Factor:</b> Hold onto that feeling. When you meet <b>x² + 4</b> down the mine, it is this — already pure, nothing to separate.'
-      : '<b>Mr Factor:</b> Keep splitting until every piece is an ingot. That is all smelting is, and it is exactly what you will do to a trinomial.'));
-  }
-  draw();
-};
-MF.cutTree = function(n, pair, title){
-  var d=E('div','panel'); d.style.margin='10px 0'; d.style.background='#fff';
-  d.appendChild(H('div','hint','<b>'+title+'</b> — '+num(n)+' → '+num(pair[0])+' × '+num(pair[1])));
-  var chain = primeFactors(pair[0]).concat(primeFactors(pair[1])).sort(function(a,b){return a-b;});
-  var row=E('div','ingotrow');
-  chain.forEach(function(p){ row.appendChild(H('div','ingot pure', num(p))); });
-  d.appendChild(row);
-  return d;
 };
 
 /* =========================================================================
@@ -14400,6 +14677,95 @@ MF.validate = function(){
   MF.state.yard = scForgeSaved.yard; MF.state.forge = scForgeSaved.forge;
   document.body.removeChild(scStage);
   MF.state.tools = scSavedTools; MF.state.school = scSavedSchool;
+
+  /* THE STAMP MILL BREAKS NUMBERS THE WAY THE MINE BREAKS ROCK.
+
+     USER, 2026-09-05: "The Ore needs to sit on a bench and have a press come on
+     it... the pedagogical focus is teaching the factors of numbers 1-100... as
+     if the student is pressing a lever to stamp the ore."
+
+     What was here was a slider and a row of buttons listing EVERY factor pair -
+     the pair scanner the mine took off the face for doing the looking for you,
+     sitting in a teaching room doing it for free - and a panel labelled "PLAY,
+     NOTHING TO ANSWER".
+
+     Driven the way a student drives it: put a number on the bench, name a
+     divisor, pull the lever, and keep going until nothing splits. Two things
+     are asserted, and the second is the one that matters.
+
+       THE ARITHMETIC. Every split must be a true division, and the pieces left
+       at the end must multiply back to the number that went in - checked
+       against `primeFactors`, which is the engine, not against the room.
+
+       AND THE LEVER MUST REFUSE. A divisor that does not divide has to bounce.
+       A mill that split on anything would teach that every number is anything.
+
+     READ THE DENOMINATOR: eight numbers across 2-100, chosen for shape - a
+     prime, a square, a prime cube, a highly composite one, and the ends of the
+     range. It says nothing about the drawing, and nothing about whether the
+     press LOOKS like it comes down. */
+  var mlStage = document.createElement('div');
+  mlStage.style.cssText = 'position:fixed; left:-17000px; top:0; width:520px';
+  document.body.appendChild(mlStage);
+  var mlSaved = MF.state.mill;
+  [2, 17, 36, 49, 64, 97, 100, 84].forEach(function(mn){
+    chk('schema');
+    MF.state.mill = null;
+    var probe = document.createElement('div');
+    mlStage.innerHTML = ''; mlStage.appendChild(probe);
+    try { MF.SCREENS['workshop-ore'](probe); } catch(e){
+      errs.push('schema: the stamp mill threw on ' + mn + ': ' + e.message); return; }
+    var M = MF.millState();
+    MF.state.mill = M = MF.millInit(mn);
+    var box = probe.querySelector('.millstage') && probe.querySelector('.millstage').parentNode;
+    if(!box){ errs.push('schema: the stamp mill drew no bench for ' + mn); return; }
+    MF.drawMill(box);
+    /* stamp it down with the engine's own smallest factor each time */
+    var guard = 0;
+    while(!M.floor.every(function(p){ return isPrime(p.n); }) && guard++ < 24){
+      var pc = M.floor[M.at];
+      if(isPrime(pc.n)) break;
+      M.raw = String(primeFactors(pc.n)[0]);
+      MF.millStamp(M, box);
+    }
+    chk('schema');
+    var got = M.floor.map(function(p){ return p.n; }).sort(function(a,b){ return a-b; });
+    var want = primeFactors(mn).sort(function(a,b){ return a-b; });
+    if(got.join('·') !== want.join('·'))
+      errs.push('schema: stamping ' + mn + ' down came to ' + got.join('·') +
+        ' and its metals are ' + want.join('·'));
+    /* AND A DIVISOR THAT DOES NOT DIVIDE MUST BOUNCE. */
+    chk('schema');
+    MF.state.mill = M = MF.millInit(mn);
+    MF.drawMill(box);
+    var before = M.floor.length;
+    M.raw = String(mn === 97 ? 5 : (mn % 7 === 0 ? 9 : 7));
+    MF.millStamp(M, box);
+    if(M.floor.length !== before || (M.last && M.last.ok))
+      errs.push('schema: the stamp split ' + mn + ' on ' + M.raw +
+        ', which does not divide it — a mill that splits on anything teaches that anything divides');
+  });
+  /* CONTROL: let the stamp split on any number at all and the sweep must say so */
+  chk('schema');
+  MF.state.mill = MF.millInit(36);
+  var mlProbe = document.createElement('div');
+  mlStage.innerHTML = ''; mlStage.appendChild(mlProbe);
+  MF.SCREENS['workshop-ore'](mlProbe);
+  var mlBox = mlProbe.querySelector('.millstage').parentNode;
+  var mlM = MF.millState();
+  var mlBefore = mlM.floor.length;
+  var mlReal = MF.millStamp;
+  MF.millStamp = function(M2){
+    var pc = M2.floor[M2.at];
+    M2.floor.splice(M2.at, 1, {n:5, id:++M2.seq}, {n:pc.n, id:++M2.seq});
+    M2.last = {ok:true, why:'x'};
+  };
+  MF.millStamp(mlM, mlBox);
+  MF.millStamp = mlReal;
+  if(mlM.floor.length === mlBefore)
+    errs.push('CONTROL: the stamp-mill sweep cannot see a press that splits on a number that does not divide');
+  document.body.removeChild(mlStage);
+  MF.state.mill = mlSaved;
 
   /* CONTROL 1: a method that prints the whole factorisation must be caught */
   chk('schema');

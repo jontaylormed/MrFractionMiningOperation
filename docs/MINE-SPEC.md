@@ -1467,3 +1467,47 @@ centre of the stone returns `.orelab`, inside the ore.
 > rather than as three numbers, so renumbering the stack is free and inverting it is not — and
 > that nothing in the hammer layer is live to the mouse. Controls: put the hammer back behind
 > the stone, and make the layer take clicks. Both fail by name.
+
+## 38. The Stamp Mill: a lump on a bench, a press over it, and a lever
+
+*User, 2026-09-05: "The Stamp floor needs updating. First remove nothing to play text. The
+Ore needs to sit on a bench and have a press come on it. While the pedagogical focus is
+teaching the factors of numbers 1-100. It needs to be more interactive as if the student is
+pressing a lever to stamp the ore."*
+
+### 38a. What went
+
+A slider, a number box, and **a row of buttons listing every factor pair of the number** —
+which is the pair scanner the mine took off the face for doing the looking for you (§10a),
+sitting in a teaching room doing it for free. Picking one drew a static tree. Nothing was
+pressed, nothing moved, and the panel was labelled **"PLAY — NOTHING TO ANSWER"**: a sign on
+a room saying there is nothing in it, which was true of the room it was labelling.
+
+### 38b. What is here
+
+**The mine's own loop, in numbers 2–100.** A lump sits on the bench under the press. You name
+a whole number you think divides it and **pull the lever**. The press comes down and it splits,
+or the stamp bounces and says what the remainder was. What comes off stays on the bench and can
+be stamped again. When nothing left will split, every piece is an ingot and that row is every
+metal in the number.
+
+That is the same act as the breaking floor, which is the whole thesis: breaking a number and
+breaking a trinomial are one job (§8a). The stone is `MF.oreRock` again — HTML pinned over the
+drawing, for the same reason the anvil's is (§26b).
+
+**Nothing tells you whether it will split.** The stamp does. A bounce names the remainder
+— *"7 does not divide 72 — 72 ÷ 7 leaves a remainder of 2"* — which describes the number,
+not the student.
+
+> `schema` (190) drives the mill the way a student does, over eight numbers chosen for shape —
+> a prime, a square, a prime cube, a highly composite one and both ends of the range. Two
+> assertions: every split is a true division and the pieces left multiply back to what went in
+> (checked against `primeFactors`, the engine, not against the room); and **a divisor that does
+> not divide must bounce**, because a mill that splits on anything teaches that anything
+> divides. Control: let the press split on any number and it reports both — *"stamping 36 down
+> came to 2·36"* and *"the stamp split 36 on 7, which does not divide it"*.
+
+> **And the sweep caught a colour on its first run.** `.millpiece.ore` shipped at `#8A7358`,
+> which is **4.09:1** against the cream on it — and the file already had the answer written
+> down from the yard's rough chips: `#7A6650` is 4.94. Same wall, same fix, found in seconds
+> because it is measured rather than eyeballed.
