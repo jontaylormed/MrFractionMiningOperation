@@ -318,6 +318,21 @@ input::placeholder, textarea::placeholder{color:#6B5B48; opacity:1}
    of the 805px between the target and the pour button - the single biggest
    reason a student had to scroll to find the thing they were about to press.
    At 310 the same drawing is 232 tall and the whole craft floor fits a laptop. */
+/* AND SMALLER AGAIN ON THE CRAFT FLOOR, WHERE IT IS NOT THE LESSON.
+
+   310 was measured against a craft floor that has since grown, and `reach` had
+   it at 715px from the target to the pour on a 979x700 laptop - 15px past one
+   screen, so the button you are about to press sits below the fold of the
+   panel that asks you to press it. That check has been failing on master.
+
+   The trim is scoped to `.craft` on purpose. In the Casting Shed's Molds room
+   the same drawing IS the lesson - it is what the sliders move and the only
+   picture of multiplication in the room - and it stays at 310 there. In the
+   Forge it is a status display for a pour you have already ordered, sitting
+   between the target and the slots, and the file already decided once that
+   this is the height to give back: "it does not need to be bigger than the
+   thing you are making it with." 276 puts the floor at 685. */
+.craft .moldwrap{max-width:276px; margin:6px auto 8px}
 .moldwrap svg{display:block; width:100%; height:auto}
 .moldwrap svg *{pointer-events:none}
 
