@@ -1470,6 +1470,28 @@ ol.ssteps li.open::marker{color:var(--vein)}
 .realworld .rwtie{font-size:14px; color:var(--ink-soft); margin-top:7px; max-width:66ch;
   border-top:1px dashed var(--rule); padding-top:7px}
 
+/* ---- WHAT DID THE MINER DO WRONG: a worked attempt with the fault in it ---- */
+.miscut{background:#FFFCF6; border:2px solid var(--tan); border-left:6px solid var(--molten);
+  border-radius:12px; padding:13px 15px; margin-top:16px}
+.miscut .mclab{font-family:var(--display); font-size:11px; letter-spacing:.12em; color:#A33E0B}
+.miscut .mclede{font-size:15px; color:var(--ink); max-width:64ch; margin:3px 0 10px}
+/* the log: a numbered line, the working, and what the miner took it to show */
+.mclog{background:#fff; border:2px solid var(--rule); border-radius:10px; padding:9px 11px; margin-bottom:11px}
+.mcrow{display:flex; align-items:baseline; gap:9px; padding:5px 0; flex-wrap:wrap;
+  border-bottom:1px dashed var(--rule)}
+.mcrow:last-child{border-bottom:0}
+.mcn{font-family:var(--display); font-size:12px; color:var(--ore-t); flex:0 0 auto; min-width:1.2em}
+.mcline{font-family:var(--display); font-size:clamp(16px,2.3vw,20px); color:var(--ink); flex:1 1 auto; min-width:0}
+.mcnote{font-size:12.5px; color:var(--ink-soft); flex:0 1 auto; font-style:italic}
+/* the last line is the one that is wrong, and it is not marked as wrong -
+   that is the question */
+.mcrow:last-child .mcline{color:#A33E0B}
+.miscut .mcq{font-family:var(--display); font-size:clamp(16px,2.4vw,19px); color:var(--ink); margin-bottom:8px}
+.miscut .qopts{margin-bottom:2px}
+.mcafter{font-size:14.5px; color:var(--ink); background:#F1F8F5; border:2px solid var(--vein);
+  border-radius:10px; padding:10px 12px; margin-top:9px; max-width:66ch}
+.miscut .hint{margin-top:8px}
+
 /* ---- A REFLECTION, WHICH IS NOT A QUESTION ---- */
 .reflect{background:var(--paper); border:2px dashed var(--tan); border-radius:12px;
   padding:13px 15px; margin-top:16px}
@@ -5859,6 +5881,64 @@ MF.paintRealWorld = function(host, key){
    something in their own words without also asking whether they got it right -
    and because `nogrades` would fail the build over anything that scored it.
    ========================================================================= */
+/* =========================================================================
+   WHAT DID THE MINER DO WRONG?
+
+   USER, 2026-09-05. A worked attempt with the fault in it, on the bench, and
+   the question is where it went off - not what the answer is.
+
+   IT IS DESCRIBED, NOT MARKED, like everything else here: every option carries
+   its own `says`, so the reading you get is about the WORKING rather than
+   about you, and `holds` marks the one the mathematics supports so the `quiz`
+   group can check it against the engine. The options go through
+   MF.spreadOptions for the same reason every other question does - the
+   supported one must not sit in the same slot every time.
+   ========================================================================= */
+MF.paintMiscut = function(host, o){
+  /* CLASS `ask` AS WELL AS `miscut`: the quiz group sweeps `.ask` cards and
+     clicks every `.qopt` in them, requiring each to say something back. This
+     question has that shape exactly, so it gets the same sweep for free rather
+     than a second copy of the same assertion somewhere else. */
+  var box = E('div','miscut ask');
+  box.appendChild(H('div','mclab', o.lab || '&#9935; WHAT DID THE MINER DO WRONG?'));
+  if(o.lede) box.appendChild(H('p','mclede', o.lede));
+
+  /* the log, line by line, with what the miner thought each line showed */
+  var log = E('div','mclog');
+  (o.work || []).forEach(function(w, i){
+    var r = E('div','mcrow');
+    r.appendChild(H('span','mcn', String(i+1)));
+    r.appendChild(H('span','mcline', w.line));
+    if(w.note) r.appendChild(H('span','mcnote', w.note));
+    log.appendChild(r);
+  });
+  box.appendChild(log);
+
+  box.appendChild(H('div','mcq', o.q || 'Where did it go wrong?'));
+  var out = E('div','qout');
+  var opts = E('div','qopts');
+  MF.spreadOptions('miscut|' + String(o.q || '') + String(o.lab || ''), o.options).forEach(function(op){
+    var b = E('button','qopt'); b.type='button';
+    b.innerHTML = op.label;
+    b.setAttribute('aria-label','Choose ' + (op.a11y || op.label.replace(/<[^>]+>/g,'')));
+    on(b,'click',function(){
+      Array.prototype.forEach.call(opts.children, function(n){ n.removeAttribute('data-chosen'); });
+      b.setAttribute('data-chosen','yes');
+      clear(out);
+      out.appendChild(H('div','note' + (op.holds ? ' good' : ''),
+        '<b>You chose ' + op.label.replace(/<[^>]+>/g,'') + '.</b> ' + op.says));
+      if(op.holds && o.after) out.appendChild(H('div','mcafter', o.after));
+    });
+    opts.appendChild(b);
+  });
+  box.appendChild(opts);
+  box.appendChild(out);
+  box.appendChild(H('div','hint','Nothing here is kept and nothing here is marked. Every answer describes the ' +
+    'working — including the ones that are not what went wrong.'));
+  host.appendChild(box);
+  return box;
+};
+
 MF.paintReflection = function(host, o){
   var box = E('div','reflect');
   box.appendChild(H('div','rflab', o.lab || '&#9998; BEFORE YOU GO'));
@@ -6161,6 +6241,17 @@ MF.shedArt = function(kind){
    there is no verdict to disagree with - so the claim under each option is
    written here as an engine call rather than as a sentence. */
 MF.QUIZ_CLAIMS = [
+  /* THE WHAT-WENT-WRONG IN THE WORDS RESTS ON THESE TWO TOGETHER, and the
+     whole point of the question is that they are BOTH true of one lump: the
+     miner checked for a common metal, found none, and read that as "nothing
+     comes out of it". Checked separately here so the pair cannot quietly stop
+     being the pair (§39). */
+  {what:'x² − 9 carries no common metal',    want:false,
+   holds:function(){ return !!MF.commonMetal({kind:'poly',a:1,b:0,c:-9}); }},
+  {what:'x² − 9 comes apart all the same',   want:true,
+   holds:function(){ return !MF.isNative({kind:'poly',a:1,b:0,c:-9}); }},
+  {what:'x² − 9 runs at (x + 3)',            want:true,
+   holds:function(){ return MF.breakOff({kind:'poly',a:1,b:0,c:-9}, {m:1,k:3}).ok; }},
   {what:'x² + 4 is native metal',            want:true,
    holds:function(){ return MF.isNative({kind:'poly',a:1,b:0,c:4}); }},
   {what:'x² − 9 still comes apart',          want:false,
@@ -6480,19 +6571,47 @@ MF.SCREENS['shed-words'] = function(host){
      }}
   ]});
 
-  /* AND THIS ROOM ENDS ON A REFLECTION rather than on another question. The
-     questions above check whether you can pick the right word; this asks you
-     to put the pair in your own, which is the thing that survives the site. */
-  MF.paintReflection(host, {
-    lab:'&#9998; IN YOUR OWN WORDS',
-    prompt:'Pick <b>one</b> pair off the table — the mine\'s word and the mathematical one — and write down what they ' +
-      'have in common in a sentence you would actually say out loud.',
-    placeholder:'A seam is a factor because…',
-    prompts:[
-      'Which of the two names tells you more about what the thing <em>does</em>?',
-      'Is there a pair on that table where the mining word is genuinely worse than the real one?',
-      'If you had to explain <b>native metal</b> to somebody who had never seen this site, would you use the word "prime" or not?'
-    ]
+  /* ---- WHAT DID THE MINER DO WRONG? ----
+
+     USER, 2026-09-05: "with the words, remove the reflection and replace with
+     what did the miner do wrong question."
+
+     The reflection asked a student to put a pair from the table into their own
+     words, and nothing was read or kept - which is a fine thing to ask and a
+     hard thing to learn from on your own. This asks the harder question:
+     somebody has used the words WRONGLY, the working is on the bench, and you
+     have to say where it went off.
+
+     ERROR ANALYSIS IS THE RIGHT CLOSER FOR THIS ROOM. Every other question
+     here asks you to pick the right name for a thing. This one shows a name
+     applied to the wrong thing and asks what the name actually means - which
+     is the difference between having the vocabulary and using it.
+
+     The mistake is the one this room exists to prevent: reading "nothing
+     divides every term" as "nothing comes apart". They are different claims
+     about different things, and the words for them are `common factor` and
+     `irreducible`. */
+  MF.paintMiscut(host, {
+    lab:'&#9935; WHAT DID THE MINER DO WRONG?',
+    lede:'A miner wrote this up in the log and racked the lump as finished metal. The arithmetic ' +
+      'on every line is right. The <b>word</b> at the end is not.',
+    work:[
+      {line:'x&sup2; &minus; 9', note:'the lump'},
+      {line:'1 and &minus;9 share nothing but 1', note:'checked for a common metal'},
+      {line:'so nothing comes out of it', note:'the step that is wrong'},
+      {line:'&rarr; native metal', note:'racked as finished'}
+    ],
+    q:'Where did it go wrong?',
+    options:[
+      {label:'"Nothing divides every term" is not the same claim as "nothing comes apart"', holds:true,
+       says:'That is exactly it. A <b>common factor</b> is something every term carries — this lump has none, and the miner checked that correctly. <b>Irreducible</b> means the whole thing will not come apart into two brackets, which is a different question and has a different answer here: x² − 9 is a <b>twin seam</b> and it runs at (x + 3)(x − 3).'},
+      {label:'The arithmetic is wrong &mdash; 1 and &minus;9 do share a factor',
+       says:'They do not. 1 and −9 share only 1, and the miner was right about that. The fault is not in the sum; it is in what the sum was taken to prove.'},
+      {label:'x&sup2; &minus; 9 has no middle term, so it cannot be factored',
+       says:'A missing middle term is what makes this one <em>easy</em>, not impossible. Two squares with a minus between them and nothing in the middle is the shape of a twin seam — (x + 3)(x − 3) multiplies back to x² − 9 with the middles cancelling, which is why there is no middle to see.'}
+    ],
+    after:'<b>The two words are not interchangeable.</b> A lump with no common metal in it can still come apart, ' +
+      'and a lump that comes apart can still have no common metal. That is the pair this whole table exists to keep separate.'
   });
 
   MF.shedFoot(host, 'shed-words');
@@ -14625,7 +14744,12 @@ MF.validate = function(){
         String(rw.tie).length + ' characters — that is a gesture, not a tie');
   });
   /* AND THE TWO READING ROOMS DO NOT END ON A QUESTION EITHER */
-  [['shed-words', '.reflect', 'a reflection'],
+  /* THE SUBJECT MOVED (user, 2026-09-05). The Words closed on a reflection and
+     now closes on "what did the miner do wrong" - a worked attempt with the
+     fault in it. The property being protected did not change: the room must
+     not end on another of the same recognition questions it is already full
+     of. So the assertion follows the closer rather than the element. */
+  [['shed-words', '.miscut', 'a what-went-wrong'],
    ['shed-mold',  '.realworld', 'a real-world example']].forEach(function(pair){
     chk('schema');
     var rwProbe = document.createElement('div');

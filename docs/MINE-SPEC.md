@@ -1513,3 +1513,41 @@ not the student.
 > which is **4.09:1** against the cream on it — and the file already had the answer written
 > down from the yard's rough chips: `#7A6650` is 4.94. Same wall, same fix, found in seconds
 > because it is measured rather than eyeballed.
+
+## 39. The Words ends on what the miner did wrong
+
+*User, 2026-09-05: "with the words, remove the reflection and replace with what did the
+miner do wrong question."*
+
+The reflection asked a student to put a pair from the table into their own words, and
+nothing was read or kept — a fine thing to ask, and a hard thing to learn from on your own.
+This asks the harder question: somebody has used the words **wrongly**, the working is on
+the bench, and you have to say where it went off.
+
+```
+1  x² − 9                              the lump
+2  1 and −9 share nothing but 1        checked for a common metal
+3  so nothing comes out of it          the step that is wrong
+4  → native metal                      racked as finished
+```
+
+**Error analysis is the right closer for this room.** Every other question here asks you to
+pick the right name for a thing. This one shows a name applied to the wrong thing — and the
+mistake is the one the room exists to prevent: reading *"nothing divides every term"* as
+*"nothing comes apart"*. They are different claims, and their names are **common factor** and
+**irreducible**.
+
+It is described, not marked, like everything else: every option carries its own reading, and
+`holds` marks the one the mathematics supports. The options go through `MF.spreadOptions`, so
+the supported one does not sit in the same slot (§28-adjacent, and the reason for it).
+
+> `MF.paintMiscut` carries the class `ask` as well as its own, so the `quiz` group's sweep —
+> click every option, require each to say something back — covers it for free rather than
+> needing a second copy of the same assertion. `quiz` 78 → 85.
+>
+> And the two facts it rests on are checked **separately** against the engine, because the
+> whole question is that they are both true of one lump: `x² − 9` carries no common metal,
+> **and** it comes apart anyway. `schema` follows the closer rather than the element — the
+> property being protected never changed, which is that the room must not end on another of
+> the recognition questions it is already full of. Control: remove the closer and it reports
+> *"shed-words does not end on a what-went-wrong"*.
