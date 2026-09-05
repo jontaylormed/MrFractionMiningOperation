@@ -1107,12 +1107,16 @@ input::placeholder, textarea::placeholder{color:#6B5B48; opacity:1}
 .rack .sh{font-size:11px; color:#E4D5BB; margin-bottom:3px}
 /* the heap: rock lying on the dirt, sitting at slightly different heights so
    it reads as tipped rather than filed */
-.heap{display:flex; flex-wrap:wrap; gap:5px; align-items:flex-end; padding-top:3px}
-.heaprock{cursor:grab; font-family:var(--display); font-size:14px; color:#FFF3DE;
-  background:linear-gradient(160deg,#7A6650,#42382C); border:0; padding:8px 12px 9px; margin:0;
-  min-height:44px; touch-action:none;
-  clip-path:polygon(9% 5%, 76% 0%, 100% 30%, 94% 84%, 58% 100%, 12% 92%, 0% 42%);
-  filter:drop-shadow(0 2px 1px rgba(0,0,0,.5))}
+.heap{display:flex; flex-wrap:wrap; gap:7px; align-items:flex-end; padding-top:3px}
+/* THE HEAP IS DRAWN LUMPS NOW. It was a text chip in a rock-shaped clip-path -
+   the last place in the mine where the expression sat BESIDE the stone rather
+   than cut into it. MF.oreRock brings its own silhouette and its own shadow,
+   so the button around it is nothing but a hit area and a grab handle. */
+.heaprock{cursor:grab; background:none; border:0; padding:0; margin:0;
+  width:132px; min-height:44px; touch-action:none;
+  filter:drop-shadow(0 2px 2px rgba(0,0,0,.5))}
+.heaprock .orerock{max-width:none}
+.heaprock .orelab{font-size:clamp(13px,1.5vw,17px)}
 .heaprock:nth-child(2n){margin-bottom:5px}
 .heaprock:nth-child(3n){margin-bottom:2px}
 .heaprock:hover{filter:brightness(1.2) drop-shadow(0 2px 1px rgba(0,0,0,.5))}
@@ -1130,7 +1134,15 @@ input::placeholder, textarea::placeholder{color:#6B5B48; opacity:1}
 .yard{position:sticky; top:12px}
 @media (max-width:1080px){ .yard{position:static} }
 .yard h3,.gearbox h3{font-size:14px; letter-spacing:.09em; text-transform:uppercase; color:var(--ore-t); margin-bottom:6px}
-.metalrow{display:flex; flex-wrap:wrap; gap:6px}
+.metalrow{display:flex; flex-wrap:wrap; gap:6px; align-items:flex-start}
+/* A BAR, AND UNDER IT THE LUMP IT CAME OUT OF. `.metal` is an inline-flex chip
+   with a clip-path and an ore fleck in its `:before`; putting a second line
+   inside it would have had to fight both. The cell is the column the caption
+   needs, and the chip is untouched. */
+.metalcell{display:flex; flex-direction:column; align-items:flex-start; max-width:190px}
+.mfrom{font-size:11px; line-height:1.25; color:#E4D5BB; margin:1px 0 0 4px;
+  font-family:var(--body)}
+.mfrom .mmore{color:#C9B695; font-style:italic}
 /* the yard is a RACK of bars, not a list of chips: each metal is a cast bar
    with a lit top edge and a shadow under it, stacked on timber shelving */
 .metalrack{background:linear-gradient(180deg,#5A4432,#42301F); border:2px solid #332416;
@@ -3745,11 +3757,24 @@ MF.ripCommon = function(ore){
   MF.swing(B);
 };
 
-/* ---- the yard: metals in, and now metals OUT ---- */
-MF.addToYard = function(ingot){
+/* ---- the yard: metals in, and now metals OUT ----
+
+   A BAR REMEMBERS WHAT IT CAME OUT OF. The rack used to be a row of labels: a
+   student who had broken 2x² + 10x + 12 down to 2, (x+2) and (x+3) saw three
+   bars with no sign they had ever been one lump. The whole thesis of the mine
+   is that breaking is factoring, and the rack is where the evidence of that
+   ends up - so it says where each bar came from.
+
+   `from` is a LIST because the same metal comes out of different lumps: a 2 is
+   a 2 whichever rock it was cut from, and `ingotKey` folds them into one
+   entry. Capped at three, because this is a caption on a bar and not a ledger. */
+MF.addToYard = function(ingot, from){
   var k = ingotKey(ingot);
-  if(!MF.state.yard[k]) MF.state.yard[k] = {ingot:ingot, count:0};
-  MF.state.yard[k].count++;
+  if(!MF.state.yard[k]) MF.state.yard[k] = {ingot:ingot, count:0, from:[]};
+  var e = MF.state.yard[k];
+  if(!e.from) e.from = [];               /* an entry made before origins existed */
+  e.count++;
+  if(from && e.from.indexOf(from) < 0 && e.from.length < 3) e.from.push(from);
 };
 MF.yardList = function(){                     /* one entry per metal held */
   var out = [];
@@ -8451,12 +8476,16 @@ MF.knockPiece = function(id){
    later. Both routes into the yard - tipping the breaking floor, and sending a
    lump straight out of the cart - call this, so the rule cannot be true in one
    of them and wrong in the other. */
-MF.stow = function(ore){
-  if(MF.isNative(ore)){ MF.addToYard(MF.oreToIngot(ore)); return 'rack'; }
+MF.stow = function(ore, from){
+  if(MF.isNative(ore)){ MF.addToYard(MF.oreToIngot(ore), from || null); return 'rack'; }
   MF.state.rockpile.push(ore); return 'heap';
 };
 MF.tipFloor = function(B, why){
-  B.floor.forEach(function(p){ MF.stow(p.ore); });
+  /* WHAT THESE PIECES CAME OUT OF is the lump that landed on the bench, not
+     the piece itself - a bar's origin is the rock it was broken from, and by
+     the time it reaches the rack that rock no longer exists anywhere else. */
+  var from = B && B.ore ? MF.oreText(B.ore) : null;
+  B.floor.forEach(function(p){ MF.stow(p.ore, from); });
   MF.finishLump(B, why);
 };
 
@@ -9064,7 +9093,7 @@ MF.paintYard = function(){
   rk.appendChild(H('div','ylab','THE RACK &mdash; native metal'));
   var keys = Object.keys(MF.state.yard);
   if(!keys.length){
-    rk.appendChild(H('div','yempty','Bare. Anything you break down to an element is racked here, and this is what the forge spends.'));
+    rk.appendChild(H('div','yempty','Bare. Anything you break down to an element is racked here, with the lump it came out of written under it — and this is what the forge spends.'));
   } else {
     var rack = E('div','rack');
     [['plain metal', function(g){ return g.m===0; }],
@@ -9077,8 +9106,17 @@ MF.paintYard = function(){
       these.sort().forEach(function(k){
         var e = MF.state.yard[k];
         var label = e.ingot.label || ingotText(e.ingot);
-        row.appendChild(H('div','metal' + (e.ingot.m===0?' pure':''),
+        /* THE BAR, AND UNDER IT WHAT IT CAME OUT OF. The bar is the same chip
+           it always was; the cell around it is what lets a caption sit under
+           it without breaking the chip's own inline layout. */
+        var cell = E('div','metalcell');
+        cell.appendChild(H('div','metal' + (e.ingot.m===0?' pure':''),
           label + (e.count>1 ? ' <span class="ct">×'+e.count+'</span>' : '')));
+        var from = e.from || [];
+        cell.appendChild(H('div','mfrom', from.length
+          ? 'out of ' + from[0] + (from.length>1 ? ' <span class="mmore">+'+(from.length-1)+' more</span>' : '')
+          : '<span class="mmore">straight off the face</span>'));
+        row.appendChild(cell);
       });
       shelf.appendChild(row);
       rack.appendChild(shelf);
@@ -9097,8 +9135,13 @@ MF.paintYard = function(){
     MF.state.rockpile.forEach(function(o, idx){
       var b = E('button','heaprock'); b.type='button';
       b.setAttribute('data-heap', idx);
-      b.appendChild(H('span','hv', MF.oreLabel(o)));
-      b.setAttribute('aria-label', MF.oreText(o) + ' — still rock. Put it back under the pick.');
+      /* THE HEAP DRAWS LUMPS, NOT LABELS. It was a text chip in a rock-shaped
+         clip-path - the last place in the mine where the expression was beside
+         the stone rather than cut into it. It is MF.oreRock now, the same
+         drawn lump the seam, the cart and the anvil show, so an instrument put
+         on a rock in the cart is still readable on it after it is tipped. */
+      b.appendChild(MF.oreRock(o, {native:false}));
+      b.setAttribute('aria-label', MF.oreDisplayText(o) + ' — still rock. Put it back under the pick.');
       b.title = 'Put it back under the pick';
       /* ONE CLICK DOES IT, and the drag below does exactly the same thing.
          A drag with no click path is a control half the users cannot reach. */
@@ -10421,6 +10464,56 @@ MF.validate = function(){
   var ngLost = (MF.yardList().length === 0 && MF.state.rockpile.length === 0);
   MF.stow = ngStow;
   if(!ngLost) errs.push('CONTROL: a stow that drops the ore still put it somewhere');
+
+  /* AND A BAR ON THE RACK MUST KNOW WHAT IT CAME OUT OF.
+
+     The rack was a row of labels: a student who broke 2x² + 10x + 12 down to
+     2, (x + 2) and (x + 3) saw three bars with nothing saying they had ever
+     been one lump. The mine's whole claim is that breaking IS factoring, and
+     the rack is where the evidence of it ends up.
+
+     Driven through the real route - dig, swing until nothing breaks, tip the
+     floor - because the origin is set by MF.tipFloor from the lump on the
+     BENCH, and a hand-built call to MF.addToYard would pass while the route a
+     student walks dropped it on the floor.
+
+     READ THE DENOMINATOR: one lump, broken all the way down. It says nothing
+     about a bar that reaches the rack by any other road - a lump sent straight
+     from the cart has no parent, and says so in words rather than carrying a
+     false one. */
+  chk('nogate');
+  MF.state.yard = {}; MF.state.rockpile = [];
+  var ngPv = {kind:'poly', a:2, b:10, c:12, id:'pv', layer:4};
+  MF.state.cart = [ngPv]; MF.state.selected = ngPv;
+  var ngB = MF.state.anvil = MF.anvilInit(ngPv), ngG = 0;
+  while(!ngB.floor.every(function(p){ return MF.isNative(p.ore); }) && ngG++ < 8){
+    var ngPc = ngB.floor[ngB.at], ngF = MF.simplestFactor(ngPc.ore);
+    if(!ngF) break;
+    ngB.raw = {m:String(ngF.m), k:String(ngF.k)}; ngB.rawFor = ngPc.id;
+    MF.swing(ngB);
+  }
+  MF.tipFloor(ngB, 'checking');
+  var ngBars = MF.yardList();
+  var ngBlind = ngBars.filter(function(e){
+    var rec = MF.state.yard[e.key];
+    return !rec || !rec.from || !rec.from.length;
+  });
+  if(!ngBars.length)
+    errs.push('nogate: breaking 2x² + 10x + 12 all the way down racked nothing, so provenance was not tested');
+  else if(ngBlind.length)
+    errs.push('nogate: ' + ngBlind.length + ' of ' + ngBars.length + ' bars reached the rack with no record ' +
+      'of the lump they came out of — the rack is a row of labels again');
+  /* CONTROL: an addToYard that forgets the origin must be caught */
+  chk('nogate');
+  MF.state.yard = {};
+  var ngAdd = MF.addToYard;
+  MF.addToYard = function(ing){ return ngAdd(ing, null); };
+  MF.stow({kind:'poly', a:1, b:0, c:4, id:'pvc', layer:3}, 'x² + 4 came out of something');
+  MF.addToYard = ngAdd;
+  var ngKeys = Object.keys(MF.state.yard);
+  if(ngKeys.length && (MF.state.yard[ngKeys[0]].from || []).length)
+    errs.push('CONTROL: a rack that throws the origin away still reported one');
+
   MF.state.yard = ngYard.yard; MF.state.rockpile = ngYard.heap; MF.state.cart = ngYard.cart;
   MF.state.selected = ngSaved.sel; MF.state.anvil = ngSaved.anvil; MF._mine = ngSaved.mine;
   document.body.removeChild(ngStage);
