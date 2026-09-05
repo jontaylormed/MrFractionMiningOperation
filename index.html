@@ -6234,8 +6234,10 @@ MF.SCREENS['workshop-mold'] = function(host){
     'You can walk into the mine having read none of it — the `nogate` rule holds everywhere.'));
 
   var go = E('div','row'); go.style.marginTop='14px';
+  /* NO "INTO THE MINE" (user, 2026-09-05), here or in the room feet below.
+     The masthead carries the mine on every page; a door to it at the foot of
+     each of four teaching rooms was the same route said five times. */
   go.appendChild(MF.jump('Take some ore apart &rarr;','workshop-ore'));
-  go.appendChild(MF.jump('Into the mine &rarr;','mine'));
   go.appendChild(MF.jump('To the forge &rarr;','forge'));
   go.appendChild(MF.jump('Out to the surface &rarr;','home'));
   host.appendChild(go);
@@ -6263,7 +6265,8 @@ MF.shedFoot = function(host, key){
     on(b,'click',function(){ MF.go(s.key); });
     row.appendChild(b);
   });
-  row.appendChild(MF.jump('Into the mine &rarr;','mine'));
+  /* the foot carries the OTHER TWO ROOMS and nothing else: the way to the mine
+     is the masthead, on this page as on every other */
   host.appendChild(row);
 };
 

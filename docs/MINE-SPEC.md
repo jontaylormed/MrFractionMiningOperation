@@ -1507,7 +1507,7 @@ not the student.
 > divides. Control: let the press split on any number and it reports both — *"stamping 36 down
 > came to 2·36"* and *"the stamp split 36 on 7, which does not divide it"*.
 
-**The room ends on the bench.** The "Into the mine" button is gone (user, 2026-09-05). It is not a dead end: the masthead carries every screen on the site, so the way out is where it is on every other page rather than an extra door at the foot of this one.
+**The teaching rooms end on their own work.** The "Into the mine" buttons are gone from the Stamp Mill, the Casting Shed hub and all three shed rooms (user, 2026-09-05). It is not a dead end: the masthead carries every screen on the site, so the way out is where it is on every other page rather than an extra door at the foot of this one.
 
 > **And the sweep caught a colour on its first run.** `.millpiece.ore` shipped at `#8A7358`,
 > which is **4.09:1** against the cream on it — and the file already had the answer written
