@@ -9257,35 +9257,81 @@ MF.anvilScene = function(ore, opts){
   var wrap = E('div','anvilsvg');
   var W=340, VH=232;
   var svg = S('svg',{viewBox:'0 0 '+W+' '+VH,'aria-hidden':'true'});
-  /* NO <defs>, AND NOT ONE GRADIENT. There were seven, and they are what the
-     rest of the site does not have. */
 
   /* ---- the ground, the stump, the anvil ----
 
-     FLAT, AND CUT BACK. This was the only rendered object on the site: seven
-     gradients, a metallic bevel on every plane, tongs leaning on the stump,
-     bolt heads, grain lines, chips of swarf across the floor. Every other
-     scene in the build - the valley, the yard, the stamp mill, the gallery
-     wall six inches above this one - is flat fill and a dark outline, so the
-     anvil read as a photograph pasted into a drawing.
+     RENDERED, AND THE REVERSAL IS THE POINT.
 
-     Same silhouette, same coordinates: the hammer's pivot, the rock's seat on
-     the face and the shatter animation are all pinned to these numbers and
-     none of them moved. What went is the shading and the clutter. */
+     USER, 2026-09-05: "Now make the anvil and hammer look 3D like the ladle."
+
+     This was cut back to flat fill and a dark outline for a stated reason, and
+     the reason was not that flat is better: it was that the anvil was THE ONLY
+     RENDERED OBJECT ON THE SITE and read as a photograph pasted into a
+     drawing. The ladle (§35) is rendered now, and it is the other half of the
+     same act - metal poured, metal broken - so the anvil being flat makes it
+     the odd one out in the other direction.
+
+     What came back is the SHADING. What did not is the clutter: no tongs
+     leaning on the stump, no swarf across the floor, no bolt heads. The
+     silhouette is the one it has had since it was flattened.
+
+     EVERY COORDINATE IS THE SAME. The hammer's pivot at (176,10), the face at
+     y=154 running x 112..262, the horn, the hardy hole - the ore's mount is
+     pinned to the face in percentages of this viewBox and the swing animations
+     are pinned to the rest, so a number moved here is a lump floating off the
+     anvil. Nothing moved. */
+  var aid = 'av' + (MF._anvSeq = (MF._anvSeq || 0) + 1);
+  var defs = S('defs',{});
+  function agrad(id, stops, horiz){
+    var g = S('linearGradient',{id:id, x1:'0', y1:'0', x2:(horiz?'1':'0'), y2:(horiz?'0':'1')});
+    stops.forEach(function(s){ g.appendChild(S('stop',{offset:s[0],'stop-color':s[1]})); });
+    defs.appendChild(g);
+  }
+  agrad(aid+'face', [['0%','#D6E0EA'],['30%','#AEBAC6'],['100%','#7E8A96']], true);
+  agrad(aid+'body', [['0%','#8A96A2'],['46%','#5E6A76'],['100%','#39424B']]);
+  agrad(aid+'base', [['0%','#525C66'],['100%','#2E353C']]);
+  agrad(aid+'horn', [['0%','#8E9AA6'],['100%','#4E5862']]);
+  agrad(aid+'wood', [['0%','#8A6142'],['40%','#6B4A32'],['100%','#3F2C1D']]);
+  agrad(aid+'haft', [['0%','#B08658'],['34%','#8A6A45'],['100%','#54402A']], true);
+  agrad(aid+'head', [['0%','#96A2AE'],['38%','#5E6A76'],['100%','#2E353C']], true);
+  agrad(aid+'peen', [['0%','#6E7A86'],['100%','#333B43']], true);
+  svg.appendChild(defs);
+
   svg.appendChild(S('ellipse',{cx:172,cy:226,rx:118,ry:7,fill:'#1B1511',opacity:'.42'}));
-  /* the stump: two flat tones, one for the top face and one for the side */
-  svg.appendChild(S('path',{d:'M104 202 h136 l-9 24 h-118 Z',fill:'#6B4A32',stroke:'#3A2A1C','stroke-width':'2','stroke-linejoin':'round'}));
+  /* the stump: a round of timber, lit from the left, with the grain showing */
+  svg.appendChild(S('path',{d:'M104 202 h136 l-9 24 h-118 Z',fill:'url(#'+aid+'wood)',
+    stroke:'#33240F','stroke-width':'2','stroke-linejoin':'round'}));
+  [0,1,2].forEach(function(gr){
+    svg.appendChild(S('path',{d:'M'+(112+gr*44)+' 204 q6 12 -2 22',fill:'none',
+      stroke:'#3F2C1D','stroke-width':'1.6',opacity:'.4'}));
+  });
+  /* the shadow the anvil casts onto its own stump, which is what seats it */
+  svg.appendChild(S('ellipse',{cx:174,cy:206,rx:70,ry:6,fill:'#20160E',opacity:'.5'}));
   svg.appendChild(S('rect',{x:102,y:208,width:140,height:5,fill:'#5A626A'}));
 
-  /* the anvil, in four flat planes: base, waist, table, face */
-  svg.appendChild(S('path',{d:'M110 192 h124 l6 12 h-136 Z',fill:'#414A53',stroke:'#2A3138','stroke-width':'2','stroke-linejoin':'round'}));
-  svg.appendChild(S('path',{d:'M138 172 h68 l14 22 h-96 Z',fill:'#5E6A76',stroke:'#2A3138','stroke-width':'2','stroke-linejoin':'round'}));
-  svg.appendChild(S('path',{d:'M104 170 h136 l-16 6 h-104 Z',fill:'#4E5862'}));
-  svg.appendChild(S('path',{d:'M104 156 q-32 2 -58 12 q26 8 58 8 Z',fill:'#6E7A86',stroke:'#2A3138','stroke-width':'2','stroke-linejoin':'round'}));
-  svg.appendChild(S('path',{d:'M112 154 h150 l0 16 h-150 Z',fill:'#A9B5C0',stroke:'#2A3138','stroke-width':'2','stroke-linejoin':'round'}));
-  /* the hardy hole - the one detail kept, because it is what makes the shape
-     read as an anvil rather than as a grey block */
-  svg.appendChild(S('rect',{x:232,y:158,width:11,height:9,rx:1,fill:'#2A3138'}));
+  /* the anvil, in four planes, each shaded across the direction it faces */
+  svg.appendChild(S('path',{d:'M110 192 h124 l6 12 h-136 Z',fill:'url(#'+aid+'base)',
+    stroke:'#20262C','stroke-width':'2','stroke-linejoin':'round'}));
+  svg.appendChild(S('path',{d:'M138 172 h68 l14 22 h-96 Z',fill:'url(#'+aid+'body)',
+    stroke:'#20262C','stroke-width':'2','stroke-linejoin':'round'}));
+  /* the waist's near edge, catching the light */
+  svg.appendChild(S('path',{d:'M140 174 l-14 18',fill:'none',stroke:'#B6C2CE','stroke-width':'2.5',opacity:'.3'}));
+  svg.appendChild(S('path',{d:'M104 170 h136 l-16 6 h-104 Z',fill:'#3E464F'}));
+  svg.appendChild(S('path',{d:'M104 156 q-32 2 -58 12 q26 8 58 8 Z',fill:'url(#'+aid+'horn)',
+    stroke:'#20262C','stroke-width':'2','stroke-linejoin':'round'}));
+  /* the light running along the top of the horn */
+  svg.appendChild(S('path',{d:'M100 158 q-30 3 -52 10',fill:'none',stroke:'#CBD5DF','stroke-width':'2.5',
+    opacity:'.42','stroke-linecap':'round'}));
+  svg.appendChild(S('path',{d:'M112 154 h150 l0 16 h-150 Z',fill:'url(#'+aid+'face)',
+    stroke:'#20262C','stroke-width':'2','stroke-linejoin':'round'}));
+  /* THE FACE IS THE LIT PLANE: a hard specular along its top edge and a dark
+     line where it overhangs the waist. Those two together are what make a
+     rectangle read as a slab with a thickness. */
+  svg.appendChild(S('rect',{x:114,y:154.5,width:146,height:2.5,fill:'#EAF1F8',opacity:'.65'}));
+  svg.appendChild(S('rect',{x:112,y:168,width:150,height:2.5,fill:'#161B20',opacity:'.5'}));
+  /* the hardy hole, with a lip on it so it reads as a hole and not a sticker */
+  svg.appendChild(S('rect',{x:232,y:158,width:11,height:9,rx:1,fill:'#161B20'}));
+  svg.appendChild(S('path',{d:'M232 158 h11',fill:'none',stroke:'#20262C','stroke-width':'2.5',opacity:'.85'}));
 
   /* THE LUMP IS NOT DRAWN INSIDE THIS SVG ANY MORE.
      It used to be a polygon with an SVG <text> on it, and that could not be
@@ -9305,18 +9351,29 @@ MF.anvilScene = function(ore, opts){
      the animation goes on the inner group, per MF.ANIM_TRANSFORM_CLASSES. */
   var mount = S('g',{});
   var ham = S('g',{class:'hammerswing'});
-  /* the haft, vertical - one flat timber tone, the same #8A6A45 the crates and
-     the props in the valley are drawn in */
-  ham.appendChild(S('path',{d:'M170 12 l12 0 l3 88 l-18 0 Z',fill:'#8A6A45',stroke:'#4A3524','stroke-width':'2','stroke-linejoin':'round'}));
-  /* the head: a block square on the end of the haft, the face pointing DOWN */
+  /* the haft: a timber CYLINDER, so the shading runs across it rather than
+     down it - a light edge, a body, and a shadowed far side */
+  ham.appendChild(S('path',{d:'M170 12 l12 0 l3 88 l-18 0 Z',fill:'url(#'+aid+'haft)',
+    stroke:'#3C2C1B','stroke-width':'2','stroke-linejoin':'round'}));
+  ham.appendChild(S('path',{d:'M172.5 14 l1.6 84',fill:'none',stroke:'#D6AE7C','stroke-width':'2',
+    opacity:'.45','stroke-linecap':'round'}));
+  /* the head: a forged block, shaded across its length, with a bevel where the
+     top face turns over into the side */
   ham.appendChild(S('path',{d:'M148 98 h56 l6 8 l0 14 l-6 8 h-56 l-6 -8 l0 -14 Z',
-    fill:'#5E6A76',stroke:'#2A3138','stroke-width':'2.5','stroke-linejoin':'round'}));
-  /* the eye, where the haft passes through */
-  ham.appendChild(S('rect',{x:167,y:100,width:18,height:8,rx:2,fill:'#2A3138'}));
-  /* THE STRIKING FACE, flared and light: the side that meets the anvil */
-  ham.appendChild(S('path',{class:'hface',d:'M140 122 h64 l-4 10 h-56 Z',fill:'#A9B5C0',stroke:'#2A3138','stroke-width':'2.5','stroke-linejoin':'round'}));
+    fill:'url(#'+aid+'head)',stroke:'#20262C','stroke-width':'2.5','stroke-linejoin':'round'}));
+  ham.appendChild(S('path',{d:'M146 101 h60',fill:'none',stroke:'#C4CED8','stroke-width':'2.5',opacity:'.4'}));
+  ham.appendChild(S('path',{d:'M144 124 h64',fill:'none',stroke:'#161B20','stroke-width':'3',opacity:'.42'}));
+  /* the eye, where the haft passes through - sunk, so it gets a lip */
+  ham.appendChild(S('rect',{x:167,y:100,width:18,height:8,rx:2,fill:'#161B20'}));
+  ham.appendChild(S('path',{d:'M167.5 108.5 h17',fill:'none',stroke:'#8A96A2','stroke-width':'1.6',opacity:'.5'}));
+  /* THE STRIKING FACE, flared and light: the side that meets the anvil, and
+     the brightest thing on the hammer because it is the polished one */
+  ham.appendChild(S('path',{class:'hface',d:'M140 122 h64 l-4 10 h-56 Z',fill:'url(#'+aid+'face)',
+    stroke:'#20262C','stroke-width':'2.5','stroke-linejoin':'round'}));
+  ham.appendChild(S('path',{d:'M143 130 h58',fill:'none',stroke:'#F2F7FB','stroke-width':'2',opacity:'.5'}));
   /* a cross-peen off the back, so it reads as a forging hammer and not a brick */
-  ham.appendChild(S('path',{d:'M204 102 l22 6 l0 8 l-22 6 Z',fill:'#4E5862',stroke:'#2A3138','stroke-width':'2.5','stroke-linejoin':'round'}));
+  ham.appendChild(S('path',{d:'M204 102 l22 6 l0 8 l-22 6 Z',fill:'url(#'+aid+'peen)',
+    stroke:'#20262C','stroke-width':'2.5','stroke-linejoin':'round'}));
   mount.appendChild(ham);
   svg.appendChild(mount);
 

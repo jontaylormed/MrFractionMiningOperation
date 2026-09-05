@@ -1725,3 +1725,34 @@ Choosing over-or-under by comparing the rock's **centre** to the wall's **midpoi
 correct only if the panel is a sliver; at 255px of a 563px window it left 17 of 54 lumps
 partly covered. Comparing the actual overlap each way, and preferring **beside** the rock
 where there is room, took that to 1 of 56.
+
+## §82. A gradient fill is invisible to the contrast sweep, and so is anything at opacity 0
+
+Two denominator holes, found while adding gradients to the anvil (§36) and the ladle (§35)
+and worth writing down before either becomes a defect.
+
+**`_backdrops` skips `url(...)` fills.** It reads SVG shape fills to find what is painted
+under a piece of text (§22), and a gradient is not a colour it can resolve:
+
+```js
+if(!f || f === 'none' || f.indexOf('url(') === 0) return;
+```
+
+So text over a gradient-filled shape falls through to whatever is behind it — and gets a
+ratio that is arithmetic about the wrong surface. Nothing on the site does this today: the
+ore's label on the anvil is measured against `MF.oreRock`'s own **flat** polygon at 4.98:1,
+not against the anvil. But the site now has thirteen gradients where it had none.
+
+**And the pour's numbers are not measured at all.** `MF._measureContrast(moldScene)` returns
+**zero** elements. `.mdnum` rests at `opacity:0` and is raised by an animation on a delay, so
+at the instant the sweep runs it is invisible — and the sweep skips anything at zero opacity,
+correctly, because you cannot measure what is not painted.
+
+The consequence is that the halo those numbers rely on is documented and hand-measured
+("13.05:1 at every frame of the pour") and **verified by nothing**. The `mine-blow` pass
+already solved this shape of problem for the THUD burst by forcing its opacity before
+measuring; the mold numbers need the same treatment.
+
+> **Neither of these is a bug today. Both are checks that would not fire if one appeared.**
+> Recorded here, unfixed, so the next person to put text over a gradient — or to trust the
+> pour's contrast numbers — finds out from this file rather than from a student.

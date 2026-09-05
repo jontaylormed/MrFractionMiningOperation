@@ -1408,3 +1408,30 @@ no sight of what went in.
 > The check needed **its own stage** — `getBBox` is geometry and geometry needs layout. The
 > mold checks above it read attributes off a detached scene, which is why they never needed
 > one, and why none of them could have caught text in the wrong place.
+
+## 36. The anvil and the hammer are rendered again
+
+*User, 2026-09-05: "Now make the anvil and hammer look 3D like the ladle."*
+
+This is a reversal of a decision, and the original reason is why it is the right one.
+`MF.anvilScene` was cut back to flat fill and a dark outline — and the stated reason was
+never that flat is better. It was that the anvil was **the only rendered object on the
+site** and read as a photograph pasted into a drawing. The ladle (§35) is rendered now,
+and it is the other half of the same act — metal poured, metal broken — so the anvil being
+flat made it the odd one out in the other direction.
+
+**What came back is the shading. What did not is the clutter.** Eight gradients across the
+planes that face different ways, a specular along the face's top edge and a dark line where
+it overhangs the waist, wood grain on the stump and the shadow the anvil casts onto it, the
+haft shaded across as a cylinder, a bevel on the head and a polished striking face. No tongs
+leaning on the stump, no swarf across the floor, no bolt heads — the silhouette is the one
+it has had since it was flattened.
+
+**Every coordinate is the same.** The hammer's pivot at (176,10), the face at y=154 running
+x 112..262, the horn, the hardy hole. The ore's mount is pinned to the face in percentages
+of this viewBox and the swing animations to the rest, so a number moved here is a lump
+floating off the anvil. Nothing moved, and `swing` (22) and `animmount` (30) both still pass
+— including that `.hammerswing` carries no transform attribute of its own (§5g).
+
+Measured after: the ore's label on the anvil reads **4.98:1**, unchanged, because it is
+measured against `MF.oreRock`'s own flat polygon and not against the anvil behind it.
