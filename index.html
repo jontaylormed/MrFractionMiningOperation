@@ -7280,14 +7280,96 @@ MF.SCREENS.mine = function(host){
               right:yard, yard:yard};
   MF.paintMine();
 };
-MF.paintMine = function(){
+/* =========================================================================
+   A CLICK REPAINTS WHAT IT CHANGED, AND KEEPS THE KEYBOARD WHERE IT WAS.
+
+   USER, 2026-09-05: the same sweep the seam got (§32), for the cart and the
+   breaking floor.
+
+   MEASURED FIRST. Every click in either band - arming an instrument, putting
+   one on a lump, taking it off, choosing a piece - ran the full MF.paintMine,
+   which tears down and rebuilds ALL FIVE BANDS: 1,102 nodes, 23.3ms, including
+   the seam's 691 SVG nodes and the whole wall texture. To change a chip in the
+   cart. 23ms is longer than a frame, so every click dropped one.
+
+   And every one of them DROPPED KEYBOARD FOCUS TO <body>: tab to an instrument,
+   press Enter, and you are back at the top of the document with the belt gone
+   from under you. That is the same fault the seam had, in the form it takes for
+   somebody not using a mouse - and it was in all seven controls.
+
+   TWO PARTS.
+
+   `MF.repaint(bands)` paints only what a handler says changed. The face and
+   the shaft are repainted when ORE moves - a layer change, a lump cut out of
+   the wall - and not when an instrument is picked up in a different band.
+
+   And the focus is carried across, by identity rather than by node: every
+   control in the mine already carries a data attribute naming what it acts on
+   (data-tool, data-ore, data-piece, data-heap), because the drag needed one.
+   `preventScroll` is not optional - restoring focus without it scrolls the
+   page, which is the jerk this is here to remove.
+   ========================================================================= */
+MF.BANDS = {shaft:'paintShaft', face:'paintFace', cart:'paintCart',
+            yard:'paintYard', work:'paintWork'};
+MF.ALL_BANDS = ['shaft','face','cart','yard','work'];
+
+/* WHAT HAD THE KEYBOARD, described so it can be found again after the node it
+   names has been thrown away and rebuilt. */
+MF._focusKey = function(el){
+  var host = MF._mine && MF._mine.root;
+  if(!el || !host || !el.getAttribute || el === document.body || !host.contains(el)) return null;
+  var attrs = [];
+  ['data-tool','data-ore','data-piece','data-heap','data-i','data-ore-slot'].forEach(function(a){
+    if(el.hasAttribute(a)) attrs.push('[' + a + '="' + el.getAttribute(a) + '"]');
+  });
+  /* classes that describe STATE rather than identity are dropped: a piece that
+     was `.fresh` when it took focus will not be `.fresh` after the repaint. */
+  var cls = String(el.className || '').trim().split(/\s+/).filter(function(c){
+    return c && !/^(fresh|knock|under|held|native|rock)$/.test(c);
+  });
+  return {tag:el.tagName.toLowerCase(), attrs:attrs, cls:cls,
+          text:(el.textContent || '').trim().slice(0,28)};
+};
+MF._refocus = function(key){
+  var host = MF._mine && MF._mine.root;
+  if(!key || !host) return false;
+  var found = null;
+  var sel = key.tag + key.attrs.join('') + (key.cls.length ? '.' + key.cls.join('.') : '');
+  try { found = host.querySelector(sel); } catch(e){ found = null; }
+  /* a control with no data attribute - the route buttons, the exits - is found
+     by what it says, which is stable across a repaint */
+  if(!found && key.text){
+    found = [].slice.call(host.querySelectorAll(key.tag)).filter(function(n){
+      return (n.textContent || '').trim().slice(0,28) === key.text;
+    })[0];
+  }
+  if(found && found.focus){ found.focus({preventScroll:true}); return true; }
+  return false;
+};
+
+MF.repaint = function(bands){
   /* isConnected, same guard drainFlashes carries: MF._mine outlives a
      navigation away from the mine, and painting into a detached column is the
      silent-failure class that already cost a review cycle (s35) */
   if(!MF._mine || !MF._mine.mid || !MF._mine.mid.isConnected) return;
-  MF.paintShaft(); MF.paintFace(); MF.paintCart(); MF.paintYard(); MF.paintWork();
+  var key = MF._focusKey(document.activeElement);
+  (bands || MF.ALL_BANDS).forEach(function(b){
+    var fn = MF.BANDS[b];
+    if(fn && MF[fn]) MF[fn]();
+  });
+  if(key) MF._refocus(key);
   MF.drainFlashes();          /* after the repaint, so a message survives it */
 };
+
+/* THE WHOLE MINE, and it is still what runs when the FACE changes. Every path
+   that does not name its bands gets this, so a handler that is added without
+   thinking about scope is correct-but-slow rather than wrong. */
+MF.paintMine = function(){ MF.repaint(); };
+
+/* the two bands an instrument touches. An instrument RIDES WITH THE ORE, and
+   the same lump is drawn in the cart and on the bench at once - so putting one
+   on in either place changes both, and the belt itself hangs in both. */
+MF.paintGear = function(){ MF.repaint(['cart','work']); };
 
 /* ---------- the shaft: descend freely, no gate anywhere ---------- */
 MF.paintShaft = function(){
@@ -8111,7 +8193,9 @@ MF.paintCart = function(){
     on(toFloor,'click',function(){
       MF.state.selected = o;
       MF.state.anvil = null;
-      MF.paintMine();
+      /* the floor did not exist a moment ago and the cart chip changes with it;
+         the wall and the yard did not move */
+      MF.repaint(['cart','work']);
       MF.knockLump(o.id);
       /* the floor did not exist a moment ago, so say where it went */
       var w = MF._mine && MF._mine.work;
@@ -8980,7 +9064,9 @@ MF.paintBreak = function(host, B){
         if(nat) B.last = {ok:false, native:true,
           why:'Nothing left in that one. ' + MF.oreText(p.ore) + ' does not come apart — it is an element.'};
         else { B.at = idx; B.last = null; }
-        MF.paintMine();
+        /* only the floor moved: nothing in the wall, the cart or the yard
+           changed because a different piece went under the hammer */
+        MF.repaint(['work']);
         MF.knockPiece(p.id);
       });
       cell.appendChild(b);
@@ -9035,7 +9121,7 @@ MF.paintBreak = function(host, B){
   leave.style.background='#241D18'; leave.style.color='#E4D5BB'; leave.style.borderColor='#6B5B48';
   /* the floor is NOT thrown away - the anvil is keyed to this lump, so picking
      it up again puts every piece back exactly where it was left */
-  on(leave,'click',function(){ MF.state.selected = null; MF.paintMine(); });
+  on(leave,'click',function(){ MF.state.selected = null; MF.repaint(['cart','work']); });
   exits.appendChild(leave);
   host.appendChild(exits);
 };
@@ -9162,7 +9248,7 @@ MF.swing = function(B){
   if(!isFinite(m) || !isFinite(k)){
     B.last = {ok:false, why:'A hammer is cut to a whole shape. Those boxes only take whole numbers.'};
     B.anim = 'glance';
-    MF.paintMine(); return;
+    MF.repaint(['work']); return;
   }
   var r = MF.breakOff(t.ore, {m:m, k:k});
   if(!r.ok){
@@ -9172,7 +9258,7 @@ MF.swing = function(B){
        wrong about arithmetic. */
     B.last = {ok:false, why:r.why, reason:r.reason, swung:{m:m, k:k}};
     B.anim = 'glance';
-    MF.paintMine(); return;
+    MF.repaint(['work']); return;
   }
   var a = {ore:r.left, id:++B.seq, fresh:true}, b2 = {ore:r.right, id:++B.seq, fresh:true};
   B.floor.splice(B.at, 1, a, b2);
@@ -9190,7 +9276,9 @@ MF.swing = function(B){
      of them read a floor that had not moved yet. The sequence a student sees
      is built out of animation-delay instead: the hammer falls, the burst lands
      at 260ms, and the new pieces are held back to arrive with it. */
-  MF.paintMine();
+  /* the floor changed and nothing else did: the lump is still the same lump
+     in the cart, the wall is untouched, and nothing has reached the yard */
+  MF.repaint(['work']);
   /* 2500ms, not 900: .piece.fresh is delayed to 1740ms (the beat) and runs for
      420ms, and it is animation-fill-mode:backwards that keeps the piece
      invisible until then. Strip the class early and the piece appears at 900ms
@@ -9276,7 +9364,8 @@ MF.cartToYard = function(id){
   MF.state.cart = MF.state.cart.filter(function(o){ return o.id!==id; });
   /* if it was the lump on the bench, the bench goes with it */
   if(MF.state.selected && MF.state.selected.id===id){ MF.state.selected = null; MF.state.anvil = null; }
-  MF.paintMine();
+  /* rack or heap, and it left the cart - the wall did not move */
+  MF.repaint(['cart','yard','work']);
   MF.flash(where==='rack'
     ? MF.oreText(ore) + ' is native metal — racked in the yard.'
     : MF.oreText(ore) + ' still has a seam in it. On the heap, ready when you are.');
@@ -9412,7 +9501,9 @@ MF.finishLump = function(B, why){
   MF.state.cart = MF.state.cart.filter(function(o){ return o.id!==id; });
   MF.state.selected = null; MF.state.anvil = null;
   MF.state.broken++;
-  MF.paintMine();
+  /* the lump is finished: it leaves the cart, its metal reaches the yard, and
+     the floor goes with it. The wall is untouched. */
+  MF.repaint(['cart','yard','work']);
   MF.flash(why || 'Done.');
 };
 /* Flashes are QUEUED, not written straight into the column. Two of the three
@@ -9598,7 +9689,9 @@ MF.paintBelt = function(host, atWork){
     b.title = t.ds;
     on(b,'click',function(){
       MF.state.armedTool = (MF.state.armedTool === k) ? null : k;
-      MF.paintMine();
+      /* the belt hangs in the cart AND on the floor, and arming marks the drop
+         targets in both - but it changes nothing in the wall */
+      MF.paintGear();
     });
     MF.dragTool(b, k);
     loop.appendChild(b);
@@ -9724,7 +9817,7 @@ MF.applyTool = function(key, pieceId, opener){
   var off = (p.tool === key);
   p.tool = off ? null : key;
   if(p.ore) p.ore.tool = p.tool;
-  MF.paintMine();
+  MF.paintGear();
   MF.knockPiece && MF.knockPiece(pieceId);
 };
 
@@ -9741,7 +9834,7 @@ MF.applyToolToOre = function(key, oreId){
   MF.state.cart.forEach(function(o){ if(String(o.id) === String(oreId)) found = o; });
   if(!found) return;
   found.tool = (found.tool === key) ? null : key;
-  MF.paintMine();
+  MF.paintGear();
   MF.knockLump && MF.knockLump(found.id);
 };
 
@@ -9751,7 +9844,18 @@ MF.applyToolToOre = function(key, oreId){
 MF.clearTool = function(ore, piece){
   if(piece) piece.tool = null;
   if(ore) ore.tool = null;
-  MF.paintMine();
+  MF.paintGear();
+  /* THE CONTROL THAT WAS CLICKED NO LONGER EXISTS. The slot is only drawn
+     while an instrument is ON the lump, so taking it off deletes the button
+     that took it off - and MF._refocus finds nothing to hand the keyboard back
+     to, which drops it on <body>. The right landing place is the lump itself:
+     it is what the student was working with, it is still there, and it is what
+     they would reach for next. */
+  var host = MF._mine && MF._mine.root;
+  if(!host) return;
+  var back = (piece && host.querySelector('.piece[data-piece="' + piece.id + '"]')) ||
+             (ore && host.querySelector('[data-ore="' + ore.id + '"]'));
+  if(back && back.focus) back.focus({preventScroll:true});
 };
 
 /* opening a slot with no tool in it: choose one, or be told plainly that the
@@ -9958,7 +10062,8 @@ MF.takeFromHeap = function(idx){
   MF.state.cart.push(ore);
   MF.state.selected = ore;
   MF.state.anvil = null;
-  MF.paintMine();
+  /* off the heap, into the cart, onto the bench - the wall is untouched */
+  MF.repaint(['cart','yard','work']);
   MF.flash('Off the heap and back under the pick.');
   setTimeout(function(){ ore.fresh = false; }, 600);
 };
@@ -12675,6 +12780,104 @@ MF.validate = function(){
         errs.push('knock: picking a lump out rebuilt the whole seam — ' +
           'nothing about a selection needs the rock, the texture and the pick torn down');
     })();
+    /* AND THE SAME SWEEP FOR THE CART AND THE BREAKING FLOOR.
+
+       USER, 2026-09-05: "Now do the same sweep for the cart and breaking floor
+       clicks."
+
+       Measured: every click in either band ran the full MF.paintMine and
+       rebuilt ALL FIVE BANDS - 1,102 nodes, 23.3ms, including the seam's 691
+       SVG nodes - to change a chip in the cart. And every one of them DROPPED
+       KEYBOARD FOCUS TO <body>: tab to an instrument, press Enter, and you are
+       at the top of the document with the belt gone from under you.
+
+       Two properties, both driven for real, on every control in both bands:
+       the wall must not be rebuilt by a click that did not touch it, and the
+       keyboard must not be dropped.
+
+       READ THE DENOMINATOR: six controls, one width, and the test is "the seam
+       svg is the same node" and "focus is not on <body>". It says nothing
+       about how long a repaint takes - that is a number this file records
+       rather than asserts, because a threshold in milliseconds would fail on
+       somebody else's machine for reasons that are not about the code. */
+    (function(){
+      /* THIS BLOCK ARMS AN INSTRUMENT, AND AN ARMED INSTRUMENT IS STATE.
+         The first version left `MF.state.armedTool` set, and the `swing` group
+         further down clicks the ore on the anvil expecting the hammer to open
+         - which it does not, because a click with an instrument in hand PUTS
+         THE INSTRUMENT ON THE ROCK (one click, one act). It reported "clicking
+         the ore on the anvil opened no hammer to type into", which was a true
+         statement about a state this check had created. A probe that leaves
+         state behind is a probe that writes the next group's failures. */
+      var kWas = {tools:MF.state.tools, cart:MF.state.cart, sel:MF.state.selected,
+                  anvil:MF.state.anvil, armed:MF.state.armedTool};
+      var kOre = {kind:'poly', a:2, b:10, c:12, layer:4, id:'kbf'};
+      MF.state.tools = {lantern:{forged:true}, drill:{forged:true}};
+      MF.state.cart = [kOre]; MF.state.selected = kOre;
+      MF.state.anvil = MF.anvilInit(kOre);
+      MF.paintMine();
+      var kB = MF.state.anvil;
+      kB.raw = {m:'0', k:'2'}; kB.rawFor = kB.floor[0].id;
+      MF.swing(kB);
+      [['the cart\'s belt',        '.cartpanel .belttool'],
+       ['a lump in the cart',      '.cartbody .lump'],
+       ['a lump\'s instrument tag','.cartbody .toolslot'],
+       ['a piece on the floor',    '.floorbox .pieces .piece'],
+       ['the floor\'s belt',       '.floorbox .belttool'],
+       ['the ore on the anvil',    '.anvilore']
+      ].forEach(function(pair){
+        chk('knock');
+        var el = MF._mine.root.querySelector(pair[1]);
+        if(!el){ errs.push('knock: there is no ' + pair[0] + ' to click'); return; }
+        var svg0 = MF._mine.mid.querySelector('.seamview svg');
+        el.focus();
+        var had = (document.activeElement === el);
+        kHit(el);
+        var sc = document.querySelector('.scrim');
+        if(sc) MF.closeTool();
+        if(MF._mine.mid.querySelector('.seamview svg') !== svg0)
+          errs.push('knock: clicking ' + pair[0] + ' rebuilt the seam — ' +
+            'nothing in the wall changed, and that is 691 nodes and the whole texture');
+        chk('knock');
+        if(had && document.activeElement === document.body)
+          errs.push('knock: clicking ' + pair[0] + ' dropped the keyboard on <body> — ' +
+            'a student tabbing through the mine is put back at the top of the document');
+      });
+      MF.state.armedTool = kWas.armed || null;
+      MF.state.tools = kWas.tools; MF.state.cart = kWas.cart;
+      MF.state.selected = kWas.sel; MF.state.anvil = kWas.anvil;
+      MF.paintMine();
+    })();
+    /* CONTROL: send those handlers back through the full paint and the sweep
+       must report the rebuild. This is exactly what they did until today. */
+    chk('knock');
+    (function(){
+      /* IT BUILDS ITS OWN STATE. The first version reused whatever the block
+         above had restored, which is a cart with nothing in it and a belt with
+         no instruments on it - so there was no belt tool to click, and the
+         control failed for having nothing to measure rather than for the
+         thing it exists to catch. */
+      var cWas = {tools:MF.state.tools, cart:MF.state.cart, sel:MF.state.selected,
+                  anvil:MF.state.anvil, armed:MF.state.armedTool};
+      MF.state.tools = {lantern:{forged:true}};
+      MF.state.cart = [{kind:'poly', a:1, b:-5, c:6, layer:4, id:'kctl'}];
+      MF.state.selected = null; MF.state.anvil = null; MF.state.armedTool = null;
+      MF.paintMine();
+      var kGear = MF.paintGear;
+      MF.paintGear = function(){ MF.repaint(); };
+      var svg0 = MF._mine.mid.querySelector('.seamview svg');
+      var belt = MF._mine.root.querySelector('.cartpanel .belttool');
+      if(belt) kHit(belt);
+      var rebuilt = MF._mine.mid.querySelector('.seamview svg') !== svg0;
+      MF.paintGear = kGear;
+      MF.state.tools = cWas.tools; MF.state.cart = cWas.cart;
+      MF.state.selected = cWas.sel; MF.state.anvil = cWas.anvil;
+      MF.state.armedTool = cWas.armed || null;
+      MF.paintMine();
+      if(!belt || !rebuilt)
+        errs.push('CONTROL: the band sweep cannot see a cart click that repaints the whole mine');
+    })();
+
     /* CONTROL: put the re-centring back and the sweep must report the jump.
        This is the exact block that shipped it. */
     chk('knock');

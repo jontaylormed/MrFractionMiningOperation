@@ -1675,3 +1675,31 @@ rock still eases the seam over, because there the student needs to be taken some
 scroll, the rock's position on screen, the page's scroll — to be zero, and separately
 that the click still rings the rock and names it. Control: reintroduce the re-centring
 and it reports the jump.
+
+## §80. A probe that leaves state behind writes the next group's failures
+
+The new `knock` sweep arms an instrument to test that clicking the belt does not rebuild
+the seam. It left `MF.state.armedTool` set — and the `swing` group further down clicks
+the ore on the anvil expecting the hammer panel to open.
+
+It does not, because **a click with an instrument in hand puts the instrument on the
+rock** — one click, one act, which is the mine's own rule. So `swing` reported:
+
+> `swing: a swing that leaves work to do — clicking the ore on the anvil opened no hammer to type into`
+
+A true statement about a state that **the check above had created**, in a group that had
+nothing wrong with it, pointing at code that was fine.
+
+> **Save and restore everything a probe touches, including the fields it sets as a side
+> effect of driving the UI.** The obvious ones — `cart`, `selected`, `anvil` — were
+> already saved. `armedTool` was not, because arming was a *gesture* the probe performed
+> rather than a value it assigned, and gestures leave state too.
+
+The same run also had the control fail for the opposite reason: it reused whatever the
+restore left behind, which was a cart with nothing in it and a belt with no instruments,
+so there was no button to click and it reported *"cannot see a cart click that repaints
+the whole mine"* — **failing for having nothing to measure rather than for the thing it
+exists to catch.** Controls build their own state now.
+
+> **Two failure modes, one root:** a check that depends on ambient state is a check whose
+> result belongs to whatever ran before it.
