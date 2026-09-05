@@ -1607,3 +1607,34 @@ the walkthrough is finished — three states the first paint has none of. `contr
 > doing something — a mold filled, a lump broken all the way down, a panel opened, a
 > lesson walked — has to be mounted on purpose or it is not swept. That list is now nine
 > entries long, and every one of them was added after a real gap.
+
+## §78. A check on every item can miss a pattern across the set
+
+The user reported that the multiple-choice questions were not random and the first option
+was usually the best-fitting one. Measured before touching anything: **the supported
+option was first in eight of eight** recognition questions on the site.
+
+A student who clicks the top option and reads nothing answered every one of them. That is
+the surface-cue trap this project's own teaching brief exists to prevent, sitting in the
+one place whose job is to find out whether a student followed the room.
+
+**The `quiz` group ran green over it, and every assertion in it was true.** It checked
+that each option says something back, that the option marked as supported really is
+supported by the engine, and that no distractor is secretly also true. All per-question,
+all correct. **The fault was not in any question. It was in the set.**
+
+> **Ask what a per-item check looks like in aggregate.** Position, ordering, length,
+> difficulty and colour are all properties that are fine in every instance and a tell
+> across the collection. A group that iterates and asserts item-by-item cannot see one,
+> and will report clean the whole time.
+
+`MF.spreadOptions` places the supported option at a slot computed from the question text
+— stable under repaint, so the answer does not move under the student's finger — and the
+others fill in around it. A plain shuffle was tried first and left the answer in the last
+slot **five times out of eight**: unbiased per question, and still a slot worth guessing.
+
+The check counts the spread over every recognition question at once and fails if any slot
+holds the answer more than half the time. Threshold at a half, not a third, because eight
+questions over three slots is a small sample and exact uniformity is not something a hash
+owes anybody — what it rules out is *a slot worth guessing*. Control: render in the
+authored order and it reports `slot 1 in 8 of 8`.

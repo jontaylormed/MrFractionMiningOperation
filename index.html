@@ -5464,7 +5464,25 @@ MF.paintQuestions = function(host, o){
       card.appendChild(row);
     } else {
       var opts = E('div','qopts');
-      qn.options.forEach(function(op, oi){
+      /* THE ANSWER MUST NOT SIT IN THE SAME SLOT EVERY TIME.
+
+         USER, 2026-09-05: "your multiple-choice questions are not random, and
+         often the first choice is the best-fitting choice."
+
+         Measured before touching anything: the option carrying `holds` was
+         FIRST in EIGHT OF EIGHT questions across the whole build. A student
+         who clicks the top option and reads nothing answers every recognition
+         question in the site correctly - which is the surface-cue trap this
+         project's own teaching brief exists to prevent, shipped in the one
+         place whose job is to check whether a student followed the room.
+
+         MF.balanced already existed for exactly this, and the assay has used
+         it since §3: a deterministic shuffle, seeded so the order is stable
+         under a repaint - the student's finger must not have the answer move
+         out from under it - and different from question to question. The seed
+         is the question's own text, so it is stable across sessions too and
+         does not need to be stored. */
+      MF.spreadOptions('q|' + String(qn.q).replace(/<[^>]+>/g,''), qn.options).forEach(function(op, oi){
         var b = E('button','qopt'); b.type='button';
         b.innerHTML = op.label;
         b.setAttribute('aria-label', 'Choose ' + (op.a11y || op.label.replace(/<[^>]+>/g,'')));
@@ -8047,6 +8065,32 @@ MF.balanced = function(seed, list){
     var t = out[i]; out[i]=out[j]; out[j]=t;
     h = (h*1664525 + 1013904223) >>> 0;
   }
+  return out;
+};
+
+/* AND WHERE THE ANSWER LANDS IS PLACED, NOT LEFT TO THE SHUFFLE.
+
+   A plain shuffle is unbiased per question and says nothing about the BUILD.
+   Run over the eight recognition questions on this site it put the supported
+   option in the last slot five times out of eight - better than the eight out
+   of eight that shipped, and still a slot worth guessing.
+
+   So the supported option's slot is computed from the question directly and
+   the others fill in around it. That makes the spread a property of the hash
+   over the question set rather than of luck, and the `quiz` group measures the
+   spread it actually produces rather than trusting that shuffling is enough.
+
+   `holds` is what marks the supported option, and a question with none - or
+   with several, which is a real shape here, two readings of one lump can both
+   be true - falls back to the plain shuffle. */
+MF.spreadOptions = function(seed, options){
+  var n = options.length;
+  var right = -1, holds = 0;
+  options.forEach(function(o, i){ if(o.holds){ holds++; right = i; } });
+  if(holds !== 1) return MF.balanced(seed, options);
+  var rest = MF.balanced(seed + '|rest', options.filter(function(o, i){ return i !== right; }));
+  var slot = hash(seed + '|slot') % n, out = [], ri = 0;
+  for(var i=0;i<n;i++) out.push(i === slot ? options[right] : rest[ri++]);
   return out;
 };
 
@@ -12501,6 +12545,110 @@ MF.validate = function(){
   });
   chk('quiz');
   if(qzSeen < 9) errs.push('quiz: only ' + qzSeen + ' questions across the three workshops');
+
+  /* AND THE SUPPORTED OPTION MUST NOT SIT IN THE SAME SLOT EVERY TIME.
+
+     USER, 2026-09-05: "your multiple-choice questions are not random, and often
+     the first choice is the best-fitting choice."
+
+     Measured before it was fixed: the option carrying `holds` was FIRST in
+     EIGHT OF EIGHT recognition questions in the build. A student who clicks
+     the top option and reads nothing answered every one of them - which is the
+     surface-cue trap this project's teaching brief exists to prevent, sitting
+     in the one place whose job is to find out whether a student followed the
+     room. No group could see it: `quiz` checked that every option says
+     something and that the maths behind each is true, and both were.
+
+     THIS IS A PROPERTY OF THE BUILD, NOT OF A QUESTION. One question's order
+     means nothing - the fault is a slot that pays off across the set. So it is
+     counted over every recognition question on the site at once, and it fails
+     if any single slot holds the answer more often than half the time.
+
+     Half rather than a third, because eight questions over three slots is a
+     small sample and an exactly-uniform 2.67 is not a thing a hash owes
+     anybody. What the threshold rules out is a SLOT WORTH GUESSING.
+
+     READ THE DENOMINATOR: the spread of one marked option across the site's
+     recognition questions, and that a rendered question is a permutation of
+     its authored options. It says nothing about the distractors' quality, and
+     nothing about typed questions, which have no slots. */
+  var qzSlot = {}, qzTotal = 0, qzWorstQ = null;
+  var qzReal = MF.paintQuestions;
+  MF.paintQuestions = function(host, o){
+    (o.list || []).forEach(function(q){
+      if(q.kind === 'pick') qzSpread(q, o.lab || '');
+    });
+    return qzReal(host, o);
+  };
+  function qzSpread(q, where){
+    var right = null, holds = 0;
+    q.options.forEach(function(op){ if(op.holds){ holds++; right = op; } });
+    if(holds !== 1) return;                     /* two true readings is a real shape */
+    var seed = 'q|' + String(q.q).replace(/<[^>]+>/g,'');
+    var ord = MF.spreadOptions(seed, q.options);
+    var at = -1;
+    ord.forEach(function(op, i){ if(op === right) at = i; });
+    /* the rendering must be a PERMUTATION - nothing dropped, nothing doubled */
+    chk('quiz');
+    if(ord.length !== q.options.length || at < 0)
+      errs.push('quiz: shuffling "' + String(q.q).replace(/<[^>]+>/g,'').slice(0,40) +
+        '" lost or duplicated an option');
+    /* and it must be STABLE, or the answer moves under the student's finger */
+    chk('quiz');
+    var again = MF.spreadOptions(seed, q.options);
+    if(again.map(function(x){ return x.label; }).join('|') !== ord.map(function(x){ return x.label; }).join('|'))
+      errs.push('quiz: "' + String(q.q).replace(/<[^>]+>/g,'').slice(0,40) +
+        '" renders its options in a different order every time — a repaint would move the answer');
+    qzSlot[at] = (qzSlot[at] || 0) + 1;
+    qzTotal++;
+    qzWorstQ = qzWorstQ || where;
+  }
+  var qzProbe = document.createElement('div');
+  ['shed-mold','shed-words','shed-methods','workshop-ore'].forEach(function(scr){
+    if(!MF.SCREENS[scr]) return;
+    qzProbe.innerHTML = '';
+    try { MF.SCREENS[scr](qzProbe); } catch(e){}
+  });
+  MF.paintQuestions = qzReal;
+  chk('quiz');
+  if(qzTotal < 6){
+    errs.push('quiz: only ' + qzTotal + ' recognition questions were reached, which is too few to say ' +
+      'anything about where the answer sits');
+  } else {
+    var qzWorst = 0, qzAt = null;
+    Object.keys(qzSlot).forEach(function(k){ if(qzSlot[k] > qzWorst){ qzWorst = qzSlot[k]; qzAt = k; } });
+    if(qzWorst > qzTotal / 2)
+      errs.push('quiz: the supported option is in slot ' + (Number(qzAt)+1) + ' in ' + qzWorst +
+        ' of ' + qzTotal + ' questions — that slot is worth guessing, and a student who clicks it ' +
+        'and reads nothing passes the room');
+  }
+  /* CONTROL: render in the authored order and the sweep must report the tell
+     that shipped. This is exactly what `paintQuestions` did until today. */
+  chk('quiz');
+  var qzCtl = {}, qzCtlN = 0;
+  ['shed-mold','shed-words','shed-methods','workshop-ore'].forEach(function(scr){
+    if(!MF.SCREENS[scr]) return;
+    var seenHere = [];
+    var stash = MF.paintQuestions;
+    MF.paintQuestions = function(host, o){
+      (o.list||[]).forEach(function(q){
+        if(q.kind !== 'pick') return;
+        var at = -1, holds = 0;
+        q.options.forEach(function(op, i){ if(op.holds){ holds++; at = i; } });
+        if(holds === 1) seenHere.push(at);       /* authored order, unshuffled */
+      });
+      return stash(host, o);
+    };
+    qzProbe.innerHTML = '';
+    try { MF.SCREENS[scr](qzProbe); } catch(e){}
+    MF.paintQuestions = stash;
+    seenHere.forEach(function(at){ qzCtl[at] = (qzCtl[at]||0)+1; qzCtlN++; });
+  });
+  var qzCtlWorst = 0;
+  Object.keys(qzCtl).forEach(function(k){ if(qzCtl[k] > qzCtlWorst) qzCtlWorst = qzCtl[k]; });
+  if(!(qzCtlN >= 6 && qzCtlWorst > qzCtlN / 2))
+    errs.push('CONTROL: the slot sweep cannot see options rendered in their authored order, ' +
+      'which is the state that shipped (' + qzCtlWorst + ' of ' + qzCtlN + ' in one slot)');
 
   /* EVERY QUESTION'S TRUE OPTION IS TRUE, AND EVERY OTHER ONE IS NOT.
      Declared once, next to the questions, and verified here against the
