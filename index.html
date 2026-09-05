@@ -6365,13 +6365,31 @@ MF.shedFoot = function(host, key){
 MF.SCREENS['shed-mold'] = function(host){
   var st = {a:3, b:4, c:5, mode:'num'};
   MF.shedHead(host, 'shed-mold');
-  host.appendChild(MF.shedArt('mold'));
   host.appendChild(H('p','lede','Two metals go in <b>separate</b> and one object comes out <b>single</b>. ' +
     'The mold does not choose the shape — the metals do. And because the result is determined, running it backwards has a definite answer, ' +
     'which is the whole reason the mine is possible at all.'));
 
   var panel = E('div','panel light');
-  panel.appendChild(H('div','panel-tag play','PLAY &mdash; NOTHING TO ANSWER'));
+  /* NO "PLAY - NOTHING TO ANSWER" TAG. It was already false of this room -
+     there are two questions and a real-world close below it - and the same
+     label came off the Stamp Mill on the same day for the same reason. */
+  /* ---- THE POUR, AND IT IS THE FORGE'S OWN ----
+
+     USER, 2026-09-05: "In the Mold, the illustration needs to be reworked as
+     the Forge Molds work."
+
+     The room's picture was `MF.shedArt('mold')`: a flat diagram of the idea,
+     drawn once, that moved for nothing. What a student meets at the forge is a
+     ladle tipping into a sand mold with the metal rising in the cavity - and
+     if the teaching room draws the idea and the working room draws the object,
+     the student has to join them up themselves.
+
+     So it is the same function, MF.moldScene, cut to an EXPRESSION rather than
+     to a tool - because what this room is making is the thing two metals come
+     to, not an instrument. And it re-pours on every change, so the sliders are
+     the ladle. */
+  var pourHost = E('div','moldpour');
+  panel.appendChild(pourHost);
   var ctrls = E('div','row');
   function slider(key,label,min,max){
     var w=E('div'); w.style.minWidth='170px'; w.style.flex='1 1 170px';
@@ -6472,6 +6490,20 @@ MF.SCREENS['shed-mold'] = function(host){
     });
     clear(stageHost);
     clear(chainHost);
+    /* ---- POUR IT, in the Forge's own mold ----
+       The metals are whatever the sliders are set to, the cavity is cut to
+       what they come to, and `data-pour` replays the whole thing - ladle,
+       stream, the terms falling down it, the metal rising in the shape - every
+       time the student moves anything. */
+    clear(pourHost);
+    var ings = isTwo ? [{m:1,k:a},{m:1,k:c}]
+             : (isX  ? [{m:0,k:a},{m:1,k:c}]
+                     : [{m:0,k:a},{m:0,k:b+c}]);
+    var prod = ingotProduct(ings);
+    var sc = MF.moldScene(null, {ok:true, terse:true, maths:MF.moldMaths(ings, prod)},
+                          quadText(prod.a, prod.b, prod.c));
+    sc.setAttribute('data-pour','sound');
+    pourHost.appendChild(sc);
 
     if(isTwo){
       /* TWO BRACKETS: a box with two rows and two columns, which is where the
@@ -7355,11 +7387,28 @@ MF.moldMaths = function(ingots, prod){
   if(prod.overflow){ out.single = 'over'; return out; }
   out.single = quadText(prod.a, prod.b, prod.c);
 
-  /* all plain metal: the numbers themselves are the products */
-  if(ingots.every(function(g){ return g.m===0; })){
-    out.terms = ingots.map(function(g){ return {t:num(g.k), from:'', mid:false}; });
-    return out;
-  }
+  /* THERE IS NO "ALL PLAIN METAL" SHORTCUT, AND THE ONE THAT WAS HERE LIED.
+
+     It read: if every metal is plain, the numbers themselves are the products
+     - `out.terms = ingots.map(k)`. `MF.pourChain` prints the terms row joined
+     with PLUS SIGNS, so pouring 3 and 9 printed
+
+         what went into the mold      3  9
+         the depth reaches every part 3 + 9
+         one object comes out         27
+
+     which says 3 + 9 = 27 on the screen, in the room that exists to explain
+     what a pour comes to, and contradicted the area model drawn beside it.
+
+     READ THE DENOMINATOR: `mold` already checks that the terms add up to the
+     casting, and it reported clean over this for as long as it has existed -
+     because it walks MF.toolOrder(), every order is a quadratic, and not one
+     of them is two plain metals. A green group proves only what it swept. The
+     check below now pours plain metal too.
+
+     The branch was not only wrong, it was redundant: two plain metals fall
+     through the pair arithmetic below as sq=0, mA=0, mB=0, kk=g1·g2, which is
+     the one true product with the pair that made it attached. */
   /* two brackets: the four corners, each with the pair that made it */
   if(ingots.length===2){
     var g1=ingots[0], g2=ingots[1];
@@ -7378,6 +7427,9 @@ MF.moldMaths = function(ingots, prod){
       out.terms.push({t:mids[0].t, from:mids[0].from, mid:false});
     }
     if(kk) out.terms.push({t:num(kk), from:q1+' × '+q2, mid:false});
+    /* a pour of nothing has no products to list, and an empty terms list would
+       have the chain print a blank line where the working goes */
+    if(!out.terms.length) out.terms = [{t:out.single, from:'', mid:false}];
     return out;
   }
   out.terms = [{t:out.single, from:'', mid:false}];
@@ -7428,7 +7480,13 @@ MF.pourChain = function(host, ingots){
     return r;
   };
 
-  row('in', [{t: m.into.join(' '), op:''}], 'what went into the mold');
+  /* JOINED WITH ×, NOT WITH A SPACE. Two brackets side by side are unambiguous
+     - `(x + 3) (x + 5)` is implied multiplication and reads as one - but two
+     plain metals are not: the Molds room pours 3 and 9, and `3 9` on a line
+     reads as thirty-nine. The stream in the picture directly above already
+     writes the × between them, so this is the same line twice or it is two
+     different claims. */
+  row('in', [{t: m.into.join(' × '), op:''}], 'what went into the mold');
   if(m.single === 'over'){
     box.appendChild(H('div','pcnote','That is more metal than the mold holds.'));
     host.appendChild(box);
@@ -7462,11 +7520,25 @@ MF.pourChain = function(host, ingots){
   return box;
 };
 
-MF.moldScene = function(key, pour){
-  var t = MF.TOOLS[key];
+/* `shape` (optional): cut the mold to an EXPRESSION instead of to a tool.
+
+   The Casting Shed's Molds room shows the same pour the Forge does (§40), and
+   what it is making is not an instrument - it is the object two metals come
+   to. So the cavity carries `x² + 8x + 15` where the forge's carries a
+   lantern, and everything else about the scene is identical because it IS the
+   same scene. One function draws every mold on the site; a second copy for the
+   teaching room would be a second chance to drift.
+
+   `pour.terse` goes with it: draw the metals falling in the stream and NOT the
+   products over the casting. In the Forge those products are the only place
+   the multiplication is written; in the Molds room MF.pourChain writes it out
+   underneath at four times the size, and printing it twice says it is two
+   different things. */
+MF.moldScene = function(key, pour, shape){
+  var t = MF.TOOLS[key] || {nm: shape || 'a casting', ic:''};
   var wrap = E('div','moldwrap');
   if(pour) wrap.setAttribute('data-pour', pour.ok ? 'sound' : 'scrap');
-  var W=400, VH=300, uid='md'+key;
+  var W=400, VH=300, uid='md'+(key || 'sh')+(MF._moldSeq = (MF._moldSeq||0)+1);
   var svg = S('svg',{viewBox:'0 0 '+W+' '+VH, role:'img',
     'aria-label': pour
       ? ('Seen from above: metal running down a trough into a mold cut to the shape of ' +
@@ -7603,9 +7675,17 @@ MF.moldScene = function(key, pour){
      Rendered from MF.TOOLS[key].ic, so the hole in the sand and the thing on
      your belt can never be two different shapes. */
   var glyph = function(cls, size){
+    /* AN EXPRESSION IS WIDE AND AN EMOJI IS SQUARE, so a cavity cut to one
+       cannot be set at the other's size: 150px of `x² + 8x + 15` runs off both
+       ends of the sand. 34 fits the same box the glyph does. */
     var n = S('text',{x:'256',y:'186','text-anchor':'middle','dominant-baseline':'central',
-      'font-size':String(size||150), class:cls});
-    n.textContent = MF.iconChar(t.ic);
+      'font-size':String(size || (shape ? 34 : 150)), class:cls});
+    if(shape){
+      n.setAttribute('font-family',"'Black Han Sans','Arial Black',Impact,sans-serif");
+      n.textContent = String(shape).replace(/<[^>]+>/g,'');
+    } else {
+      n.textContent = MF.iconChar(t.ic);
+    }
     return n;
   };
   svg.appendChild(glyph('mdcutshadow'));      /* the depth, offset down and right */
@@ -7713,6 +7793,11 @@ MF.moldScene = function(key, pour){
       el.style.animationDelay = (0.5 + i * 0.13) + 's';
       svg.appendChild(el);
     });
+    /* TERSE: the metals fall in the stream and nothing is written over the
+       casting. The Molds room writes the multiplication out underneath at four
+       times this size (MF.pourChain), and printing it twice in one picture
+       says it is two different things. */
+    if(pour.terse){ wrap.appendChild(svg); return wrap; }
     /* the products, each above the pair that made it */
     var n2 = m.terms.length, span = 196, x0 = 256 - span/2;
     m.terms.forEach(function(tm, i){
@@ -11502,9 +11587,16 @@ MF.validate = function(){
       else if(/x$/.test(s))  mX  += (s==='x' ? 1 : (s==='−x' ? -1 : parseInt(s.replace(/[−–]/g,'-'),10)));
       else                   mK  += parseInt(s.replace(/[−–]/g,'-'),10);
     });
-    /* three plain metals are shown as themselves, and multiply rather than add */
-    var allPlain = ings.every(function(g){ return g.m===0; });
-    if(!allPlain && (mSq !== t.cast.a || mX !== t.cast.b || mK !== t.cast.c))
+    /* THERE IS NO LONGER AN EXCUSE FOR PLAIN METAL HERE.
+
+       This line used to read `if(!allPlain && ...)`, with a comment saying
+       three plain metals "are shown as themselves, and multiply rather than
+       add". That was a true description of what the code did and a licence for
+       it to be wrong: MF.moldMaths listed the metals as the products and the
+       chain joined them with plus signs, so a pour of 3 and 9 printed 3 + 9
+       over a casting of 27. The exemption was covering the defect rather than
+       the other way round. The products are the products in every case. */
+    if(mSq !== t.cast.a || mX !== t.cast.b || mK !== t.cast.c)
       errs.push('mold: the products shown for "' + t.nm + '" come to ' + quadText(mSq,mX,mK) +
                 ', and the casting is ' + quadText(t.cast.a,t.cast.b,t.cast.c));
     /* a merge is two things becoming one, or it is not a merge */
@@ -11572,6 +11664,61 @@ MF.validate = function(){
       errs.push('mold: the cavity for "' + t.nm + '" starts already filled (height ' +
                 mClip.getAttribute('height') + ') — there is nothing to watch arrive');
   });
+  /* ---- THE POURS THE SWEEP ABOVE STRUCTURALLY CANNOT REACH ----
+
+     Everything above walks MF.toolOrder(). Every order is a quadratic and not
+     one of them is two plain metals, so the arithmetic the Molds room actually
+     puts on screen - a depth over two plain parts, on nine settings each - had
+     never been through any of it. That is how `3 + 9` over a casting of `27`
+     shipped under a green `mold` group.
+
+     This is the room's own three modes across the whole of both sliders, held
+     to the same rule: what the chain prints as the products has to add up to
+     what the chain prints as the casting. 3 · 9 = 27 is one term, not two. */
+  [1,2,3,4,5,6,7,8,9].forEach(function(pa){
+    [1,2,3,4,5,6,7,8,9].forEach(function(pc){
+      [[{m:0,k:pa},{m:0,k:pa+pc}],        /* two plain parts   */
+       [{m:0,k:pa},{m:1,k:pc}],           /* a part with an x  */
+       [{m:1,k:pa},{m:1,k:pc}]            /* two brackets      */
+      ].forEach(function(pIng){
+        var pProd = ingotProduct(pIng);
+        var pm = MF.moldMaths(pIng, pProd);
+        var pSq=0, pX=0, pK=0, bad=false;
+        pm.terms.forEach(function(tm){
+          var s = tm.t;
+          if(s === '' || s === '0') bad = true;
+          if(/x²$/.test(s))      pSq += (s==='x²' ? 1 : (s==='−x²' ? -1 : parseInt(s.replace(/[−–]/g,'-'),10)));
+          else if(/x$/.test(s))  pX  += (s==='x' ? 1 : (s==='−x' ? -1 : parseInt(s.replace(/[−–]/g,'-'),10)));
+          else                   pK  += parseInt(s.replace(/[−–]/g,'-'),10);
+        });
+        chk('mold');
+        if(bad)
+          errs.push('mold: pouring ' + pm.into.join(' × ') + ' shows a term that is nothing at all');
+        chk('mold');
+        if(pSq !== pProd.a || pX !== pProd.b || pK !== pProd.c)
+          errs.push('mold: pouring ' + pm.into.join(' × ') + ' shows products coming to ' +
+                    quadText(pSq,pX,pK) + ', and the casting is ' + quadText(pProd.a,pProd.b,pProd.c));
+      });
+    });
+  });
+  /* CONTROL: the plain-metal pour, listed as itself again. This is the exact
+     shape that shipped, so the control is the defect rather than a caricature
+     of it - restore the shortcut and the 81 plain settings must fail. */
+  chk('mold');
+  var ppReal = MF.moldMaths;
+  MF.moldMaths = function(ings, prod){
+    var r = ppReal(ings, prod);
+    if(ings.every(function(g){ return g.m===0; }))
+      r.terms = ings.map(function(g){ return {t:num(g.k), from:'', mid:false}; });
+    return r;
+  };
+  var ppM = MF.moldMaths([{m:0,k:3},{m:0,k:9}], ingotProduct([{m:0,k:3},{m:0,k:9}]));
+  MF.moldMaths = ppReal;
+  if(ppM.terms.length === 1)
+    errs.push('CONTROL: the plain-metal control did not reinstate the shortcut, so it proves nothing');
+  else if(ppM.terms.reduce(function(s,t){ return s + parseInt(t.t,10); },0) === 27)
+    errs.push('CONTROL: the plain-metal sweep cannot see products listed as the metals that made them');
+
   /* CONTROL: a mold that shows the wrong total must be caught */
   chk('mold');
   var mReal = MF.moldMaths;
@@ -13089,6 +13236,37 @@ MF.validate = function(){
       if(!direct) return;
       var cs = getComputedStyle(el);
       if(cs.display==='none' || cs.visibility==='hidden' || parseFloat(cs.opacity)===0) return;
+      /* CAN `color` REACH A PIXEL OF THIS AT ALL?
+
+         The pictograph rule below was the first answer to that question, and
+         it was written against the wrong predicate. It skipped on EMOJI-NESS,
+         but the case it was built for is named in its own comment: the mold's
+         cavity, which is not a label at all. It is a hole cut in sand, drawn
+         by forcing every channel of the ink to zero.
+
+         Cut that cavity to an EXPRESSION rather than a tool icon (§40) and it
+         suddenly has word characters in it, the emoji test stops firing, and
+         three copies of a SHAPE begin reporting 1.08:1 as if they were text
+         somebody was meant to read. Nothing about them had changed.
+
+         So ask the honest question instead - does the property this sweep
+         reads draw anything? Three ways it does not:
+
+           - INSIDE <defs>, <mask>, <clipPath>, <symbol>. Nothing there is
+             painted. A mask is an alpha channel; the colour of a glyph used
+             as one is discarded by definition.
+           - `filter: brightness(0)`. Every channel is multiplied by zero, so
+             the ink is black whatever `color` says, and a ratio computed from
+             `color` describes a colour that is not on the screen.
+           - a pictograph, which is the original rule and still true.
+
+         AN EXEMPTION IS NOT A PASS. The cavity is measured further down, by
+         hand, as the black it really renders as against the sand it is really
+         cut into - a reading `color` could never have given. Skipping a thing
+         and replacing the reading are two different acts and this does both;
+         doing only the first is how a surface goes dark. */
+      if(el.closest && el.closest('defs,mask,clipPath,symbol')) return;
+      if(/brightness\(0\)/.test(cs.filter || '')) return;
       /* A PICTOGRAPH IS A PICTURE, AND `color` DOES NOT DRAW IT.
          A colour emoji carries its own colour table; the property this sweep
          measures has no effect on a single pixel of it. Measuring one reports
@@ -13491,6 +13669,59 @@ MF.validate = function(){
     return [0,1,2].map(function(i){ return fg[i]*a + bg[i]*(1-a); }).concat([1]); }
   function cRatio(f,b){ var L1=cLum(f),L2=cLum(b);
     return Math.round(((Math.max(L1,L2)+0.05)/(Math.min(L1,L2)+0.05))*100)/100; }
+  /* ======================================================================
+     THE CAVITY, MEASURED AS IT ACTUALLY RENDERS.
+
+     `MF._measureContrast` now skips `.mdcut`, and the reason is sound: the cut
+     is drawn through `filter: brightness(0)`, so the `color` that sweep reads
+     reaches none of its pixels. That is a reason to measure it a DIFFERENT
+     way. It is not a reason to stop measuring it.
+
+     What is on the screen is black, and what it is cut into is the sand. Both
+     are read off a live mold rather than typed in here, so re-cutting the mold
+     into a darker sand - or letting the cut stop being black - fails this
+     instead of quietly passing.
+
+     WHAT THIS DOES NOT SEE: the shadow copy, which is the same black at 40%
+     opacity and therefore lighter than what is measured here; and whether the
+     expression in the cavity is the RIGHT one, which is `sheet`'s job. This
+     measures legibility of the cut, and only that.
+     ====================================================================== */
+  var cavProbe = document.createElement('div');
+  cavProbe.style.cssText = 'position:fixed; left:-13000px; top:0; width:420px';
+  document.body.appendChild(cavProbe);
+  try { cavProbe.appendChild(MF.moldScene(null, null, 'x² + 8x + 15')); }
+  catch(e){ errs.push('cavity: the mold threw while being cut to an expression: ' + e.message); }
+  var cavCut  = cavProbe.querySelector('.mdcut');
+  var cavSand = cavProbe.querySelector('rect[fill*="sand"]');
+  if(!cavCut || !cavSand){
+    errs.push('cavity: the mold drew no ' + (!cavCut ? 'cut' : 'sand') + ', so nothing was measured');
+  } else if(!/brightness\(0\)/.test(getComputedStyle(cavCut).filter || '')){
+    /* THE EXEMPTION IS SPENT THE MOMENT THIS STOPS BEING TRUE. If the cut ever
+       becomes ordinary ink, the sweep should be measuring it again and this
+       hand reading should go - so say so rather than carrying a skip whose
+       reason has expired. */
+    errs.push('cavity: .mdcut no longer renders through brightness(0), so the contrast ' +
+              'sweep should be measuring it rather than skipping it');
+  } else {
+    var cavStops = [], cavGrad = document.getElementById(
+      (cavSand.getAttribute('fill') || '').slice(5, -1));
+    if(cavGrad) cavGrad.querySelectorAll('stop').forEach(function(s){
+      var c = cRgb(s.getAttribute('stop-color'));
+      if(c) cavStops.push(c);
+    });
+    if(!cavStops.length)
+      errs.push('cavity: the sand resolved to no colours, so the cut was measured against nothing');
+    cavStops.forEach(function(bg){
+      chk('cavity');
+      /* the cut is 34px, which is over the large-text line, so 3:1 */
+      var cr = cRatio([0,0,0,1], bg);
+      if(cr < 3) errs.push('cavity: the cut is black on sand rgb(' +
+        bg.slice(0,3).join(',') + ') at ' + cr + ':1, needs 3');
+    });
+  }
+  cavProbe.remove();
+
   var cPhProbe = document.createElement('div');
   cPh.appendChild(cPhProbe);
   MF._mine = null; MF.SCREENS.mine(cPhProbe);
