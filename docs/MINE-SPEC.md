@@ -1313,3 +1313,46 @@ would reserve the height the panel was moved out of the flow to stop reserving.
 > under the wall by **0px**, that it offers both choices, that it is not on screen with
 > nothing picked out, and that Escape closes it. Controls: put the reading back in the
 > flow — it reports both the shove (216px) and the panel hanging outside the window.
+
+## 34. The layer is the size of the shaft
+
+*User, 2026-09-05: "In the mine, the layer needs to be the same size as the shaft."*
+
+**The two columns were already the same size.** Both stretched to one grid row — 982px at
+1250. The mismatch was inside: the seam window was a fixed 563px, so the layer had **264px
+of empty rock panel under it** while the shaft was full to the bottom. Two boxes the same
+height, one of them two-thirds empty.
+
+So the zoom is **derived rather than declared**. The wall is a flex column, the window
+takes what is left of it, and both axes come off that one measured number — the rule §28
+established after the letterbox, only now the number is measured instead of written down,
+and it follows the shaft because the shaft is what sets the row.
+
+Measured at 1250: shaft 982, wall 982, window 803, drawing 803 — **0 clipped, 0 blank.**
+
+### 34a. Four numbers that had to be right, and each was wrong once
+
+| | |
+|---|---|
+| `flex-basis` | `auto` makes the basis the *content* height, which is the drawing, which is the thing being sized from the box. The wall inflated the row 71px past the shaft and dragged the shaft up with it — the layer **setting** the row rather than filling it. `flex:1 1 0` breaks the loop. |
+| the floor | with a 210px minimum and a zero basis, the stacked layout under 900px — where the wall is content-sized and has no free space — collapsed the window to **205px**, far smaller than the 563 it replaced. `min-height:542px`, the height the seam was designed at, is the floor. |
+| the cap | a zoom cap above the window's own height means the drawing is taller than the box and `overflow-y:hidden` clips it: 846px in an 803px window, **43px of the floor cut off**. There is no cap, and no floor either — a floor above what the window can show is a floor on clipping. |
+| when to measure | sized before the scan row was appended, the window was 71px larger than it ended up. `MF.fitSeam` runs at the **end** of the paint. |
+
+And `.seamview` is `overflow-x:scroll`, not `auto`: with `auto` the bar is not there when the
+drawing is measured and appears once the drawing makes the box overflow, so the height read
+15px too large and the seam was sized to a window it then made smaller.
+
+### 34b. More lump, not more walk
+
+`SEAM_W` drops 2900 → 2000. The drawn width is in viewBox units rendered at *window height
+÷ `SEAM_H`* per unit, so when the window grew to match the shaft every unit got 48% wider
+and the scan ran from 4.7 screens end to end to **7.3**. Fewer units at a bigger zoom is
+the same number of *pixels* of seam: the scan holds at **4.8 screens**, and what the extra
+height buys is a lump at **58–111px** instead of 39–75.
+
+> `seam` (22) asserts no dead space under the window on the wide layout, on all five
+> layers — measured as the gap between the window's foot and the wall's, less the scan row.
+> Control: pin the window back to a fixed 542px and it reports 282px of empty wall.
+> It says nothing about the stacked layout under 900px, where there is no shaft beside it
+> to match.

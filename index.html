@@ -529,8 +529,37 @@ input::placeholder, textarea::placeholder{color:#6B5B48; opacity:1}
 .layer.shut .hint{color:#B5A88F}
 
 /* the wall */
+/* THE LAYER IS THE SAME SIZE AS THE SHAFT (user, 2026-09-05).
+
+   Both columns were already stretched to one row height - 982px at 1250 - but
+   the seam WINDOW inside the wall was a fixed 563px, so the layer had 264px of
+   empty rock panel under it while the shaft was full to the bottom. Two boxes
+   the same height, one of them two-thirds empty.
+
+   The wall is a flex column now and the seam window takes what is left of it.
+   `flex:1 1 0` and not `1 1 auto`: an auto basis is the CONTENT height, which
+   is the drawing, which is the thing being sized - the box would take its
+   height from the svg and the svg from the box. A zero basis breaks that. */
 .wall{background:linear-gradient(180deg,#5A4B3C,#3A3129); border:3px solid var(--rock-3); border-radius:14px;
-  padding:18px; color:#F0E2C8; position:relative; overflow:hidden}
+  padding:18px; color:#F0E2C8; position:relative; overflow:hidden;
+  display:flex; flex-direction:column}
+/* A ZERO BASIS AND A REAL FLOOR, and both halves were wrong once.
+
+   `flex:1 1 auto` makes the basis the CONTENT height - which is the drawing,
+   which is the thing being sized from the box. Measured: the wall inflated the
+   grid row 71px past the shaft's own 982 and dragged the shaft up with it, so
+   the layer was SETTING the row rather than filling it. Backwards.
+
+   `flex:1 1 0` breaks that, and with a 210px minimum it broke the other way:
+   under 900px the columns stack, the wall is content-sized, there is no free
+   space to hand out, and the window fell to its minimum - the layer came out
+   205px on a phone, far smaller than the 563 it replaced.
+
+   Zero basis so the drawing cannot feed its own height back in; 542 - the
+   height the seam was designed at - as the floor for when there is no free
+   space to grow into. */
+.wall .facewrap{flex:1 1 0; min-height:542px; display:flex; flex-direction:column}
+.wall .facewrap .seamview{flex:1 1 0; min-height:0}
 .wall h3{color:#FFE9C4; font-size:20px}
 /* #F2E6D0, not #D9C39C: layer 1 is the LIGHTEST rock in the mine, and the
    dimmer cream measured 3.82:1 against it while passing on every dark layer.
@@ -1912,7 +1941,13 @@ table.rosetta td.rx{font-family:var(--display); font-size:16px; color:var(--ink)
 .face svg{display:block; width:100%; height:auto}
 /* the seam viewport: the rock inside is several screens wide and is scanned
    along by scrolling, dragging or the scan buttons */
-.seamview{overflow-x:auto; overflow-y:hidden; cursor:grab; scroll-behavior:smooth;
+/* `scroll`, NOT `auto`. The bar is always there in practice - the seam is five
+   screens wide by design - but with `auto` it is not there at the moment the
+   drawing is measured, and it appears once the drawing makes the box overflow.
+   So the height was read 15px too large and the seam was sized to a window it
+   then made smaller: 15px of the floor clipped, every time. Reserving the bar
+   makes the measurement the same before and after. */
+.seamview{overflow-x:scroll; overflow-y:hidden; cursor:grab; scroll-behavior:smooth;
   scrollbar-color:var(--lamp) #241D18}
 .seamview:active{cursor:grabbing}
 /* THE SEAM IS SHOWN TALLER THAN IT IS DRAWN. The rock is the same 2280x190
@@ -7512,7 +7547,14 @@ MF.LAYER_LOOK = [
    spread down its length, so looking for something worth breaking is real
    movement rather than reading a grid of seven.
    SEAM_W is the drawn width; the viewport shows roughly a third of it. */
-MF.SEAM_W = 2900;
+/* 2000, NOT 2900. The drawn width is in viewBox units and the seam is rendered
+   at `window height / SEAM_H` per unit - so when the window grew from 542px to
+   ~800 to match the shaft (§34), every unit got 48% wider too and the scan ran
+   from 4.7 screens end to end to 7.3. Fewer units at a bigger zoom is the same
+   number of PIXELS of seam: the scan distance and the lumps-per-screen hold
+   where they were, and what the extra height buys is a bigger lump rather than
+   a longer walk. */
+MF.SEAM_W = 2000;
 /* THE SEAM IS TALLER THAN IT WAS, because the window onto it now sits in a
    column the shaft sets the height of - 982px at 1250 - and only 307 of that
    was rock. The rest was empty wall under the scan row. This is more SEAM, not
@@ -7821,13 +7863,10 @@ MF.paintFace = function(){
   var W=MF.SEAM_W, VH=MF.SEAM_H;
   var svg = S('svg',{viewBox:'0 0 '+W+' '+VH,role:'group',
     'aria-label':'A seam of rock at layer '+L.n+', wider than the screen. Scroll or use the scan buttons to move along it.'});
-  /* BOTH AXES, FROM ONE ZOOM. Setting only the width let `xMidYMid meet` fit
-     the drawing to it and letterbox 91px of nothing above and below the rock. */
-  var pxW = Math.round(W * MF.SEAM_ZOOM), pxH = Math.round(VH * MF.SEAM_ZOOM);
-  svg.setAttribute('width', pxW);
-  svg.setAttribute('height', pxH);
-  svg.style.width = pxW + 'px';
-  svg.style.height = pxH + 'px';
+  /* THE SVG IS SIZED AFTER THE WALL IS MOUNTED, by MF.sizeSeam - it takes its
+     height from the space the flex column gives it, and that is not knowable
+     until it is in the document. MF.SEAM_ZOOM is the fallback for a detached
+     probe, and the floor. */
   svg.style.maxWidth = 'none';
 
   var defs = S('defs',{});
@@ -8047,20 +8086,11 @@ MF.paintFace = function(){
      `scrollBehavior='auto'` for the restore itself: a freshly built box being
      put back where it was is not a journey, and animating it from 0 is exactly
      the lurch this is here to stop. */
-  faceBox.style.scrollBehavior = 'auto';
-  faceBox.scrollLeft = MF.state.scan || 0;
-  faceBox.style.scrollBehavior = '';
-  if(target){
-    var tLeft = (target.px / W) * faceBox.scrollWidth;
-    var pad = Math.max(60, target.sz * (faceBox.scrollWidth / W) + 40);
-    if(tLeft < faceBox.scrollLeft + pad ||
-       tLeft > faceBox.scrollLeft + faceBox.clientWidth - pad){
-      var wantLeft = Math.max(0, tLeft - faceBox.clientWidth / 2);
-      faceBox.scrollLeft = wantLeft;         /* smooth, per the stylesheet */
-      MF.state.scan = wantLeft;
-    }
-  }
-  syncMarker();
+  /* THE SIZING AND THE SCROLL BOTH HAPPEN AT THE END OF THE PAINT, in
+     MF.fitSeam - not here. Everything below this line still has to be appended
+     to the wall, and the scan row alone is 71px: sized at this point the seam
+     took a height the wall was about to take back off it, and 71px of the
+     floor was clipped. Measure last, when the box is finished. */
   MF._seamView = faceBox;
 
   /* ---- inspect, then break: A POP-OUT OVER THE WALL, NOT A PANEL UNDER IT ----
@@ -8083,9 +8113,116 @@ MF.paintFace = function(){
   /* WHAT THE LIGHT PATH NEEDS, so a selection does not rebuild the seam.
      `rocks` is MF.state.face, which survives; the rest are live nodes. */
   MF._face = {box:faceBox, svg:svg, insp:insp, wrap:faceWrap, pick:pick,
-              rocks:rocks, W:W, VH:VH};
+              rocks:rocks, W:W, VH:VH, target:target, sync:syncMarker};
+  /* NOW the wall is finished, so now the window's height is what it will be */
+  MF.fitSeam();
   MF.paintInspect();
 };
+
+/* =========================================================================
+   THE LAYER IS AS BIG AS THE SPACE IT IS GIVEN.
+
+   USER, 2026-09-05: "In the mine, the layer needs to be the same size as the
+   shaft."
+
+   Both columns were already stretched to one row height - 982px at 1250px -
+   and measuring showed the mismatch was inside: the seam window was a fixed
+   563px, leaving 264px of empty rock panel under it while the shaft was full
+   to the bottom. Two boxes the same height, one of them two-thirds empty.
+
+   So the zoom is DERIVED rather than declared. The wall's flex column hands
+   the window a height; both axes come off that one number, which is the rule
+   s28 established after the letterbox - only now the number is measured
+   instead of written down, and it follows the shaft because the shaft is what
+   sets the row.
+
+   IT IS MORE SEAM, NOT MORE ZOOM, up to a point: the cap keeps a lump the size
+   a lump has been, so a tall shaft buys face to scan rather than magnification.
+   Past the cap the extra height goes back to the wall as padding, which is
+   honest - a 4x lump would be a different design, not a taller one.
+   ========================================================================= */
+/* NO UPPER CAP ON THE ZOOM, and there was one for a day.
+   A cap above the window's own height means the drawing is TALLER than the box
+   it is in, and `overflow-y:hidden` clips the difference: at 2.35 the seam came
+   out 846px in an 803px window and 43px of the floor - the muck, the ore
+   flecks, the dark sill - was cut off. The zoom IS the window height over the
+   viewBox height; a cap on it is a cap on nothing but honesty. What stops the
+   lumps growing without limit is the shaft, which is what sets the row. */
+MF.sizeSeam = function(box){
+  /* THE CALLER HANDS IN THE BOX WHEN IT HAS ONE. `MF._face` is not assigned
+     until the end of MF.paintFace, so during a paint it still points at the
+     PREVIOUS window - which has just been discarded, fails `isConnected`, and
+     made this return null every time. The seam then sat at the svg's CSS
+     default: full width, height from the aspect, 116px tall. */
+  var F = MF._face;
+  box = box || (F && F.box) ||
+        (MF._mine && MF._mine.mid && MF._mine.mid.querySelector('.seamview'));
+  if(!box || !box.isConnected) return null;
+  var svg = box.querySelector('svg');
+  if(!svg) return null;
+  /* clientHeight is what the flex column assigned, and it does NOT include the
+     drawing: `overflow-y:hidden` means a tall svg cannot push it out. That is
+     what stops this being circular. */
+  var avail = box.clientHeight;
+  /* NO FLOOR ON THE ZOOM EITHER, for the same reason there is no cap: a floor
+     above what the window can show is a floor on clipping. The 1.505 minimum
+     put a 542px drawing in a 537px box on a phone and cut 5px off the muck.
+     The floor that is wanted is a floor on the WINDOW - `min-height:542px` on
+     `.facewrap` - and that one is in the stylesheet where it can be honoured.
+     MF.SEAM_ZOOM survives as the fallback for a box with no layout at all. */
+  var zoom = (avail > 80) ? (avail / MF.SEAM_H) : MF.SEAM_ZOOM;
+  var pxH = Math.round(MF.SEAM_H * zoom), pxW = Math.round(MF.SEAM_W * zoom);
+  svg.setAttribute('width', pxW);
+  svg.setAttribute('height', pxH);
+  svg.style.width = pxW + 'px';
+  svg.style.height = pxH + 'px';
+  return {zoom:zoom, w:pxW, h:pxH, avail:avail};
+};
+
+/* SIZE THE ROCK, THEN PUT THE SCROLL BACK, THEN CHASE THE LUMP IF IT IS OFF
+   SCREEN. One function, called at the END of a paint and again on a resize,
+   because all three steps depend on the window being its final size and the
+   scroll restore reads the width the sizing sets.
+
+   THE SCROLL POSITION BELONGS TO THE STUDENT, NOT TO THE PAINT (§32): it is
+   restored every time, without animation - a freshly built box being put back
+   where it was is not a journey. The seam only MOVES when the lump being
+   looked at is genuinely off screen, and then it eases, because that is the
+   one case where movement is the point. */
+MF.fitSeam = function(){
+  var F = MF._face;
+  if(!F || !F.box || !F.box.isConnected) return null;
+  var box = F.box, got = MF.sizeSeam(box);
+  box.style.scrollBehavior = 'auto';
+  box.scrollLeft = MF.state.scan || 0;
+  box.style.scrollBehavior = '';
+  var target = F.target;
+  if(target){
+    var tLeft = (target.px / F.W) * box.scrollWidth;
+    var pad = Math.max(60, target.sz * (box.scrollWidth / F.W) + 40);
+    if(tLeft < box.scrollLeft + pad || tLeft > box.scrollLeft + box.clientWidth - pad){
+      var wantLeft = Math.max(0, tLeft - box.clientWidth / 2);
+      box.scrollLeft = wantLeft;             /* smooth, per the stylesheet */
+      MF.state.scan = wantLeft;
+    }
+  }
+  if(F.sync) F.sync();
+  return got;
+};
+
+/* AND IT FOLLOWS THE WINDOW WHEN THE WINDOW CHANGES. The height comes from the
+   shaft, which comes from the grid, which comes from the viewport - so a
+   resize that changes the row changes what the seam should be drawn at.
+   Debounced, because resize fires continuously and this reads layout. */
+MF._seamFit = null;
+on(window,'resize',function(){
+  if(MF._seamFit) clearTimeout(MF._seamFit);
+  MF._seamFit = setTimeout(function(){
+    MF._seamFit = null;
+    if(MF.state.screen !== 'mine') return;
+    if(MF.fitSeam()) MF.placeInspect();
+  }, 120);
+});
 
 /* =========================================================================
    PICKING A LUMP OUT DOES NOT REBUILD THE FACE.
@@ -11075,6 +11212,39 @@ MF.validate = function(){
     MF._mine = null;
     try { MF.SCREENS.mine(sfProbe); MF.paintMine(); }
     catch(e){ errs.push('seam: the mine threw while the window was being measured: ' + e.message); break; }
+    /* AND THE WINDOW FILLS THE COLUMN THE SHAFT SETS.
+
+       USER, 2026-09-05: "In the mine, the layer needs to be the same size as
+       the shaft."
+
+       Both columns were already stretched to one row height; the mismatch was
+       INSIDE - a fixed 563px window in a 982px column, so the layer had 264px
+       of empty rock panel under it while the shaft was full to the bottom. Two
+       boxes the same height, one of them two-thirds empty.
+
+       Measured as "no dead space under the window", not as "the two boxes are
+       equal", because the boxes were equal the whole time this was wrong.
+
+       READ THE DENOMINATOR: the wide layout only. Under 900px the columns
+       stack, the wall is content-sized and there is no shaft beside it to
+       match - the seam holds its 542px design height there, and this says
+       nothing about that. */
+    if(document.documentElement.clientWidth > 900){
+      chk('seam');
+      var sfWall = sfProbe.querySelector('.wall');
+      var sfWin  = sfProbe.querySelector('.seamview');
+      var sfScan = sfProbe.querySelector('.wall > .row');
+      if(sfWall && sfWin){
+        var sfFoot = sfWall.getBoundingClientRect().bottom -
+                     parseFloat(getComputedStyle(sfWall).paddingBottom);
+        var sfBelow = sfFoot - sfWin.getBoundingClientRect().bottom;
+        var sfUsed  = sfScan ? sfScan.getBoundingClientRect().height + 12 : 0;
+        if(sfBelow - sfUsed > 40)
+          errs.push('seam: layer '+sf+' leaves ' + Math.round(sfBelow - sfUsed) +
+            'px of empty wall under the window — the layer is meant to be the size of the ' +
+            'shaft, and the shaft is full to the bottom');
+      }
+    }
     var fit = sfFit(sfProbe);
     if(!fit){ errs.push('seam: layer '+sf+' drew no window to measure'); continue; }
     if(fit.top > 2 || fit.bottom > 2)
