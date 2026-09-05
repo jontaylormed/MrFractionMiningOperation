@@ -6923,8 +6923,10 @@ MF.SCREENS.forge = function(host){
   MF._forge = {left:colL, right:colR};
   MF.paintForge();
 
+  /* NO MINE DOOR HERE EITHER (user, 2026-09-05). It read "Back to the mine"
+     rather than "Into the mine", which is the same route under another name.
+     The masthead carries it on every page. */
   var back = E('div','row'); back.style.marginTop='14px';
-  back.appendChild(MF.jump('Back to the mine &rarr;','mine'));
   back.appendChild(MF.jump('Out to the surface &rarr;','home'));
   host.appendChild(back);
 };
