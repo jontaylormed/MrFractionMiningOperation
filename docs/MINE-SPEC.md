@@ -1264,3 +1264,52 @@ taking somewhere.
 > rock's position on screen and the page's scroll to be **unchanged** — and separately
 > that the click still rings the rock and names it underneath. Control: reintroduce the
 > re-centring and it reports the jump.
+
+## 33. The reading is a pop-out over the wall, and it asks one question
+
+*User, 2026-09-05: "When you click on the ore on the layer, there should be a pop out
+window asking to swing or keep scanning. This pop out window should be overlaid the layer
+window not popping below it."*
+
+The reading was a block in the flow under the seam, so picking a lump out **pushed the
+scan row, the cart and everything under them down the page** — the same class of thing as
+the seam snapping (§32), one band lower. It is absolutely positioned inside `.facewrap`
+now, over the wall, and **nothing below it moves when it opens.**
+
+It asks the question it exists to ask: **Swing the pick**, or **Keep scanning.**
+
+### 33a. Where it lands
+
+**Beside the rock first**, because that is the only placement that covers none of it.
+Over-or-under could not win: the panel is ~255px of a 563px window, so the two positions
+leave a 25px band neither covers, and a 150px lump spanning the middle got clipped
+whichever way it went — **17 of 54 lumps, worst case 77px**. The wall is 931px wide and
+the panel 420, so there is room to stand beside it.
+
+On a screen too narrow for that it falls back to over or under, **leaning to whichever
+side has more room** and then taking the position that covers *less* of the rock —
+compared by actual overlap, not by the rock's centre against the wall's midpoint, which
+is only right if the panel is a sliver and it is not.
+
+Swept over 56 lumps across all five layers at three scroll positions: **50 beside, 6
+over-or-under, 1 partially covered (46px), 0 outside the wall.**
+
+### 33b. What it is pinned to
+
+`.facewrap` wraps the scroller rather than living inside it: a child of the scroller
+would be clipped by it and would scroll away from the student. So the panel is re-placed
+on every scroll — and when the rock leaves the window the panel goes with it, because
+*"swing this one?"* is meaningless about something off screen.
+
+Every offset is clamped into the wall **in both directions**. The first version clamped
+one end, and a rock scrolled off the left has a negative right edge — which put the panel
+off the left of the wall. The rock is allowed to be anywhere, including outside.
+
+**Nothing picked out means nothing on screen.** The panel used to carry a "nothing picked
+out yet" plate, which is a box of text explaining that there is no box of text — and it
+would reserve the height the panel was moved out of the flow to stop reserving.
+
+> `knock` (39) asserts the pop-out is inside the wall's box, that opening it moves what is
+> under the wall by **0px**, that it offers both choices, that it is not on screen with
+> nothing picked out, and that Escape closes it. Controls: put the reading back in the
+> flow — it reports both the shove (216px) and the panel hanging outside the window.

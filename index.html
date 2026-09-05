@@ -2008,7 +2008,56 @@ table.rosetta td.rx{font-family:var(--display); font-size:16px; color:var(--ink)
 }
 
 /* ---- inspecting a rock before you break it ---- */
+/* =========================================================================
+   THE POP-OUT OVER THE WALL (MINE-SPEC §33).
+
+   USER, 2026-09-05: "there should be a pop out window asking to swing or keep
+   scanning. This pop out window should be overlaid the layer window not
+   popping below it."
+
+   It is absolutely positioned inside `.facewrap`, so it covers the seam and
+   NOTHING BELOW IT MOVES when it opens. As a block in the flow it used to push
+   the scan row, the cart and everything under them down the page every time a
+   lump was picked out.
+   ========================================================================= */
+.facewrap{position:relative}
 .inspect{background:#241D18; border:2px solid #6B5B48; border-radius:12px; padding:11px 13px; color:#F0E2C8; margin-top:10px}
+/* 420, NOT 340. At 340 the two buttons could not sit side by side and the
+   reading wrapped to five lines: the panel came out 359px tall in a 563px
+   window, which is a pop-out that cannot avoid covering the stone it is about.
+   Wider is SHORTER here, and short is the whole requirement. */
+.inspectpop{position:absolute; z-index:6; margin:0; width:min(420px, calc(100% - 20px));
+  padding:10px 13px 11px;
+  border-color:var(--lamp); box-shadow:0 14px 34px rgba(0,0,0,.55), 0 0 0 1px rgba(0,0,0,.4);
+  animation:popin 150ms cubic-bezier(.2,.8,.3,1) 1}
+@keyframes popin{from{opacity:0; transform:translateY(6px)}to{opacity:1; transform:translateY(0)}}
+@media (prefers-reduced-motion:reduce){ .inspectpop{animation:none} }
+/* BESIDE the rock when there is room, which is the only placement that covers
+   none of it; over or under only on a screen too narrow for that. */
+.inspectpop[data-flip=low]{bottom:14px}
+.inspectpop[data-flip=high]{top:14px}
+/* a caret pointing back at the rock, wherever the clamp put the panel */
+.inspectpop:after{content:""; position:absolute; border:9px solid transparent;
+  width:0; height:0}
+.inspectpop[data-flip=low]:after,.inspectpop[data-flip=high]:after{
+  left:var(--caret,50%); margin-left:-9px}
+.inspectpop[data-flip=low]:after{bottom:100%; border-bottom-color:var(--lamp)}
+.inspectpop[data-flip=high]:after{top:100%; border-top-color:var(--lamp)}
+.inspectpop[data-flip=side]:after{top:var(--caretY,50%); margin-top:-9px}
+.inspectpop[data-side=right]:after{right:100%; border-right-color:var(--lamp)}
+.inspectpop[data-side=left]:after{left:100%; border-left-color:var(--lamp)}
+.inspectpop .label{font-size:10px}
+.inspectpop .expr{font-size:clamp(19px,2.4vw,24px); margin:1px 0 4px}
+.inspectpop .obs{font-size:13px; line-height:1.4}
+.inspectpop .poprow{gap:8px; flex-wrap:nowrap; margin-top:9px}
+/* the swing is the wider of the two, because it is the one the panel is for */
+.inspectpop .poprow .btn{flex:2 1 0; min-width:0; font-size:14px; padding:9px 10px; min-height:44px}
+.inspectpop .poprow .popkeep{flex:1 1 0; white-space:nowrap}
+@media (max-width:560px){
+  .inspectpop{width:calc(100% - 16px)}
+  .inspectpop[data-flip=low]{bottom:8px}
+  .inspectpop[data-flip=high]{top:8px}
+}
 .inspect .label{font-size:11px; letter-spacing:.1em; text-transform:uppercase; color:var(--lamp)}
 .inspect .expr{font-family:var(--display); font-size:clamp(22px,3.4vw,34px); color:#FFF3DE; margin:2px 0 6px}
 .inspect .obs{font-size:14px; color:#D9C39C}
@@ -7897,7 +7946,15 @@ MF.paintFace = function(){
   on(faceBox,'pointerleave',function(){ if(!MF.state.breaking) pickHome(); });
 
   faceBox.appendChild(svg);
-  wall.appendChild(faceBox);
+  /* THE SEAM GETS A WRAPPER SO SOMETHING CAN SIT OVER IT.
+     `.facewrap` is position:relative and nothing else; the pop-out that opens
+     when a lump is picked out is absolutely positioned inside it, so it
+     overlays the wall instead of being appended under it (MINE-SPEC §33). It
+     is OUTSIDE `faceBox`, which is the horizontal scroller - a child of the
+     scroller would be clipped by it and would scroll away from the student. */
+  var faceWrap = E('div','facewrap');
+  faceWrap.appendChild(faceBox);
+  wall.appendChild(faceWrap);
 
   /* ---- scanning along the seam ---- */
   var scanRow = E('div','row'); scanRow.style.marginTop='10px'; scanRow.style.alignItems='center';
@@ -7932,7 +7989,22 @@ MF.paintFace = function(){
     marker.style.left = (frac * (100 - Math.max(8, vis*100))).toFixed(1) + '%';
     MF.state.scan = faceBox.scrollLeft;
   }
-  on(faceBox,'scroll',syncMarker);
+  on(faceBox,'scroll',function(){
+    syncMarker();
+    /* THE POP-OUT FOLLOWS THE ROCK IT IS ABOUT. It is pinned to the wrapper,
+       not to the scroller, so scanning would otherwise leave it hanging over
+       a stone that is no longer there. It is re-placed on every scroll, and
+       when the rock leaves the window the panel goes with it - the question
+       "swing this one?" is meaningless about something off screen. */
+    if(MF._face && MF._face.insp && !MF._face.insp.hidden){
+      var rn = MF.state.inspecting == null ? null
+             : MF._face.svg.querySelector('.rock[data-i="' + MF.state.inspecting + '"]');
+      var vb = faceBox.getBoundingClientRect();
+      var rr = rn && rn.getBoundingClientRect();
+      if(!rr || rr.right < vb.left + 8 || rr.left > vb.right - 8) MF.selectRock(null);
+      else MF.placeInspect();
+    }
+  });
 
   /* drag to scan. A rock click still works because a drag under a few pixels
      is not treated as a drag at all. */
@@ -7991,14 +8063,27 @@ MF.paintFace = function(){
   syncMarker();
   MF._seamView = faceBox;
 
-  /* ---- inspect, then break ---- */
-  var insp = E('div','inspect');
-  wall.appendChild(insp);
+  /* ---- inspect, then break: A POP-OUT OVER THE WALL, NOT A PANEL UNDER IT ----
+
+     USER, 2026-09-05: "When you click on the ore on the layer, there should be
+     a pop out window asking to swing or keep scanning. This pop out window
+     should be overlaid the layer window not popping below it."
+
+     It lives in `.facewrap`, over the seam. It is hidden until a lump is picked
+     out, so nothing below it moves when it opens - which is the whole of "not
+     popping below it": the panel used to be a block in the flow, so opening it
+     pushed the scan row, the cart and everything under them down the page. */
+  var insp = E('div','inspect inspectpop');
+  insp.hidden = true;
+  insp.setAttribute('role','dialog');
+  insp.setAttribute('aria-label','What you are looking at, and what to do with it');
+  faceWrap.appendChild(insp);
   wall.appendChild(scanRow);          /* seam navigation, below what it acts on */
 
   /* WHAT THE LIGHT PATH NEEDS, so a selection does not rebuild the seam.
      `rocks` is MF.state.face, which survives; the rest are live nodes. */
-  MF._face = {box:faceBox, svg:svg, insp:insp, pick:pick, rocks:rocks, W:W, VH:VH};
+  MF._face = {box:faceBox, svg:svg, insp:insp, wrap:faceWrap, pick:pick,
+              rocks:rocks, W:W, VH:VH};
   MF.paintInspect();
 };
 
@@ -8051,6 +8136,23 @@ MF.selectRock = function(idx){
 
   MF.paintInspect();
   if(node) MF.knockRock(node, o, false);
+  /* ESCAPE PUTS IT AWAY, like every other panel on the site. One listener,
+     hung on the document while a lump is picked out and taken off again when
+     it is not - a keydown handler that outlives what it closes is the fault
+     class `sheet` exists for. */
+  if(idx == null){
+    if(MF._popKeys){ document.removeEventListener('keydown', MF._popKeys, true); MF._popKeys = null; }
+  } else if(!MF._popKeys){
+    MF._popKeys = function(e){
+      if(e.key !== 'Escape' || MF.state.inspecting == null) return;
+      e.preventDefault();
+      var back = MF._face && MF._face.svg &&
+                 MF._face.svg.querySelector('.rock[data-i="' + MF.state.inspecting + '"]');
+      MF.selectRock(null);
+      if(back && back.focus) back.focus({preventScroll:true});
+    };
+    document.addEventListener('keydown', MF._popKeys, true);
+  }
   /* AND THE PAGE IS NOT SCROLLED. It used to nudge the panel into view on
      every click; with the seam no longer rebuilt the panel does not move, so
      there is nothing to catch up with - and a page that jumps under a click is
@@ -8063,10 +8165,18 @@ MF.paintInspect = function(){
   if(!F || !F.insp || !F.insp.isConnected) return;
   var insp = clear(F.insp);
   var rocks = F.rocks;
+  /* NOTHING PICKED OUT MEANS NOTHING ON SCREEN. The pop-out used to carry a
+     "nothing picked out yet" plate, which is a box of text explaining that
+     there is no box of text. The wall says what to do by being clickable, and
+     the line under the layer's name already says it in words. */
   if(MF.state.inspecting==null || !rocks[MF.state.inspecting]){
-    insp.appendChild(H('div','label','THE FACE'));
-    insp.appendChild(H('div','obs','Nothing picked out yet. Click a lump in the wall and have a proper look at it first — you can turn over as many as you like without breaking any.'));
-  } else {
+    insp.hidden = true;
+    insp.removeAttribute('data-flip');
+    insp.style.left = ''; insp.style.right = '';
+    return;
+  }
+  insp.hidden = false;
+  if(true){
     var o = rocks[MF.state.inspecting];
     insp.appendChild(H('div','label','YOU ARE LOOKING AT'));
     insp.appendChild(H('div','expr', MF.oreLabel(o)));
@@ -8104,19 +8214,100 @@ MF.paintInspect = function(){
             moved to the CART (§20), because that is where the instruments are:
             you put a tool on the lump, watch it change, and THEN decide where
             it goes. Choosing before you can read the rock was choosing early. */
-    var brow = E('div','row'); brow.style.marginTop='10px';
+    /* ---- THE TWO WAYS OUT OF THE POP-OUT, and they are the question it asks:
+            swing at this one, or leave it and carry on scanning. ---- */
+    var brow = E('div','row poprow'); brow.style.marginTop='10px';
     var br = E('button','btn primary big','Swing the pick'); br.type='button';
     br.setAttribute('aria-label','Cut ' + MF.oreText(o) + ' out of the seam and into the cart');
     on(br,'click',function(){ MF.breakRock(MF.state.inspecting, 'cart'); });
     brow.appendChild(br);
-    var skip = E('button','btn','Leave it and look at another'); skip.type='button';
+    var skip = E('button','btn popkeep','Keep scanning'); skip.type='button';
     skip.style.background='#241D18'; skip.style.color='#E4D5BB'; skip.style.borderColor='#6B5B48';
+    skip.setAttribute('aria-label','Leave ' + MF.oreText(o) + ' in the wall and carry on along the seam');
     /* putting a lump down is a selection change like any other, and it used to
        rebuild the whole face to clear a ring */
     on(skip,'click',function(){ MF.selectRock(null); });
     brow.appendChild(skip);
     insp.appendChild(brow);
   }
+  MF.placeInspect();
+};
+
+/* WHERE THE POP-OUT SITS: over the lump it is about, and never over the lump
+   it is about.
+
+   Horizontally it is centred on the rock, clamped so it cannot hang off either
+   end of the window. Vertically it takes the HALF THE ROCK IS NOT IN - a panel
+   that covers the stone you just clicked is answering a question about
+   something you can no longer see - and the caret flips with it.
+
+   It is read off the live boxes rather than from the seam's own coordinates,
+   because the seam scrolls: the same lump is at a different place on screen
+   depending on where the student has scanned to. */
+MF.placeInspect = function(){
+  var F = MF._face;
+  if(!F || !F.insp || F.insp.hidden || !F.wrap || !F.wrap.isConnected) return;
+  var node = (MF.state.inspecting == null) ? null
+           : F.svg.querySelector('.rock[data-i="' + MF.state.inspecting + '"]');
+  if(!node) return;
+  var wb = F.wrap.getBoundingClientRect(), rb = node.getBoundingClientRect();
+  if(!wb.width) return;
+  var pw = F.insp.offsetWidth || 320, ph = F.insp.offsetHeight || 240, gap = 14;
+  var rL = rb.left - wb.left, rR = rb.right - wb.left;
+  var rTop = rb.top - wb.top, rBot = rb.bottom - wb.top;
+  var cx = (rL + rR) / 2, cy = (rTop + rBot) / 2;
+
+  /* BESIDE THE ROCK FIRST, because then it covers none of it.
+
+     Over-or-under was the first version and it could not win: the panel is
+     ~255px of a 563px window, so the two positions leave a 25px band that
+     neither covers, and a 150px lump spanning the middle got clipped whichever
+     way it went - 17 of 54 lumps swept, worst case 77px. The wall is 931px
+     wide and the panel is 420, so there is room to stand beside it. */
+  var roomRight = wb.width - rR - gap * 2;
+  var roomLeft  = rL - gap * 2;
+  var side = roomRight >= pw ? 'right' : (roomLeft >= pw ? 'left' : null);
+
+  if(side){
+    /* CLAMPED AT BOTH ENDS, and the first version was clamped at one.
+       A rock that has been scrolled off the left of the window has a NEGATIVE
+       right edge, so `rR + gap` put the panel off the left of the wall - it
+       only had a `min`. Every offset in here is clamped into the wall in both
+       directions now, because the rock is allowed to be anywhere, including
+       outside. */
+    var raw = (side === 'right') ? rR + gap : rL - gap - pw;
+    var sLeft = Math.max(gap, Math.min(wb.width - pw - gap, raw));
+    var sTop = Math.max(gap, Math.min(wb.height - ph - gap, cy - ph/2));
+    F.insp.style.left = Math.round(sLeft) + 'px';
+    F.insp.style.top = Math.round(sTop) + 'px';
+    F.insp.style.bottom = 'auto';
+    F.insp.setAttribute('data-flip','side');
+    F.insp.setAttribute('data-side', side);
+    /* the caret comes off the edge nearest the rock, level with its middle */
+    F.insp.style.setProperty('--caretY',
+      Math.round(Math.max(16, Math.min(ph - 16, cy - sTop))) + 'px');
+    return;
+  }
+
+  /* NO ROOM EITHER SIDE - a narrow screen. Fall back to over or under, and
+     pick the one that covers LESS of the rock rather than comparing the rock's
+     centre to the wall's midpoint, which is only right if the panel is a
+     sliver and it is not. */
+  F.insp.removeAttribute('data-side');
+  F.insp.style.top = ''; F.insp.style.bottom = '';
+  /* AND EVEN HERE IT LEANS AWAY. Centring the panel on the rock maximised the
+     overlap; pushing it to whichever side has more room shrinks the box the
+     two shapes share before the over/under choice is made at all. */
+  var lean = (roomRight >= roomLeft) ? (wb.width - pw - gap) : gap;
+  var left = Math.max(10, Math.min(wb.width - pw - 10, lean));
+  F.insp.style.left = Math.round(left) + 'px';
+  F.insp.style.setProperty('--caret', Math.round(Math.max(16, Math.min(pw - 16, cx - left))) + 'px');
+  var over = function(aTop, aBot){
+    return Math.max(0, Math.min(aBot, rBot) - Math.max(aTop, rTop));
+  };
+  var high = over(gap, gap + ph);
+  var low  = over(wb.height - gap - ph, wb.height - gap);
+  F.insp.setAttribute('data-flip', low <= high ? 'low' : 'high');
 };
 
 /* =========================================================================
@@ -12780,6 +12971,84 @@ MF.validate = function(){
         errs.push('knock: picking a lump out rebuilt the whole seam — ' +
           'nothing about a selection needs the rock, the texture and the pick torn down');
     })();
+    /* THE POP-OUT IS OVER THE WALL, AND NOTHING BELOW IT MOVES.
+
+       USER, 2026-09-05: "there should be a pop out window asking to swing or
+       keep scanning. This pop out window should be overlaid the layer window
+       not popping below it."
+
+       The reading used to be a block in the flow under the seam, so picking a
+       lump out PUSHED the scan row, the cart and everything under them down
+       the page - the same class of thing as the seam snapping, one band lower.
+
+       Four properties: it is inside the wall's box, opening it moves nothing
+       below it, it offers BOTH choices, and it is not on screen at all when
+       nothing is picked out - an empty "nothing picked out yet" plate would
+       reserve the height and give the shove back.
+
+       READ THE DENOMINATOR: one lump, at the live viewport. It says nothing
+       about where the panel lands relative to the rock - that is measured by
+       hand and recorded in SITE-STATE, because "does it cover the stone" has a
+       fallback case on a narrow screen that is a trade rather than a bug. */
+    chk('knock');
+    (function(){
+      var pWall = MF._mine.mid.querySelector('.facewrap');
+      var pPop  = MF._mine.mid.querySelector('.inspectpop');
+      if(!pWall || !pPop){ errs.push('knock: the wall has no pop-out to open over it'); return; }
+      MF.selectRock(null);
+      chk('knock');
+      if(!pPop.hidden)
+        errs.push('knock: the pop-out is on screen with nothing picked out — an empty plate ' +
+          'reserves the height it was moved out of the flow to stop reserving');
+      var below = MF._mine.mid.querySelector('.wall .row');
+      var yBefore = below ? below.getBoundingClientRect().top : null;
+      var pRock = MF._mine.mid.querySelector('.seamview .rock');
+      if(!pRock){ errs.push('knock: no lump to open the pop-out with'); return; }
+      kHit(pRock);
+      chk('knock');
+      if(pPop.hidden){ errs.push('knock: clicking a lump opened no pop-out'); return; }
+      var pb = pPop.getBoundingClientRect(), wb = pWall.getBoundingClientRect();
+      if(pb.bottom > wb.bottom + 2 || pb.top < wb.top - 2 ||
+         pb.left < wb.left - 2 || pb.right > wb.right + 2)
+        errs.push('knock: the pop-out is not inside the layer window — it is meant to be ' +
+          'overlaid on the wall, not hanging off it');
+      chk('knock');
+      var yAfter = below ? below.getBoundingClientRect().top : null;
+      if(yBefore != null && Math.abs(yAfter - yBefore) > 2)
+        errs.push('knock: opening the pop-out moved what is under the wall by ' +
+          Math.round(yAfter - yBefore) + 'px — it is overlaid, so nothing below it may shift');
+      chk('knock');
+      var labels = [].map.call(pPop.querySelectorAll('.btn'), function(b){ return b.textContent; }).join(' | ');
+      if(!/swing/i.test(labels) || !/scan/i.test(labels))
+        errs.push('knock: the pop-out offers "' + labels + '" — it asks whether to swing ' +
+          'or to keep scanning, and both have to be in it');
+      chk('knock');
+      /* Escape puts it away, like every other panel on this site */
+      document.dispatchEvent(new KeyboardEvent('keydown',{key:'Escape',bubbles:true}));
+      if(!pPop.hidden)
+        errs.push('knock: Escape did not close the pop-out');
+      MF.selectRock(null);
+    })();
+    /* CONTROL: put the reading back in the flow under the wall and the sweep
+       must report both the shove and the panel hanging outside the window. */
+    chk('knock');
+    (function(){
+      var pWall = MF._mine.mid.querySelector('.facewrap');
+      var pPop  = MF._mine.mid.querySelector('.inspectpop');
+      if(!pWall || !pPop){ errs.push('CONTROL: nothing to move back into the flow'); return; }
+      var pRock = MF._mine.mid.querySelector('.seamview .rock');
+      if(pRock) kHit(pRock);
+      var wasPos = pPop.style.position, wasTop = pPop.style.top, wasBottom = pPop.style.bottom;
+      pPop.style.position = 'static';       /* exactly what it was before §33 */
+      var pb = pPop.getBoundingClientRect(), wb = pWall.getBoundingClientRect();
+      var escaped = pb.bottom > wb.bottom + 2;
+      pPop.style.position = wasPos; pPop.style.top = wasTop; pPop.style.bottom = wasBottom;
+      MF.selectRock(null);
+      if(!escaped)
+        errs.push('CONTROL: the pop-out sweep cannot see a reading that sits under the wall ' +
+          'instead of over it');
+    })();
+
     /* AND THE SAME SWEEP FOR THE CART AND THE BREAKING FLOOR.
 
        USER, 2026-09-05: "Now do the same sweep for the cart and breaking floor

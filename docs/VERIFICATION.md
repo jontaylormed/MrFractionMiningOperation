@@ -1703,3 +1703,25 @@ exists to catch.** Controls build their own state now.
 
 > **Two failure modes, one root:** a check that depends on ambient state is a check whose
 > result belongs to whatever ran before it.
+
+## §81. Clamp both ends, because the thing you are anchoring to may be off screen
+
+The pop-out is placed beside the lump it is about, so its left offset is computed from
+the lump's right edge. That was clamped with a `min` — keep it inside the right-hand edge
+of the wall — and not with a `max`.
+
+A lump that has been scrolled off the **left** of the seam has a negative right edge. The
+panel went off the left of the wall, and `knock` caught it as *"the pop-out is not inside
+the layer window"* on the very first run.
+
+> **An element positioned relative to another element inherits that element's freedom to
+> be anywhere.** The seam scrolls, so its lumps can be at any offset including negative
+> ones; anything anchored to them needs clamping at both ends, on both axes. One-sided
+> clamps are the default mistake because the case you are picturing while you write it is
+> the one where the anchor is comfortably on screen.
+
+The same run showed why the placement rule had to be measured rather than reasoned about.
+Choosing over-or-under by comparing the rock's **centre** to the wall's **midpoint** is
+correct only if the panel is a sliver; at 255px of a 563px window it left 17 of 54 lumps
+partly covered. Comparing the actual overlap each way, and preferring **beside** the rock
+where there is room, took that to 1 of 56.
