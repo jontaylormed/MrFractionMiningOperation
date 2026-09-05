@@ -1481,7 +1481,14 @@ ol.ssteps li.open::marker{color:var(--vein)}
   border-radius:12px; padding:12px 15px; margin-top:14px}
 .realworld .rwlab{font-family:var(--display); font-size:11px; letter-spacing:.12em; color:var(--vein)}
 .realworld .rwwhere{font-family:var(--display); font-size:clamp(17px,2.5vw,20px); color:var(--ink); margin:2px 0 5px}
-.realworld .rwbody{font-size:15px; color:var(--ink); max-width:66ch}
+.realworld .rwbody{font-size:15px; color:var(--ink); max-width:66ch; margin-top:6px}
+/* the anecdote folds; the tie-back below it never does */
+.rwfold summary{cursor:pointer; font-family:var(--display); font-size:clamp(15px,2.2vw,17px);
+  color:var(--vein); list-style:none; line-height:1.3}
+.rwfold summary::-webkit-details-marker{display:none}
+.rwfold summary:before{content:"▸ "}
+.rwfold[open] summary:before{content:"▾ "}
+.rwfold summary b{color:var(--ink); font-weight:400}
 .realworld .rwtie{font-size:14px; color:var(--ink-soft); margin-top:7px; max-width:66ch;
   border-top:1px dashed var(--rule); padding-top:7px}
 
@@ -1681,6 +1688,22 @@ table.rosetta td.rx{font-family:var(--display); font-size:16px; color:var(--ink)
 .xkey .xk{font-size:13px; color:var(--ink-soft); margin-bottom:5px}
 .xkey .xk b{font-family:var(--display); font-weight:400; color:var(--ink)}
 .xkey .dim{opacity:.8}
+
+/* the pick's shortlist of shapes, and the dial's ruler */
+.kindwrap{display:block}
+.kstrip{display:flex; gap:6px; flex-wrap:wrap}
+.kcard{flex:1 1 92px; min-width:0; background:#FFFCF6; border:2px solid var(--rule);
+  border-radius:9px; padding:7px 6px 6px; text-align:center}
+.kcard .knm{font-family:var(--display); font-size:13px; color:var(--ink-soft); line-height:1.15}
+.kcard .ktick{font-size:15px; margin-top:3px; color:var(--rule)}
+/* LIT, not merely marked: the one the instrument named has to be findable at a
+   glance in a row of five, which a tick alone is not. */
+.kcard.lit{background:#E8F2EE; border-color:var(--vein); box-shadow:0 0 0 2px rgba(31,110,88,.18)}
+.kcard.lit .knm{color:var(--ink)}
+.kcard.lit .ktick{color:var(--vein)}
+.kcard.waiting{border-style:dashed}
+.tickdia{width:min(300px,100%)}
+.tickdia svg{display:block; width:100%; height:auto}
 
 .diaglab{font-family:var(--display); font-size:11px; letter-spacing:.11em;
   color:var(--ore-t); margin:12px 0 2px}
@@ -3069,12 +3092,20 @@ MF.SCHEMA = {
      inventing a method for it. */
   pick: {
     name: 'Testing the rock before you swing',
-    why: 'Every other instrument works on a lump you have already dug. This one works one step earlier, at the wall: hold it to a lump in the seam and it names what KIND of ore it is — shared metal, a twin seam, a plain trinomial, a loaded one, or an ingot that is already pure. It tells you nothing about the answer. It tells you which shape you are about to be looking at, so choosing what to cut out is a decision instead of a lottery. Turning lumps over at the face costs nothing and breaks nothing.',
+    /* 493 characters, and it was the first thing on the slide. The list of
+       five kinds it spent a sentence naming is now DRAWN on the step below it
+       (MF.kindStrip), so saying them again here was the same information at a
+       quarter of the legibility. */
+    why: 'Every other instrument works on a lump you have already dug. This one works at the wall, and it names the KIND rather than the answer — so choosing what to cut out is a decision instead of a lottery.',
     steps: function(ore){
+      var kind = MF.assayOf(ore);
       return [
-        {act:'At the seam, pick out a lump and hold the pick to it.', shows:'what kind is this?'},
-        {act:'It names the shape — and stops there. Which numbers are in it is still yours to find.', shows:MF.ASSAY[MF.assayOf(ore)].name},
-        {act:'On the floor it has nothing to say. By then you have the lump.', shows:MF.oreLabel(ore)}
+        {act:'Hold it to a lump still in the wall.', shows:MF.oreLabel(ore),
+         draw:function(li){ MF.kindStrip(li, {lit:null, key:'One of these. Not which numbers — which <b>shape</b>.'}); }},
+        {act:'It picks the shape out of that list and stops there.',
+         draw:function(li){ MF.kindStrip(li, {lit:kind, key:'<b>' + MF.ASSAY[kind].name + '.</b> ' + MF.ASSAY[kind].tell}); }},
+        {act:'Which numbers are in it is still yours.', open:true,
+         draw:function(li){ MF.workLine(li, MF.ASSAY[kind].name + ', so the seam is', [null], 'wbig'); }}
       ];
     },
     practice: {ore:{kind:'number',n:12}, ask:'Name one whole number that runs through 12.', answer:{m:0,k:2}}
@@ -3087,15 +3118,25 @@ MF.SCHEMA = {
      still the student's. */
   lantern: {
     name: 'One side lit, one side dark',
-    why: 'Every factorisation has two sides, and they are not independent: once one side is out, the other is whatever is left. So one side is a foothold rather than the answer. The lantern lights the simpler side and will not light the other.',
+    /* EVERY `why` IS ONE CLAIM NOW, because the steps under it draw. What
+       these paragraphs were spending three sentences describing - a split, a
+       box, an X, a ruler - is the picture on the slide below, and saying it in
+       prose first was the same information at a quarter of the legibility. */
+    why: 'A factorisation has two sides, and once one is out the other is whatever is left. So one side is a foothold, not the answer &mdash; and the lantern lights the simpler one.',
     steps: function(ore){
       var one = MF.simplestFactor(ore);
-      if(!one) return [{act:'Nothing moves in there. It is an element, and an element has no two sides.', shows:MF.oreLabel(ore)}];
+      if(!one) return [{act:'Nothing moves in there. An element has no two sides.', shows:MF.oreLabel(ore),
+        draw:function(li){ MF.splitDiagram(li, {whole:MF.oreLabel(ore), left:null, right:null,
+          key:'Neither side exists. That is what native metal <b>is</b>.'}); }}];
       return [
-        {act:'The lantern lights one side of it.', shows:'( ' + ingotHtml(one) + ' )'},
-        {act:'The other side is whatever is left when that one comes out.', open:true,
-         shows:MF.oreLabel(ore) + ' <span class="op">=</span> ( ' + ingotHtml(one) + ' ) <span class="op">&times;</span> ( <span class="qm">?</span> )'},
-        {act:'Name it, cut the hammer to it and swing. The lantern will not say whether you have it right &mdash; the rock will.', open:true}
+        {act:'The lantern lights one side.',
+         draw:function(li){ MF.splitDiagram(li, {whole:MF.oreLabel(ore), left:'( ' + ingotHtml(one) + ' )', right:null,
+           key:'It lights the <b>simpler</b> side, and it will not light the other.'}); }},
+        {act:'The dark side is whatever is left when that one comes out.', open:true,
+         draw:function(li){ MF.workLine(li, null,
+           [MF.oreLabel(ore), '  =  ( ', ingotHtml(one), ' ) × ( ', null, ' )'], 'wbig'); }},
+        {act:'Name it and swing. The lantern will not say whether you have it right &mdash; the rock will.', open:true,
+         draw:function(li){ MF.workLine(li, 'cut the hammer to', [null], 'wbig'); }}
       ];
     },
     practice: {ore:{kind:'poly',a:1,b:-5,c:6}, ask:'x&sup2; &minus; 5x + 6 has ( x &minus; 2 ) in it. Name the other side.', answer:{m:1,k:-3}}
@@ -3105,18 +3146,24 @@ MF.SCHEMA = {
      what stays open is what is left underneath - which the blow reveals. */
   steel: {
     name: 'Pulling out the common factor (the GCF)',
-    why: 'If every term is carrying the same metal, that metal can be lifted out of all of them at once and stood in front of a bracket. It is the distributive property run backwards, and it is always the first thing to try.',
+    why: 'If every term carries the same metal, it lifts out of all of them at once and stands in front of a bracket. That is the distributive property run backwards, and it is always the first thing to try.',
     steps: function(ore){
       var g = MF.commonMetal(ore);
       if(!g) return [
-        {act:'Look at every term and ask what divides all of them.', shows:MF.oreLabel(ore)},
-        {act:'Nothing here divides every term but one, so there is no common metal to pull. A named swing still works.'}
+        {act:'Ask what divides every term.', shows:MF.oreLabel(ore),
+         draw:function(li){ MF.workLine(li, 'the biggest that divides them all', ['1'], 'wbig'); }},
+        {act:'Nothing but one, so there is no metal to pull. A named swing still works.',
+         draw:function(li){ MF.splitDiagram(li, {whole:MF.oreLabel(ore), left:'1', right:MF.oreLabel(ore),
+           key:'A pull that changes nothing is not a move.'}); }}
       ];
       return [
-        {act:'Look at every term and ask what divides all of them.', shows:MF.oreLabel(ore)},
-        {act:'The biggest thing that divides every one of them:', shows:'<b>' + num(g) + '</b>'},
-        {act:'Stand it in front of a bracket. What goes inside is each term divided by it.', open:true,
-         shows:num(g) + ' <span class="op">&times;</span> ( <span class="qm">?</span> )'}
+        {act:'Ask what divides every term.', shows:MF.oreLabel(ore),
+         draw:function(li){ MF.workLine(li, 'the biggest that divides them all', [num(g)], 'wbig'); }},
+        {act:'Stand it out in front of a bracket.',
+         draw:function(li){ MF.splitDiagram(li, {whole:MF.oreLabel(ore), left:num(g), right:null,
+           key:'The metal is out. What is left in the bracket is yours.'}); }},
+        {act:'What goes inside is each term divided by it.', open:true,
+         draw:function(li){ MF.workLine(li, null, [num(g), ' × ( ', null, ' )  =  ', MF.oreLabel(ore)], 'wbig'); }}
       ];
     },
     practice: {ore:{kind:'poly',a:0,b:6,c:15}, ask:'6x + 15 &mdash; what is the biggest thing that divides both terms? Put 0 in the x-box and that number on the end.', answer:{m:0,k:3}}
@@ -3126,12 +3173,18 @@ MF.SCHEMA = {
      the demonstrating; the schema names what is being demonstrated. */
   dial: {
     name: 'The whole-number test',
-    why: 'Breaking rock finds seams that sit on whole numbers, and only those. Nudge a coefficient half a step and a seam that looked certain is gone &mdash; the rock has not changed, the search has. That is why some lumps will not come apart however hard you look at them.',
+    why: 'Breaking rock finds seams that sit on whole numbers, and only those. Nudge a coefficient half a step and a certain-looking seam is gone &mdash; the rock has not changed, the search has.',
     steps: function(ore){
       return [
-        {act:'Take the lump as it is and ask whether a whole-number seam runs through it.', shows:MF.oreLabel(ore)},
-        {act:'Now nudge the number on the end off a whole number and ask again.', shows:'the dial below does exactly this'},
-        {act:'If the seam survives whole numbers it can be broken. If it only lives on the decimals, no whole ingot will ever land on it.', open:true}
+        {act:'Take the lump as it is. Does a seam land on a whole number?', shows:MF.oreLabel(ore),
+         draw:function(li){ MF.tickLine(li, {at:2, label:'lands', ticks:6,
+           key:'On a mark. A whole ingot can sit there.'}); }},
+        {act:'Now nudge the end off a whole number and ask again.',
+         draw:function(li){ MF.tickLine(li, {at:2.4, label:'nowhere', ticks:6,
+           key:'Between two marks. Nothing whole fits, and looking harder will not move it.'}); }},
+        {act:'The rock has not changed. The search has.', open:true,
+         draw:function(li){ MF.tickLine(li, {at:2, label:null, ticks:6,
+           key:'So: on a mark, or not. Which is it for your lump?'}); }}
       ];
     },
     practice: {ore:{kind:'poly',a:1,b:3,c:2}, ask:'x&sup2; + 3x + 2 sits on whole numbers. Name one side of it.', answer:{m:1,k:1}}
@@ -3142,14 +3195,24 @@ MF.SCHEMA = {
      was built to draw and had only one caller for. */
   shifter: {
     name: 'The box method',
-    why: 'An x&sup2; can only come from two x-parts multiplied together, and the plain number on the end can only come from the two numbers multiplied together. Put those two in opposite corners of a box and the sides are forced. The two corners left over have to add up to the middle &mdash; that is the whole check.',
+    why: 'An x&sup2; can only come from two x-parts multiplied, and the end only from the two numbers multiplied. Put those in opposite corners and the sides are forced.',
     steps: function(ore){
       if(ore.kind==='number' || ore.a===0) return [
-        {act:'The box needs an x&sup2; for its first corner, and there is none in this one.', shows:MF.oreLabel(ore)}
+        {act:'The box needs an x&sup2; for its first corner, and there is none in this one.', shows:MF.oreLabel(ore),
+         draw:function(li){ MF.workLine(li, 'no x² to put in a corner', [MF.oreLabel(ore)], 'wbig'); }}
       ];
       return [
-        {act:'Draw a two-by-two box. The x&sup2; goes in one corner, the number on the end in the opposite corner.',
-         shows:sqTerm(ore.a) + '  and  ' + num(ore.c)},
+        {act:'The x&sup2; goes in one corner, the number on the end in the opposite one.',
+         draw:function(li){
+           MF.areaModel(li, {
+             rows:[{label:'?'},{label:'?'}],
+             cols:[{label:'?'},{label:'?'}],
+             cells:[[{kind:'sq',text:quadText(ore.a,0,0)},{kind:'x',text:''}],
+                    [{kind:'x',text:''},{kind:'k',text:num(ore.c)}]],
+             caption:'Opposite corners, because that is the only way an x² and a plain number can come out of the same two sides.',
+             a11y:'A two by two box with ' + quadText(ore.a,0,0) + ' in one corner and ' + num(ore.c) + ' opposite it, the other two corners empty.'
+           });
+         }},
         {act:'The sides of the box are the two pieces you are hunting. Neither one is known yet.', open:true,
          draw: function(li){
            MF.areaModel(li, {
@@ -3161,8 +3224,17 @@ MF.SCHEMA = {
              a11y:'A two by two box with ' + quadText(ore.a,0,0) + ' in one corner and ' + num(ore.c) + ' in the opposite corner, every side marked with a question mark.'
            });
          }},
-        {act:'Fill the other two corners so they add to the middle term. When they do, the sides of the box are the answer.', open:true,
-         shows:'those two must come to <b>' + xt2(ore.b) + '</b>'}
+        {act:'Fill the other two corners so they add to the middle. Then the sides are the answer.', open:true,
+         draw:function(li){
+           MF.areaModel(li, {
+             rows:[{label:'?'},{label:'?'}],
+             cols:[{label:'?'},{label:'?'}],
+             cells:[[{kind:'sq',text:quadText(ore.a,0,0)},{kind:'x',text:'?'}],
+                    [{kind:'x',text:'?'},{kind:'k',text:num(ore.c)}]],
+             caption:'These two have to come to ' + xt2(ore.b) + '. That is the whole check.',
+             a11y:'The same box, with the two remaining corners marked with question marks that must add to ' + xt2(ore.b) + '.'
+           });
+         }}
       ];
     },
     practice: {ore:{kind:'poly',a:1,b:8,c:16}, ask:'x&sup2; + 8x + 16 &mdash; the box comes out square. Name one side.', answer:{m:1,k:4}}
@@ -3172,26 +3244,42 @@ MF.SCHEMA = {
      The drill lists every pair and marks none; choosing is the student's. */
   drill: {
     name: 'The pair hunt, and the difference of two squares',
-    why: 'Two numbers that multiply to the end and add to the middle are exactly the two numbers in the brackets. When the middle is nothing at all and the end is a negative square, that pair is a number and its own opposite &mdash; the two middles cancel, and what is left is a difference of two squares.',
+    why: 'Two numbers that multiply to the top of the X and add to the bottom are exactly the two numbers in the brackets. With no middle at all, that pair is a number and its own opposite.',
     steps: function(ore){
       if(ore.kind==='number') return [
-        {act:'On a plain number the hunt is simpler: every pair that multiplies to it.', shows:num(ore.n)},
-        {act:'Any of them can be swung. Some leave more still to break than others.', open:true}
+        {act:'On a plain number the hunt is simpler: every pair that multiplies to it.', shows:num(ore.n),
+         draw:function(li){ MF.workLine(li, 'pairs that multiply to ' + num(ore.n), [null, ' × ', null], 'wbig'); }},
+        {act:'Any of them can be swung. Some leave more still to break than others.', open:true,
+         draw:function(li){ MF.splitDiagram(li, {whole:num(ore.n), left:null, right:null,
+           key:'Both sides are yours. The drill lists; it never chooses.'}); }}
       ];
       if(ore.a===0) return [
-        {act:'No x&sup2; here, so there is no pair to hunt. Look for the metal every term is carrying instead.', shows:MF.oreLabel(ore)}
+        {act:'No x&sup2; here, so there is no pair to hunt. Look for the metal every term carries.', shows:MF.oreLabel(ore),
+         draw:function(li){ MF.splitDiagram(li, {whole:MF.oreLabel(ore), left:null, right:null,
+           key:'This is the Steel Head’s lump, not the drill’s.'}); }}
       ];
       var tgt = (ore.a===1) ? ore.c : ore.a*ore.c;
       var twin = (ore.b===0 && ore.c<0 && isSquare(ore.a) && isSquare(-ore.c));
+      /* THE X IS THE DIAGRAM SCHOOL DRAWS, and this is the method that IS it:
+         a·c on top, the middle below, the pair on the sides. Both sides stay
+         open - on a monic trinomial they are the two bracket constants, so
+         filling one in would be handing over half the answer and filling both
+         would be the whole of it, which `schema` fails the build for. */
       var out = [
-        {act:(ore.a===1 ? 'Take the number on the end.' : 'Multiply the x&sup2; by the number on the end &mdash; that is a&middot;c.'),
-         shows:'<b>' + num(tgt) + '</b>'},
-        {act:'List every pair that multiplies to it. The drill lists them; it marks none.', shows:'the core reads them out below'},
-        {act:'Take the one pair that also adds to the middle. Those two are the numbers in the brackets.', open:true,
-         shows:'it has to add to <b>' + num(ore.b) + '</b>'}
+        {act:(ore.a===1 ? 'Take the number on the end. It goes on top of the X.'
+                        : 'Multiply the x&sup2; by the end &mdash; a&middot;c. It goes on top of the X.'),
+         draw:function(li){ MF.xDiagram(li, {top:num(tgt), bottom:null, left:null, right:null,
+           topWhy: ore.a===1 ? '' : num(ore.a) + ' × ' + num(ore.c)}); }},
+        {act:'The middle goes underneath. Now the X is asking a question.',
+         draw:function(li){ MF.xDiagram(li, {top:num(tgt), bottom:num(ore.b), left:null, right:null,
+           topWhy: ore.a===1 ? '' : num(ore.a) + ' × ' + num(ore.c)}); }},
+        {act:'Two numbers do both at once. Those two are the numbers in the brackets.', open:true,
+         draw:function(li){ MF.workLine(li, 'multiply to ' + num(tgt) + ', add to ' + num(ore.b),
+           [null, '  and  ', null], 'wbig'); }}
       ];
-      if(twin) out.push({act:'And this one is a twin seam: no middle at all, and both ends square. The pair is a number and its opposite, so the middles cancel each other.',
-        shows:'a difference of two squares'});
+      if(twin) out.push({act:'A twin seam: no middle, both ends square. The pair is a number and its own opposite, so the middles cancel.',
+        draw:function(li){ MF.xDiagram(li, {top:num(tgt), bottom:'0', left:null, right:null,
+          botWhy:'nothing in the middle'}); }});
       return out;
     },
     practice: {ore:{kind:'poly',a:1,b:0,c:-25}, ask:'x&sup2; &minus; 25 has no middle term and both ends are squares. Name one side.', answer:{m:1,k:5}}
@@ -3202,24 +3290,45 @@ MF.SCHEMA = {
      seam has to satisfy and stops there. */
   auger: {
     name: 'Factoring by grouping',
-    why: 'On a loaded lump the middle term can be split into two pieces whose numbers multiply to a&middot;c. Split it and there are four terms instead of three; four terms fall into two pairs, and each pair carries a common metal. Pull both out and the same bracket is left over both times &mdash; and a bracket that comes out twice is a seam running through the whole thing.',
+    why: 'Split the middle into two pieces that multiply to a&middot;c, and three terms become four. Four fall into two pairs, and the same bracket comes out of both &mdash; a seam through the whole lump.',
     steps: function(ore){
       if(ore.kind==='number') return [
-        {act:'Whatever comes out of a plain number has to divide it exactly. That is the only rule there is here.', shows:num(ore.n)}
+        {act:'Whatever comes out of a plain number has to divide it exactly. That is the only rule here.', shows:num(ore.n),
+         draw:function(li){ MF.splitDiagram(li, {whole:num(ore.n), left:null, right:null,
+           key:'Nothing to group — a number has no middle term to split.'}); }}
       ];
       if(ore.a===0) return [
-        {act:'No x&sup2;, so there is nothing to group. Whatever comes out has to divide both terms.', shows:num(ore.b) + ' and ' + num(ore.c)}
+        {act:'No x&sup2;, so there is nothing to group. Whatever comes out has to divide both terms.',
+         draw:function(li){ MF.workLine(li, 'it has to divide both', [num(ore.b), '  and  ', num(ore.c)], 'wbig'); }}
       ];
+      var ac = ore.a * ore.c;
+      /* THE FULL X-BOX, WHICH IS THE POINT OF THIS INSTRUMENT: the X finds the
+         pair, the pair splits the middle, the four terms go in the 2×2, and the
+         factors come off the edges. Every stage of it was a sentence before. */
       return [
-        {act:'Multiply the x&sup2; by the number on the end.',
-         shows:'a&middot;c <span class="op">=</span> ' + num(ore.a) + ' &times; ' + num(ore.c) + ' <span class="op">=</span> <b>' + num(ore.a*ore.c) + '</b>'},
-        {act:'Find the pair that multiplies to that and adds to the middle. The auger will not choose it for you.', open:true,
-         shows:'multiply to ' + num(ore.a*ore.c) + ', add to ' + num(ore.b) + ' &nbsp;<span class="qm">?</span>'},
-        {act:'Split the middle term into those two pieces, so the lump has four terms instead of three.', open:true,
-         shows:sqTerm(ore.a) + ' <span class="op">+</span> <span class="qm">?</span> <span class="op">+</span> <span class="qm">?</span> <span class="op">+</span> ' + num(ore.c)},
-        {act:'Group the first two and the last two, then pull the common metal out of each pair.', open:true,
-         shows:'( <span class="qm">?</span> ) <span class="op">+</span> ( <span class="qm">?</span> )'},
-        {act:'The same bracket comes out of both groups. That repeated bracket is the seam &mdash; cut the hammer to it.', open:true}
+        {act:'Multiply the x&sup2; by the end. That is the top of the X.',
+         draw:function(li){ MF.xDiagram(li, {top:num(ac), bottom:num(ore.b), left:null, right:null,
+           topWhy:num(ore.a) + ' × ' + num(ore.c)}); }},
+        {act:'Find the pair that does both. The auger will not choose it for you.', open:true,
+         draw:function(li){ MF.workLine(li, 'multiply to ' + num(ac) + ', add to ' + num(ore.b),
+           [null, '  and  ', null], 'wbig'); }},
+        {act:'Split the middle into those two pieces &mdash; four terms instead of three.', open:true,
+         draw:function(li){ MF.workLine(li, null,
+           [sqTerm(ore.a), '  +  ', null, '  +  ', null, '  +  ', num(ore.c)], 'wbig'); }},
+        {act:'The four go in a box. Pull the common metal off each row and column.', open:true,
+         draw:function(li){
+           MF.xBox(li, {
+             rows:[{label:'?'},{label:'?'}],
+             cols:[{label:'?'},{label:'?'}],
+             cells:[[{kind:'sq',text:quadText(ore.a,0,0)},{kind:'x',text:'?'}],
+                    [{kind:'x',text:'?'},{kind:'k',text:num(ore.c)}]],
+             caption:'The split middle fills the other two corners. The edges are the factors.',
+             a11y:'A two by two box holding the four terms, with both pairs of edges unknown.'
+           });
+         }},
+        {act:'The same bracket comes off both groups. That repeat is the seam.', open:true,
+         draw:function(li){ MF.splitDiagram(li, {whole:MF.oreLabel(ore), left:null, right:null,
+           key:'A bracket that comes out <b>twice</b> runs through the whole lump.'}); }}
       ];
     },
     practice: {ore:{kind:'poly',a:6,b:7,c:-3}, ask:'6x&sup2; + 7x &minus; 3 &mdash; a&middot;c is &minus;18, and &minus;2 and 9 multiply to &minus;18 and add to 7. Group it, and name one side.', answer:{m:2,k:3}}
@@ -3365,6 +3474,94 @@ MF.workLine = function(host, label, parts, cls){
   row.appendChild(eq);
   host.appendChild(row);
   return row;
+};
+
+/* =========================================================================
+   TWO MORE DRAWERS, BECAUSE TWO METHODS HAD NOTHING TO DRAW WITH.
+
+   USER, 2026-09-05: "The Tools need more diagrams and fewer walls of text."
+
+   Measured before touching anything: across all seven lessons in the Casting
+   Shed, exactly ONE step in the whole module carried a diagram - the Shifter's
+   box. Every other slide was `act` text and `shows` text. The vocabulary this
+   file already owns - MF.xDiagram, MF.splitDiagram, MF.areaModel, MF.xBox,
+   MF.workLine - was built for MF.TOOL_READ, the mine's reading, and the
+   METHODS never used a line of it.
+
+   Five of the seven are drawable with what already exists. Two are not, and
+   this is what they needed. Both follow the same rule as the X: strokes in
+   SVG, every number an HTML span pinned over them (VERIFICATION §59).
+   ========================================================================= */
+
+/* THE KINDS, WITH ONE LIT. The Prospector's Pick names a SHAPE and stops, so
+   what it does cannot be drawn as a split or a box - there is nothing coming
+   apart. It is a shortlist with one of them picked out, which is exactly what
+   the instrument is for: turning a lottery into a decision. */
+MF.kindStrip = function(host, o){
+  var kinds = o.kinds || ['shared','twin','plain','loaded','pure'];
+  var box = E('div','xwrap kindwrap');
+  var strip = E('div','kstrip');
+  kinds.forEach(function(k){
+    var a = MF.ASSAY[k];
+    if(!a) return;
+    var lit = (o.lit === k);
+    var c = E('div','kcard' + (lit ? ' lit' : '') + (o.lit == null ? ' waiting' : ''));
+    c.appendChild(H('div','knm', a.name));
+    if(lit) c.appendChild(H('div','ktick','&#10003;'));
+    else if(o.lit == null) c.appendChild(H('div','ktick','<span class="qm">?</span>'));
+    strip.appendChild(c);
+  });
+  box.appendChild(strip);
+  if(o.key) box.appendChild(H('div','xkey','<div class="xk">' + o.key + '</div>'));
+  box.setAttribute('role','img');
+  box.setAttribute('aria-label', o.lit
+    ? ('A shortlist of the kinds of ore, with ' + MF.ASSAY[o.lit].name + ' picked out.')
+    : 'A shortlist of the kinds of ore, none of them picked out yet.');
+  host.appendChild(box);
+  return box;
+};
+
+/* WHOLE NUMBERS, AS A RULER. The Decimal Dial's claim is that a seam either
+   lands on a tick or it does not, and that no amount of looking changes which.
+   Told, that is a sentence a student nods at. Drawn, it is a marker sitting
+   visibly between two ticks with nowhere to go.
+
+   `at` is where the seam falls, in tick units; a whole number lands on one and
+   anything else does not. Nothing here computes - the caller passes what the
+   engine said. */
+MF.tickLine = function(host, o){
+  var wrap = E('div','xdia tickdia');
+  var W = 300, VH = 76, n = o.ticks || 6;
+  var svg = S('svg',{viewBox:'0 0 '+W+' '+VH, preserveAspectRatio:'xMidYMid meet','aria-hidden':'true'});
+  svg.appendChild(S('line',{x1:'16',y1:'46',x2:String(W-16),y2:'46',
+    stroke:'#C8B89A','stroke-width':'4','stroke-linecap':'round'}));
+  var step = (W - 32) / (n - 1);
+  for(var i=0; i<n; i++)
+    svg.appendChild(S('line',{x1:String(16+i*step),y1:'36',x2:String(16+i*step),y2:'56',
+      stroke:'#C8B89A','stroke-width':'4','stroke-linecap':'round'}));
+  /* the marker, and whether it is standing on a tick or in the gap */
+  var onTick = (Math.abs(o.at - Math.round(o.at)) < 1e-9);
+  var mx = 16 + o.at * step;
+  svg.appendChild(S('path',{d:'M'+mx+' 18 L'+(mx-9)+' 34 L'+(mx+9)+' 34 Z',
+    fill: onTick ? 'var(--vein)' : 'var(--ore-t)'}));
+  if(!onTick)
+    svg.appendChild(S('circle',{cx:String(mx),cy:'46',r:'5',fill:'none',
+      stroke:'var(--ore-t)','stroke-width':'3','stroke-dasharray':'3 3'}));
+  var labs = E('div','xlabs');
+  var lab = H('span','xcell ' + (onTick ? 'xbot' : 'xtop'),
+    o.label == null ? '<span class="qm">?</span>' : String(o.label));
+  lab.style.left = ((mx/W)*100).toFixed(2) + '%';
+  lab.style.top  = ((66/VH)*100).toFixed(2) + '%';
+  labs.appendChild(lab);
+  wrap.appendChild(svg); wrap.appendChild(labs);
+  var box = E('div','xwrap');
+  box.appendChild(wrap);
+  if(o.key) box.appendChild(H('div','xkey','<div class="xk">' + o.key + '</div>'));
+  box.setAttribute('role','img');
+  box.setAttribute('aria-label','A ruler marked at the whole numbers, with a seam ' +
+    (onTick ? 'standing on a mark.' : 'falling between two marks, where no whole ingot can land.'));
+  host.appendChild(box);
+  return box;
 };
 
 /* THE X-BOX: the four terms in a 2×2, with the factors read off the edges.
@@ -5573,8 +5770,7 @@ MF.drawLesson = function(box, key){
   var hx = E('div','lstext');
   hx.appendChild(H('div','lslab','THE METHOD'));
   hx.appendChild(H('div','lsnm', s.name));
-  hx.appendChild(H('div','lstool','<b>' + t.nm + '</b> carries it. The method is the part worth having — ' +
-    'it works in a notebook with no instrument at all.'));
+  hx.appendChild(H('div','lstool','<b>' + t.nm + '</b> carries it &mdash; but the method works in a notebook.'));
   head.appendChild(hx);
   wrap.appendChild(head);
 
@@ -5618,7 +5814,9 @@ MF.drawLesson = function(box, key){
     next.setAttribute('aria-label','Show the next slide of ' + s.name);
     on(next,'click',function(){ st.at++; MF.drawLesson(box, key); });
     nav.appendChild(next);
-    nav.appendChild(H('div','hint','Nothing is skipped by going forward, and nothing is lost by going back.'));
+    /* THE REASSURANCE LINE IS GONE. Four hints came to 457 characters in one
+       lesson - a fifth of everything on the page - and this one restated what
+       a Back button that is plainly there already says. */
   } else {
     var again = E('button','btn lsagain','start it over'); again.type='button';
     on(again,'click',function(){ st.at = 0; MF.drawLesson(box, key); });
@@ -5639,8 +5837,7 @@ MF.drawLesson = function(box, key){
   /* ---- WHERE THIS METHOD TURNS UP OUTSIDE A MINE ---- */
   MF.paintRealWorld(wrap, key);
 
-  wrap.appendChild(H('div','hint','<b>In the mine:</b> click this instrument on your belt, then click a rock — ' +
-    'or drag it onto one. The rock re-spells itself exactly as it does on the bench above.'));
+  wrap.appendChild(H('div','hint','<b>In the mine:</b> this instrument on your belt, then a rock.'));
 
   box.appendChild(wrap);
   /* KEEP THE KEYBOARD WHERE IT WAS. Every control here is destroyed by the
@@ -5709,8 +5906,7 @@ MF.lessonPractice = function(host, key){
   row.appendChild(go);
   pr.appendChild(row);
   pr.appendChild(out);
-  pr.appendChild(H('div','hint','Nothing here is kept and nothing here is a mark. It is the same engine the anvil ' +
-    'swings through, so what it says about the rock is what the rock would say.'));
+  pr.appendChild(H('div','hint','Not kept, not a mark &mdash; the same engine the anvil swings through.'));
   host.appendChild(pr);
   return pr;
 };
@@ -5821,8 +6017,7 @@ MF.lessonBench = function(host, key){
     row.appendChild(cell);
   });
   box.appendChild(row);
-  box.appendChild(H('div','hint','Nothing here is marked and nothing is spent. Put the instrument on all three — ' +
-    'the point is what it has to say about <b>different shapes of lump</b>, including the one it can say nothing about.'));
+  box.appendChild(H('div','hint','Nothing is marked. Try all three &mdash; including the one it can say nothing about.'));
   host.appendChild(box);
   return box;
 };
@@ -5879,10 +6074,26 @@ MF.REALWORLD = {
 MF.paintRealWorld = function(host, key){
   var rw = MF.REALWORLD[key];
   if(!rw) return null;
+  /* IT FOLDS, AND THE TIE-BACK DOES NOT.
+
+     USER, 2026-09-05: "The Tools need more diagrams and fewer walls of text."
+     Measured, this was 454 characters at the foot of every lesson - the single
+     biggest block left once the steps started drawing.
+
+     It is not cut, because the user asked for it (2026-09-05, the same day)
+     and because a method a student can place in the world is worth more than
+     one they can only perform. But it is an ASIDE by its own title - the same
+     move, somewhere else - so the anecdote folds and the one sentence that
+     names WHICH PART OF THE METHOD it is stays on the page. Fold the part that
+     is a story; keep the part that is a lesson. */
   var box = E('div','realworld');
-  box.appendChild(H('div','rwlab','&#127758; THE SAME MOVE, OUTSIDE A MINE'));
-  box.appendChild(H('div','rwwhere', rw.where));
-  box.appendChild(H('p','rwbody', rw.body));
+  var d = document.createElement('details');
+  d.className = 'rwfold';
+  var sm = document.createElement('summary');
+  sm.innerHTML = '&#127758; the same move, outside a mine &mdash; <b>' + rw.where + '</b>';
+  d.appendChild(sm);
+  d.appendChild(H('p','rwbody', rw.body));
+  box.appendChild(d);
   box.appendChild(H('div','rwtie', rw.tie));
   host.appendChild(box);
   return box;
@@ -16119,6 +16330,145 @@ MF.validate = function(){
   var vsP = MF.xPair({kind:'poly',a:6,b:7,c:-3});
   if(vsP && (vsP.p + 1) * vsP.q === vsP.ac)
     errs.push('CONTROL: the X arithmetic check cannot see a wrong pair');
+
+  /* ======================================================================
+     AND THE SAME RULE IN THE CASTING SHED, WHICH `visual` NEVER LOOKED AT.
+
+     USER, 2026-09-05: "The Tools need more diagrams and fewer walls of text."
+
+     READ THE DENOMINATOR. `visual` above sweeps MF.TOOL_READ - the mine's
+     READING of a lump. The Casting Shed's Tools module renders something
+     else entirely: MF.SCHEMA[key].steps, the METHOD, walked a slide at a
+     time. Measured the day the user complained, across all seven lessons:
+
+         one step in the whole module carried a diagram
+         1,649-2,082 characters of prose per lesson
+         34 characters of worked lines in the worst one
+
+     Every group was green. None of them had ever asked whether a lesson
+     draws, because the group that asks that was pointed at a different
+     surface. This is that question, asked here.
+
+     A HOLE IS A `.qm` OR AN SVG `?`. MF.areaModel marks an unknown side with
+     SVG text rather than a span, so counting only `.qm` would have called the
+     Shifter's box - the one diagram that was already there - a lesson with
+     nothing left open.
+     ====================================================================== */
+  var tgProse = function(root){
+    var n = 0;
+    root.querySelectorAll('p, .hint, .sact, .lstool, .rwtie, .lbhint, .lbfound, .swhy').forEach(function(el){
+      if(el.closest('.xwrap') || el.closest('.wline') || el.closest('.stage')) return;
+      if(el.closest('details:not([open])')) return;      /* folded is not a wall */
+      n += (el.textContent||'').trim().length;
+    });
+    return n;
+  };
+  var tgHoles = function(root){
+    var n = root.querySelectorAll('.qm').length;
+    root.querySelectorAll('svg text').forEach(function(t){ if((t.textContent||'').trim() === '?') n++; });
+    return n;
+  };
+  MF.toolOrder().forEach(function(tk){
+    var s = MF.SCHEMA[tk], steps = [];
+    try { steps = s.steps(s.practice.ore) || []; } catch(e){ steps = []; }
+    /* EVERY STEP DRAWS. The `why` beat is prose by design and is not a step;
+       everything after it is a move, and a move that is only described is the
+       thing the user asked to stop seeing. */
+    steps.forEach(function(st, i){
+      chk('taught');
+      if(!st.draw){
+        errs.push('taught: ' + s.name + ' step ' + (i+1) + ' has no diagram — "' +
+                  String(st.act||'').replace(/<[^>]+>/g,'').slice(0,44) + '" is told, not shown');
+        return;
+      }
+      var li = document.createElement('li');
+      vsStage.appendChild(li);
+      try { st.draw(li); } catch(e){ errs.push('taught: ' + s.name + ' step ' + (i+1) + ' threw while drawing: ' + e.message); }
+      chk('taught');
+      if(!li.querySelector('.xwrap, .stage, .wline'))
+        errs.push('taught: ' + s.name + ' step ' + (i+1) + ' has a draw that put no diagram on the page');
+      vsStage.removeChild(li);
+    });
+    /* AND THE LESSON LEAVES SOMETHING OPEN. A walkthrough that fills in every
+       number is a worked solution being read at a student. */
+    var box = document.createElement('div');
+    vsStage.appendChild(box);
+    var drawn = 0;
+    steps.forEach(function(st){ if(st.draw){ try { st.draw(box); drawn++; } catch(e){} } });
+    chk('taught');
+    if(drawn && !tgHoles(box))
+      errs.push('taught: nothing in ' + s.name + ' is left as a ? — it does the work rather than asking for it');
+    vsStage.removeChild(box);
+  });
+  /* THE WHOLE LESSON, PROSE MEASURED AS A STUDENT MEETS IT. Built through the
+     real screen and walked to the end, because the bench, the practice and the
+     close only exist at particular points of the walk. */
+  var tgSaved = {tools:MF.state.tools, school:MF.state.school};
+  MF.state.tools = {}; MF.toolOrder().forEach(function(k){ MF.state.tools[k] = {forged:true}; });
+  MF.state.school = {};
+  var tgHost = document.createElement('div');
+  vsStage.appendChild(tgHost);
+  var tgSeen = 0;
+  try {
+    MF.SCREENS['shed-methods'](tgHost);
+    [].forEach.call(tgHost.querySelectorAll('.lessondet'), function(d){
+      d.setAttribute('open','');
+      for(var g=0; g<14; g++){
+        var nx = d.querySelector('.lsnext');
+        if(!nx) break;
+        nx.dispatchEvent(new MouseEvent('click',{bubbles:true}));
+      }
+      var body = d.querySelector('.lesson');
+      if(!body) return;
+      tgSeen++;
+      var slides = [].slice.call(body.querySelectorAll('.ssteps li'));
+      var told = slides.filter(function(li){
+        return !li.classList.contains('whyslide') && !li.querySelector('.xwrap, .stage, .wline');
+      });
+      chk('taught');
+      if(told.length)
+        errs.push('taught: ' + told.length + ' slide(s) of ' + (body.querySelector('.lsnm')||{}).textContent +
+                  ' reached the page with no picture on them');
+      chk('taught');
+      var p = tgProse(body);
+      if(p > 1150)
+        errs.push('taught: ' + (body.querySelector('.lsnm')||{}).textContent + ' is ' + p +
+                  ' characters of prose outside its diagrams — the lesson is still a wall of text');
+    });
+  } catch(e){ errs.push('taught: the Tools module threw while being walked: ' + e.message); }
+  chk('taught');
+  if(tgSeen !== MF.toolOrder().length)
+    errs.push('taught: only ' + tgSeen + ' of ' + MF.toolOrder().length +
+              ' lessons were walked, so the rest were not measured');
+  vsStage.removeChild(tgHost);
+  MF.state.tools = tgSaved.tools; MF.state.school = tgSaved.school;
+  /* CONTROL 1: a step with its diagram taken away must be caught */
+  chk('taught');
+  var tgCtl = document.createElement('li');
+  vsStage.appendChild(tgCtl);
+  tgCtl.appendChild(H('div','sact','A sentence describing a move, with no picture of it anywhere.'));
+  if(tgCtl.querySelector('.xwrap, .stage, .wline'))
+    errs.push('CONTROL: the taught check cannot tell a paragraph from a diagram');
+  vsStage.removeChild(tgCtl);
+  /* CONTROL 2: a diagram with every number filled in leaves no hole */
+  chk('taught');
+  var tgFull = document.createElement('div');
+  vsStage.appendChild(tgFull);
+  MF.xDiagram(tgFull, {top:'-18', bottom:'7', left:'-2', right:'9'});
+  MF.areaModel(tgFull, {rows:[{label:'x'}], cols:[{label:'x'},{label:'3'}],
+    cells:[[{kind:'sq',text:'x²'},{kind:'x',text:'3x'}]], sideMode:'show'});
+  if(tgHoles(tgFull))
+    errs.push('CONTROL: the taught check reports a hole in a diagram that has none');
+  vsStage.removeChild(tgFull);
+  /* CONTROL 3: and prose padded back onto a lesson must fail the budget */
+  chk('taught');
+  var tgPad = document.createElement('div');
+  vsStage.appendChild(tgPad);
+  for(var tp=0; tp<9; tp++)
+    tgPad.appendChild(H('p',null,new Array(31).join('a sentence of explanation. ')));
+  if(tgProse(tgPad) <= 1150)
+    errs.push('CONTROL: the taught prose budget cannot see a lesson padded back out to prose');
+  vsStage.removeChild(tgPad);
 
   document.body.removeChild(vsStage);
   MF.state.anvil = vsSaved;
