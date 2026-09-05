@@ -951,7 +951,15 @@ input::placeholder, textarea::placeholder{color:#6B5B48; opacity:1}
    stone's bottom sits at 33% up from the foot of the stage and it is a little
    wider than the face, the way a lump of rock lies on one.
    POSITION HERE, ANIMATION ON THE LUMP INSIDE (s5g). */
-.anvilmount{position:absolute; left:32%; right:26%; bottom:33%; z-index:3}
+/* BACK TO FRONT: the anvil, the stone, the hammer, the burst (MINE-SPEC §37).
+   The stone drops to 2 so the hammer can come down IN FRONT of it - it is
+   HTML pinned over the drawing, and HTML with a z-index always paints over the
+   svg it sits on, so the head used to swing behind the lump it was hitting. */
+.anvilmount{position:absolute; left:32%; right:26%; bottom:33%; z-index:2}
+/* the hammer's own layer: the same viewBox as the scene, so (176,10) is still
+   (176,10) and the arc does not move by a pixel */
+.hammerlayer{position:absolute; inset:0; width:100%; height:100%; z-index:3;
+  pointer-events:none; overflow:visible}
 /* the stone is a `.piece`, so the belt's drag and MF.pieceAt find it exactly
    as they find a chip on the ground - but it must not LOOK like a chip. The
    chip's own plate, clip-path and padding all come off; what is left is the
@@ -9349,6 +9357,26 @@ MF.anvilScene = function(ore, opts){
   /* ---- THE HAMMER: upright, face down, standing over the work ----
      The pivot is the hand at (176,10). Positioning lives on this outer mount;
      the animation goes on the inner group, per MF.ANIM_TRANSFORM_CLASSES. */
+  /* ---- THE HAMMER GETS ITS OWN LAYER, OVER THE ORE ----
+
+     USER, 2026-09-05: "On the breaking floor, the hammer animation needs to be
+     in front of the ore but behind the sound text."
+
+     It used to be drawn inside the scene's own svg, which put it UNDER the
+     stone: the ore is HTML pinned over the drawing (§26b, because an SVG
+     <text> cannot carry a lens's coloured spans), and HTML with a z-index
+     always paints over the svg it sits on. So the head came down BEHIND the
+     lump it was hitting.
+
+     A second svg, absolutely over the first and sharing its viewBox, fixes the
+     order without moving a coordinate: the transform-origin at (176,10) is in
+     the viewBox's own units, so the arc is identical.
+
+     back to front: the anvil, the stone, the hammer, the burst.
+       .anvilmount  z 2
+       .hammerlayer z 3
+       .thud        z 4  */
+  var hamLayer = S('svg',{class:'hammerlayer', viewBox:'0 0 '+W+' '+VH,'aria-hidden':'true'});
   var mount = S('g',{});
   var ham = S('g',{class:'hammerswing'});
   /* the haft: a timber CYLINDER, so the shading runs across it rather than
@@ -9375,9 +9403,11 @@ MF.anvilScene = function(ore, opts){
   ham.appendChild(S('path',{d:'M204 102 l22 6 l0 8 l-22 6 Z',fill:'url(#'+aid+'peen)',
     stroke:'#20262C','stroke-width':'2.5','stroke-linejoin':'round'}));
   mount.appendChild(ham);
-  svg.appendChild(mount);
+  hamLayer.appendChild(mount);
 
   wrap.appendChild(svg);
+  /* the hammer goes on AFTER the stone below, so the DOM order and the
+     z-index say the same thing */
 
   /* ---- THE ORE, STANDING ON THE ANVIL FACE ----
 
@@ -9430,6 +9460,7 @@ MF.anvilScene = function(ore, opts){
     seat.appendChild(rock);
   }
   wrap.appendChild(seat);
+  wrap.appendChild(hamLayer);      /* over the stone, under the burst */
   return wrap;
 };
 
@@ -13947,6 +13978,71 @@ MF.validate = function(){
       if(!finished && rk && rk.classList.contains('shatter'))
         errs.push('swing: ' + t[0] + ' cleared the anvil while there is still rock to break');
     });
+    /* THE ORDER THE THREE THINGS PAINT IN.
+
+       USER, 2026-09-05: "On the breaking floor, the hammer animation needs to
+       be in front of the ore but behind the sound text."
+
+       The hammer used to be drawn inside the scene's own svg, which put it
+       UNDER the stone - the ore is HTML pinned over the drawing (§26b), and
+       HTML with a z-index always paints over the svg it sits on, so the head
+       came down behind the lump it was hitting. It has its own layer now.
+
+       Asserted as an ORDER rather than as three numbers, so re-numbering the
+       stack is free and inverting it is not. */
+    chk('swing');
+    (function(){
+      var stg = MF._mine.work.querySelector('.anvilstage');
+      if(!stg){ errs.push('swing: no anvil stage to check the paint order on'); return; }
+      var zOf = function(sel){
+        var n = stg.querySelector(sel);
+        return n ? parseInt(getComputedStyle(n).zIndex, 10) : null;
+      };
+      var zOre = zOf('.anvilmount'), zHam = zOf('.hammerlayer'), zThud = zOf('.thud');
+      if(zOre == null || zHam == null || zThud == null){
+        errs.push('swing: the stage is missing ' +
+          (zOre==null?'the ore':(zHam==null?'the hammer layer':'the burst')) +
+          ', so nothing can be said about what paints over what');
+        return;
+      }
+      if(!(zOre < zHam))
+        errs.push('swing: the hammer paints behind the ore (' + zHam + ' vs ' + zOre +
+          ') — the head comes down behind the lump it is hitting');
+      chk('swing');
+      if(!(zHam < zThud))
+        errs.push('swing: the burst paints behind the hammer (' + zThud + ' vs ' + zHam +
+          ') — the noise is meant to land over the blow');
+      /* AND THE LAYER MUST NOT TAKE THE ORE'S CLICK.
+
+         It is a full-size sheet sitting directly over the one control on this
+         floor. That is the `overlay` fault class exactly - the pick eating
+         every click on the seam - introduced fresh by putting the hammer on
+         top, so it is checked where it was introduced. */
+      chk('swing');
+      var lay = stg.querySelector('.hammerlayer');
+      var live = [].slice.call(lay.querySelectorAll('*')).filter(function(n){
+        return getComputedStyle(n).pointerEvents !== 'none';
+      });
+      if(getComputedStyle(lay).pointerEvents !== 'none' || live.length)
+        errs.push('swing: the hammer layer is live to the mouse — it covers the ore, ' +
+          'which is the only control on the breaking floor');
+    })();
+    /* CONTROL: drop the hammer back into the scene svg and the order must fail */
+    chk('swing');
+    (function(){
+      var stg = MF._mine.work.querySelector('.anvilstage');
+      if(!stg) return;
+      var lay = stg.querySelector('.hammerlayer');
+      if(!lay){ errs.push('CONTROL: no hammer layer to put back'); return; }
+      var was = lay.style.zIndex;
+      lay.style.zIndex = '1';                /* behind the stone, as it was */
+      var zOre = parseInt(getComputedStyle(stg.querySelector('.anvilmount')).zIndex, 10);
+      var zHam = parseInt(getComputedStyle(lay).zIndex, 10);
+      lay.style.zIndex = was;
+      if(zOre < zHam)
+        errs.push('CONTROL: the paint-order sweep cannot see a hammer put back behind the ore');
+    })();
+
     /* CONTROL: put the two-readers bug back and the check must say so.
        IT QUERIED `.mid`, WHICH NEVER HELD THE BENCH. So it could not fire
        whatever the code did - a control that cannot fail, which is the one

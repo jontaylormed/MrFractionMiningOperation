@@ -1435,3 +1435,35 @@ floating off the anvil. Nothing moved, and `swing` (22) and `animmount` (30) bot
 
 Measured after: the ore's label on the anvil reads **4.98:1**, unchanged, because it is
 measured against `MF.oreRock`'s own flat polygon and not against the anvil behind it.
+
+## 37. The hammer comes down in front of the stone
+
+*User, 2026-09-05: "On the breaking floor, the hammer animation needs to be in front of the
+ore but behind the sound text."*
+
+The hammer was drawn inside the scene's own `<svg>`, which put it **under** the stone. The
+ore is HTML pinned over the drawing (§26b — an SVG `<text>` cannot carry a lens's coloured
+spans), and HTML with a z-index always paints over the `<svg>` it sits on. So the head came
+down *behind* the lump it was hitting.
+
+It has its own layer now: a second `<svg>` absolutely over the first, **sharing its viewBox**,
+so `transform-origin:176px 10px` is still the same point and the arc does not move by a pixel.
+
+Back to front:
+
+| | |
+|---|---|
+| the anvil, the stump, the ground | the scene `<svg>` |
+| the stone | `.anvilmount`, z 2 |
+| the hammer | `.hammerlayer`, z 3 |
+| THUD / CLANG | `.thud`, z 4 |
+
+**And the layer is inert to the mouse.** It is a full-size sheet sitting directly over the
+one control on this floor — the same fault class as the pick eating every click on the seam,
+introduced fresh by putting the hammer on top. Verified by hit test: `elementFromPoint` at the
+centre of the stone returns `.orelab`, inside the ore.
+
+> `swing` (26) asserts the order — ore **behind** hammer **behind** burst, stated as an order
+> rather than as three numbers, so renumbering the stack is free and inverting it is not — and
+> that nothing in the hammer layer is live to the mouse. Controls: put the hammer back behind
+> the stone, and make the layer take clicks. Both fail by name.
