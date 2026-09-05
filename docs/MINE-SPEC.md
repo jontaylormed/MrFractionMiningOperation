@@ -1029,3 +1029,21 @@ pinned to the wheels rather than to the box. Measured at 1250px: bar 226..1024, 
 
 > It keeps the class `cartwheels`, because that is what `cartdraw` measures — six cart
 > sizes against the height of this row — and because it is still, in fact, the wheels.
+
+### 27d. The ore sits in the middle of the cart
+
+*User, 2026-09-04: "The Ore should be centered alligned in the cart."*
+
+`repeat(auto-fill, minmax(190px, 1fr))` could not do it, for two reasons at once:
+**`auto-fill` keeps the empty tracks it makes**, so one lump in a 1140px cart sat in the
+first of five columns; and a **`1fr` maximum lets the tracks absorb every spare pixel**,
+so `justify-content` had nothing left to centre.
+
+`repeat(auto-fit, minmax(190px, 230px))` with `justify-content:center` does both jobs:
+`auto-fit` collapses the empty tracks to zero, and the 230px cap leaves the spare width
+*outside* the tracks, where centring can reach it. The cap is also what stops a single
+stone stretching to 1140px, which is what a bare `auto-fit` would have done instead.
+
+Measured: at 1250px one lump has **444px either side**, two have **322px**; at 380px one
+lump has **14px either side**; at 560px two lumps stack in one column at **165..395** in
+a cart running **61..499**.

@@ -560,8 +560,20 @@ input::placeholder, textarea::placeholder{color:#6B5B48; opacity:1}
 /* THE CART IS A TRAY OF ROCKS, laid out across the band rather than stacked in
    a narrow column. Each cell is wide enough to read the numbers on the stone
    and big enough to drop an instrument onto. */
-.cart{display:grid; grid-template-columns:repeat(auto-fill,minmax(190px,1fr));
-  gap:14px; align-items:start; max-height:none}
+/* THE ORE SITS IN THE MIDDLE OF THE CART (user, 2026-09-04).
+
+   `auto-fill` with a `1fr` maximum could not do it, for two reasons at once:
+   auto-fill KEEPS the empty tracks it makes, so one lump in a 1140px cart sat
+   in the first of five columns; and a `1fr` maximum lets the tracks absorb
+   every spare pixel, so `justify-content` had nothing left to centre.
+
+   `auto-fit` collapses the empty tracks to zero, and a 230px CAP leaves the
+   spare width outside the tracks where centring can reach it. One lump is
+   centred; four are a centred row of four. The cap is also what stops a
+   single stone stretching to 1140px, which is what a bare `auto-fit` would
+   have done instead. */
+.cart{display:grid; grid-template-columns:repeat(auto-fit,minmax(190px,230px));
+  justify-content:center; gap:14px; align-items:start; max-height:none}
 /* THE LUMP IS THE STONE, not a list row. It was
      .lump{background:#fff; border-radius:11px; min-height:44px}
    - a white row with a 26px glyph and a text label beside it - which is what
