@@ -1638,3 +1638,40 @@ holds the answer more than half the time. Threshold at a half, not a third, beca
 questions over three slots is a small sample and exact uniformity is not something a hash
 owes anybody — what it rules out is *a slot worth guessing*. Control: render in the
 authored order and it reports `slot 1 in 8 of 8`.
+
+## §79. "Does the control answer?" is not "is the control still where you aimed?"
+
+The user reported that clicking a lump in the layer window forcibly moved the screen and
+felt jerky. Measured before touching anything: scanning **1400px** along the seam and
+clicking a lump that was plainly on screen snapped the seam back to **0** and threw the
+clicked lump **1400px sideways, out from under the cursor.**
+
+Three things were happening on every click, none of them needed:
+
+- `MF.paintMine()` tore down and rebuilt the whole middle column — **691 SVG nodes**, the
+  24 lumps, the wall texture and the pick — to change which rock was ringed;
+- the rebuild then **re-centred** the seam on the selected lump, whether or not it was
+  already visible;
+- and the page was nudged vertically to bring the panel into view.
+
+**Every group ran green over it, and each was right about what it measures.** `knock`
+asks whether a click *answers* — it did, throughout. `layout` measures the right edge.
+`reach` measures the distance between two controls. `contrast` measures ink. Nothing
+measured **whether the thing you aimed at was still where you aimed after you hit it.**
+
+> **A control has a second obligation beyond responding: not moving.** Checks that ask
+> "did something happen" are blind to "too much happened". If a click repaints a
+> container, ask what inside that container the user's hand or eye was already tracking —
+> scroll offsets, hover targets, focus, caret position, the element under the pointer.
+
+The fix was to stop the repaint rather than to soften it. A selection changes three
+things — a `data-sel` attribute, a transform on a node that already eases, and the panel
+underneath — so `MF.selectRock` changes those three and touches nothing else. The seam is
+never rebuilt, so its scroll offset cannot move, so the lump cannot jump. **Movement that
+is the point is kept**: a selection changed by anything other than a click on a visible
+rock still eases the seam over, because there the student needs to be taken somewhere.
+
+`knock` now drives a real click on a visible rock and requires all three deltas — seam
+scroll, the rock's position on screen, the page's scroll — to be zero, and separately
+that the click still rings the rock and names it. Control: reintroduce the re-centring
+and it reports the jump.

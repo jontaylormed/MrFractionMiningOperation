@@ -7765,20 +7765,7 @@ MF.paintFace = function(){
          This used to `return` on the spot, so during the 900ms of a break every
          rock on the face was a control that did nothing and said nothing. */
       if(MF.state.breaking){ MF.knockRock(g, o, true); return; }
-      MF.state.inspecting=idx;
-      MF.paintMine();
-      /* THE FACE HAS JUST BEEN REBUILT, so `g` is detached and animating it
-         would play the knock on a node nobody can see. data-i survives the
-         repaint; the element reference does not. */
-      var fresh = MF._mine && MF._mine.mid &&
-                  MF._mine.mid.querySelector('.face .rock[data-i="'+idx+'"]');
-      MF.knockRock(fresh || g, o, false);
-      /* make sure the answer is on screen. A click that works but whose
-         response is below the fold is indistinguishable from a dead control. */
-      var panel = MF._mine && MF._mine.mid && MF._mine.mid.querySelector('.inspect');
-      if(panel && panel.getBoundingClientRect().bottom > window.innerHeight){
-        panel.scrollIntoView({block:'nearest', behavior:'smooth'});
-      }
+      MF.selectRock(idx);
     }
     on(g,'click',inspectThis);
     on(g,'keydown',function(e){ if(e.key==='Enter'||e.key===' '){ e.preventDefault(); inspectThis(); } });
@@ -7883,18 +7870,117 @@ MF.paintFace = function(){
   });
   on(faceBox,'click',function(e){ if(moved>4){ e.stopPropagation(); e.preventDefault(); moved=0; } }, true);
   host.appendChild(wall);
-  /* restore where they were, and centre the lump they are looking at */
+
+  /* PUT THEM BACK WHERE THEY WERE, AND DO NOT MOVE THEM FOR CLICKING.
+
+     USER, 2026-09-05: "When I click on the layer tool, it forcibly moves the
+     screen, which makes the webpage feel jerky and not smooth."
+
+     This block used to CENTRE the seam on whichever lump was selected, on
+     every paint. Measured: scanning 1400px along the seam and clicking a lump
+     that was plainly on screen snapped the seam back to 0 and threw the lump
+     the student had just clicked 1400px sideways, out from under their cursor.
+     A control that moves the thing you aimed at is worse than one that does
+     nothing.
+
+     Two rules now. The scroll position is RESTORED, always - it belongs to the
+     student, not to the paint. And the seam only moves when the lump being
+     looked at is genuinely NOT ON SCREEN, which happens when the selection was
+     changed by something other than a click on a visible rock; then it eases
+     rather than jumping, because `.seamview` carries scroll-behavior:smooth
+     and this is the one case where movement is the point.
+
+     `scrollBehavior='auto'` for the restore itself: a freshly built box being
+     put back where it was is not a journey, and animating it from 0 is exactly
+     the lurch this is here to stop. */
+  faceBox.style.scrollBehavior = 'auto';
+  faceBox.scrollLeft = MF.state.scan || 0;
+  faceBox.style.scrollBehavior = '';
   if(target){
-    var wantLeft = (target.px / W) * faceBox.scrollWidth - faceBox.clientWidth/2;
-    faceBox.scrollLeft = Math.max(0, wantLeft);
-  } else {
-    faceBox.scrollLeft = MF.state.scan || 0;
+    var tLeft = (target.px / W) * faceBox.scrollWidth;
+    var pad = Math.max(60, target.sz * (faceBox.scrollWidth / W) + 40);
+    if(tLeft < faceBox.scrollLeft + pad ||
+       tLeft > faceBox.scrollLeft + faceBox.clientWidth - pad){
+      var wantLeft = Math.max(0, tLeft - faceBox.clientWidth / 2);
+      faceBox.scrollLeft = wantLeft;         /* smooth, per the stylesheet */
+      MF.state.scan = wantLeft;
+    }
   }
   syncMarker();
   MF._seamView = faceBox;
 
   /* ---- inspect, then break ---- */
   var insp = E('div','inspect');
+  wall.appendChild(insp);
+  wall.appendChild(scanRow);          /* seam navigation, below what it acts on */
+
+  /* WHAT THE LIGHT PATH NEEDS, so a selection does not rebuild the seam.
+     `rocks` is MF.state.face, which survives; the rest are live nodes. */
+  MF._face = {box:faceBox, svg:svg, insp:insp, pick:pick, rocks:rocks, W:W, VH:VH};
+  MF.paintInspect();
+};
+
+/* =========================================================================
+   PICKING A LUMP OUT DOES NOT REBUILD THE FACE.
+
+   USER, 2026-09-05: "When I click on the layer tool, it forcibly moves the
+   screen, which makes the webpage feel jerky and not smooth."
+
+   Clicking a rock used to run MF.paintMine(), which tears down and rebuilds
+   the whole middle column - the seam's 691 SVG nodes, the 24 lumps, the
+   texture, the pick - to change three things: which rock is ringed, where the
+   pick stands, and what the panel underneath says. Then it re-centred the
+   seam and scrolled the page.
+
+   Nothing about a selection needs any of that. This is the whole act:
+
+     the ring moves        - a data-sel attribute on two groups
+     the pick walks over   - a transform on a node that already eases
+     the panel is redrawn  - the one thing whose content actually changed
+
+   The seam is not touched, so the scroll position cannot move, so the lump
+   under the cursor cannot jump.
+
+   THE FULL PAINT IS STILL THERE and is still what runs when the FACE changes -
+   a new layer, a lump cut out of the wall, ore arriving. This is only for the
+   case where the rock the student is looking at is the only thing that moved.
+   ========================================================================= */
+MF.selectRock = function(idx){
+  var F = MF._face;
+  MF.state.inspecting = idx;
+  if(!F || !F.box || !F.box.isConnected){ MF.paintMine(); return; }
+
+  /* the ring: off whatever had it, on to this one */
+  Array.prototype.forEach.call(F.svg.querySelectorAll('.rock[data-sel]'), function(n){
+    n.removeAttribute('data-sel');
+  });
+  var node = (idx == null) ? null : F.svg.querySelector('.rock[data-i="' + idx + '"]');
+  if(node) node.setAttribute('data-sel','on');
+
+  /* the pick walks over to it. It carries transition:transform .16s, so this
+     is an ease and not a jump - and it is the same expression MF.paintFace
+     uses, so the two paths cannot put the pick in different places. */
+  var o = (idx == null) ? null : F.rocks[idx];
+  if(F.pick){
+    var pX = o ? Math.min(F.W-110, Math.max(10, o.px + o.sz + 16)) : (F.W-104);
+    var pY = o ? Math.min(F.VH-100, Math.max(4, o.py - 40)) : (F.VH-96);
+    F.pick.style.transform = 'translate(' + pX + 'px,' + pY + 'px)';
+  }
+
+  MF.paintInspect();
+  if(node) MF.knockRock(node, o, false);
+  /* AND THE PAGE IS NOT SCROLLED. It used to nudge the panel into view on
+     every click; with the seam no longer rebuilt the panel does not move, so
+     there is nothing to catch up with - and a page that jumps under a click is
+     the whole complaint. */
+};
+
+/* the panel under the seam, and it is the only thing a selection redraws */
+MF.paintInspect = function(){
+  var F = MF._face;
+  if(!F || !F.insp || !F.insp.isConnected) return;
+  var insp = clear(F.insp);
+  var rocks = F.rocks;
   if(MF.state.inspecting==null || !rocks[MF.state.inspecting]){
     insp.appendChild(H('div','label','THE FACE'));
     insp.appendChild(H('div','obs','Nothing picked out yet. Click a lump in the wall and have a proper look at it first — you can turn over as many as you like without breaking any.'));
@@ -7943,12 +8029,12 @@ MF.paintFace = function(){
     brow.appendChild(br);
     var skip = E('button','btn','Leave it and look at another'); skip.type='button';
     skip.style.background='#241D18'; skip.style.color='#E4D5BB'; skip.style.borderColor='#6B5B48';
-    on(skip,'click',function(){ MF.state.inspecting=null; MF.paintMine(); });
+    /* putting a lump down is a selection change like any other, and it used to
+       rebuild the whole face to clear a ring */
+    on(skip,'click',function(){ MF.selectRock(null); });
     brow.appendChild(skip);
     insp.appendChild(brow);
   }
-  wall.appendChild(insp);
-  wall.appendChild(scanRow);          /* seam navigation, below what it acts on */
 };
 
 /* =========================================================================
@@ -12518,6 +12604,115 @@ MF.validate = function(){
       if(kHalos()) errs.push('CONTROL: the knock check reported a reaction with the reaction unwired');
       MF.knockRock = kSaved.knock;
     }
+
+    /* AND PICKING A LUMP OUT MUST NOT MOVE ANYTHING UNDER THE CURSOR.
+
+       USER, 2026-09-05: "When I click on the layer tool, it forcibly moves the
+       screen, which makes the webpage feel jerky and not smooth."
+
+       Measured before it was fixed: scanning 1400px along the seam and clicking
+       a lump that was plainly on screen ran a full MF.paintMine, which rebuilt
+       the seam's 691 SVG nodes, re-centred the scroll on the selected lump and
+       nudged the page. The seam snapped back to 0 and THE LUMP THE STUDENT HAD
+       JUST CLICKED MOVED 1400px SIDEWAYS out from under their cursor.
+
+       No group could see it. `knock` asked whether a click ANSWERS - it does,
+       and it did throughout. `layout` measures the right edge, `reach` the
+       distance between two controls, `contrast` the ink. Nothing measured
+       whether the thing you aimed at was still where you aimed.
+
+       So it is driven for real: scroll the seam, find a rock that is genuinely
+       inside the viewport, click it, and require all three deltas to be zero -
+       the seam's scroll, the rock's position on screen, and the page's.
+
+       READ THE DENOMINATOR: one click, on a visible rock, at one width. It
+       says nothing about a selection changed by anything other than a click -
+       that case is SUPPOSED to move the seam, and does. */
+    chk('knock');
+    (function(){
+      var kf = MF._mine.mid.querySelector('.seamview');
+      if(!kf){ errs.push('knock: no seam window to test a click against'); return; }
+      kf.style.scrollBehavior = 'auto';
+      kf.scrollLeft = Math.min(1400, Math.max(0, kf.scrollWidth - kf.clientWidth));
+      MF.state.scan = kf.scrollLeft;
+      kf.style.scrollBehavior = '';
+      var kb = kf.getBoundingClientRect();
+      var kVis = [].slice.call(kf.querySelectorAll('.rock')).filter(function(r){
+        var rb = r.getBoundingClientRect();
+        return rb.left > kb.left + 30 && rb.right < kb.right - 30;
+      });
+      if(!kVis.length){ errs.push('knock: no lump was fully on screen, so the click had nothing safe to aim at'); return; }
+      var kTarget = kVis[0], kIdx = kTarget.getAttribute('data-i');
+      var kSvg0 = kf.querySelector('svg');
+      var kL0 = kf.scrollLeft, kX0 = kTarget.getBoundingClientRect().left, kY0 = window.scrollY;
+      kHit(kTarget);
+      var kf2 = MF._mine.mid.querySelector('.seamview');
+      var kNow = kf2 && kf2.querySelector('.rock[data-i="' + kIdx + '"]');
+      var dSeam = Math.round(kf2 ? kf2.scrollLeft - kL0 : 0);
+      var dLump = kNow ? Math.round(kNow.getBoundingClientRect().left - kX0) : 0;
+      var dPage = Math.round(window.scrollY - kY0);
+      if(Math.abs(dLump) > 2)
+        errs.push('knock: clicking a lump moved it ' + dLump + 'px across the screen — ' +
+          'the thing you aimed at must not go anywhere when you hit it');
+      chk('knock');
+      if(Math.abs(dSeam) > 2)
+        errs.push('knock: clicking a lump scrolled the seam ' + dSeam + 'px');
+      chk('knock');
+      if(Math.abs(dPage) > 2)
+        errs.push('knock: clicking a lump scrolled the page ' + dPage + 'px');
+      /* AND IT MUST STILL ANSWER. A control that moves nothing and says
+         nothing is not an improvement on one that moves too much. */
+      chk('knock');
+      if(!kNow || kNow.getAttribute('data-sel') !== 'on')
+        errs.push('knock: clicking a lump left no ring on it');
+      chk('knock');
+      var kSaid = ((MF._mine.mid.querySelector('.inspect .expr')||{}).textContent||'').trim();
+      if(!kSaid)
+        errs.push('knock: clicking a lump did not name it in the panel underneath');
+      /* and the seam is not thrown away to do it */
+      chk('knock');
+      if(kf2 && kf2.querySelector('svg') !== kSvg0)
+        errs.push('knock: picking a lump out rebuilt the whole seam — ' +
+          'nothing about a selection needs the rock, the texture and the pick torn down');
+    })();
+    /* CONTROL: put the re-centring back and the sweep must report the jump.
+       This is the exact block that shipped it. */
+    chk('knock');
+    (function(){
+      var kf = MF._mine.mid.querySelector('.seamview');
+      if(!kf) return;
+      var kReal = MF.selectRock;
+      MF.selectRock = function(i){
+        kReal(i);
+        var o = MF.state.face[i];
+        if(!o) return;
+        var f = MF._face && MF._face.box;
+        if(!f) return;
+        f.style.scrollBehavior = 'auto';
+        f.scrollLeft = Math.max(0, (o.px / MF.SEAM_W) * f.scrollWidth - f.clientWidth/2);
+        f.style.scrollBehavior = '';
+      };
+      kf.style.scrollBehavior = 'auto';
+      kf.scrollLeft = Math.min(1400, Math.max(0, kf.scrollWidth - kf.clientWidth));
+      kf.style.scrollBehavior = '';
+      var kb = kf.getBoundingClientRect();
+      var kVis = [].slice.call(kf.querySelectorAll('.rock')).filter(function(r){
+        var rb = r.getBoundingClientRect();
+        return rb.left > kb.left + 30 && rb.right < kb.right - 30;
+      });
+      var moved = 0;
+      if(kVis.length){
+        var kT = kVis[0], kI = kT.getAttribute('data-i');
+        var x0 = kT.getBoundingClientRect().left;
+        kHit(kT);
+        var n2 = MF._mine.mid.querySelector('.seamview .rock[data-i="' + kI + '"]');
+        if(n2) moved = Math.abs(n2.getBoundingClientRect().left - x0);
+      }
+      MF.selectRock = kReal;
+      if(!(kVis.length && moved > 2))
+        errs.push('CONTROL: the click sweep cannot see a selection that drags the seam ' +
+          'out from under the lump that was clicked');
+    })();
 
     /* 5j. NOTHING PAINTED OVER A CONTROL MAY TAKE ITS CLICK.
            The knock above was wired correctly and could not fire, because the

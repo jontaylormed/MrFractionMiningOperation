@@ -1230,3 +1230,37 @@ a **reflection** instead: a box that is never read, checked or kept, and says so
 > argument, and that the Words and Molds rooms close on something **after** their last
 > question. Controls: the bench removed, every reading muted, a tool's example deleted,
 > and the reflection removed — all fail by name.
+
+## 32. Picking a lump out does not rebuild the face
+
+*User, 2026-09-05: "When I click on the layer tool, it forcibly moves the screen, which
+makes the webpage feel jerky and not smooth."*
+
+Clicking a rock ran `MF.paintMine()`, which tears down and rebuilds the whole middle
+column — **691 SVG nodes**, the 24 lumps, the wall texture, the pick — to change which
+rock is ringed. It then re-centred the seam on the selected lump and nudged the page.
+
+Measured: scanning 1400px along the seam and clicking a lump that was on screen snapped
+the seam back to 0 and moved **the lump the student had just clicked 1400px sideways**.
+
+A selection changes exactly three things, and `MF.selectRock` changes exactly those:
+
+| | |
+|---|---|
+| the ring moves | a `data-sel` attribute on two groups |
+| the pick walks over | a transform on a node that already carries `transition .16s` |
+| the panel is redrawn | `MF.paintInspect`, the one thing whose content changed |
+
+The seam is not touched, so its scroll offset cannot move, so nothing under the cursor
+can jump. **The full paint is still what runs when the FACE changes** — a new layer, a
+lump cut out of the wall, ore arriving.
+
+**Movement that is the point is kept.** The scroll position is restored on every paint
+because it belongs to the student; and a selection changed by something *other* than a
+click on a visible rock still eases the seam over, because there the student does need
+taking somewhere.
+
+> `knock` (19) drives a real click on a visible rock and requires the seam's scroll, the
+> rock's position on screen and the page's scroll to be **unchanged** — and separately
+> that the click still rings the rock and names it underneath. Control: reintroduce the
+> re-centring and it reports the jump.
