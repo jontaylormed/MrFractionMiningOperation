@@ -1517,3 +1517,29 @@ panel — a shorter title, a shorter close, one heading fewer, a smaller stone u
 
 > **When a box caps itself, measure the content against the box.** Any check that reads
 > the box's own dimension is reading the cap you wrote, not the thing you wanted to know.
+
+## §75. A fixed angle cannot express a taper on a box that changes height
+
+The cart's corner straps were skewed 2.3° to lean with the flared body. It looked right
+in the state it was built in and it is not expressible that way at all.
+
+The taper is **4% of the width at the bottom**. The lean a strap needs to follow it is
+`atan(taper ÷ height)` — and the height is a scrolling list of however many lumps a
+student has dug, from one to the 430px cap. The same 2.3° that matched at 200px threw
+the strap **21px off the plate** at 526px.
+
+The fix was not a better angle. It was to stop encoding a *relationship between two
+dimensions* as a constant: the straps run straight, and the body's own `clip-path` —
+which is stated in percentages and therefore is the relationship — trims them to the
+plate.
+
+> **Before writing a constant into a drawing, ask which of its dimensions can change.**
+> A skew, a rotation, a fixed offset and a `flex-basis` all encode an answer that was
+> only true at the size you were looking at. This is the same mistake as §63's
+> `flex-basis` becoming a height when the axis turned, in a different property.
+
+> **And a caveat this file should carry:** nothing in `MF.validate()` caught it. The
+> `cartdraw` group measures the wheels and the rail, and says so; the straps are inside
+> the box it does not look at. It was found by drawing the cart at two lump counts and
+> reading the geometry back. **The denominator was doing its job — it just did not
+> include this.**

@@ -573,11 +573,55 @@ input::placeholder, textarea::placeholder{color:#6B5B48; opacity:1}
 .lump .glyph{width:26px; height:26px; flex:0 0 auto; background:linear-gradient(150deg,#8A7358,#4A3F34);
   clip-path:polygon(22% 4%, 74% 0%, 100% 38%, 88% 86%, 44% 100%, 6% 74%, 0% 30%);
   box-shadow:inset -3px -3px 6px rgba(0,0,0,.4)}
-/* the cart the lumps are sitting in */
+/* ---- THE CART THE LUMPS ARE SITTING IN ----
+
+   Built to the reference the user sent (2026-09-04): a heavy bolted rim, a
+   body that flares from the lip down to the sill, riveted corner straps, chips
+   in the plate, a bolted chassis and spoked wheels with a rust hub cap.
+
+   THE BED GRADIENT DOES NOT MOVE. `_backdrops` (§64) walks up from the layer
+   tag under each lump to find what is painted behind it, and this is what it
+   finds. Everything below is drawn OVER it.
+
+   THE FLARE IS A CLIP, NOT A BORDER. A clip-path takes the border with it, so
+   the outline is `.cartline` - an svg tracing the same trapezoid at double
+   stroke width, half of which the clip removes. */
 .cartbody{position:relative; background:linear-gradient(180deg,#5E6A76,#3E474F);
-  border:3px solid #2A3138; border-radius:4px 4px 14px 14px; padding:12px 12px 16px; margin-top:6px}
-.cartbody:before{content:""; position:absolute; left:0; right:0; top:-3px; height:8px;
-  background:linear-gradient(180deg,#8A9AA6,#66727E); border-radius:3px 3px 0 0}
+  padding:19px 23px 20px; margin-top:8px;
+  clip-path:polygon(0 0, 100% 0, 97.6% 100%, 2.4% 100%)}
+.cartbody > .cart{position:relative; z-index:3}
+.cartline,.cartchip{position:absolute; inset:0; width:100%; height:100%; pointer-events:none}
+.cartline{z-index:4}
+.cartchip{z-index:1; height:90px}
+/* THE RIM: the lipped top, with bolt heads every 30px along it. Repeating
+   gradients rather than drawn circles, because this box stretches and a bolt
+   that stretches is not a bolt. */
+.cartrim{position:absolute; left:0; right:0; top:0; height:15px; z-index:2; pointer-events:none;
+  background:
+    radial-gradient(circle at 15px 50%, #C2CDD8 0 2.6px, #7C8994 2.6px 4px, transparent 4.2px) 0 0/30px 100% repeat-x,
+    linear-gradient(180deg,#9CA9B5 0%,#7A8794 62%,#4E5862 100%);
+  border-bottom:2px solid #2A3138}
+/* THE CORNER STRAPS, leaning with the flare - a vertical strap on a tapering
+   wall is not vertical. 2.3deg is the taper the outline is drawn to. */
+/* THEY ARE NOT SKEWED, AND THE FIRST VERSION WAS. A skew is a fixed ANGLE and
+   this box is a list with a 430px cap - so the same 2.3° that matched the
+   taper at 200px tall threw the strap 21px off the plate at 526px. The taper
+   is a percentage of the width and the lean it needs is a function of the
+   height, which no single angle can be.
+   So the straps run straight down the corner and `.cartbody`'s clip trims
+   their outer edge to the plate - which is how a strap over a tapering corner
+   is drawn in flat art anyway: the inner edge straight, the outer following
+   the plate. */
+.cartstrap{position:absolute; top:13px; bottom:0; width:16px; z-index:2; pointer-events:none;
+  background:
+    radial-gradient(circle at 50% 13px, #C2CDD8 0 2.6px, #7C8994 2.6px 4px, transparent 4.2px) 0 0/100% 28px repeat-y,
+    linear-gradient(90deg,#8A97A3,#5E6A76 60%,#48525B);
+  border-left:2px solid #2A3138; border-right:2px solid #2A3138}
+.cartstrap.l{left:0}
+.cartstrap.r{right:0}
+/* and the sill the body sits down onto */
+.cartsill{position:absolute; left:5%; right:5%; bottom:0; height:9px; z-index:2; pointer-events:none;
+  background:linear-gradient(180deg,#4E5862,#39424B); border-top:2px solid #2A3138}
 /* THE WHEELS AND THE TRACK DO NOT FLEX. The cart panel is a flex column with a
    430px cap, and a flex item with no `flex-shrink:0` is a candidate for being
    squeezed when the column is over budget. `.cartrail` is 6px of track under
@@ -585,9 +629,32 @@ input::placeholder, textarea::placeholder{color:#6B5B48; opacity:1}
    a bar at the bottom of the box that appeared and disappeared on every click.
    The LIST is the thing that gives up height here; the cart it is drawn in
    keeps its shape. */
-.cartwheels{display:flex; justify-content:space-around; margin:-6px 10px 0; flex:0 0 auto}
-.cartwheels i{display:block; width:22px; height:22px; border-radius:50%;
-  background:radial-gradient(circle at 40% 38%, #6E7A86 0 26%, #2E353C 28%); border:2px solid #1E242A}
+/* THE UNDERCARRIAGE IS POSITIONED, NOT FLEXED. `justify-content:space-around`
+   put the two wheels at the quarter points of the row, which on a 1140px cart
+   is 570px apart with the drawbar stranded 80px in front of nothing. Percent
+   offsets keep the same proportions at every width, and the chassis bar and
+   the coupling can then be pinned to the wheels rather than to the box. */
+.cartwheels{position:relative; height:44px; margin:-4px 12px 0; flex:0 0 auto}
+/* the bolted chassis bar the axles hang off, behind the wheels */
+.cartaxle{position:absolute; left:15%; right:15%; top:16px; height:9px; z-index:0;
+  background:
+    radial-gradient(circle at 11px 50%, #C2CDD8 0 2.2px, transparent 2.4px) 0 0/26px 100% repeat-x,
+    linear-gradient(180deg,#8A97A3,#4E5862);
+  border:2px solid #2A3138; border-radius:3px}
+/* THE HITCH: a drawbar and ring off the front of the chassis, which is what
+   makes it one of a train of carts rather than a bucket on wheels. Pinned to
+   the bar's front end, so it is coupled to something at every width. */
+.carthitch{position:absolute; left:15%; margin-left:-42px; top:6px;
+  width:46px; height:30px; z-index:1; pointer-events:none}
+.cwheel{position:absolute; top:0; z-index:2; width:44px; height:44px; overflow:visible}
+.cwheel.front{left:14%}
+.cwheel.rear{right:14%}
+@media (max-width:560px){
+  .cartwheels{height:38px; margin:-4px 8px 0}
+  .cwheel{width:38px; height:38px}
+  .carthitch{width:38px; height:25px; top:7px; margin-left:-34px}
+  .cartaxle{top:14px}
+}
 .cartrail{height:6px; margin:2px 0 0; border-radius:3px; flex:0 0 auto;
   background:repeating-linear-gradient(90deg,#5A4B3C 0 12px, #3A3129 12px 18px)}
 .lump .txt{font-family:var(--display); font-size:17px}
@@ -662,27 +729,30 @@ input::placeholder, textarea::placeholder{color:#6B5B48; opacity:1}
 /* ---- the breaking floor: rock on one side of a swing, metal on the other.
        A piece must SAY which it is without being read - rock is dark and
        knocked about, native metal is a cast bar with a lit edge. ---- */
-/* THE HAMMER IS IN YOUR HAND WHILE YOU ARE STANDING HERE.
+/* THE CURSOR OVER THE BREAKING FLOOR IS THE HAND, THE SAME AS IN THE LAYER.
 
-   USER, 2026-09-04: "the mouse cursor in the layer should be a hammer."
+   USER, 2026-09-04, first: "the mouse cursor in the layer should be a hammer."
+   USER, same day, after seeing it: "When the mouse is on the breaking field,
+   it can be the hand icon as its in the layer tool."
 
-   It is the whole affordance for the thing that replaced the permanent swing
-   bar: there is no longer a button on screen saying what this floor is for, so
-   the pointer has to say it. The hotspot is the striking face, at (5,10).
+   So it was built as a drawn hammer with its hotspot on the striking face, and
+   it is a plain pointer again. THE ORE STILL HAS TO SAY IT IS CLICKABLE - it
+   is the one control on this floor and there is no button on screen naming it
+   - which is what these rules are for: `.piece` already carries `cursor:pointer`
+   and the stone on the anvil must not lose it to any later rule.
 
-   It is declared as a custom property because `cursor` is inherited and
-   `.piece` sets its own - the ore on the anvil is exactly where the hammer
-   most needs to be showing, so that rule has to be able to ask for it by name.
-   Everything on the belt keeps a plain pointer: you are picking an instrument
-   up there, not hitting anything. */
+   Kept as a custom property because that is what lets the ore ask for the
+   floor's cursor by name rather than restating a value, and it is the seam
+   between this decision and the next one. */
 .floorbox{position:relative; overflow:hidden;
-  --hammer:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='32' height='32'%3E%3Cpath d='M13 12L27 26L24 29L10 15Z' fill='%238A6A45' stroke='%23241D18' stroke-width='2' stroke-linejoin='round'/%3E%3Cpath d='M3 6L14 2L19 9L8 13Z' fill='%23A9B5C0' stroke='%23241D18' stroke-width='2' stroke-linejoin='round'/%3E%3C/svg%3E") 5 10, pointer;
-  cursor:var(--hammer);
+  --floorcur:pointer;
+  cursor:var(--floorcur);
   background:linear-gradient(180deg,#3A3129,#241D18); border:3px solid var(--rock-3);
   border-radius:14px; padding:14px; color:#F0E2C8}
-.floorbox .piece,.floorbox .piece.rock{cursor:var(--hammer)}
-.floorbox .gearbox,.floorbox .gearbox *,.floorbox .btn,.floorbox .toolslot,
-.floorbox .piece.native{cursor:pointer}
+.floorbox .piece,.floorbox .piece.rock{cursor:var(--floorcur)}
+.floorbox .gearbox,.floorbox .gearbox *,.floorbox .btn,.floorbox .toolslot{cursor:pointer}
+/* native metal is finished: there is nothing to bring a hammer down on */
+.floorbox .piece.native{cursor:default}
 /* the cue under the anvil, which is the only instruction left on this floor */
 .anvilcue{margin-top:10px; text-align:center; color:#E4D5BB; font-size:14px}
 .anvilcue b{color:#FFE9C4}
@@ -7077,12 +7147,115 @@ MF.paintCart = function(){
     cart.appendChild(cell);
   });
   body.appendChild(cart);
+  MF.cartIron(body);
   cartPanel.appendChild(body);
-  var wheels = E('div','cartwheels');
-  wheels.appendChild(E('i')); wheels.appendChild(E('i'));
-  cartPanel.appendChild(wheels);
+  cartPanel.appendChild(MF.cartUnder());
   cartPanel.appendChild(E('div','cartrail'));
   host.appendChild(cartPanel);
+};
+
+/* =========================================================================
+   THE CART IS A BUILT OBJECT, AND THE ORE STILL LIVES IN IT.
+
+   USER, 2026-09-04: "Redesign the minecart to include details as shown in the
+   included picture, such as the hitch and the bolted edges, etc. But leave
+   space for the Ore to exist and be factored."
+
+   From the reference: a heavy lipped rim bolted along its length, riveted
+   corner straps down a body that FLARES - wide at the lip, narrower at the
+   sill - chips knocked out of the plate, a bolted chassis bar, and spoked
+   wheels with a rust-coloured hub cap. Plus the coupling: a drawbar and ring
+   off the front, which is the one part of a mine cart that says it belongs to
+   a train of them.
+
+   TWO CONSTRAINTS THIS HAD TO BE BUILT AROUND, both of them load-bearing:
+
+   1. THE BED COLOUR STAYS ON `.cartbody` AS A CSS BACKGROUND. The contrast
+      sweep's `_backdrops` walks UP from a piece of text looking for paint
+      (§64), and the layer tag under each lump has nothing between it and the
+      cart's bed. Repaint the bed as an SVG fill behind the content and that
+      walk climbs straight past it to the panel's paper, and reports cream ink
+      on cream. So the ironwork is drawn OVER a bed that has not moved.
+
+   2. THE BOX HAS TO STRETCH. It holds a scrolling list with a 430px cap, so
+      nothing here may be a drawing that distorts when the box grows: the rim
+      and the straps are HTML with repeating bolt heads, sized in pixels, and
+      the only SVG is the outline - which is `preserveAspectRatio="none"` with
+      a non-scaling stroke, so a tall cart is a tall cart and not a fat one.
+   ========================================================================= */
+MF.cartIron = function(body){
+  /* THE OUTLINE, TRACING THE SAME TRAPEZOID `.cartbody` IS CLIPPED TO.
+     Stroke 6 because the clip takes the outer half of it: a clipped border is
+     half a border, and this is the width that leaves 3px showing. */
+  var out = S('svg',{class:'cartline', viewBox:'0 0 100 100', preserveAspectRatio:'none','aria-hidden':'true'});
+  out.appendChild(S('path',{d:'M0 0 H100 L97.6 100 H2.4 Z', fill:'none', stroke:'#2A3138',
+    'stroke-width':'6', 'vector-effect':'non-scaling-stroke','stroke-linejoin':'round'}));
+  body.appendChild(out);
+
+  /* the chips knocked out of the plate. Fixed to the top of the box so they
+     never stretch, and inert. */
+  var chip = S('svg',{class:'cartchip', viewBox:'0 0 200 90', preserveAspectRatio:'none','aria-hidden':'true'});
+  [['M28 16 l7 12 l-4 3 l-8 -12 Z','.5'],
+   ['M162 22 l5 15 l-4 2 l-6 -15 Z','.42'],
+   ['M96 54 l14 4 l0 4 l-14 -4 Z','.34'],
+   ['M50 62 l11 2 l-1 4 l-11 -2 Z','.3']].forEach(function(c){
+    chip.appendChild(S('path',{d:c[0], fill:'#2A3138', opacity:c[1]}));
+  });
+  body.appendChild(chip);
+
+  /* THE RIM: the heavy lipped top, bolted along its length. */
+  body.appendChild(E('div','cartrim'));
+  /* THE CORNER STRAPS, riveted, leaning with the flare. A vertical strap on a
+     wall that tapers is not vertical, and skewing them by the same 2.3° the
+     outline leans is the difference between ironwork and two stripes. */
+  body.appendChild(E('div','cartstrap l'));
+  body.appendChild(E('div','cartstrap r'));
+  /* and the sill the body sits down onto */
+  body.appendChild(E('div','cartsill'));
+};
+
+/* ONE WHEEL: tyre, rim face, four cut-outs, and a rust-coloured hub cap.
+   The cut-outs are computed rather than rotated into place - a transform
+   attribute on an SVG group is the thing §5g exists about, and while these
+   are static today, the wheel in `MF.cartTrack` spins and this shape will be
+   wanted there sooner or later. */
+MF.cartWheel = function(which){
+  var svg = S('svg',{class:'cwheel ' + which, viewBox:'-27 -27 54 54','aria-hidden':'true'});
+  svg.appendChild(S('circle',{cx:0,cy:0,r:23,fill:'#39424B',stroke:'#1E242A','stroke-width':'3'}));
+  svg.appendChild(S('circle',{cx:0,cy:0,r:18,fill:'#6E7A86',stroke:'#2A3138','stroke-width':'2.5'}));
+  var rad = function(d){ return d*Math.PI/180; };
+  [45,135,225,315].forEach(function(a){
+    var o = 13.5, i = 5.2, sp = 33;
+    var x1 = (o*Math.cos(rad(a-sp))).toFixed(1), y1 = (o*Math.sin(rad(a-sp))).toFixed(1);
+    var x2 = (o*Math.cos(rad(a+sp))).toFixed(1), y2 = (o*Math.sin(rad(a+sp))).toFixed(1);
+    var x3 = (i*Math.cos(rad(a))).toFixed(1),    y3 = (i*Math.sin(rad(a))).toFixed(1);
+    svg.appendChild(S('path',{d:'M'+x1+' '+y1+' A'+o+' '+o+' 0 0 1 '+x2+' '+y2+' L'+x3+' '+y3+' Z',
+      fill:'#39424B', stroke:'#2A3138','stroke-width':'2','stroke-linejoin':'round'}));
+  });
+  svg.appendChild(S('circle',{cx:0,cy:0,r:6,fill:'#8A9AA6',stroke:'#2A3138','stroke-width':'2'}));
+  svg.appendChild(S('circle',{cx:0,cy:0,r:2.8,fill:'#C96A1F'}));
+  /* the bolt head on the axle mount, up and to the left, as in the reference */
+  svg.appendChild(S('circle',{cx:-11,cy:-15,r:3.6,fill:'#8A9AA6',stroke:'#2A3138','stroke-width':'2'}));
+  return svg;
+};
+
+/* THE UNDERCARRIAGE: the bolted chassis bar, the coupling, and the wheels.
+   It keeps the class `cartwheels` because that is what `cartdraw` measures -
+   6 cart sizes against the height of this row - and because it is still, in
+   fact, the wheels. */
+MF.cartUnder = function(){
+  var row = E('div','cartwheels');
+  row.appendChild(E('div','cartaxle'));
+  /* THE HITCH: a drawbar off the front with a ring on the end. */
+  var hitch = S('svg',{class:'carthitch', viewBox:'0 0 46 30','aria-hidden':'true'});
+  hitch.appendChild(S('rect',{x:14,y:11,width:30,height:8,rx:2,fill:'#6E7A86',stroke:'#2A3138','stroke-width':'2.5'}));
+  hitch.appendChild(S('circle',{cx:36,cy:15,r:2,fill:'#39424B'}));
+  hitch.appendChild(S('ellipse',{cx:10,cy:15,rx:9,ry:11,fill:'none',stroke:'#2A3138','stroke-width':'6'}));
+  hitch.appendChild(S('ellipse',{cx:10,cy:15,rx:9,ry:11,fill:'none',stroke:'#8A9AA6','stroke-width':'3'}));
+  row.appendChild(hitch);
+  row.appendChild(MF.cartWheel('front'));
+  row.appendChild(MF.cartWheel('rear'));
+  return row;
 };
 
 

@@ -957,8 +957,14 @@ It closes *before* it swings: the scrim covers the whole page, and left up it wo
 the blow the student just struck. One panel is one blow — a glance comes back as a note
 beside the anvil and the stone is still there to click again, which is the loop.
 
-The cursor over the whole floor is a hammer. It is the only affordance left saying what
-this place is for, now that there is no button on screen saying it.
+**The cursor over the floor is the hand, the same as in the layer.** It was built as a
+drawn hammer with its hotspot on the striking face — *"the mouse cursor in the layer
+should be a hammer"* — and the user asked for the hand back the same day, having seen
+it: *"When the mouse is on the breaking field, it can be the hand icon as its in the
+layer tool."* What still has to be true is that **the ore says it is clickable**: it is
+the only control on this floor and no button on screen names it, so `.floorbox .piece`
+asks for the floor's cursor by name and cannot lose it to a later rule. Native metal is
+finished and takes `default` — there is nothing to bring a hammer down on.
 
 ### 26d. What the checks had to do about it
 
@@ -972,3 +978,54 @@ this place is for, now that there is no button on screen saying it.
 > The `reach` panel check earned itself immediately: at 380px the hammer panel held
 > 870px of question in a 681px box, putting the swing button below the fold of a dialog
 > that does not look like it scrolls. The panel was cut down until it fit, not the check.
+
+## 27. The cart is a built object, and the ore still lives in it
+
+*User, 2026-09-04, with a reference image: "Redesign the minecart to include details as
+shown in the included picture, such as the hitch and the bolted edges, etc. But leave
+space for the Ore to exist and be factored."*
+
+From the reference: a heavy lipped rim bolted along its length, riveted corner straps
+down a body that **flares** — wide at the lip, narrower at the sill — chips knocked out
+of the plate, a bolted chassis bar, and spoked wheels with a rust-coloured hub cap. Plus
+the coupling: a drawbar and ring off the front, which is the one part of a mine cart
+that says it belongs to a *train* of them.
+
+### 27a. Two constraints it had to be built around
+
+**The bed colour stays on `.cartbody` as a CSS background.** The contrast sweep's
+`_backdrops` walks *up* from a piece of text looking for paint (`VERIFICATION` §64), and
+the layer tag under each lump has nothing between it and the cart's bed. Repaint the bed
+as an SVG fill behind the content and that walk climbs straight past it to the panel's
+paper, and reports cream ink on cream. **The ironwork is drawn over a bed that has not
+moved.**
+
+**The box has to stretch.** It holds a scrolling list with a 430px cap, so nothing here
+may be a drawing that distorts as the box grows. The rim and the straps are HTML with
+repeating bolt heads sized in pixels; the only SVG in the body is the outline, which is
+`preserveAspectRatio="none"` with a **non-scaling stroke**, so a tall cart is a tall cart
+and not a fat one.
+
+### 27b. The flare is a clip, and the straps are not skewed
+
+A `clip-path` takes the border with it, so the outline is a separate path tracing the
+same trapezoid at **double** stroke width — the clip removes the outer half and 3px is
+what shows.
+
+The corner straps were skewed to lean with the taper, and that was wrong: **a skew is a
+fixed angle and the taper is a percentage of the width**, so the lean a strap needs is a
+function of a height that changes with every lump added. The same 2.3° that matched at
+200px tall threw the strap 21px off the plate at 526px. They run straight down the
+corner now and the body's own clip trims their outer edge to the plate — which is how a
+strap over a tapering corner is drawn in flat art anyway.
+
+### 27c. The undercarriage is positioned, not flexed
+
+`justify-content:space-around` put the wheels at the quarter points, which on a 1140px
+cart is 570px apart with the drawbar stranded 80px in front of nothing. Percent offsets
+hold the same proportions at every width, and the chassis bar and the coupling are then
+pinned to the wheels rather than to the box. Measured at 1250px: bar 226..1024, wheels
+215..259 and 991..1035, the drawbar running behind the front wheel from 184 to 230.
+
+> It keeps the class `cartwheels`, because that is what `cartdraw` measures — six cart
+> sizes against the height of this row — and because it is still, in fact, the wheels.
