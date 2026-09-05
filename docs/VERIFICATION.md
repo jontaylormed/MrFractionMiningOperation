@@ -1543,3 +1543,38 @@ plate.
 > the box it does not look at. It was found by drawing the cart at two lump counts and
 > reading the geometry back. **The denominator was doing its job — it just did not
 > include this.**
+
+## §76. A drawing that does not fill its element is invisible to every instrument
+
+The user reported blank space at the top and bottom of the layer window. Most of it was
+not in the drawing: `.seamview svg` said `height:542px` in the stylesheet while
+`MF.paintFace` set the width to the viewBox's own 2900. A 2900×360 viewBox in a 2900×542
+box with the default `xMidYMid meet` fits the **width** and letterboxes the rest —
+**91px of nothing at each end**, on every layer, for as long as the taller seam had
+existed.
+
+Every group ran green over it, and each was right about what it measures:
+
+- `layout` measures the **right** edge, and says so.
+- `hollow` measures a box against **the text drawn in it**; this box holds a picture.
+- `contrast` walks **text nodes**; the seam has none.
+- `reach` measures the distance between **two controls**; this was inside one element.
+
+A drawing that under-fills its element crosses no edge, moves no control and has no ink.
+It just wastes the screen — the axis this project has spent five sessions buying back.
+
+> **Two axes set in two places is one number too many.** The height was in the
+> stylesheet, the width in JS, and nothing tied them together — so raising one and not
+> the other was a single-line change that could not fail loudly. Both come off
+> `MF.SEAM_ZOOM` now.
+
+> **And the control had to change with the cause.** Setting `MF.SEAM_ZOOM` to 1 would
+> *not* reproduce the fault, because both axes now derive from it and the drawing would
+> simply be smaller and still filled — a control that proves the opposite of what it was
+> written for (§72). The control states a height independently of the width, which is
+> what the stylesheet did.
+
+`seam` now measures painted content against the element's content box, per layer, and a
+second assertion that something is drawn in the top 44 and bottom 44 units of the rock —
+because **filling the element is not the same as filling the picture**, and both halves
+of the user's report were true.

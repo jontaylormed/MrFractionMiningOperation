@@ -184,7 +184,7 @@ The face is **2280px of rock**, several screens wide, scanned by dragging, scrol
 
 ## The breaking floor: one anvil, the belt over it, and the ore on top
 
-**Measured 2026-09-04, all four widths, 0 errors over 10,939 checks in 35 groups, both controls failing.**
+**Measured 2026-09-04, all four widths, 0 errors over 10,951 checks in 35 groups, both controls failing.**
 
 **There is one box, and the anvil in it is the work.** The `workpair` is gone. It was two boxes: one held a row of chips and the belt, the other held a drawing of an anvil, two number boxes and the swing button — so **the anvil a student was looking at was not the thing their ore was on**, and the drawing was decoration beside the work. What is here now is the gallery you are standing in: the belt overhead, the anvil, the stone on its face, and whatever has come off it lying on the ground. **A first lump has nothing on the ground at all.**
 
@@ -228,7 +228,15 @@ The face is **2280px of rock**, several screens wide, scanned by dragging, scrol
 
 **The breaking floor does not exist until the ore is sent to it.** `MF.placeCut` no longer selects what it puts in the cart, which is what used to open the bench under a student who had only just cut a lump.
 
-**The seam is shown at 286px, not 190.** The rock is the same **2280 × 190** it always was — what changed is the size it is rendered at. As a 190px strip it was a letterbox with small lumps in it; the same rock and the same lumps now stand **307px** tall in the column.
+**The seam is 2900 × 360 units drawn at 4365 × 542px**, one zoom on both axes: `MF.SEAM_ZOOM = 1.505`. It scrolls horizontally inside `.seamview`, whose content box is exactly 542px — **blankTop 0, blankBottom 0** at every layer.
+
+> **It was a letterbox, and nothing in the build could see it.** The commit that made the seam taller set `height:542px` on `.seamview svg` in CSS and left the width at the viewBox's own 2900 in JS. `xMidYMid meet` fits the *width*, at 1.0, and letterboxes the rest — the rock painted 360px tall in a 542px element with **91px of dead space above and below**. `layout` measures the right edge; `hollow` measures a box against the *text* in it and this box holds a picture; `contrast` walks text nodes and the seam has none; `reach` measures between two controls and this was inside one element. Every group was right about what it measures (`VERIFICATION.md` §76). Both axes come off one constant now and the stylesheet states no height.
+
+**And the rock is drawn, not washed.** `MF.seamRock` fills the window back to front: **jointing** (big low-contrast blocks and cracks, the way rock breaks), **ore stringers** threaded through the wall — deliberately dim, because a stringer is not breakable and a bright one would compete with the lumps that are — a **roof** with a ragged hanging edge, points coming down off it, ore glinting in it and drips, and a **floor**: a ragged sill, a muck pile of broken chunks flecked with ore, and a dark band under it. 282 shapes at layer 3.
+
+> Three things it is built around. It carries `pointer-events:none` and is appended **before** the lumps — `overlay` is the group that caught the pick eating every click on the seam. It is seeded off the **layer**, because `paintFace` runs on every `paintMine` and a texture drawn from `Math.random` would reshuffle the wall on every click anywhere in the mine. And it does **not** draw from `MF.state.rng`, which is the ore stream — taking numbers out of it here would change which lumps get dug.
+
+> **`seam` (17)** asserts ore is spread across all three thirds of every layer, that the drawing fills its window on all five, and that something is drawn in the **top 44 and bottom 44 units** of each — because filling the element is not the same as filling the picture, and both halves of the user's report were true. Controls: a height stated independently of the width (the exact fault that shipped), and a texture group with its head and foot stripped out.
 
 **Both orange buttons in the mine are one treatment**, and both carry **dark ink**: `--ore` fill, `--lamp` border, `#1A120B` text. Cream on `--ore` is **3.55:1** and the Stamp Mill button shipped at exactly that, unmeasured, for weeks (`VERIFICATION.md` §62).
 

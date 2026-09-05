@@ -1804,7 +1804,12 @@ table.rosetta td.rx{font-family:var(--display); font-size:16px; color:var(--ink)
    the same lumps are half again as big, which is what "extend it vertically"
    buys. The width scales with it, so you scan a little less seam per screen
    and see a great deal more of what is in it. */
-.seamview svg{width:auto; max-width:none; height:542px}
+/* NO HEIGHT HERE. It used to say `height:542px` while JS set the width to the
+   viewBox's own 2900 - two numbers for one drawing, in two files' worth of
+   different places, and they drifted: the rock painted 360px tall in a 542px
+   element with 91px of blank above and below it. Both axes come off
+   MF.SEAM_ZOOM in MF.paintFace now, so there is one number and it cannot. */
+.seamview svg{max-width:none}
 .seamview::-webkit-scrollbar{height:10px}
 .seamview::-webkit-scrollbar-track{background:#241D18}
 .seamview::-webkit-scrollbar-thumb{background:var(--lamp); border-radius:999px}
@@ -6704,6 +6709,21 @@ MF.SEAM_H = 360;
    the lumps sit 117 units apart instead of 145 and are spread over 228 units
    of height instead of 142. */
 MF.SEAM_COUNT = 24;
+/* HOW MANY SCREEN PIXELS ONE SEAM UNIT IS DRAWN AT, and it is ONE number for
+   both axes because that is the whole point of it.
+
+   THE BLANK BANDS THE USER REPORTED WERE THIS, and they were not in the
+   drawing at all. The commit that made the seam taller raised the element to
+   `height:542px` in CSS and left the width at `W` - 2900 - in JS. A viewBox of
+   2900x360 in a 2900x542 box with the default `xMidYMid meet` scales to fit
+   the WIDTH, at 1.0, and letterboxes the rest: the rock painted 360px tall in
+   the middle of the element with **91px of empty above it and 91px below**.
+   Measured, not guessed.
+
+   So the two numbers are derived from one here and cannot drift again: the svg
+   is sized in JS on both axes and `.seamview svg` no longer states a height.
+   1.505 is the ratio the old comment claimed the seam was already drawn at. */
+MF.SEAM_ZOOM = 1.505;
 
 MF.stockFace = function(){
   var L = MF.state.layer;
@@ -6802,6 +6822,169 @@ MF.cartTrack = function(){
   return wrap;
 };
 
+/* =========================================================================
+   THE SEAM IS ROCK ALL THE WAY UP AND ALL THE WAY DOWN.
+
+   USER, 2026-09-04: "The Layer window should be filled with illustrated rock
+   and ore textures. The blank spaces on the top and bottom of the layer need
+   to be redesigned."
+
+   The window was a vertical gradient with nine strata lines and 220 grit dots
+   across 2900 x 360 units - so the top 40 and the bottom 60 held nothing at
+   all, and the middle held a flat wash with lumps floating in it. It read as a
+   backdrop rather than as the inside of a mine.
+
+   What is drawn here, back to front:
+
+     the JOINTING   - big low-contrast blocks, the way rock actually breaks
+     the STRINGERS  - ore threaded through the wall, which is what makes it a
+                      SEAM. Deliberately dim: these are not breakable, and a
+                      bright thread would compete with the lumps that are.
+     the ROOF       - a hanging wall with a ragged edge and points coming down
+                      off it, ore glinting in it, and drips
+     the FLOOR      - a ragged sill with a muck pile of broken chunks along it,
+                      flecked with ore, and a dark bottom band
+
+   THREE THINGS IT HAD TO BE BUILT AROUND:
+
+   1. IT MUST NOT TAKE A CLICK. `overlay` sweeps this svg for anything live
+      sitting in front of the lumps (VERIFICATION s52) - the fault it exists
+      for is the pick eating every click on the seam. This is one group, it is
+      appended BEFORE the lumps, and it carries pointer-events:none.
+
+   2. IT MUST NOT MOVE ON A REPAINT. `MF.paintFace` runs on every `paintMine`,
+      which is every click anywhere in the mine, so a texture drawn from
+      `Math.random` would reshuffle the whole wall each time. It is seeded off
+      the LAYER.
+
+   3. AND IT MUST NOT DRAW FROM `MF.state.rng`. That is the ore stream. Taking
+      numbers out of it here would change which lumps get dug, and the `seam`
+      and `native` groups would start disagreeing with themselves between runs
+      for reasons nothing in the file explains.
+   ========================================================================= */
+/* a flat tint of a hex colour: f < 1 darkens, f > 1 lightens */
+function sh(hex, f){
+  var m = /^#([0-9a-f]{2})([0-9a-f]{2})([0-9a-f]{2})$/i.exec(hex);
+  if(!m) return hex;
+  var c = [1,2,3].map(function(i){
+    return Math.max(0, Math.min(255, Math.round(parseInt(m[i],16) * f)));
+  });
+  return '#' + c.map(function(v){ return ('0'+v.toString(16)).slice(-2); }).join('');
+}
+
+MF.seamRock = function(svg, W, VH, look, layer){
+  var g = S('g',{class:'seamtex','aria-hidden':'true'});
+  g.style.pointerEvents = 'none';
+  var rng = makeRng(9000 + layer * 31);
+  var P = function(pts, attrs){
+    var n = S('polygon', {points: pts.map(function(p){ return p[0].toFixed(1)+','+p[1].toFixed(1); }).join(' ')});
+    for(var k in attrs) n.setAttribute(k, attrs[k]);
+    g.appendChild(n); return n;
+  };
+  /* an irregular closed shape around (cx,cy) - one call draws every block,
+     chunk and stone in here, so no two are the same silhouette twice */
+  var blob = function(cx, cy, r, sides, wob){
+    var pts = [], rot = rng() * Math.PI * 2;
+    for(var i=0;i<sides;i++){
+      var a = rot + i * (Math.PI*2/sides) + (rng()-0.5) * 0.4;
+      var rr = r * (1 - wob/2 + rng() * wob);
+      pts.push([cx + rr*Math.cos(a), cy + rr*Math.sin(a)]);
+    }
+    return pts;
+  };
+
+  var dark = sh(look.rock2, 0.72), darker = sh(look.rock2, 0.5),
+      lite = sh(look.rock, 1.14), mid = sh(look.rock, 0.9);
+
+  /* ---- THE JOINTING: how the rock is broken up, behind everything ---- */
+  for(var b=0; b<Math.round(W/86); b++){
+    var bx = rng() * W, by = 40 + rng() * (VH - 110), br = 46 + rng() * 96;
+    P(blob(bx, by, br, 4 + Math.floor(rng()*3), 0.5), {
+      fill: rng() < 0.5 ? lite : darker, opacity: (0.10 + rng()*0.09).toFixed(2),
+      stroke: darker, 'stroke-width':'2', 'stroke-opacity':'.3','stroke-linejoin':'round'});
+  }
+  /* joint cracks running down through it */
+  for(var c=0; c<Math.round(W/58); c++){
+    var jx = rng() * W, jy = 44 + rng() * (VH - 130), d = 'M'+jx.toFixed(1)+' '+jy.toFixed(1);
+    var segs = 2 + Math.floor(rng()*3);
+    for(var s2=0; s2<segs; s2++)
+      d += ' l' + ((rng()-0.5)*22).toFixed(1) + ' ' + (12 + rng()*26).toFixed(1);
+    g.appendChild(S('path',{d:d, fill:'none', stroke:darker, 'stroke-width':(1.4+rng()*1.4).toFixed(1),
+      opacity:(0.22+rng()*0.2).toFixed(2), 'stroke-linecap':'round'}));
+  }
+
+  /* ---- THE STRINGERS: ore threaded through the wall ----
+     This is what makes it a SEAM rather than a wall of stone. They are dim on
+     purpose: a stringer is not breakable and a bright one would compete with
+     the lumps that are. */
+  for(var v=0; v<Math.round(W/190); v++){
+    var vx = rng() * W, vy = 52 + rng() * (VH - 150);
+    var dv = 'M'+vx.toFixed(1)+' '+vy.toFixed(1), px = vx, py = vy;
+    var run = 3 + Math.floor(rng()*3);
+    for(var q=0;q<run;q++){
+      var nx = px + 40 + rng()*90, ny = py + (rng()-0.5)*44;
+      dv += ' Q'+((px+nx)/2).toFixed(1)+' '+(py + (rng()-0.5)*40).toFixed(1)+
+            ' '+nx.toFixed(1)+' '+ny.toFixed(1);
+      px = nx; py = ny;
+    }
+    g.appendChild(S('path',{d:dv, fill:'none', stroke:look.ore, 'stroke-width':(2+rng()*2.4).toFixed(1),
+      opacity:(0.2+rng()*0.16).toFixed(2), 'stroke-linecap':'round'}));
+  }
+
+  /* ---- THE ROOF: the hanging wall, and what comes down off it ---- */
+  var edge = [[0,0],[W,0]], rx = W, ry;
+  for(var e=W; e>=0; e-=74){
+    ry = 22 + rng() * 30;
+    edge.push([e, ry]);
+  }
+  edge.push([0, 30]);
+  P(edge, {fill:dark, stroke:darker, 'stroke-width':'3','stroke-linejoin':'round'});
+  /* a lit lip just under the break, so the roof has a near edge */
+  var lip = 'M0 30';
+  for(var lx=0; lx<W; lx+=74) lip += ' q37 '+((lx/74)%2?7:-6)+' 74 '+((lx/74)%3===0?4:-3);
+  g.appendChild(S('path',{d:lip, fill:'none', stroke:lite, 'stroke-width':'3', opacity:'.28'}));
+  /* points hanging down off it */
+  for(var pt=0; pt<Math.round(W/104); pt++){
+    var tx = rng() * W, tw = 7 + rng()*15, th = 12 + rng()*32, ty = 24 + rng()*18;
+    P([[tx-tw, ty],[tx+tw, ty-3],[tx + (rng()-0.5)*8, ty+th]],
+      {fill:dark, stroke:darker,'stroke-width':'2.5','stroke-linejoin':'round'});
+  }
+  /* ore in the roof, and water off it */
+  for(var ro=0; ro<Math.round(W/150); ro++){
+    var ox = rng()*W, oy = 8 + rng()*22;
+    g.appendChild(S('path',{d:'M'+ox.toFixed(1)+' '+oy.toFixed(1)+' q'+(14+rng()*16).toFixed(1)+' '+
+      ((rng()-0.5)*10).toFixed(1)+' '+(30+rng()*26).toFixed(1)+' '+((rng()-0.5)*8).toFixed(1),
+      fill:'none', stroke:look.ore,'stroke-width':'3','stroke-linecap':'round', opacity:'.5'}));
+  }
+  for(var dr=0; dr<Math.round(W/230); dr++)
+    g.appendChild(S('ellipse',{cx:(rng()*W).toFixed(1), cy:(38+rng()*16).toFixed(1),
+      rx:'2.2', ry:'3.4', fill:look.glint, opacity:'.32'}));
+
+  /* ---- THE FLOOR: the sill, the muck, and the dark under it ---- */
+  var sill = [[0,VH],[W,VH]], sy;
+  for(var f2=W; f2>=0; f2-=88){
+    sy = VH - 30 - rng() * 26;
+    sill.push([f2, sy]);
+  }
+  sill.push([0, VH-38]);
+  P(sill, {fill:dark, stroke:darker,'stroke-width':'3','stroke-linejoin':'round'});
+  /* the muck: broken rock along the sill, which is where a face ends up */
+  for(var mk=0; mk<Math.round(W/34); mk++){
+    var mx = rng()*W, mr = 8 + rng()*17, my = VH - 34 - rng()*20;
+    var tone = rng();
+    P(blob(mx, my, mr, 5 + Math.floor(rng()*3), 0.44), {
+      fill: tone < 0.34 ? mid : (tone < 0.7 ? look.rock2 : dark),
+      stroke: darker, 'stroke-width':'2.5','stroke-linejoin':'round'});
+    /* a third of them still have something in them */
+    if(rng() < 0.34)
+      g.appendChild(S('circle',{cx:(mx + (rng()-0.5)*mr).toFixed(1), cy:(my + (rng()-0.5)*mr).toFixed(1),
+        r:(1.8+rng()*2.2).toFixed(1), fill:look.ore, opacity:'.85'}));
+  }
+  g.appendChild(S('rect',{x:0, y:VH-11, width:W, height:11, fill:sh(look.rock2, 0.4)}));
+
+  svg.appendChild(g);
+};
+
 /* ---------- the face: look, choose, break ---------- */
 MF.paintFace = function(){
   var host = clear(MF._mine.mid);
@@ -6819,8 +7002,13 @@ MF.paintFace = function(){
   var W=MF.SEAM_W, VH=MF.SEAM_H;
   var svg = S('svg',{viewBox:'0 0 '+W+' '+VH,role:'group',
     'aria-label':'A seam of rock at layer '+L.n+', wider than the screen. Scroll or use the scan buttons to move along it.'});
-  svg.setAttribute('width', W);
-  svg.style.width = W + 'px';
+  /* BOTH AXES, FROM ONE ZOOM. Setting only the width let `xMidYMid meet` fit
+     the drawing to it and letterbox 91px of nothing above and below the rock. */
+  var pxW = Math.round(W * MF.SEAM_ZOOM), pxH = Math.round(VH * MF.SEAM_ZOOM);
+  svg.setAttribute('width', pxW);
+  svg.setAttribute('height', pxH);
+  svg.style.width = pxW + 'px';
+  svg.style.height = pxH + 'px';
   svg.style.maxWidth = 'none';
 
   var defs = S('defs',{});
@@ -6844,6 +7032,12 @@ MF.paintFace = function(){
   for(var gq=0;gq<220;gq++){
     svg.appendChild(S('circle',{cx:(gq*173)%W, cy:(gq*53)%VH, r:1+((gq*7)%3), fill:look.grit, opacity:'.45'}));
   }
+
+  /* THE ROCK ITSELF: jointing, ore stringers, the hanging wall and the muck.
+     Appended BEFORE the lumps, and inert - `overlay` sweeps this svg for
+     anything live sitting in front of a control, and it is the group that
+     caught the pick eating every click on the seam. */
+  MF.seamRock(svg, W, VH, look, L.n);
 
   /* the rocks */
   rocks.forEach(function(o, idx){
@@ -9647,6 +9841,139 @@ MF.validate = function(){
     if(offEnd) errs.push('seam: layer '+sl+' put '+offEnd+' lumps outside the drawn rock');
   }
   MF.state.face = savedFace; MF.state.faceLayer = savedFaceLayer; MF.state.scan = savedScan;
+
+  /* AND THE ROCK MUST FILL THE WINDOW ONTO IT.
+
+     USER, 2026-09-04: "The blank spaces on the top and bottom of the layer need
+     to be redesigned." There were 91px of them at each end, and they were not
+     in the drawing at all: the commit that made the seam taller set
+     `height:542px` in CSS and left the width at the viewBox's own 2900 in JS.
+     A 2900x360 viewBox in a 2900x542 box with the default `xMidYMid meet`
+     scales to fit the WIDTH and letterboxes the rest.
+
+     Nothing could see it. `layout` measures the RIGHT edge and says so;
+     `hollow` measures a box against the text drawn in it and this box holds a
+     picture; `contrast` walks text nodes and there are none in the seam. A
+     drawing that does not fill the element it is given crosses no edge, moves
+     no control and has no ink - it just wastes the screen, which is the axis
+     this project has spent five sessions buying back.
+
+     Measured as PAINTED CONTENT against the element's content box, per layer,
+     because the seam is rebuilt per layer and the palette is the only thing
+     that changes - so a fault here would be in all five or in none, and
+     checking one would not say which.
+
+     READ THE DENOMINATOR: this is the seam's VERTICAL fit, at the live
+     viewport, over five layers. It says nothing about the horizontal - that is
+     a scrolling axis by design - and nothing about what is drawn in the space
+     once it is filled. */
+  var sfStage = document.createElement('div');
+  sfStage.style.cssText = 'position:fixed; left:-14000px; top:0; width:' +
+    document.documentElement.clientWidth + 'px';
+  document.body.appendChild(sfStage);
+  var sfSaved = {mine:MF._mine, layer:MF.state.layer, face:MF.state.face,
+                 fl:MF.state.faceLayer, cart:MF.state.cart, sel:MF.state.selected, anvil:MF.state.anvil};
+  var sfFit = function(root){
+    var svg = root.querySelector('.seamview svg'), box = root.querySelector('.seamview');
+    if(!svg || !box) return null;
+    var wall = svg.querySelector('rect');
+    if(!wall) return null;
+    var sb = svg.getBoundingClientRect(), wb = wall.getBoundingClientRect();
+    return {top: Math.round(wb.top - sb.top), bottom: Math.round(sb.bottom - wb.bottom),
+            drawn: Math.round(wb.height), box: box.clientHeight};
+  };
+  for(var sf=1; sf<=MF.LAYERS.length; sf++){
+    chk('seam');
+    var sfProbe = document.createElement('div');
+    sfStage.innerHTML = ''; sfStage.appendChild(sfProbe);
+    MF.state.layer = sf; MF.state.face = []; MF.state.faceLayer = null;
+    MF.state.cart = []; MF.state.selected = null; MF.state.anvil = null;
+    MF._mine = null;
+    try { MF.SCREENS.mine(sfProbe); MF.paintMine(); }
+    catch(e){ errs.push('seam: the mine threw while the window was being measured: ' + e.message); break; }
+    var fit = sfFit(sfProbe);
+    if(!fit){ errs.push('seam: layer '+sf+' drew no window to measure'); continue; }
+    if(fit.top > 2 || fit.bottom > 2)
+      errs.push('seam: layer '+sf+' paints ' + fit.drawn + 'px of rock in a ' + fit.box +
+        'px window — ' + fit.top + 'px of it is blank at the top and ' + fit.bottom +
+        'px at the bottom, so the layer is a letterbox');
+
+    /* AND THE ROCK MUST REACH BOTH ENDS OF IT.
+       Filling the element is not the same as filling the picture: the top 40
+       and the bottom 60 units of the seam held nothing but a gradient and a
+       few grit dots, which is the other half of what the user reported. The
+       roof and the floor are what went in, so this asserts something is DRAWN
+       in each band rather than counting shapes - a count says the texture
+       exists somewhere, and somewhere was never the problem. */
+    chk('seam');
+    var sfTex = sfProbe.querySelector('.seamtex');
+    if(!sfTex){
+      errs.push('seam: layer '+sf+' drew no rock texture at all — the window is a gradient again');
+    } else {
+      var sfTop = 0, sfBot = 0;
+      [].forEach.call(sfTex.children, function(n){
+        var bb; try { bb = n.getBBox(); } catch(e){ return; }
+        if(bb.width < 4 && bb.height < 4) return;      /* a grit fleck is not a band */
+        if(bb.y < 44) sfTop++;
+        if(bb.y + bb.height > MF.SEAM_H - 44) sfBot++;
+      });
+      if(sfTop < 3)
+        errs.push('seam: layer '+sf+' has ' + sfTop + ' things drawn in the top 44 units of the rock — ' +
+          'the head of the layer is blank');
+      if(sfBot < 3)
+        errs.push('seam: layer '+sf+' has ' + sfBot + ' things drawn in the bottom 44 units of the rock — ' +
+          'the foot of the layer is blank');
+    }
+  }
+  /* CONTROL: put the fault back and the measurement must report the bands.
+
+     THE FAULT WAS NEVER ONE WRONG NUMBER - it was the two axes being set in
+     two places from two numbers. So the control does what the stylesheet did:
+     it states a height independently of the width, and lets `xMidYMid meet` do
+     the rest. Setting MF.SEAM_ZOOM to 1 would NOT reproduce it, because both
+     axes now come off that one constant and the drawing would simply be
+     smaller and still filled - a control that proves the opposite of what it
+     was written for. */
+  chk('seam');
+  var sfCtl = document.createElement('div');
+  sfStage.innerHTML = ''; sfStage.appendChild(sfCtl);
+  MF.state.layer = 2; MF.state.face = []; MF.state.faceLayer = null; MF._mine = null;
+  try { MF.SCREENS.mine(sfCtl); MF.paintMine(); } catch(e){}
+  var sfSvg = sfCtl.querySelector('.seamview svg');
+  if(sfSvg){
+    sfSvg.style.width = MF.SEAM_W + 'px'; sfSvg.setAttribute('width', MF.SEAM_W);
+    sfSvg.style.height = '542px'; sfSvg.setAttribute('height', '542');
+  }
+  var sfBad = sfFit(sfCtl);
+  if(!sfBad || (sfBad.top <= 2 && sfBad.bottom <= 2))
+    errs.push('CONTROL: the seam check cannot see a drawing letterboxed inside its own window');
+  /* CONTROL: and a wall with nothing drawn at its head and foot. Built by
+     stripping the roof and the floor out of a real texture group rather than
+     by an empty div, so what is measured is the thing the check measures. */
+  chk('seam');
+  var sfTexCtl = sfCtl.querySelector('.seamtex');
+  if(!sfTexCtl){
+    errs.push('CONTROL: no texture was drawn, so the blank-band rule measured nothing');
+  } else {
+    [].slice.call(sfTexCtl.children).forEach(function(n){
+      var bb; try { bb = n.getBBox(); } catch(e){ return; }
+      if(bb.y < 44 || bb.y + bb.height > MF.SEAM_H - 44) sfTexCtl.removeChild(n);
+    });
+    var sfLeftTop = 0, sfLeftBot = 0;
+    [].forEach.call(sfTexCtl.children, function(n){
+      var bb; try { bb = n.getBBox(); } catch(e){ return; }
+      if(bb.width < 4 && bb.height < 4) return;
+      if(bb.y < 44) sfLeftTop++;
+      if(bb.y + bb.height > MF.SEAM_H - 44) sfLeftBot++;
+    });
+    if(sfLeftTop >= 3 || sfLeftBot >= 3)
+      errs.push('CONTROL: the blank-band rule still counts ' + sfLeftTop + '/' + sfLeftBot +
+        ' after the head and foot of the wall were stripped out');
+  }
+  document.body.removeChild(sfStage);
+  MF._mine = sfSaved.mine; MF.state.layer = sfSaved.layer; MF.state.face = sfSaved.face;
+  MF.state.faceLayer = sfSaved.fl; MF.state.cart = sfSaved.cart;
+  MF.state.selected = sfSaved.sel; MF.state.anvil = sfSaved.anvil;
 
   /* 5c. A TOOL MUST NEVER GATE DESCENT. With nothing forged and an empty yard,
          every layer must still be reachable and still hand out ore. */

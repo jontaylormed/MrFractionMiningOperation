@@ -1047,3 +1047,49 @@ stone stretching to 1140px, which is what a bare `auto-fit` would have done inst
 Measured: at 1250px one lump has **444px either side**, two have **322px**; at 380px one
 lump has **14px either side**; at 560px two lumps stack in one column at **165..395** in
 a cart running **61..499**.
+
+## 28. The layer is rock all the way up and all the way down
+
+*User, 2026-09-04: "The Layer window should be filled with illustrated rock and ore
+textures. The blank spaces on the top and bottom of the layer need to be redesigned."*
+
+### 28a. Most of the blank was not in the drawing at all
+
+**91px at the top and 91px at the bottom, measured.** The commit that made the seam
+taller set `height:542px` on `.seamview svg` in CSS and left the width at the viewBox's
+own `W` — 2900 — in JS. A 2900×360 viewBox in a 2900×542 box with the default
+`xMidYMid meet` scales to fit the **width**, at 1.0, and letterboxes the rest: the rock
+painted 360px tall in the middle of the element with dead space above and below it.
+
+Both axes come off one constant now — `MF.SEAM_ZOOM = 1.505`, the ratio the old comment
+already claimed the seam was drawn at — and `.seamview svg` no longer states a height.
+The window is 4365×542 and the rock fills it: **blankTop 0, blankBottom 0**.
+
+> **Nothing in the build could see it.** `layout` measures the right edge and says so;
+> `hollow` measures a box against the *text* drawn in it and this box holds a picture;
+> `contrast` walks text nodes and the seam has none. A drawing that does not fill its
+> element crosses no edge, moves no control and has no ink.
+
+### 28b. And the picture's own head and foot were bare
+
+The other half was real: the top 40 and the bottom 60 units of the seam held a gradient,
+a couple of strata lines and some grit. `MF.seamRock` draws, back to front:
+
+| | |
+|---|---|
+| **jointing** | big low-contrast blocks and cracks — the way rock actually breaks |
+| **stringers** | ore threaded through the wall. Dim on purpose: a stringer is not breakable, and a bright one would compete with the lumps that are |
+| **the roof** | a hanging wall with a ragged edge, points coming down off it, ore glinting in it, and drips |
+| **the floor** | a ragged sill, a muck pile of broken chunks flecked with ore, and a dark band under it |
+
+Three things it is built around. **It must not take a click** — one group, appended
+before the lumps, `pointer-events:none`; `overlay` is the group that caught the pick
+eating every click on the seam. **It must not move on a repaint** — `paintFace` runs on
+every `paintMine`, so it is seeded off the layer. And **it must not draw from
+`MF.state.rng`**, which is the ore stream: taking numbers out of it here would change
+which lumps get dug.
+
+> `seam` (17) now asserts the drawing fills its window on all five layers, and that
+> something is drawn in the top 44 and bottom 44 units of each. Controls: a height stated
+> independently of the width — the exact fault that shipped — and a texture group with
+> its head and foot stripped out. Both fail by name.
