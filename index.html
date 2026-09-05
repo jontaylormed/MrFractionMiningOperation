@@ -12531,6 +12531,60 @@ MF.validate = function(){
      question, and this one had a wrong answer in the safe direction.
      An overlapping painted sibling is checked FIRST, and only if there is none
      does the ancestor chain get walked. */
+  /* THE COLOURS A GRADIENT FILL ACTUALLY PAINTS.
+
+     Takes a `url(#id)` fill and the svg it was found in, and returns every
+     stop colour as an RGB triple - skipping stops too transparent to be what
+     is under the text, on the same 0.6 threshold the shape sweep uses.
+
+     Returns null for anything that is not a resolvable gradient, so the caller
+     falls back to the flat-fill path it always had. */
+  function _gradStops(fill, svgEl){
+    if(!fill || fill.indexOf('url(') !== 0) return null;
+    var id = fill.slice(4, -1).replace(/["']/g,'').replace(/^#/,'');
+    if(!id) return null;
+    var g = null;
+    try { g = (svgEl.ownerDocument || document).getElementById(id); } catch(e){ g = null; }
+    if(!g || !/gradient/i.test(g.tagName || '')) return null;
+    var out = [];
+    g.querySelectorAll('stop').forEach(function(st){
+      var so = st.getAttribute('stop-opacity');
+      if(so != null && parseFloat(so) < 0.6) return;
+      var c = st.getAttribute('stop-color');
+      if(!c) return;
+      var m6 = c.match(/^#([0-9a-fA-F]{6})$/);
+      var rgb = m6 ? [parseInt(m6[1].slice(0,2),16), parseInt(m6[1].slice(2,4),16),
+                      parseInt(m6[1].slice(4,6),16)] : _rgb(c);
+      if(rgb) out.push(rgb);
+    });
+    return out.length ? out : null;
+  }
+
+  /* THE HALO BEHIND A LETTERFORM, if there is one wide enough to be one.
+
+     Two ways this site draws one, and both count:
+       `paint-order:stroke` with an SVG `stroke` and `stroke-width` - the mold's
+          numbers, and the ore labels cut into a stone;
+       `-webkit-text-stroke` - the THUD and CLANG bursts.
+
+     Returns the halo's RGB, or null. A stroke under 2px is NOT a halo: it
+     tints the edge of a glyph without carrying it, and letting a hairline
+     stand in for the backdrop would hide exactly the failures this sweep is
+     for. */
+  function _haloOf(el, cs){
+    var w = parseFloat(cs.webkitTextStrokeWidth || 0);
+    if(w >= 2){
+      var wc = _rgb(cs.webkitTextStrokeColor || '');
+      if(wc) return wc;
+    }
+    if((cs.paintOrder || '').indexOf('stroke') !== 0) return null;
+    var sw = parseFloat(cs.strokeWidth || el.getAttribute('stroke-width') || 0);
+    if(!(sw >= 2)) return null;
+    var sc = cs.stroke && cs.stroke !== 'none' ? cs.stroke : el.getAttribute('stroke');
+    if(!sc || sc === 'none') return null;
+    return _rgb(sc);
+  }
+
   function _backdrops(el, root){
     var p = el.parentElement, box = el.getBoundingClientRect();
     if(p && box.width > 0 && box.height > 0){
@@ -12555,11 +12609,27 @@ MF.validate = function(){
             var b2 = s.getBoundingClientRect();
             if(cx < b2.left || cx > b2.right || cy < b2.top || cy > b2.bottom) return;
             var f = s.getAttribute('fill');
-            if(!f || f === 'none' || f.indexOf('url(') === 0) return;
+            if(!f || f === 'none') return;
             if(parseFloat(s.getAttribute('opacity') || '1') < 0.6) return;
             shapeFill = f;                   /* last painted wins */
           });
           if(shapeFill){
+            /* A GRADIENT IS A BACKDROP TOO, AND IT IS SEVERAL OF THEM.
+
+               This used to `return` on any `url(...)` fill, so text over a
+               gradient fell through to whatever was behind the drawing and got
+               a ratio that was arithmetic about the wrong surface. It was not
+               a live defect while the site had no gradients under text - and
+               then the ladle and the anvil brought thirteen of them
+               (VERIFICATION §82).
+
+               A gradient is resolved to ITS STOPS, all of them, and handed
+               back as a set. `_backdrops` callers take the WORST ratio across
+               whatever they are given, so a colour that clears the light end
+               of a gradient and fails the dark end fails - which is the same
+               rule the THUD burst is already held to by hand. */
+            var stops = _gradStops(shapeFill, sib);
+            if(stops && stops.length){ over = stops; continue; }
             var m6 = shapeFill.match(/^#([0-9a-fA-F]{6})$/);
             var sr = m6 ? [parseInt(m6[1].slice(0,2),16), parseInt(m6[1].slice(2,4),16),
                            parseInt(m6[1].slice(4,6),16)] : _rgb(shapeFill);
@@ -12600,9 +12670,34 @@ MF.validate = function(){
       var f=_rgb(cs.color); if(!f) return;
       var px=parseFloat(cs.fontSize), bold=parseInt(cs.fontWeight,10)>=700;
       var need = (px>=24 || (px>=18.66 && bold)) ? 3 : 4.5;
-      var r = Math.min.apply(null, _backdrops(el, root).map(function(b){ return _ratio(f,b); }));
-      out.push({el:el, ratio:Math.round(r*100)/100, need:need,
-                text:(el.textContent||'').trim().slice(0,30), cls:(el.className||'').toString().slice(0,24)});
+      /* A HALO IS THE BACKDROP.
+
+         Text drawn with a stroke UNDER its fill - `paint-order:stroke` with a
+         wide stroke, or `-webkit-text-stroke` - is not sitting on whatever is
+         behind the drawing. It is sitting on the halo, and that is what the
+         eye compares the letterform against.
+
+         This sweep did not know that, and it did not have to while nothing
+         relied on it. Then the mold's numbers were finally measured (§82) and
+         came back at 1.09:1 - dark ink over the dark end of a molten gradient
+         - for text whose own comment explains that no flat ink can clear a
+         surface that runs molten to dull red to steel, and that a 4px cream
+         stroke is the answer. The measurement was right about the pixels
+         behind the glyph and wrong about what a student is reading.
+
+         So: a halo wide enough to actually surround the strokes of a letter
+         REPLACES the backdrop. 2px is the floor - a hairline stroke tints an
+         edge and does not carry the letter, and treating it as a backdrop
+         would let a real failure hide behind it. */
+      var halo = _haloOf(el, cs);
+      var back = halo ? [halo] : _backdrops(el, root);
+      var r = Math.min.apply(null, back.map(function(b){ return _ratio(f,b); }));
+      out.push({el:el, ratio:Math.round(r*100)/100, need:need, halo:!!halo,
+                text:(el.textContent||'').trim().slice(0,30),
+                /* SVG elements have an SVGAnimatedString for className, which
+                   stringifies to "[object SVGAnimatedString]" and named every
+                   failure in the pour after the same useless object. */
+                cls:(el.getAttribute && el.getAttribute('class') || el.className || '').toString().slice(0,24)});
     });
     return out;
   };
@@ -12632,7 +12727,7 @@ MF.validate = function(){
      the threshold, and every run of this group reported clean over them.
      READ THE DENOMINATOR: a green sweep proves only what it mounted, and this
      one was choosing what to mount at random. */
-  Object.keys(MF.SCREENS).concat(['mine-layer1','mine-number','mine-blow','mine-done','forge-armed','forge-poured','toolsheet','hammersheet','shed-taught']).forEach(function(scr){
+  Object.keys(MF.SCREENS).concat(['mine-layer1','mine-number','mine-blow','mine-done','forge-armed','forge-poured','toolsheet','hammersheet','shed-taught','mold-pour']).forEach(function(scr){
     stage.innerHTML='';
     var probe = document.createElement('div');
     stage.appendChild(probe);
@@ -12838,6 +12933,58 @@ MF.validate = function(){
         });
         if(cHam < 2)
           errs.push('contrast: the hammer panel opened for ' + cHam + ' of 2 lumps, so it was not swept');
+      } else if(scr==='mold-pour'){
+        /* THE NUMBERS ON A POUR, WHICH NOTHING HAD EVER MEASURED.
+
+           `MF._measureContrast` on a poured mold returned ZERO elements.
+           `.mdnum` rests at `opacity:0` and is raised by an animation on a
+           delay, and the sweep skips anything at zero opacity - correctly,
+           because you cannot measure what is not painted. So the halo those
+           numbers depend on was documented, hand-measured once, and verified
+           by nothing (VERIFICATION §82).
+
+           The `mine-blow` pass above already solved this shape for the THUD
+           burst by forcing its opacity before measuring. This does the same,
+           with `!important` because an inline value alone loses to a running
+           animation - important author declarations are the one thing that
+           beats one.
+
+           READ THE DENOMINATOR: this measures the INK against the surface, the
+           way every other pass does. It does not model the text at the 0.85
+           opacity its keyframes hold it at - no pass on this site composites a
+           fade, and a check that did would have to do it everywhere or mean
+           nothing. What it closes is that these numbers were not looked at.
+
+           Three pours, because what is under the numbers differs: two brackets
+           put four products over the casting, a twin seam has middles that
+           cancel, and three plain metals is the five-token stream. */
+        MF.state.yard = {};
+        [[{m:1,k:2},{m:1,k:3}], [{m:1,k:3},{m:1,k:-3}], [{m:0,k:2},{m:0,k:3},{m:0,k:5}]]
+          .forEach(function(ings){
+            var mp = MF.moldScene('lantern', {ok:true, maths:MF.moldMaths(ings, ingotProduct(ings))});
+            mp.setAttribute('data-pour','sound');
+            probe.appendChild(mp);
+          });
+        var cLit = 0;
+        probe.querySelectorAll('.mdnum').forEach(function(n){
+          n.style.setProperty('opacity','1','important');
+          cLit++;
+        });
+        if(!cLit)
+          errs.push('contrast: the poured molds drew no numbers, so the pour was not swept');
+        /* AND THE FORCING HAS TO HAVE WORKED. This is the assertion that keeps
+           the hole shut: if a later change makes these un-forceable - an
+           `!important` in a keyframe, a parent at zero opacity - the sweep
+           goes back to measuring nothing and reporting clean, which is the
+           state §82 was written about. */
+        var cDark = 0;
+        probe.querySelectorAll('.mdnum').forEach(function(n){
+          if(parseFloat(getComputedStyle(n).opacity) === 0) cDark++;
+        });
+        chk('contrast');
+        if(cDark)
+          errs.push('contrast: ' + cDark + ' of ' + cLit + ' numbers on the pour are still at zero ' +
+            'opacity, so the sweep skips them and measures nothing');
       } else if(scr==='shed-taught'){
         /* THE CASTING SHED WITH SOMETHING TO TEACH.
 

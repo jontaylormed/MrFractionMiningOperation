@@ -1756,3 +1756,45 @@ measuring; the mold numbers need the same treatment.
 > **Neither of these is a bug today. Both are checks that would not fire if one appeared.**
 > Recorded here, unfixed, so the next person to put text over a gradient — or to trust the
 > pour's contrast numbers — finds out from this file rather than from a student.
+
+## §83. Both holes in §82, closed — and one of them was measuring the wrong thing
+
+**A gradient is a backdrop, and it is several of them.** `_backdrops` returned early on any
+`url(...)` fill, so text over a gradient fell through to whatever was behind the drawing.
+`_gradStops` resolves the referenced gradient to its stop colours and hands back *all* of
+them; callers already take the worst ratio across whatever they are given, so a colour that
+clears the light end and fails the dark end now fails. Proven on a constructed case: mid-tone
+ink over a `#FFF6D8 → #7A2410` gradient reports **2.39:1**, where before it climbed out to the
+white behind the SVG and reported a pass.
+
+**And the pour's numbers are measured.** A `mold-pour` pass builds three castings, forces
+every `.mdnum` visible with `!important` — an inline value alone loses to a running
+animation — and lets the sweep read them. `contrast` 2,089 → 2,115.
+
+### The part that was not just a hole
+
+Measured for the first time, the mold's numbers came back at **1.09:1** — and that was the
+*measurement* being wrong, not the ink. `.mdnum` is dark ink on a 4px cream stroke drawn
+under the fill (`paint-order:stroke`), and its own comment explains why: no flat colour can
+clear a surface that runs molten → dull red → steel, so the halo is the surface.
+
+**The sweep did not know what a halo was.** It compared the letterform to the pixels *behind
+the glyph*, which is the right question only when nothing is drawn between them.
+
+> `_haloOf` now returns the halo colour when text carries a stroke wide enough to surround
+> its strokes — `paint-order:stroke` with an SVG stroke, or `-webkit-text-stroke` — and that
+> colour **replaces** the backdrop. The floor is 2px: a hairline tints an edge without
+> carrying the letter, and treating one as a backdrop would let a real failure hide behind it.
+
+Two lessons, and the second is the sharper one:
+
+> **A sweep that has never measured something has never been wrong about it either.** Closing
+> a denominator hole is not just adding coverage — it is the first time the instrument is
+> pointed at the thing, and the first reading may say more about the instrument than about
+> the code. Both were true here: 1.09:1 was arithmetic about real pixels and a false claim
+> about what a student reads.
+
+> **And an existing check may already cover what the new one appears to catch.** Stripping the
+> halo fired 83 errors — from a `mold` assertion that already required a halo to *exist*. What
+> was missing was never its existence; it was whether it is *enough*. Read what fires before
+> claiming the new check is what caught it.
