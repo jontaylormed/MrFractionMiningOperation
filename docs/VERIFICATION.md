@@ -1798,3 +1798,56 @@ Two lessons, and the second is the sharper one:
 > halo fired 83 errors — from a `mold` assertion that already required a halo to *exist*. What
 > was missing was never its existence; it was whether it is *enough*. Read what fires before
 > claiming the new check is what caught it.
+
+## §84. An exemption that describes the defect is a licence for it
+
+`mold` has always asserted that the products shown on a pour add up to the casting. It read:
+
+```js
+/* three plain metals are shown as themselves, and multiply rather than add */
+var allPlain = ings.every(function(g){ return g.m===0; });
+if(!allPlain && (mSq !== t.cast.a || mX !== t.cast.b || mK !== t.cast.c))
+```
+
+Every word of that comment is a **true description of what the code did**. None of it is a
+reason the code should do it. `MF.pourChain` joins the terms row with plus signs, so listing
+the metals as the products printed `3 + 9` over a casting of `27` — and the exemption existed
+precisely so the check would not say so. The Pick and the Lantern both pour plain metal, so
+this was live in the Forge, under a green group, for as long as the group has existed.
+
+> **Ask of any `if(!x && ...)` in a check: is `x` a case that is genuinely out of scope, or a
+> case that fails?** Removing this one fired on the Pick and the Lantern immediately.
+
+And the second hole, which is §5 again in a new place:
+
+> `mold` walks `MF.toolOrder()`. Every order is a quadratic. **The Molds room's own
+> arithmetic — a depth over two plain parts, on nine settings each — had never been through
+> any of it.** 486 checks now pour the room's three modes across both sliders.
+
+## §85. The pictograph exemption was skipping on the wrong predicate
+
+The contrast sweep skipped elements with no word characters in them, reasoning that a colour
+emoji carries its own colour table and `color` draws none of it. True — and the case it was
+actually written for is named in its own comment: **the mold's cavity**, which is not a label
+at all. It is a hole cut in sand, drawn by forcing every channel of the ink to zero.
+
+Cut that cavity to an **expression** rather than a tool icon and it suddenly has word
+characters in it. The emoji test stops firing, and three copies of a *shape* start reporting
+1.08:1 as if they were text somebody was meant to read. **Nothing about them had changed.**
+
+> The predicate is now the honest question — *can `color` reach a pixel of this?* — and it
+> says no for anything inside `<defs>`, `<mask>`, `<clipPath>` or `<symbol>` (never painted;
+> a mask is an alpha channel), and for anything drawn through `filter: brightness(0)` (every
+> channel multiplied by zero). The pictograph rule stays as the third case.
+
+**And an exemption is not a pass.** Skipping a thing and replacing the reading are two
+different acts, and doing only the first is how a surface goes dark. A `cavity` group measures
+the cut *as it actually renders* — the black it really is, against the sand gradient it is
+really cut into, both read off a live mold rather than typed into the check. 5.05:1 against
+the darkest stop.
+
+> It also fails loudly if `.mdcut` ever stops being forced black, because the skip above would
+> then be hiding real text. **A skip whose reason has expired should say so**, not sit there
+> being quietly wrong. Control: remove the filter — the sweep picks `.mdcut` and
+> `.mdcutshadow` straight back up, and `.mdmaskglyph` correctly stays out, which is the two
+> rules proving they are independent.

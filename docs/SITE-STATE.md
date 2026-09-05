@@ -22,7 +22,7 @@
 | **Screens** | **eight** — surface, the Stamp Mill, the Casting Shed and its three workshops, the mine, the forge |
 | **Layers** | **five**, all reachable from the first screen, none gated on anything |
 | **Instruments** | **seven**, all made at the forge, none granted |
-| **Validation** | `MF.validate()` → **10,752 checks / 35 groups / 0 errors**, two controls that must fail, and do — **run it at the width you ship from**, because `layout`, `reach`, `hollow` and `cartdraw` measure the live viewport and report it (`VERIFICATION.md` §61, §63, §65). Verified at **380×780, 560×760, 994×700 and 1250×900** |
+| **Validation** | `MF.validate()` → **11,949 checks / 36 groups / 0 errors**, two controls that must fail, and do — **run it at the width you ship from**, because `layout`, `reach`, `hollow` and `cartdraw` measure the live viewport and report it (`VERIFICATION.md` §61, §63, §65). Verified at **380×780, 560×760, 994×700 and 1250×900** |
 
 > **A check is only as wide as the space it sweeps.** The `truthy` group reported 0 errors across 642 checks while **1,970 Decimal Dial states printed a falsehood**, because it tested each lump's original integer coefficients and never nudged `c` — the one thing the dial exists to do. It now sweeps every slider position the control can reach (3,287 checks). Ask of any green result: *what did it not look at?*
 | **Runtime** | Zero dependencies, no build step, no network requests, no storage, runs from `file://` |
@@ -184,7 +184,7 @@ The face is **2280px of rock**, several screens wide, scanned by dragging, scrol
 
 ## The breaking floor: one anvil, the belt over it, and the ore on top
 
-**Measured 2026-09-05, all four widths, 0 errors over 11,473 checks in 35 groups, both controls failing.**
+**Measured 2026-09-05, all four widths, 0 errors over 11,949 checks in 36 groups, both controls failing.**
 
 **There is one box, and the anvil in it is the work.** The `workpair` is gone. It was two boxes: one held a row of chips and the belt, the other held a drawing of an anvil, two number boxes and the swing button — so **the anvil a student was looking at was not the thing their ore was on**, and the drawing was decoration beside the work. What is here now is the gallery you are standing in: the belt overhead, the anvil, the stone on its face, and whatever has come off it lying on the ground. **A first lump has nothing on the ground at all.**
 
@@ -324,6 +324,12 @@ Plain numbers → a metal spread over a bracket → two brackets → a square �
 **THE CASTING SHED IS THREE MODULES: The Words, The Molds, The Tools** — the user's own names for them (2026-09-05). The screen keys are unchanged (`shed-words`, `shed-mold`, `shed-methods`) because they are wired into the door table, four check groups and every jump on the site; what changed is what a student reads on the card.
 
 **THE MOLDS SHOW THE MULTIPLICATION.** The room drew an area model and one line of algebra, and the area model **only ever held one row** — a depth over two parts, `a(b + c)`. That is a number distributed over a sum, and it is not the move the mine runs backwards: the mine's job is two brackets, four products, and two middles that turn out to be the same kind of thing. `MF.pourChain` writes the pour out a line at a time — what went in, every part meeting every part, each pair multiplied out, the two middles collapsing, one object — and the room gains a third thing you can pour (**two brackets**). It does **no arithmetic of its own**: every number comes from `MF.moldMaths`, which the `mold` group already checks against `ingotProduct`, so there is no second copy to drift.
+
+**AND THE ROOM POURS THE FORGE'S OWN MOLD** (`MINE-SPEC.md` §40). It drew `MF.shedArt('mold')` — a flat diagram of the idea that moved for nothing — while the working room a click away draws a ladle tipping into sand. It is `MF.moldScene` now, cut to an **expression** rather than a tool, re-poured on every slider and mode change, so the sliders are the ladle. One function draws every mold on the site. The picture is 310px here, where it **is** the lesson, and 276px on the craft floor, where it is a status display for a pour already ordered — `reach` had the forge 15px past one 700px screen at 979px wide.
+
+> **The pour was printing a falsehood, and two separate things kept it green.** `MF.moldMaths` listed plain metals as their own products, so pouring 3 and 9 printed `3 + 9` over a casting of `27` — in the Forge too, because the Pick and the Lantern both cast from plain metal. The assertion that products add up to the casting carried `if(!allPlain && …)`, **an exemption that described the defect and licensed it**; and the sweep walked `MF.toolOrder()`, so the Molds room's own arithmetic had never been through it at all. Both closed: the shortcut is gone, the exemption is gone, and 486 checks pour the room's three modes across both sliders. Control: put the shortcut back — 83 errors.
+
+> **A new `cavity` group (3), because an exemption is not a pass.** The contrast sweep skipped the mold's cavity on the wrong predicate — *is it an emoji?* — and cutting the cavity to an expression put three copies of a **shape** into the sweep at 1.08:1. The predicate is now *can `color` reach a pixel?*: no for anything inside `<defs>`/`<mask>`/`<clipPath>`/`<symbol>`, and no through `filter: brightness(0)`. What replaced the reading measures the cut **as it renders** — black against the sand gradient it is cut into, both read off a live mold — at 5.05:1, and fails loudly if `.mdcut` ever stops being forced black (`VERIFICATION.md` §84, §85).
 
 > `mold` (112) asserts the chain over four pours, that its last line agrees with `ingotProduct`, and that a two-bracket pour shows **both** the pairings and the two middles collapsing. Control: strip the working out of `moldMaths`.
 

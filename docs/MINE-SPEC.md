@@ -1551,3 +1551,61 @@ the supported one does not sit in the same slot (§28-adjacent, and the reason f
 > property being protected never changed, which is that the room must not end on another of
 > the recognition questions it is already full of. Control: remove the closer and it reports
 > *"shed-words does not end on a what-went-wrong"*.
+
+## 40. The Molds room pours the Forge's own mold
+
+> *"In the Mold, the illustration needs to be reworked as the Forge Molds work."*
+> — user, 2026-09-05
+
+The room drew `MF.shedArt('mold')`: a flat diagram of the idea, drawn once, that moved for
+nothing. A click away, the Forge draws a ladle tipping into sand with the metal rising in the
+cavity. **If the teaching room draws the idea and the working room draws the object, the
+student has to join them up themselves.**
+
+So it is the same function. `MF.moldScene` gains one optional argument:
+
+| | |
+|---|---|
+| `shape` | cut the cavity to an **expression** instead of a tool glyph — at 34px, because an expression is wide where an emoji is square, and 150px of `x² + 8x + 15` runs off both ends of the sand |
+| `pour.terse` | draw the metals falling down the stream, and **not** the products over the casting — `MF.pourChain` writes those out underneath at four times the size, and printing them twice says they are two different things |
+
+One function draws every mold on the site. A second copy for the teaching room would be a
+second chance to drift.
+
+**It re-pours on every change**, so the sliders are the ladle: move one and the ladle tips,
+the terms fall, and the cavity fills to whatever the metals now come to.
+
+```
+two plain parts      3 × 9                   →  27
+a part with an x     3 × (x + 5)             →  3x + 15
+two brackets         (x + 3) × (x + 5)       →  x² + 8x + 15
+```
+
+The room is **smaller** in the Forge and full size here (§40a). In the Casting Shed the
+drawing is the lesson — it is what the sliders move, and the only picture of multiplication in
+the room. On the craft floor it is a status display for a pour you have already ordered, and
+it is 276px there so the pour button stays on the same screen as the target.
+
+### The pour was printing a falsehood
+
+`MF.moldMaths` carried a shortcut: *if every metal is plain, the numbers themselves are the
+products.* `MF.pourChain` joins the terms row with plus signs, so pouring 3 and 9 printed
+
+```
+what went into the mold        3  9
+the depth reaches every part   3 + 9
+one object comes out           27
+```
+
+— **3 + 9 = 27, on screen, in the room that exists to explain what a pour comes to**, beside
+an area model saying 12 + 15. It was reaching the Forge too: the Pick and the Lantern both
+cast from plain metal.
+
+The shortcut is gone. Two plain metals fall through the pair arithmetic below it as
+`sq = 0, mA = 0, mB = 0, kk = g1·g2` — the one true product, with the pair that made it
+attached. And what went in is joined with `×` rather than a space: two brackets side by side
+are unambiguous, but `3 9` reads as thirty-nine, and the stream in the picture directly above
+already writes the `×`.
+
+> Both halves of this are in `docs/VERIFICATION.md` §84 — the exemption that described the
+> defect and licensed it, and the denominator that never once poured plain metal.
