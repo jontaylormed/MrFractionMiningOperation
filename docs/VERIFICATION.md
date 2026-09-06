@@ -1991,3 +1991,50 @@ navigation — had no exception in it.
 
 > When a clear-out leaves exactly one survivor and the survivor needs a paragraph to justify
 > it, that paragraph is the tell.
+
+## §92. A dead branch with a good comment on it
+
+`MF.fitSeam` has always carried a block that scrolls the face when the lump being looked at is
+off screen. It has a comment explaining why it eases rather than jumps, and why the scroll
+position belongs to the student. **It has never run once.**
+
+```js
+var target = F.target;      // nothing in the file ever assigned F.target
+if(target){ … }
+```
+
+Measured at 1376×900 when the user reported the distance: **19 of 24 lumps were off the side of
+the window while their own reading was on screen.** Median travel from stone to panel: 1,306px.
+Worst: 3,197.
+
+> **The placement maths was never wrong.** With the rock actually in view the panel sits 14px
+> from it — that logic had been tuned twice and both times it was working correctly on a rock
+> that wasn't there. Two correct-looking pieces of code, one of them describing something the
+> other had let scroll away.
+
+Three lessons, and the third is the one that cost the time:
+
+> **A field that is only ever read is a bug.** `F.target` is read in one place and written in
+> none. That is greppable, it is mechanical, and no group on this site looks for it.
+
+> **No group asked whether the thing being described was on screen with its description.**
+> `reach` measured spans between controls; `layout` measured right edges; `overlay` measured
+> what eats clicks. The relationship between a *reading* and its *subject* was nobody's.
+
+> **A smooth scroll measured synchronously reports the position it is easing away from.** This
+> fix looked unfixed twice — once before it and once after — because the probe read
+> `getBoundingClientRect` mid-animation. Force `scroll-behavior:auto` for the whole sweep, or
+> measure a journey that has not happened yet. Same family as §56's arrival wipe.
+
+## §93. Pinned to the edge is not the same as near the thing
+
+The reading's fallback, when it cannot stand beside a lump, was `top:14px` or `bottom:14px` —
+the wall's edges, wherever the stone happened to be. On a 979px window, where the panel rarely
+fits beside anything, that put the reading **329px** from a stone in the middle of the wall.
+
+The choice it was making — *cover less of the lump* — was the right question. The positions it
+was choosing between were both wrong: two fixed bands, neither of them near.
+
+> The candidates are now **above the lump** and **below the lump**, with the wall's edges kept
+> only for when neither fits. Same ordering rule, better options: 329px → 20px, and at that
+> width the worst case and the median are now the same number.

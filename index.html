@@ -7097,13 +7097,20 @@ MF.SCREENS['workshop-mold'] = function(host){
 /* the head every workshop page wears, and the way back out of it. One
    function, because three copies of a back link is three chances for one of
    them to strand a student in a room with no door. */
-MF.shedHead = function(host, key){
+MF.shedHead = function(host, key, opts){
   var w = null;
   MF.SHED.forEach(function(s){ if(s.key===key) w = s; });
-  var back = E('button','btn backbtn','&larr; The Casting Shed'); back.type='button';
-  back.innerHTML = '&larr; The Casting Shed';
-  on(back,'click',function(){ MF.go('workshop-mold'); });
-  host.appendChild(back);
+  /* THE BACK BUTTON IS OPTIONAL (user, 2026-09-06: remove it from The Words).
+     The Casting Shed is in the top bar on every page, so this is the same
+     route said twice — the clear-out that took the doors off the shed's front
+     page and the foot of the Forge. Asked for in one room and done in one
+     room; the other two still carry it. */
+  if(!(opts && opts.noBack)){
+    var back = E('button','btn backbtn','&larr; The Casting Shed'); back.type='button';
+    back.innerHTML = '&larr; The Casting Shed';
+    on(back,'click',function(){ MF.go('workshop-mold'); });
+    host.appendChild(back);
+  }
   host.appendChild(H('h2',null,'<span class="shedic sm">' + w.ic + '</span>' + w.nm));
   return w;
 };
@@ -7397,7 +7404,7 @@ MF.SCREENS['shed-mold'] = function(host){
 
 /* ---------------- WORKSHOP 2: THE WORDS ---------------- */
 MF.SCREENS['shed-words'] = function(host){
-  MF.shedHead(host, 'shed-words');
+  MF.shedHead(host, 'shed-words', {noBack:true});
   host.appendChild(MF.shedArt('words'));
   host.appendChild(H('p','lede','A metaphor is a way in until it becomes a private language, and then it is a wall. ' +
     'Everything on the left is what this place calls a thing. Everything on the right is what a textbook, a teacher and an exam paper call ' +
@@ -9685,7 +9692,13 @@ MF.fitSeam = function(){
     var tLeft = (target.px / F.W) * box.scrollWidth;
     var pad = Math.max(60, target.sz * (box.scrollWidth / F.W) + 40);
     if(tLeft < box.scrollLeft + pad || tLeft > box.scrollLeft + box.clientWidth - pad){
-      var wantLeft = Math.max(0, tLeft - box.clientWidth / 2);
+      /* A THIRD IN, NOT CENTRED. Centred leaves half a window each side and the
+         reading panel is 420px wide plus gaps — too tight on both, so
+         MF.placeInspect gives up on standing beside the lump and falls back to
+         a corner, which is the distance this exists to close. Landing the lump
+         a third from the left leaves the panel somewhere to be. */
+      var wantLeft = Math.max(0, Math.min(box.scrollWidth - box.clientWidth,
+                                          tLeft - box.clientWidth * 0.32));
       box.scrollLeft = wantLeft;             /* smooth, per the stylesheet */
       MF.state.scan = wantLeft;
     }
@@ -9749,6 +9762,34 @@ MF.selectRock = function(idx){
      is an ease and not a jump - and it is the same expression MF.paintFace
      uses, so the two paths cannot put the pick in different places. */
   var o = (idx == null) ? null : F.rocks[idx];
+
+  /* ---- AND THE FACE COMES TO THE LUMP ----
+
+     USER, 2026-09-06, with a screenshot: "This distance in the mine needs to
+     be addressed."
+
+     MF.fitSeam has a block that chases a lump which is off screen. It has
+     never run. It reads `F.target`, and NOTHING IN THE FILE EVER ASSIGNED
+     `F.target` — a whole branch, with a comment explaining why it eases rather
+     than jumps, dead since the day it was written because the field it hangs
+     off was never set.
+
+     Measured before touching it, at 1376x900: NINETEEN OF TWENTY-FOUR lumps
+     were off screen while their own pop-out was showing. The placement maths
+     was never the problem — when the rock is actually visible the panel sits
+     14px from it. The rock was somewhere else entirely.
+
+     NOT CENTRED — A THIRD IN. Centring the lump leaves 465px each side, and
+     the panel is 420 wide plus its gaps: too tight either side, so
+     MF.placeInspect would give up on standing beside the rock and fall back to
+     a corner. A third in leaves the panel the room to be where it belongs. */
+  if(o){
+    F.target = {px:o.px, sz:o.sz};
+    MF.fitSeam();
+  } else {
+    F.target = null;
+  }
+
   if(F.pick){
     var pX = o ? Math.min(F.W-110, Math.max(10, o.px + o.sz + 16)) : (F.W-104);
     var pY = o ? Math.min(F.VH-100, Math.max(4, o.py - 40)) : (F.VH-96);
@@ -9916,19 +9957,54 @@ MF.placeInspect = function(){
      sliver and it is not. */
   F.insp.removeAttribute('data-side');
   F.insp.style.top = ''; F.insp.style.bottom = '';
-  /* AND EVEN HERE IT LEANS AWAY. Centring the panel on the rock maximised the
-     overlap; pushing it to whichever side has more room shrinks the box the
-     two shapes share before the over/under choice is made at all. */
-  var lean = (roomRight >= roomLeft) ? (wb.width - pw - gap) : gap;
-  var left = Math.max(10, Math.min(wb.width - pw - 10, lean));
+  /* IT SITS OVER THE LUMP, NOT IN A CORNER.
+
+     This used to lean to whichever side had more room, on the reasoning that
+     centring the panel on the rock maximised the overlap between them. That
+     was true when the rock could be anywhere — including most of a window
+     away, because the face never came to it (§46). It is not true now: the
+     lump is always brought into view before this runs, and the over/under
+     choice below already picks the band that covers less of it.
+
+     So leaning was buying a smaller overlap at the price of the distance the
+     user reported. Centred on the lump and clamped into the wall, the panel is
+     directly above or below the thing it is describing and the caret points at
+     it — 386px of travel in the worst case became a fraction of that. */
+  var left = Math.max(10, Math.min(wb.width - pw - 10, cx - pw / 2));
   F.insp.style.left = Math.round(left) + 'px';
   F.insp.style.setProperty('--caret', Math.round(Math.max(16, Math.min(pw - 16, cx - left))) + 'px');
-  var over = function(aTop, aBot){
-    return Math.max(0, Math.min(aBot, rBot) - Math.max(aTop, rTop));
+  /* AND IT HUGS THE LUMP VERTICALLY TOO, rather than being pinned to the top
+     or the bottom of the wall.
+
+     `[data-flip=high]` is `top:14px` and `[data-flip=low]` is `bottom:14px` —
+     the wall's edges, wherever the lump happens to be. At 979px, where the
+     panel rarely fits beside a lump, that put the reading 329px from lump 7:
+     the panel at the top of the wall describing a stone in the middle of it.
+
+     So the candidates are ABOVE THE LUMP and BELOW THE LUMP, and only if
+     neither fits does it fall back to the wall's edges. Ordered by how much of
+     the stone they cover and then by how far they sit from it, so the choice
+     is still "cover less of it" first — that part was right. */
+  var over = function(aTop){
+    return Math.max(0, Math.min(aTop + ph, rBot) - Math.max(aTop, rTop));
   };
-  var high = over(gap, gap + ph);
-  var low  = over(wb.height - gap - ph, wb.height - gap);
-  F.insp.setAttribute('data-flip', low <= high ? 'low' : 'high');
+  var cands = [];
+  if(rTop - gap - ph >= gap)                 cands.push({top:rTop - gap - ph, flip:'high'});
+  if(rBot + gap + ph <= wb.height - gap)     cands.push({top:rBot + gap,      flip:'low'});
+  if(!cands.length){
+    cands.push({top:gap, flip:'high'});
+    cands.push({top:wb.height - gap - ph, flip:'low'});
+  }
+  cands.sort(function(a, b){
+    var oa = over(a.top), ob = over(b.top);
+    if(oa !== ob) return oa - ob;
+    return Math.abs((a.top + ph/2) - cy) - Math.abs((b.top + ph/2) - cy);
+  });
+  var put = cands[0];
+  /* inline top, and `bottom:auto` so the stylesheet's edge pin cannot win */
+  F.insp.style.top = Math.round(Math.max(gap, Math.min(wb.height - ph - gap, put.top))) + 'px';
+  F.insp.style.bottom = 'auto';
+  F.insp.setAttribute('data-flip', put.flip);
 };
 
 /* =========================================================================
@@ -17123,6 +17199,69 @@ MF.validate = function(){
         errs.push('reach: at ' + w + 'px the hammer panel holds ' + sh.scrollHeight + 'px of question in a ' +
                   sh.clientHeight + 'px box — the swing button is below the fold of a dialog');
       MF.closeTool();
+    })();
+
+    /* ---- THE READING STANDS BESIDE THE LUMP IT IS ABOUT ----
+
+       USER, 2026-09-06, with a screenshot: "This distance in the mine needs to
+       be addressed."
+
+       MF.fitSeam has always carried a block that chases a lump off the side of
+       the window. It read `F.target`, and NOTHING EVER ASSIGNED `F.target` —
+       so the branch was dead from the day it was written, and clicking a lump
+       left the face exactly where it was. Measured at 1376x900: 19 of 24 lumps
+       were off screen while their own pop-out was showing, median travel 1306
+       pixels, worst 3197.
+
+       THE PLACEMENT MATHS WAS NEVER WRONG. With the rock actually in view the
+       panel sits 14px from it. What was wrong is that the rock was somewhere
+       else, and no group on this site had ever asked whether the thing being
+       described was on the screen at the same time as the description.
+
+       So: every lump on the face, selected, and two questions of each — is it
+       VISIBLE, and how far is the reading from it. The scroll is forced
+       instant for the sweep, because a smooth scroll measured synchronously
+       reports the position it is easing away from (the same probe artifact
+       that made this look unfixed twice while it was being fixed). */
+    (function(){
+      var sf = MF._face;
+      if(!sf || !sf.svg || !sf.box){ errs.push('reach: there is no face to measure the reading against'); return; }
+      var rcInst = document.createElement('style');
+      rcInst.textContent = '.seamview,.seamview *{scroll-behavior:auto !important}';
+      document.head.appendChild(rcInst);
+      var rcHeld = MF.state.inspecting, seen = 0, hidden = 0, farthest = 0, farAt = null;
+      [].slice.call(sf.svg.querySelectorAll('.rock')).forEach(function(n){
+        var idx = +n.getAttribute('data-i');
+        MF.selectRock(idx);
+        var f2 = MF._face;
+        var node = f2.svg.querySelector('.rock[data-i="' + idx + '"]'), ins = f2.insp;
+        if(!node || !ins || ins.hidden) return;
+        seen++;
+        var rb = node.getBoundingClientRect(), ib = ins.getBoundingClientRect(),
+            bb = f2.box.getBoundingClientRect();
+        var shown = Math.max(0, Math.min(rb.right, bb.right) - Math.max(rb.left, bb.left));
+        if(shown < rb.width - 1) hidden++;
+        var dx = Math.max(0, Math.max(rb.left - ib.right, ib.left - rb.right));
+        var dy = Math.max(0, Math.max(rb.top - ib.bottom, ib.top - rb.bottom));
+        var d = Math.hypot(dx, dy);
+        if(d > farthest){ farthest = d; farAt = idx; }
+      });
+      MF.selectRock(rcHeld == null ? null : rcHeld);
+      rcInst.remove();
+      chk('reach');
+      if(seen < 8){
+        errs.push('reach: only ' + seen + ' lumps on the face opened a reading, so the distance was not measured');
+        return;
+      }
+      chk('reach');
+      if(hidden)
+        errs.push('reach: at ' + w + 'px, ' + hidden + ' of ' + seen +
+          ' lumps are off the side of the window while their own reading is on screen — ' +
+          'the face does not come to the lump');
+      chk('reach');
+      if(farthest > 320)
+        errs.push('reach: at ' + w + 'px the reading stands ' + Math.round(farthest) +
+          'px from lump ' + farAt + ' — it is describing something the eye has to go looking for');
     })();
 
     /* ---- the forge: target -> slots -> rack -> pour ---- */
