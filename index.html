@@ -345,7 +345,30 @@ input::placeholder, textarea::placeholder{color:#6B5B48; opacity:1}
 /* THE CUT. brightness(0) is what blacks out a COLOUR EMOJI - `fill` does not
    touch one, because the glyph carries its own colour table. */
 .mdcut{filter:brightness(0); opacity:.92}
-.mdcutshadow{filter:brightness(0); opacity:.4; transform:translate(7px,8px); transform-box:view-box}
+/* ---- THE CAVITY IS A HOLE, NOT A STAMP ----
+
+   USER, 2026-09-06, with a photograph of a graphite ingot mold: "they
+   currently look less 3D and more casting an old shadow. Not a shadow into an
+   empty space cut into a mold."
+
+   Exactly right, and the old markup said so. `.mdcutshadow` was a black copy
+   of the glyph offset DOWN AND RIGHT, painted OUTSIDE the silhouette. That is
+   the definition of a drop shadow: light from the upper left, an object
+   standing ON the sand, throwing a shadow away from itself. The one thing the
+   cavity is not is on top of anything.
+
+   HOW A CUT ACTUALLY LIGHTS, which is what the photograph shows: the light
+   comes down at an angle, so the inner wall it can reach is the one on the FAR
+   side — the bottom-right of each hole is pale, and the near wall at the top
+   left is in shadow. Nothing outside the rim changes at all, because the
+   surface around a hole is still flat.
+
+   So every layer is masked into the silhouette and the offset points the other
+   way. `.mdwall` is the lit far wall; `.mdinner` is a black copy pushed UP AND
+   LEFT over it, which covers all of the cavity except the band along its
+   bottom-right edge — and that band left showing IS the lit wall. An inner
+   shadow, built out of the same two shapes the drop shadow used. */
+.mdinner{filter:brightness(0); opacity:.92}
 /* and the same glyph in its own colours, shown only where the metal has run */
 .mdlive{filter:drop-shadow(0 0 7px rgba(255,190,90,.75))}
 /* THE THREE STATES OF THE METAL, all painted through the tool's own alpha mask
@@ -8541,8 +8564,36 @@ MF.moldScene = function(key, pour, shape){
     }
     return n;
   };
-  svg.appendChild(glyph('mdcutshadow'));      /* the depth, offset down and right */
   svg.appendChild(glyph('mdcut'));            /* the cut itself, black */
+
+  /* ---- AND IT IS LIT LIKE A HOLE, NOT LIKE A STAMP ----
+
+     The depth used to be a black copy offset DOWN AND RIGHT, outside the
+     silhouette — a drop shadow, which says the shape is standing on the sand.
+     The user sent a photograph of a graphite mold to say so.
+
+     In a real cavity the light reaches the FAR wall: the bottom-right of the
+     hole is pale and the near wall at the top left is dark, and nothing
+     outside the rim changes because the surface around a hole is flat.
+
+     Both layers are masked into the cavity, which is the whole difference. The
+     lit wall is painted across it, then a black copy pushed UP AND LEFT covers
+     everything except a band along the bottom-right edge — and the band it
+     fails to cover is the wall the light is on. The offsets are in the same
+     direction as the scene's own light, which comes off the ladle and the glow
+     in the top-left corner. */
+  var pit = S('g',{class:'mdpit', mask:'url(#'+uid+'tool)'});
+  grad(uid+'wall', [['0%','#6B5C49'],['55%','#8A7862'],['100%','#B2A188']]);
+  pit.appendChild(S('rect',{x:cavL, y:96, width:cavW, height:186, fill:'url(#'+uid+'wall)'}));
+  var inner = glyph('mdinner');
+  /* NOT A CSS TRANSFORM. §5g: a CSS transform replaces the attribute rather
+     than composing with it, and this glyph is inside a group the pour animates
+     the opacity of. The attribute is the safe one here because nothing
+     animates the transform of this element. */
+  inner.setAttribute('transform', 'translate(' + (-cavSize * 0.13).toFixed(1) +
+                                  ',' + (-cavSize * 0.15).toFixed(1) + ')');
+  pit.appendChild(inner);
+  svg.appendChild(pit);
 
   /* ---- THE CAVITY FILLS FROM THE BOTTOM ----
      It used to be a rect growing LEFT TO RIGHT over two things: the coloured
@@ -12620,6 +12671,47 @@ MF.validate = function(){
       if(!mMaskGlyph || mMaskGlyph.textContent !== MF.iconChar(t.ic))
         errs.push('mold: the metal for "' + t.nm + '" is poured through a mask that is not the tool\'s own icon');
     }
+    /* THE CAVITY IS LIT AS A HOLE, NOT AS A STAMP.
+
+       USER, 2026-09-06, with a photograph of a graphite mold: "they currently
+       look less 3D and more casting an old shadow. Not a shadow into an empty
+       space cut into a mold."
+
+       The old depth was a black copy of the glyph offset DOWN AND RIGHT and
+       painted OUTSIDE the silhouette — a drop shadow, which says the shape is
+       standing on the sand rather than cut into it.
+
+       Two things separate an inner shadow from a drop shadow, and both are
+       mechanical: everything stays INSIDE the cavity, and the offset points
+       TOWARD the light instead of away from it. Rasterising to check that the
+       far wall is actually paler would be the direct reading, but it is a
+       canvas round-trip per scene; these two are what make that true, and they
+       are the two a future edit would get wrong. */
+    chk('mold');
+    var mPit = mScene.querySelector('.mdpit');
+    if(!mPit){
+      errs.push('mold: "' + t.nm + '" has no lit wall in its cavity — it is a flat hole');
+    } else {
+      chk('mold');
+      if(!mPit.getAttribute('mask'))
+        errs.push('mold: the shading in "' + t.nm + '"\'s cavity is not masked into it, ' +
+                  'so it paints on the sand outside the rim — that is a drop shadow');
+      chk('mold');
+      var mIn = mPit.querySelector('.mdinner');
+      var mTr = mIn && (mIn.getAttribute('transform')||'').match(/translate\(\s*(-?[\d.]+)\s*,\s*(-?[\d.]+)/);
+      if(!mTr){
+        errs.push('mold: "' + t.nm + '"\'s cavity has no offset wall, so it has no depth at all');
+      } else if(!(parseFloat(mTr[1]) < 0 && parseFloat(mTr[2]) < 0)){
+        errs.push('mold: the depth in "' + t.nm + '"\'s cavity is offset (' + mTr[1] + ',' + mTr[2] +
+                  ') — down and right is a shadow cast by something sitting on the sand; ' +
+                  'a hole is dark on the side the light comes from');
+      }
+    }
+    /* and the drop shadow must not come back */
+    chk('mold');
+    if(mScene.querySelector('.mdcutshadow'))
+      errs.push('mold: "' + t.nm + '" still carries the old outside drop shadow');
+
     /* AND THE FILL RISES, AND ENDS FULL. A clip rect resting empty on the floor
        of the glyph and growing upward is what "the outline fills in" means; a
        rect with width in it is the old left-to-right wipe. */
