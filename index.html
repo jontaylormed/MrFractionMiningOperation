@@ -917,6 +917,40 @@ input::placeholder, textarea::placeholder{color:#6B5B48; opacity:1}
 .orerock.native .orelab{color:#2E2208; text-shadow:0 2px 0 #F2DCA4, 0 -2px 0 #F2DCA4,
   2px 0 0 #F2DCA4, -2px 0 0 #F2DCA4, 1px 1px 0 #F2DCA4, -1px -1px 0 #F2DCA4}
 .orerock.big{max-width:320px}
+/* ---- THE X, SCRIBED ON THE STONE (user, 2026-09-06) ----
+   It sits under the expression inside `.orelab`, so the lump still says what
+   it is and the X is the reading laid over it — the re-spelling in place that
+   §21 asks for, rather than a diagram beside the rock. */
+/* IT SCALES WITH THE STONE, NOT WITH THE WINDOW. `.orelab`'s font-size is
+   viewport-based and therefore the SAME on a 230px lump in the cart and a
+   122px piece on the breaking floor — so a fixed 88x60 X fitted the first and
+   overflowed the second by 3px, off the top of the rock. A percentage of the
+   label plus an aspect-ratio makes the X a fraction of whatever stone it is
+   cut into; `min()` keeps it from growing past its drawn size on the big one. */
+.lensx{display:block; position:relative; width:min(88px,46%); aspect-ratio:88/60;
+  margin:3px auto 0}
+.lensx svg{display:block; width:100%; height:100%; overflow:visible}
+.lensx path{stroke:currentColor; stroke-width:4; fill:none; stroke-linecap:round; opacity:.55}
+.lensx b{position:absolute; transform:translate(-50%,-50%); font-family:var(--display);
+  font-weight:400; font-size:14px; line-height:1; white-space:nowrap}
+.lensx .lxtop{left:50%; top:7%; color:var(--ore-t)}
+.lensx .lxbot{left:50%; top:93%; color:var(--vein)}
+.lensx .lxside{color:var(--ink-soft)}
+.lensx .lxl{left:6%; top:50%}
+.lensx .lxr{left:94%; top:50%}
+/* on a lump the ink is cut into stone, so the X borrows the label's own colour
+   and the two targets keep theirs */
+.orerock.native .lensx .lxside{color:#5A4620}
+/* and the numbers with it — a piece on the breaking floor is half the width of
+   a lump in the cart, so 14px would crowd its X the way the box did */
+.anvilrock .lensx b{font-size:11px}
+.anvilrock .lensx path{stroke-width:6}
+/* AND THE EXPRESSION ABOVE IT IS CAPPED ON A SMALL STONE.
+   `.orelab` is clamp(15px,2.4vw,21px) — it grows with the WINDOW while the
+   piece it is written on does not, so at 994px `6x² + 7x − 3` wrapped to two
+   lines on a 122px rock and pushed the X 4px off the top. The check caught
+   what a 360px probe could not: measuring one width proves one width. */
+.anvilrock .orelab{font-size:clamp(12px,1.5vw,15px)}
 .orerock.big .orelab{font-size:clamp(19px,3vw,30px)}
 /* the layer tag sits under the stone, not on it */
 /* --ink-soft is a LIGHT-surface colour and the cart's bed is steel (#5E6A76 to
@@ -4180,14 +4214,50 @@ MF.LENS.auger = function(ore){
 };
 
 /* THE DECIMAL DIAL: the tail marked as the number that moves. */
+/* THE CROSSCUT: THE X, SCRIBED ON THE STONE ITSELF.
+
+   USER, 2026-09-06, with a worked example from a lesson: "When using the
+   Crosscut Tool, an X should appear on the ore. As this diagram demonstrates."
+
+   The lens still showed the old Decimal Dial reading — the tail in angle
+   brackets, "the thing that moves" — which stopped being this instrument's job
+   the moment it became the X method. So this is the reading catching up with
+   the tool.
+
+   IT IS THE RE-SPELLING, NOT SOMETHING BESIDE IT. §21: in the mine nothing may
+   be drawn next to a lump, because the re-spelt rock has to BE the whole
+   reading. So the X is not a panel that opens near the stone — it is what the
+   stone says while the instrument is on it, in the same place the expression
+   was, exactly as every other lens re-spells in place.
+
+   BOTH SIDES STAY OPEN, and this is the one place it might have been tempting
+   not to: the worked example the user sent has 4 and 3 filled in, because it
+   is a solution. On a monic lump those two ARE the bracket constants, so
+   printing them is printing the answer — `schema` fails the build for it, and
+   it would make the instrument do the thing the student came to do. The X
+   states the two targets and stops.
+
+   THE COLOURS MATCH THE LESSON: the product on top in the ore tone, the sum
+   below in the vein green, which is how the same two numbers are marked
+   everywhere else the X is drawn. */
 MF.LENS.dial = function(ore){
   if(ore.kind === 'number' || ore.a === 0 || !ore.c) return null;
-  var head = sqTerm(ore.a);
-  var mid = ore.b ? (ore.b < 0 ? lensMark('lop',' − ') + xt2(Math.abs(ore.b))
-                               : lensMark('lop',' + ') + xt2(ore.b)) : '';
+  var ac = (ore.a === 1) ? ore.c : ore.a * ore.c;
+  var x =
+    '<span class="lensx" role="img" aria-label="An X. Top: ' + num(ac) +
+      ', what the pair multiplies to. Bottom: ' + num(ore.b) +
+      ', what it adds to. Both sides unknown.">' +
+      '<svg viewBox="0 0 100 68" aria-hidden="true" focusable="false">' +
+        '<path d="M22 12 L78 56"/><path d="M78 12 L22 56"/>' +
+      '</svg>' +
+      '<b class="lxtop">' + num(ac) + '</b>' +
+      '<b class="lxbot">' + num(ore.b) + '</b>' +
+      '<b class="lxside lxl">?</b>' +
+      '<b class="lxside lxr">?</b>' +
+    '</span>';
   return {
-    html: head + mid + lensMark('lop',' + ') + lensMark('ldial','&#10216;' + num(ore.c) + '&#10217;'),
-    found: 'the tail is the thing that moves'
+    html: MF.oreLabel(ore) + x,
+    found: 'the pair multiplies to ' + num(ac) + ' and adds to ' + num(ore.b)
   };
 };
 
@@ -16512,6 +16582,76 @@ MF.validate = function(){
     chk('schema');
     if(!MF.TOOLS[k]) errs.push('schema: there is a method for "' + k + '", which is not a tool');
   });
+
+  /* ---- THE CROSSCUT SCRIBES AN X ON THE STONE, AND IT STAYS ON IT ----
+
+     USER, 2026-09-06, with a worked example: "When using the Crosscut Tool, an
+     X should appear on the ore."
+
+     Two things to hold. The X has to be THERE — the lens was still showing the
+     old Decimal Dial reading long after the tool stopped being a dial — and it
+     has to FIT, because `.orelab` is absolutely positioned over the rock and
+     nothing clips it: a label taller than its stone hangs off into the sand.
+
+     THE SECOND ONE IS THE ONE THAT BIT. `.orelab`'s font-size is viewport-based
+     and therefore identical on a 230px lump in the cart and a 122px piece on
+     the breaking floor, so a fixed X fitted the first and overflowed the
+     second off the top of the rock. Measured on BOTH sizes here, because one
+     size passing proves nothing about the other. */
+  (function(){
+    var lxSaved = {tools:MF.state.tools, cart:MF.state.cart, sel:MF.state.selected,
+                   anvil:MF.state.anvil, mine:MF._mine};
+    MF.state.tools = {dial:{forged:true}};
+    var lxOre = {kind:'poly', a:6, b:7, c:-3, id:'lx', tool:'dial'};
+    MF.state.cart = [lxOre]; MF.state.selected = lxOre;
+    MF.state.anvil = MF.anvilInit(lxOre); MF.state.anvil.step = 'break';
+    if(MF.state.anvil.floor[0]) MF.state.anvil.floor[0].ore.tool = 'dial';
+    MF._mine = null;
+    var lxHost = document.createElement('div');
+    lxHost.style.cssText = 'position:fixed; left:-13000px; top:0; width:360px';
+    document.body.appendChild(lxHost);
+    try { MF.SCREENS.mine(lxHost); MF.paintMine(); } catch(e){}
+    var seen = 0;
+    [].forEach.call(lxHost.querySelectorAll('.orerock'), function(rk){
+      var x = rk.querySelector('.lensx'), lab = rk.querySelector('.orelab');
+      if(!x || !lab) return;
+      seen++;
+      var rb = rk.getBoundingClientRect(), lb = lab.getBoundingClientRect();
+      chk('schema');
+      if(lb.top < rb.top - 1 || lb.bottom > rb.bottom + 1)
+        errs.push('schema: the X the Crosscut scribes runs ' +
+          Math.round(Math.max(rb.top - lb.top, lb.bottom - rb.bottom)) +
+          'px off a ' + Math.round(rb.width) + 'px stone — nothing clips a lump\'s label, ' +
+          'so it hangs in the sand beside the rock');
+    });
+    chk('schema');
+    if(seen < 2)
+      errs.push('schema: only ' + seen + ' lump carried the Crosscut\'s X, so it was measured at ' +
+                'one size — the cart lump and the breaking-floor piece are half an order apart');
+    /* AND IT IS THE X, not the instrument it used to be */
+    chk('schema');
+    var lxRead = MF.LENS.dial({kind:'poly', a:1, b:7, c:12});
+    if(!lxRead || !/lensx/.test(lxRead.html))
+      errs.push('schema: the Crosscut does not scribe an X on the ore at all');
+    else {
+      chk('schema');
+      var lxBox = document.createElement('div');
+      lxBox.innerHTML = lxRead.html;
+      var top = lxBox.querySelector('.lxtop'), bot = lxBox.querySelector('.lxbot');
+      var sides = lxBox.querySelectorAll('.lxside');
+      if(!top || top.textContent.trim() !== '12' || !bot || bot.textContent.trim() !== '7')
+        errs.push('schema: the X on x² + 7x + 12 does not carry 12 over 7 — ' +
+                  'the product goes on top and the sum underneath');
+      chk('schema');
+      /* BOTH SIDES OPEN. On a monic lump they are the bracket constants, so
+         one filled is half the answer and both is all of it. */
+      if(sides.length !== 2 || [].some.call(sides, function(s){ return s.textContent.trim() !== '?'; }))
+        errs.push('schema: the Crosscut fills a side of its own X in — those two are the brackets');
+    }
+    lxHost.remove();
+    MF.state.tools = lxSaved.tools; MF.state.cart = lxSaved.cart;
+    MF.state.selected = lxSaved.sel; MF.state.anvil = lxSaved.anvil; MF._mine = lxSaved.mine;
+  })();
 
   /* ---- THE LANTERN LIGHTS A SHAPE, NOT A BRACKET ----
 
