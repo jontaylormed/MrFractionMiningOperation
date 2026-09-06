@@ -2388,6 +2388,56 @@ table.scan tr.hit td{background:#F1F8F5; color:var(--vein); font-weight:700}
 .bubble{position:relative; background:#fff; border:2px solid var(--tan); border-radius:14px; padding:12px 15px; font-size:15px; max-width:64ch}
 .bubble:before{content:""; position:absolute; left:-11px; top:20px; width:0; height:0; border:9px solid transparent; border-right-color:var(--tan)}
 .bubble b{font-family:var(--display); font-weight:400; color:var(--ore-t)}
+/* =========================================================================
+   MR FACTOR'S DOCK. He sits in the corner of every room and speaks when you
+   arrive somewhere for the first time.
+
+   IT IS FIXED, SMALL AND NEVER MODAL. There is no scrim behind it and it does
+   not take the keyboard when it opens: `nogate` is the rule this site is built
+   on, and a guide that has to be dismissed before you can work is a gate with
+   a friendly face on it. The portrait alone is 64px in the corner; the bubble
+   only exists while it is open.
+   ========================================================================= */
+.guide{position:fixed; right:14px; bottom:14px; z-index:60;
+  display:flex; flex-direction:column; align-items:flex-end; gap:8px;
+  /* the DOCK does not take clicks — only the things in it do, so it can never
+     swallow a click meant for the room behind it (the fault class the
+     `overlay` group exists for) */
+  pointer-events:none}
+.guide > *{pointer-events:auto}
+.gtab{border:3px solid var(--tan); background:var(--paper); border-radius:50%;
+  width:64px; height:64px; padding:0; cursor:pointer; display:grid; place-items:center;
+  box-shadow:0 3px 10px rgba(0,0,0,.22)}
+.gtab:hover{border-color:var(--ore-t)}
+.gtab svg{display:block; width:42px; height:auto}
+/* HE PUTS A HAND UP IN A ROOM YOU HAVE NOT BEEN IN. Not a badge with a number
+   on it — nothing on this site counts anything — just a lit lamp. */
+.gtab[data-new]{border-color:var(--ore-t); box-shadow:0 0 0 4px rgba(176,106,32,.20), 0 3px 10px rgba(0,0,0,.22)}
+.gbubble{position:relative; background:#fff; border:3px solid var(--tan); border-radius:14px;
+  padding:13px 15px 11px; width:min(330px, calc(100vw - 34px)); box-shadow:0 5px 18px rgba(0,0,0,.20)}
+.gbubble:after{content:""; position:absolute; right:22px; bottom:-11px; width:0; height:0;
+  border:9px solid transparent; border-top-color:var(--tan)}
+.gwhere{font-family:var(--display); font-size:11px; letter-spacing:.11em; color:var(--ore-t)}
+.gtext{font-size:15px; color:var(--ink); margin:4px 0 9px}
+.gtext b{font-family:var(--display); font-weight:400; color:var(--ore-t)}
+.grow{display:flex; align-items:center; gap:8px}
+.gdots{display:flex; gap:5px; flex:1 1 auto}
+.gdot{width:8px; height:8px; border-radius:50%; background:var(--tan)}
+.gdot[data-on]{background:var(--ore-t)}
+.gbtn{font:inherit; font-size:14px; padding:6px 11px; border-radius:9px;
+  border:2px solid var(--tan); background:var(--paper); color:var(--ink); cursor:pointer}
+.gbtn.gnext{background:var(--ore-t); border-color:var(--ore-t); color:#FFF7EA}
+.gbtn:disabled{opacity:.45; cursor:default}
+.gshut{position:absolute; top:5px; right:8px; border:0; background:none; font-size:19px;
+  line-height:1; color:var(--ink-soft); cursor:pointer; padding:2px 4px}
+.gshut:hover{color:var(--ink)}
+@media(max-width:430px){
+  .guide{right:10px; bottom:10px}
+  .gtab{width:54px; height:54px}
+  .gtab svg{width:35px}
+}
+@media print{ .guide{display:none} }
+
 .chips{display:flex; flex-wrap:wrap; gap:8px; margin:8px 0}
 .chip{border:2px solid var(--tan); background:#fff; border-radius:999px; padding:6px 13px; font-size:14px; color:var(--ink)}
 </style>
@@ -2418,6 +2468,11 @@ table.scan tr.hit td{background:#F1F8F5; color:var(--vein); font-weight:700}
 </header>
 
 <div class="wrap"><main id="screen" tabindex="-1"></main></div>
+
+<!-- MR FACTOR'S DOCK. Outside #screen on purpose: MF.go clears that element on
+     every arrival, and a guide that is destroyed by the act of arriving
+     somewhere cannot greet you when you get there. -->
+<div id="guide" class="guide" hidden></div>
 
 <script>
 "use strict";
@@ -4443,12 +4498,182 @@ MF.go = function(name){
     host.appendChild(H('div','note bad','<b>This screen did not build.</b> That is a fault in the mine, not in you. ('+String(err.message||err)+')'));
   }
   MF.paintNav();
+  MF.guideArrive();
   host.focus();
   window.scrollTo(0,0);
   host.classList.remove('arriving');
   void host.offsetWidth;                 /* restart the wipe on every arrival */
   host.classList.add('arriving');
 };
+/* =========================================================================
+   MR FACTOR, GUIDING. A DOCK, AND ONE WALKTHROUGH PER ROOM.
+
+   USER DECISION, 2026-09-05: he sits in a dock — one place, every page, that a
+   student learns once — and the tutorial is a PER-ROOM FIRST VISIT rather than
+   a single tour of the site.
+
+   Before this he existed in three places out of eight screens: two speech
+   bubbles and a portrait on the front page. There was a character and no
+   guide, so "where do I start" had no answer anywhere on the site.
+
+   WHAT THE DOCK IS, AND WHAT IT REFUSES TO BE:
+
+   - It OPENS ITSELF once per room, the first time you arrive there in a
+     session, and never again unless you ask.
+   - It NEVER GATES. No scrim, no focus trap, nothing behind it is disabled,
+     and the room is fully usable with the bubble open. `nogate` is the rule
+     this whole site is built on and a guide you have to dismiss before you can
+     work is a gate wearing a friendly face.
+   - It COUNTS NOTHING. No progress bar across rooms, no "3 of 8 completed",
+     no badge with a number on it — `nogrades` would fail the build over it and
+     it would be the wrong thing anyway. A room you have not been in gets a lit
+     lamp on the portrait, and that is the whole of the signal.
+   - It is ALWAYS THERE. Tap him in a room you have read and he says the same
+     thing again from the top, because the student who needs him most is the
+     one who came back.
+
+   THE COPY IS ABOUT WHAT TO DO, NOT WHAT THINGS ARE CALLED. Each beat names an
+   action available in that room. The rooms already explain themselves at
+   length; what was missing was somebody saying "start here".
+   ========================================================================= */
+MF.GUIDE = {
+  home: {where:'THE SURFACE', beats:[
+    'Everything here is a building you can walk into, and the bar at the top goes to all of them.',
+    'Start in <b>the mine</b> if you want to break something, or the <b>Casting Shed</b> if you would rather read first. Neither is required and neither locks.',
+    'The yard in the corner is where your metal ends up. You have not put anything in it yet.'
+  ]},
+  mine: {where:'THE MINE', beats:[
+    'Pick a lump out of the wall and it goes in your cart. Dig as deep as you like — nothing has to be worked before you go further.',
+    'Put one on the bench and <b>name a factor</b>, then swing. Either the seam runs or the pick glances off, and the rock tells you which.',
+    'What is left goes back under the hammer. Keep going until nothing will come apart — that is <b>native metal</b>, and it is finished.',
+    'Nothing here is marked and nothing is timed. A swing that misses costs you the swing.'
+  ]},
+  forge: {where:'THE FORGE', beats:[
+    'This is the one place on the site that <b>multiplies</b> instead of breaking. Metal goes into a mold and one object comes out.',
+    'Take an order off the board and I will open the mold. You spend metal out of the yard to fill it.',
+    'If the casting is sound you keep the tool. A tool never gates anything — it reads a lump for you and that is all.'
+  ]},
+  'workshop-mold': {where:'THE CASTING SHED', beats:[
+    'Three short workshops. <b>The Words</b> is the vocabulary, <b>The Molds</b> is what a pour actually does, and <b>The Tools</b> is how each instrument works.',
+    'None of them is required and none is marked. Come back here when a word in the mine stops making sense.'
+  ]},
+  'shed-mold': {where:'THE MOLDS', beats:[
+    'Move the sliders and watch the pour. Whatever you put in decides what comes out — you never choose the shape.',
+    'The working underneath is the same multiplication written a line at a time. The mine runs it <b>backwards</b>.'
+  ]},
+  'shed-words': {where:'THE WORDS', beats:[
+    'Every mining name here is a real mathematical thing with a real name. The table has both columns.',
+    'Then put them together yourself in the matching activity. Nothing is counted — a pair that does not go together tells you what each word means and lets go.'
+  ]},
+  'shed-methods': {where:'THE TOOLS', beats:[
+    'One lesson per instrument you have cast. Each one walks its method a slide at a time, and every slide has the picture on it.',
+    'Under the walkthrough is a bench with three lumps on it. <b>Take the instrument off the hook and hold it to one</b> — that is the part that is not reading.'
+  ]},
+  'workshop-ore': {where:'THE STAMP MILL', beats:[
+    'Plain numbers, and the factors of everything up to a hundred.',
+    'Put a lump on the bench and pull the lever. The press finds what divides it — and what will not come apart is a <b>prime</b>, which is the same object as native metal.'
+  ]}
+};
+
+MF.guideState = {seen:{}, open:false, at:0, room:null};
+
+/* the portrait, the bubble, and nothing else on the page has to know */
+MF.paintGuide = function(){
+  var host = q('#guide');
+  if(!host) return null;
+  var room = MF.state.screen;
+  var g = MF.GUIDE[room];
+  clear(host);
+  if(!g){ host.hidden = true; return null; }
+  host.hidden = false;
+
+  var G = MF.guideState;
+  if(G.room !== room){ G.room = room; G.at = 0; }
+  var beats = g.beats;
+  if(G.at >= beats.length) G.at = beats.length - 1;
+
+  if(G.open){
+    var bub = E('div','gbubble');
+    var shut = E('button','gshut'); shut.type='button';
+    shut.innerHTML = '&times;';
+    shut.setAttribute('aria-label','Close what Mr Factor is saying');
+    on(shut,'click',function(){ G.open = false; MF.paintGuide(); focusTab(); });
+    bub.appendChild(shut);
+    bub.appendChild(H('div','gwhere', g.where));
+    bub.appendChild(H('p','gtext', beats[G.at]));
+
+    var row = E('div','grow');
+    var back = E('button','gbtn'); back.type='button';
+    back.innerHTML = '&larr;';
+    back.setAttribute('aria-label','What he said before this');
+    back.disabled = (G.at === 0);
+    on(back,'click',function(){ G.at--; MF.paintGuide(); });
+    row.appendChild(back);
+
+    var dots = E('div','gdots');
+    beats.forEach(function(_, i){
+      var d = E('i','gdot');
+      if(i <= G.at) d.setAttribute('data-on','yes');
+      dots.appendChild(d);
+    });
+    row.appendChild(dots);
+
+    var nxt = E('button','gbtn gnext'); nxt.type='button';
+    var last = (G.at === beats.length - 1);
+    nxt.textContent = last ? 'got it' : 'next →';
+    nxt.setAttribute('aria-label', last ? 'Close what Mr Factor is saying' : 'The next thing he has to say');
+    on(nxt,'click',function(){
+      if(last){ G.open = false; MF.paintGuide(); focusTab(); }
+      else { G.at++; MF.paintGuide(); }
+    });
+    row.appendChild(nxt);
+    bub.appendChild(row);
+    host.appendChild(bub);
+  }
+
+  var tab = E('button','gtab'); tab.type='button';
+  /* THE LIT LAMP IS THE WHOLE SIGNAL for a room he has not spoken in. It is
+     not a count and it is not a score; it goes out once he has, and nothing
+     anywhere adds them up. */
+  var fresh = !MF.guideState.seen[room];
+  if(fresh && !G.open) tab.setAttribute('data-new','yes');
+  tab.appendChild(MF.art(42, {lit:fresh}));
+  tab.setAttribute('aria-label', (G.open ? 'Close' : 'Open') + ' what Mr Factor has to say about ' +
+    g.where.toLowerCase() + (fresh && !G.open ? '. He has not shown you this room yet.' : ''));
+  tab.setAttribute('aria-expanded', G.open ? 'true' : 'false');
+  on(tab,'click',function(){
+    G.open = !G.open;
+    if(G.open){ G.at = 0; MF.guideState.seen[room] = true; }
+    MF.paintGuide();
+  });
+  host.appendChild(tab);
+
+  function focusTab(){
+    var t = host.querySelector('.gtab');
+    if(t && t.focus) t.focus({preventScroll:true});
+  }
+  return host;
+};
+
+/* CALLED ON EVERY ARRIVAL. He opens himself the FIRST time you reach a room
+   and stays shut after that, which is the difference between a guide and a
+   thing that talks at you every time you walk through a door. */
+MF.guideArrive = function(){
+  var room = MF.state.screen;
+  if(!MF.GUIDE[room]){ MF.paintGuide(); return false; }
+  var first = !MF.guideState.seen[room];
+  if(first){
+    MF.guideState.seen[room] = true;
+    MF.guideState.at = 0;
+    MF.guideState.open = true;
+  } else {
+    MF.guideState.open = false;
+  }
+  MF.guideState.room = room;
+  MF.paintGuide();
+  return first;
+};
+
 MF.paintNav = function(){
   var nav = q('#nav'); clear(nav);
   /* the same names the buildings carry on the surface - a door, its room and
@@ -14348,6 +14573,32 @@ MF.validate = function(){
        `hidden` is the only thing holding them back, so dropping the attribute
        shows every card at its real colours. */
     [].forEach.call(probe.querySelectorAll('.ask[hidden]'), function(c){ c.hidden = false; });
+    /* MR FACTOR'S DOCK IS NOT IN THE PROBE, because it is not in `#screen` —
+       it lives outside it on purpose, so that clearing the screen on every
+       arrival cannot destroy the thing whose job is to greet you when you get
+       there. That also puts every word he says outside this sweep, which is
+       how a surface goes dark. So it is built for this room and measured with
+       it (§88). */
+    if(MF.GUIDE[scr]){
+      var gSaved = MF.guideState, gScreen = MF.state.screen;
+      MF.state.screen = scr;
+      MF.guideState = {seen:{}, open:true, at:0, room:scr};
+      var gHost = document.createElement('div');
+      gHost.id = 'guide-probe';
+      probe.appendChild(gHost);
+      var gReal = q('#guide');
+      /* paint it into the probe rather than the real dock, so the sweep is
+         measuring this screen's copy and not whatever is on screen now */
+      if(gReal){
+        gReal.id = 'guide-parked'; gHost.id = 'guide';
+        MF.GUIDE[scr].beats.forEach(function(_, bi){
+          MF.guideState.at = bi;
+          MF.paintGuide();
+        });
+        gHost.id = 'guide-probe'; gReal.id = 'guide';
+      }
+      MF.guideState = gSaved; MF.state.screen = gScreen;
+    }
     MF._measureContrast(probe).forEach(function(m){
       chk('contrast');
       if(m.ratio < m.need) contrastFails.push(scr+': "'+m.text+'" ('+m.cls+') at '+m.ratio+':1, needs '+m.need);
@@ -17217,6 +17468,128 @@ MF.validate = function(){
 
   document.body.removeChild(vsStage);
   MF.state.anvil = vsSaved;
+
+  /* ======================================================================
+     MR FACTOR'S DOCK, HELD TO THE SAME RULES AS EVERYTHING ELSE.
+
+     USER DECISION, 2026-09-05: a dock, and a per-room first visit.
+
+     A guide is the one feature on a site like this that most wants to become a
+     gate — a modal you dismiss, a tour you cannot skip, a progress bar across
+     the rooms — and every one of those is against a rule this project already
+     has. So the rules are checked rather than remembered.
+
+     READ THE DENOMINATOR: this measures that he EXISTS in every room, that he
+     opens once and only once, that he blocks nothing and counts nothing, and
+     that his copy is short. It cannot tell you whether what he says is the
+     right thing to say in that room — that is a human reading and it has not
+     happened.
+     ====================================================================== */
+  var gdSaved = {state:MF.guideState, screen:MF.state.screen};
+  /* EVERY ROOM HAS A WAY IN. A screen added without guide copy is a room a
+     student can arrive in with nobody to tell them what it is for. */
+  Object.keys(MF.SCREENS).forEach(function(scr){
+    chk('guide');
+    if(!MF.GUIDE[scr]){
+      errs.push('guide: "' + scr + '" is a room Mr Factor has nothing to say about');
+      return;
+    }
+    var g = MF.GUIDE[scr];
+    chk('guide');
+    if(!g.where || !g.beats || !g.beats.length)
+      errs.push('guide: the guide for "' + scr + '" has no ' + (g.where ? 'beats' : 'name') + ' in it');
+    /* AND HE IS BRIEF. The whole complaint that produced §41 was walls of
+       text; a guide is the last place to reintroduce one, and it is the
+       easiest place to do it by accident. */
+    (g.beats || []).forEach(function(b, bi){
+      chk('guide');
+      var plain = String(b).replace(/<[^>]+>/g,'').trim();
+      if(plain.length < 12 || plain.length > 210)
+        errs.push('guide: "' + scr + '" beat ' + (bi+1) + ' is ' + plain.length +
+                  ' characters — he says one thing at a time');
+    });
+    chk('guide');
+    if((g.beats || []).length > 4)
+      errs.push('guide: "' + scr + '" has ' + g.beats.length +
+                ' beats — a room you have to be talked through four times is a room, not a tour stop');
+  });
+  /* HE OPENS ONCE. Arriving in a room for the first time raises the bubble;
+     arriving again does not, or he is a thing that talks at you every time you
+     walk through a door. */
+  (function(){
+    var gRoom = 'shed-words';
+    MF.guideState = {seen:{}, open:false, at:0, room:null};
+    MF.state.screen = gRoom;
+    chk('guide');
+    if(!MF.guideArrive())
+      errs.push('guide: arriving in a room for the first time did not open the guide');
+    chk('guide');
+    if(!MF.guideState.open)
+      errs.push('guide: the first arrival left the bubble shut');
+    chk('guide');
+    if(MF.guideArrive())
+      errs.push('guide: he opened himself a second time in a room the student has already been shown');
+    chk('guide');
+    if(MF.guideState.open)
+      errs.push('guide: coming back into a room raised the bubble again');
+  })();
+  /* HE NEVER GATES. No scrim, nothing disabled behind him, and the dock itself
+     takes no pointer events — the fault class the `overlay` group exists for,
+     where the pick was eating every click meant for a rock. */
+  (function(){
+    MF.guideState = {seen:{}, open:true, at:0, room:'mine'};
+    MF.state.screen = 'mine';
+    MF.paintGuide();
+    var dock = q('#guide');
+    chk('guide');
+    if(!dock || !dock.querySelector('.gbubble')){
+      errs.push('guide: the dock did not paint, so nothing about it was measured');
+      return;
+    }
+    chk('guide');
+    if(document.querySelector('.scrim'))
+      errs.push('guide: opening the guide put a scrim over the room — it is not modal and must never be');
+    chk('guide');
+    if(getComputedStyle(dock).pointerEvents !== 'none')
+      errs.push('guide: the dock takes pointer events itself, so it can swallow a click meant for the room behind it');
+    chk('guide');
+    var gTab = dock.querySelector('.gtab');
+    if(!gTab || getComputedStyle(gTab).pointerEvents === 'none')
+      errs.push('guide: the portrait cannot be clicked, so there is no way to ask him anything');
+    /* AND HE COUNTS NOTHING. Same regex the nogrades group uses, pointed at
+       him — a guide is where a progress bar across the rooms would go. */
+    chk('guide');
+    var gWords = (dock.textContent || '') + ' ' +
+      [].map.call(dock.querySelectorAll('[aria-label]'), function(n){ return n.getAttribute('aria-label'); }).join(' ');
+    if(/(\d+\s*(?:%|percent))|(\b\d+\s*(?:of|out of|\/)\s*\d+\b)|\b(score|scored|complete[d]?|progress|streak)\b/i.test(gWords))
+      errs.push('guide: the dock is counting something — "' +
+        (gWords.match(/(\d+\s*(?:%|percent))|(\b\d+\s*(?:of|out of|\/)\s*\d+\b)|\b(score|scored|complete[d]?|progress|streak)\b/i)||[''])[0] +
+        '" is on it, and nothing on this site adds anything up');
+    /* the bubble has to fit the narrowest screen the site is checked at */
+    chk('guide');
+    var gb = dock.querySelector('.gbubble').getBoundingClientRect();
+    if(gb.width > document.documentElement.clientWidth - 16)
+      errs.push('guide: the bubble is ' + Math.round(gb.width) + 'px on a ' +
+        document.documentElement.clientWidth + 'px screen — it runs off the edge');
+    chk('guide');
+    if(gb.left < 0)
+      errs.push('guide: the bubble starts ' + Math.round(gb.left) + 'px off the left of the screen');
+  })();
+  /* CONTROL 1: a room with no guide copy must be caught */
+  chk('guide');
+  var gdReal = MF.GUIDE['shed-words'];
+  delete MF.GUIDE['shed-words'];
+  var gdMiss = Object.keys(MF.SCREENS).filter(function(s){ return !MF.GUIDE[s]; });
+  MF.GUIDE['shed-words'] = gdReal;
+  if(!gdMiss.length)
+    errs.push('CONTROL: the guide check cannot see a room he has nothing to say about');
+  /* CONTROL 2: a beat padded back into a wall of text */
+  chk('guide');
+  var gdWall = new Array(20).join('a sentence of explanation. ');
+  if(gdWall.replace(/<[^>]+>/g,'').trim().length <= 210)
+    errs.push('CONTROL: the guide brevity budget cannot see a beat padded into a paragraph');
+  MF.guideState = gdSaved.state; MF.state.screen = gdSaved.screen;
+  MF.paintGuide();
 
   /* 6. NOTHING ON SCREEN MAY HAVE A CEILING, A PERCENTAGE, OR A COMPARISON.
         This is a stated requirement, so it is checked mechanically rather
