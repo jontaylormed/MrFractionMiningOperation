@@ -1875,6 +1875,8 @@ table.rosetta td.rx{font-family:var(--display); font-size:16px; color:var(--ink)
 .shedcard .why{flex:1 1 auto}
 .backbtn{margin-bottom:10px}
 .shedfoot{border-top:2px solid var(--rule); padding-top:14px; justify-content:center}
+/* the one door at the foot of the shed's front page, centred like the others */
+.shednext{justify-content:center}
 
 /* THE MATCHING ACTIVITY: two columns of words and the job of pairing them */
 .matchbox{background:var(--paper-2); border:3px solid var(--tan); border-radius:14px;
@@ -4077,28 +4079,63 @@ MF.oreDisplay = function(o){
    labels once shipped at 1.06:1. The stone is SVG; every character on it is a
    span.
    ========================================================================= */
+/* =========================================================================
+   WHAT A LUMP LOOKS LIKE, IN ONE PLACE.
+
+   USER, 2026-09-05: "Change the Homepage Illustration yard to contain shapes
+   that look and colored like the ore mined."
+
+   The yard on the surface held steel bars and a brown blob. Neither was the
+   thing a student digs, and the reason they were not is that the lump's
+   silhouette and palette lived inside MF.oreRock as literals - so anywhere
+   else that wanted to draw ore had to draw its own approximation, and did.
+
+   One object now. MF.oreRock renders it at label size with the expression cut
+   into it; MF.oreLump renders the same polygon, the same two skins and the
+   same seam as a bare <g> for a scene to place. The mine and the surface
+   cannot show a student two different rocks, because there is only one.
+   ========================================================================= */
+MF.ORE_ART = {
+  box:   [150, 104],
+  shape: '10,54 30,24 70,10 116,18 140,44 136,80 98,96 46,94 14,76',
+  facet: '30,24 70,10 116,18 84,40 44,42',
+  seam:  'M20 80 q30 -12 60 -6 q28 3 52 -7',
+  vein:  '#C96A1F',
+  rock:  {body:'#7A6650', edge:'#2E2620', face:'#8F7A61'},
+  metal: {body:'#D9B45C', edge:'#8A6A2A', face:'#F2DCA4'}
+};
+
+/* the lump as a bare <g>, for a scene to place and scale. `w` is how wide it
+   should come out in the host's own units. */
+MF.oreLump = function(opts){
+  var op = opts || {}, A = MF.ORE_ART;
+  var skin = op.native ? A.metal : A.rock;
+  var k = (op.w || A.box[0]) / A.box[0];
+  var g = S('g',{});
+  if(k !== 1 || op.x || op.y)
+    g.setAttribute('transform','translate('+(op.x||0)+','+(op.y||0)+') scale('+k.toFixed(4)+')');
+  g.appendChild(S('polygon',{points:A.shape, fill:skin.body, stroke:skin.edge,
+    'stroke-width':String(op.stroke || 4), 'stroke-linejoin':'round'}));
+  g.appendChild(S('polygon',{points:A.facet, fill:skin.face, opacity:'.55'}));
+  /* THE SEAM, and only on rock that still has one. On native metal there is
+     nothing running through it and drawing a seam would be a lie. */
+  if(!op.native)
+    g.appendChild(S('path',{d:A.seam, fill:'none', stroke:A.vein,
+      'stroke-width':String(op.stroke || 4), 'stroke-linecap':'round'}));
+  return g;
+};
+
 MF.oreRock = function(o, opts){
   var op = opts || {};
   var wrap = E('div','orerock' + (op.native ? ' native' : '') + (op.big ? ' big' : ''));
-  var svg = S('svg',{viewBox:'0 0 150 104', preserveAspectRatio:'xMidYMid meet','aria-hidden':'true'});
-  var body = op.native ? '#D9B45C' : '#7A6650',
-      edge = op.native ? '#8A6A2A' : '#2E2620',
-      face = op.native ? '#F2DCA4' : '#8F7A61';
+  var svg = S('svg',{viewBox:'0 0 ' + MF.ORE_ART.box[0] + ' ' + MF.ORE_ART.box[1],
+    preserveAspectRatio:'xMidYMid meet','aria-hidden':'true'});
   /* the stone: one flat silhouette and a dark outline, the way everything on
-     this site is drawn since the anvil was flattened */
-  svg.appendChild(S('polygon',{
-    points:'10,54 30,24 70,10 116,18 140,44 136,80 98,96 46,94 14,76',
-    fill:body, stroke:edge,'stroke-width':'4','stroke-linejoin':'round'}));
-  /* one lit facet, so it reads as a solid and not a blob */
-  svg.appendChild(S('polygon',{points:'30,24 70,10 116,18 84,40 44,42',fill:face,opacity:'.55'}));
-  /* THE SEAM, and only on rock that still has one. On native metal there is
-     nothing running through it and drawing a seam would be a lie. */
-  /* THE SEAM RUNS UNDER THE NUMBERS, not through them. At y=62 it crossed the
+     this site is drawn since the anvil was flattened.
+     THE SEAM RUNS UNDER THE NUMBERS, not through them. At y=62 it crossed the
      label, and an orange stroke behind an expression is noise on the one thing
      the stone exists to show. */
-  if(!op.native)
-    svg.appendChild(S('path',{d:'M20 80 q30 -12 60 -6 q28 3 52 -7',fill:'none',
-      stroke:'#C96A1F','stroke-width':'4','stroke-linecap':'round'}));
+  svg.appendChild(MF.oreLump({native:op.native}));
   wrap.appendChild(svg);
   var lab = E('div','orelab');
   lab.innerHTML = MF.oreDisplay(o);
@@ -5101,25 +5138,33 @@ MF.surfaceScene = function(){
   });
   yd.appendChild(S('rect',{x:'2',y:'11',width:'91',height:'3',fill:'#6B5A47'}));
   yd.appendChild(S('rect',{x:'2',y:'21',width:'91',height:'3',fill:'#6B5A47'}));
-  /* THE RACK, which is what a yard IS: metal off the anvil, stood up in rows.
-     Flat steel in the same two tones as the .ingot bars in the mine. */
-  yd.appendChild(S('rect',{x:'8',y:'23',width:'29',height:'3.5',fill:'#5A4230'}));
-  [[9,12],[16,9],[23,13],[30,10]].forEach(function(bar){
-    yd.appendChild(S('rect',{x:String(bar[0]),y:String(23-bar[1]),width:'5.5',height:String(bar[1]),
-      rx:'1',fill:'#C4CED8',stroke:'#5A6570','stroke-width':'1.2'}));
+  /* ---- WHAT IS IN THE YARD IS ORE, DRAWN AS ORE ----
+
+     USER, 2026-09-05: "Change the Homepage Illustration yard to contain shapes
+     that look and colored like the ore mined."
+
+     It held flat steel bars and a brown blob. Neither was a lump: a student
+     who has spent an hour looking at MF.oreRock arrived at the surface and
+     found the place their metal is kept stocked with two things they had never
+     seen. Both sides are MF.oreLump now - the same polygon, the same skins and
+     the same orange seam as the rock on the anvil - so the yard is stocked
+     with the thing the mine produces.
+
+     THE TWO SIDES STILL HAVE TO BE TOLD APART AT A GLANCE, because they are
+     the two answers to the question the face asks. They are, and by the one
+     signal that already means it everywhere else: NATIVE METAL IS GOLD AND
+     CARRIES NO SEAM; rock that still has one is brown and has the vein drawn
+     through it. That distinction is now inherited rather than re-invented. */
+  /* THE RACK: native metal, stood on a plank. */
+  yd.appendChild(S('rect',{x:'6',y:'25',width:'34',height:'3',rx:'1',fill:'#5A4230'}));
+  [[6,25,14],[19,25,15],[12,17,12],[28,26,13]].forEach(function(p){
+    yd.appendChild(MF.oreLump({native:true, x:p[0], y:p[1] - p[2]*(MF.ORE_ART.box[1]/MF.ORE_ART.box[0]),
+      w:p[2], stroke:9}));
   });
-  /* THE HEAP beside it: rock that still has a seam in it, waiting. The rack and
-     the heap are the two answers to the question the face now asks, so the two
-     have to be told apart at a glance - it is drawn in the ROCK browns with a
-     dark outline and an orange seam through it, the same signal the mine uses,
-     rather than the fence's timber. Without the outline it was the ground. */
-  yd.appendChild(S('path',{d:'M50 27 q8 -12 17 -5 q7 -7 14 1 q5 4 3 8 Z',
-    fill:'#6B5A47',stroke:'#3A2E22','stroke-width':'1.6','stroke-linejoin':'round'}));
-  yd.appendChild(S('path',{d:'M55 22 q9 -4 17 -1 q6 2 10 5',fill:'none',
-    stroke:'#C96A1F','stroke-width':'1.8','stroke-linecap':'round'}));
-  [[57,24],[68,22],[77,25]].forEach(function(r){
-    yd.appendChild(S('circle',{cx:String(r[0]),cy:String(r[1]),r:'2.4',fill:'#5A4B3C',
-      stroke:'#3A2E22','stroke-width':'1'}));
+  /* THE HEAP: rock that still has a seam in it, waiting to be worked. */
+  [[50,27,16],[62,28,15],[74,27,14],[57,20,13],[69,21,12]].forEach(function(p){
+    yd.appendChild(MF.oreLump({x:p[0], y:p[1] - p[2]*(MF.ORE_ART.box[1]/MF.ORE_ART.box[0]),
+      w:p[2], stroke:9}));
   });
   nameplate(yd, 46, 32, 'The Yard');
   svg.appendChild(yd);
@@ -6777,13 +6822,25 @@ MF.SCREENS['workshop-mold'] = function(host){
   host.appendChild(H('p','hint','Nothing in here is marked, timed or stored, and none of it is required. ' +
     'You can walk into the mine having read none of it — the `nogate` rule holds everywhere.'));
 
-  var go = E('div','row'); go.style.marginTop='14px';
-  /* NO "INTO THE MINE" (user, 2026-09-05), here or in the room feet below.
-     The masthead carries the mine on every page; a door to it at the foot of
-     each of four teaching rooms was the same route said five times. */
-  go.appendChild(MF.jump('Take some ore apart &rarr;','workshop-ore'));
-  go.appendChild(MF.jump('To the forge &rarr;','forge'));
-  go.appendChild(MF.jump('Out to the surface &rarr;','home'));
+  /* ---- ONE DOOR AT THE FOOT, AND IT IS THE NEXT STEP ----
+
+     USER, 2026-09-05: "remove the Take some ore buttons, change them to the
+     Forge button, and change Out to the Surface. The Top Bar Buttons should be
+     the main navigation out of the Casting Shed."
+
+     There were three: the Stamp Mill, the Forge and the surface. The masthead
+     already carries all five rooms on every page, so two of those three were
+     the same route said twice — a row of ways OUT under a page whose job is to
+     send you INTO one of three workshops.
+
+     The Forge is the one that stays, because it is not a way out. It is where
+     what this building teaches gets used: you learn the pour here and you
+     perform it there. Everything that is merely navigation is navigation, and
+     lives in the bar at the top.
+
+     (The mine door went in the same clear-out, and for the same reason.) */
+  var go = E('div','row shednext'); go.style.marginTop='14px';
+  go.appendChild(MF.jump('To the forge, and pour one &rarr;','forge'));
   host.appendChild(go);
 };
 
@@ -13652,6 +13709,67 @@ MF.validate = function(){
             errs.push('surface: the forge smokes from ' + Object.keys(sFlues).length + ' chimney, and it is built with two');
         }
         sAnims.forEach(function(an){ an.play(); });
+      }
+    }
+    /* ---- THE YARD IS STOCKED WITH THE THING THE MINE PRODUCES ----
+
+       USER, 2026-09-05: "Change the Homepage Illustration yard to contain
+       shapes that look and colored like the ore mined."
+
+       It held flat steel bars and a brown blob, because the lump's silhouette
+       and palette were literals inside MF.oreRock and anywhere else that
+       wanted to draw ore had to approximate it. Both sides are MF.oreLump now,
+       and this is what stops them drifting apart again: the fills on the
+       surface have to be the fills in MF.ORE_ART, which is the same object the
+       rock on the anvil is drawn from.
+
+       AND THE TWO SIDES MUST STAY TELLABLE APART, because they are the two
+       answers to the question the face asks: native metal is gold and carries
+       NO seam; rock that still has one is brown and has the vein drawn on it.
+       A yard of nine identical lumps would pass a "does it look like ore"
+       reading and teach the wrong thing. */
+    var sYard = [].slice.call(sSvg.querySelectorAll('g')).filter(function(g){
+      return g.getAttribute('transform') === 'translate(20,322)'; })[0];
+    chk('surface');
+    if(!sYard){ errs.push('surface: the yard is not on the site'); }
+    else {
+      var sLumps = [].slice.call(sYard.querySelectorAll('g')).filter(function(g){
+        return g.querySelector('polygon'); });
+      chk('surface');
+      if(sLumps.length < 4){
+        errs.push('surface: the yard holds ' + sLumps.length +
+          ' lumps — it is meant to be stocked with the ore the mine produces');
+      } else {
+        var sMetal = 0, sRock = 0, sWrong = 0, sSeamFault = 0;
+        sLumps.forEach(function(g){
+          var f = g.querySelector('polygon').getAttribute('fill');
+          var seam = !!g.querySelector('path');
+          if(f === MF.ORE_ART.metal.body){ sMetal++; if(seam) sSeamFault++; }
+          else if(f === MF.ORE_ART.rock.body){ sRock++; if(!seam) sSeamFault++; }
+          else sWrong++;
+        });
+        chk('surface');
+        if(sWrong)
+          errs.push('surface: ' + sWrong + ' lump(s) in the yard are painted a colour that is not ' +
+            'the ore\'s — the surface and the mine are drawing two different rocks');
+        chk('surface');
+        if(!sMetal || !sRock)
+          errs.push('surface: the yard holds only ' + (sMetal ? 'native metal' : 'seamed rock') +
+            ' — the rack and the heap are the two answers to the question the face asks');
+        chk('surface');
+        if(sSeamFault)
+          errs.push('surface: ' + sSeamFault + ' lump(s) in the yard carry the wrong signal — ' +
+            'native metal has no seam through it and rock that still breaks does');
+        /* and every one of them inside the fence, or they are litter */
+        chk('surface');
+        var sOut = sLumps.filter(function(g){
+          var b = g.getBBox(), tr = (g.getAttribute('transform')||'').match(/translate\(([-\d.]+),\s*([-\d.]+)\).*scale\(([\d.]+)\)/);
+          if(!tr) return false;
+          var x0 = +tr[1] + b.x * +tr[3], x1 = x0 + b.width * +tr[3];
+          return x0 < 0 || x1 > 92;
+        });
+        if(sOut.length)
+          errs.push('surface: ' + sOut.length + ' lump(s) sit outside the yard fence');
       }
     }
   } catch(e){
