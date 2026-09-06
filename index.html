@@ -5002,6 +5002,8 @@ MF.audio = {
     this.fxBus.connect(this.master);
     this.master.connect(c.destination);
     this.ready = true;
+    this.loadSfx();                            /* no-op unless a folder is set */
+    this.loadMusic();
     this.apply();
     return c;
   },
@@ -5117,6 +5119,50 @@ MF.audio = {
     }
   },
 
+  /* ---- A RECORDED CUE BEATS A SYNTHESISED ONE, WHEN THERE IS ONE ----
+
+     USER, 2026-09-06: they are supplying sound files.
+
+     So each cue has two ways to be made, and the file wins. `MF.SFX_BASE` is
+     null until somebody points it at a folder; with a folder, the five cues
+     are fetched once on the first gesture and used from then on. With no
+     folder — or a missing file, or a format the browser will not decode — the
+     oscillators underneath carry on exactly as they do now.
+
+     THAT IS NOT BELT AND BRACES, IT IS THE ONLY WAY BOTH THINGS CAN BE TRUE:
+     the file has to open from `file://` and make a noise, and a downloaded
+     hammer sounds better than a sine wave. Keeping the synth means the second
+     never costs the first. */
+  sfx:{},
+  loadSfx: function(){
+    if(!MF.SFX_BASE || !this.ready) return 0;
+    var A = this, base = MF.SFX_BASE.replace(/\/$/,''), n = 0;
+    Object.keys(this.CUES).forEach(function(k){
+      if(A.sfx[k] !== undefined) return;
+      A.sfx[k] = null;                       /* in flight; do not ask twice */
+      n++;
+      fetch(base + '/' + k + '.' + (MF.SFX_EXT || 'm4a'))
+        .then(function(r){ if(!r.ok) throw 0; return r.arrayBuffer(); })
+        .then(function(b){ return A.ctx.decodeAudioData(b); })
+        .then(function(buf){ A.sfx[k] = buf; })
+        ['catch'](function(){ A.sfx[k] = 'missing'; });
+    });
+    return n;
+  },
+  /* the music bed can be a file too, and then it loops */
+  musicFile: null,
+  loadMusic: function(){
+    if(!MF.MUSIC_SRC || !this.ready || this.musicFile !== null) return false;
+    var A = this;
+    this.musicFile = 'loading';
+    fetch(MF.MUSIC_SRC)
+      .then(function(r){ if(!r.ok) throw 0; return r.arrayBuffer(); })
+      .then(function(b){ return A.ctx.decodeAudioData(b); })
+      .then(function(buf){ A.musicFile = buf; if(A.music) { A.musicOff(); A.musicOn(); } })
+      ['catch'](function(){ A.musicFile = 'missing'; });
+    return true;
+  },
+
   /* PLAY ONE. Silent and harmless in every failure mode there is: no Web
      Audio, no gesture yet, muted, volume at zero, or a cue name that does not
      exist. A sound that throws would take a swing down with it. */
@@ -5132,6 +5178,15 @@ MF.audio = {
     var cue = this.CUES[name];
     if(!cue) return false;
     this.resume();
+    /* the recording if there is one, the oscillators if there is not */
+    var buf = this.sfx[name];
+    if(buf && buf !== 'missing'){
+      try {
+        var s = this.ctx.createBufferSource();
+        s.buffer = buf; s.connect(this.fxBus); s.start();
+        return true;
+      } catch(e){ /* fall through and synthesise */ }
+    }
     try { cue(this, this.ctx.currentTime + 0.001); } catch(e){ return false; }
     return true;
   },
@@ -5142,7 +5197,23 @@ MF.audio = {
      underground, not a tune anybody could get stuck in their head. */
   musicOn: function(){
     if(!this.ready || this.music) return false;
-    var c = this.ctx, t = c.currentTime, g = c.createGain();
+    var c = this.ctx, t = c.currentTime;
+    /* A SUPPLIED TRACK, IF THERE IS ONE. It loops, because a bed that stops is
+       a bed a student notices — and the whole point of it is not to be
+       noticed. The synthesised drone below is what plays when there is no
+       file, which is every time this page is opened from `file://`. */
+    if(this.musicFile && this.musicFile !== 'missing' && this.musicFile !== 'loading'){
+      var mg = c.createGain();
+      mg.gain.value = 0.0001;
+      mg.gain.setTargetAtTime(1, t, 1.2);
+      var src = c.createBufferSource();
+      src.buffer = this.musicFile; src.loop = true;
+      src.connect(mg); mg.connect(this.musicBus);
+      src.start(t);
+      this.music = {g:mg, os:[src], lfo:null};
+      return true;
+    }
+    var g = c.createGain();
     g.gain.value = 0.0001;
     g.gain.setTargetAtTime(0.5, t, 1.2);
     var lp = c.createBiquadFilter();
@@ -5171,7 +5242,7 @@ MF.audio = {
     var t = this.ctx.currentTime;
     m.g.gain.setTargetAtTime(0.0001, t, 0.4);
     setTimeout(function(){
-      try { m.os.forEach(function(o){ o.stop(); }); m.lfo.stop(); } catch(e){}
+      try { m.os.forEach(function(o){ o.stop(); }); if(m.lfo) m.lfo.stop(); } catch(e){}
     }, 1400);
     return true;
   },
@@ -5226,6 +5297,14 @@ MF.audio = {
    self-contained file cannot assume anything is beside it. */
 MF.VOICE_BASE = null;
 MF.VOICE_EXT = 'm4a';
+/* ---- AND THE SAME FOR SUPPLIED SOUND (user, 2026-09-06) ----
+   Point SFX_BASE at a folder holding thud / clang / pour / stamp / tick, and
+   MUSIC_SRC at one looping bed. All null here: a self-contained file cannot
+   assume anything is beside it, and every one of them falls back to the
+   oscillators rather than to silence. */
+MF.SFX_BASE = null;
+MF.SFX_EXT = 'm4a';
+MF.MUSIC_SRC = null;
 
 /* =========================================================================
    EVERY LINE MR FACTOR SAYS, WITH THE NAME OF ITS FILE.
@@ -19661,6 +19740,22 @@ MF.validate = function(){
     MF.state.access.music = 0; MF.audio.apply();
     chk('sound');
     if(MF.audio.music) errs.push('sound: turning the music back down did not stop the bed');
+  }
+
+  /* A SUPPLIED FILE NEVER COSTS THE SYNTHESISED ONE. A cue whose recording is
+     missing, still loading, or refused by the decoder must still make a noise
+     — otherwise adding sound files would take sound AWAY from anyone opening
+     this from file://, which is the one thing the fallback exists to prevent. */
+  if(MF.audio.ready){
+    var sfxKeep = MF.audio.sfx;
+    MF.audio.sfx = {thud:'missing', clang:null, pour:undefined};
+    chk('sound');
+    if(MF.audio.play('thud') !== true)
+      errs.push('sound: a cue with no recording fell silent instead of synthesising');
+    chk('sound');
+    if(MF.audio.play('clang') !== true)
+      errs.push('sound: a cue whose recording is still loading fell silent');
+    MF.audio.sfx = sfxKeep;
   }
 
   /* NO WEB AUDIO AT ALL, and the mine still swings. Detached again, for the

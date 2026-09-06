@@ -142,3 +142,68 @@ happens far more often. Positional ids are the lesser of the two, but this is th
 
 > **The em-dashes are breaths, not words.** Read them as a pause. They are in the written
 > line because that is how it reads on screen; do not say "dash".
+
+---
+
+# Supplied sound effects
+
+The five cues are **synthesised by default and file-backed when you supply files.** Drop them
+in and they take over; leave them out and the oscillators carry on. That is not belt and
+braces — it is the only way both things stay true at once: the page has to open from
+`file://` and make a noise, *and* a real recorded hammer beats a sine wave.
+
+## Where they go
+
+A folder beside `index.html`, then two lines in the script block:
+
+```js
+MF.SFX_BASE  = 'sfx';        // the folder
+MF.SFX_EXT   = 'm4a';        // or 'webm', 'mp3', 'wav'
+MF.MUSIC_SRC = 'sfx/bed.m4a' // optional, loops
+```
+
+## The five filenames
+
+Named exactly for the cue they replace — the code fetches `<SFX_BASE>/<cue>.<ext>`.
+
+| file | fires when | wants to be |
+|---|---|---|
+| `thud.m4a` | a seam runs — the good outcome | **short, round, no ring.** It should land and stop. A long tail makes success feel like an alarm. ~250 ms |
+| `clang.m4a` | the pick glances off | **metal on stone, with a tail.** It must be tellable from `thud` with your back to the screen. ~400 ms |
+| `pour.m4a` | the forge pours | the only one with a body — **1.5–2.5 s**, a swell rather than a hit |
+| `stamp.m4a` | the mill press drops | **heavier than the thud**, with a machine's snap on the front. ~350 ms |
+| `tick.m4a` | a lump is picked out | **the smallest thing in the set.** Under 100 ms. A tick, not a note. |
+
+## Specs
+
+| | |
+|---|---|
+| Format | **AAC `.m4a`**, same reasoning as the voice — or `.webm`/Opus if every device is current |
+| Channels | **Mono** |
+| Bitrate | **96 kbps** — higher than the voice, because effects have transients and are short |
+| Trim | **No leading silence.** The cue fires the instant the hammer lands; 80 ms of head reads as lag. |
+| Level | Peak around **−3 dBFS**, and keep the five roughly matched to each other |
+| Size | ~12 KB per second, so all five ≈ **50 KB total.** Negligible. |
+
+Music, if you supply it: **it loops**, so make it seamless — a bed that visibly restarts is a
+bed the student notices, and the entire point of it is not to be noticed. 60–120 s at 96 kbps
+mono is ≈ 1 MB.
+
+## One caution about downloaded sound
+
+If these came from a library, **check the licence before the site is published.** Freesound
+and similar carry a mix of CC0 (no obligation), CC-BY (**requires visible attribution**) and
+non-commercial terms. A CC-BY sound needs a credit somewhere on the site, and a school site
+is still a publication. Worth five minutes now rather than a takedown later — and if any of
+them need crediting, tell me and I will put a credits line where it belongs.
+
+## What happens if a file is wrong
+
+Every failure falls back to the synthesised cue, and each is asserted:
+
+- folder not set → synth
+- file missing (404) → synth, and it is not requested again
+- format the browser will not decode → synth
+- still downloading when the hammer lands → synth for that swing, file from the next
+
+**Adding sound files can never take sound away.**
