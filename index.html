@@ -3298,8 +3298,13 @@ MF.state = {
      `type` is the typeface, `size` a percentage, `tint` a paper, `ruler` and
      `spacing` reading aids, `motion` a manual override of the OS setting, and
      the two volumes are 0..1. */
+  /* THREE SOUND LEVELS, NOT TWO. A song and a room tone are different things
+     and a student may well want one without the other: the pump-jack bed makes
+     the mine feel like a working place, and the music is music. Both start off
+     (user, 2026-09-06: a room of thirty machines should not hum), effects
+     start quiet. */
   access:{ type:'standard', size:100, tint:'none', ruler:false, spacing:false,
-           motion:'auto', fx:0.35, music:0, mute:false, speed:1 },
+           motion:'auto', fx:0.35, music:0, ambience:0, mute:false, speed:1 },
   rng: makeRng((Date.now()^0x5f3759df)>>>0)
 };
 
@@ -4987,7 +4992,13 @@ MF.GUIDE = {
    If they are not there the site is exactly as it is now.
    ========================================================================= */
 MF.audio = {
-  ctx:null, master:null, musicBus:null, fxBus:null, music:null, ready:false,
+  ctx:null, master:null, musicBus:null, ambBus:null, fxBus:null, ready:false,
+  /* two beds, one bus each. `music` is a track and has no synthesised
+     fallback — you cannot synthesise a song, and pretending otherwise would
+     put a drone where a student expected music. `amb` is a room tone and DOES
+     fall back to the oscillators, because a mine with no room tone is the
+     thing the fallback exists to prevent. */
+  beds:{music:{node:null, file:null}, amb:{node:null, file:null}},
   /* the context cannot exist before a gesture, so nothing here runs at boot */
   start: function(){
     if(this.ctx) { this.resume(); return this.ctx; }
@@ -4997,13 +5008,15 @@ MF.audio = {
     var c = this.ctx;
     this.master = c.createGain();
     this.musicBus = c.createGain();
+    this.ambBus = c.createGain();
     this.fxBus = c.createGain();
     this.musicBus.connect(this.master);
+    this.ambBus.connect(this.master);
     this.fxBus.connect(this.master);
     this.master.connect(c.destination);
     this.ready = true;
     this.loadSfx();                            /* no-op unless a folder is set */
-    this.loadMusic();
+    this.loadBeds();
     this.apply();
     return c;
   },
@@ -5018,9 +5031,11 @@ MF.audio = {
     this.master.gain.setTargetAtTime(m, t, 0.02);
     this.fxBus.gain.setTargetAtTime(a.fx, t, 0.02);
     this.musicBus.gain.setTargetAtTime(a.music, t, 0.05);
-    /* music starts and stops itself with its own volume — a bed running at
+    this.ambBus.gain.setTargetAtTime(a.ambience, t, 0.05);
+    /* each bed starts and stops itself with its own volume — a bed running at
        zero is a phone burning battery on something nobody can hear */
-    if(a.music > 0 && !a.mute) this.musicOn(); else this.musicOff();
+    if(a.music > 0 && !a.mute) this.bedOn('music'); else this.bedOff('music');
+    if(a.ambience > 0 && !a.mute) this.bedOn('amb'); else this.bedOff('amb');
     return true;
   },
 
@@ -5149,18 +5164,26 @@ MF.audio = {
     });
     return n;
   },
-  /* the music bed can be a file too, and then it loops */
-  musicFile: null,
-  loadMusic: function(){
-    if(!MF.MUSIC_SRC || !this.ready || this.musicFile !== null) return false;
-    var A = this;
-    this.musicFile = 'loading';
-    fetch(MF.MUSIC_SRC)
-      .then(function(r){ if(!r.ok) throw 0; return r.arrayBuffer(); })
-      .then(function(b){ return A.ctx.decodeAudioData(b); })
-      .then(function(buf){ A.musicFile = buf; if(A.music) { A.musicOff(); A.musicOn(); } })
-      ['catch'](function(){ A.musicFile = 'missing'; });
-    return true;
+  /* either bed can be a file, and then it loops */
+  BED_SRC: {music:'MUSIC_SRC', amb:'AMBIENCE_SRC'},
+  loadBeds: function(){
+    var A = this, n = 0;
+    Object.keys(this.BED_SRC).forEach(function(kind){
+      var src = MF[A.BED_SRC[kind]];
+      if(!src || !A.ready || A.beds[kind].file !== null) return;
+      n++;
+      A.beds[kind].file = 'loading';
+      fetch(src)
+        .then(function(r){ if(!r.ok) throw 0; return r.arrayBuffer(); })
+        .then(function(b){ return A.ctx.decodeAudioData(b); })
+        .then(function(buf){
+          A.beds[kind].file = buf;
+          /* if it was already running on the synth, swap it for the real one */
+          if(A.beds[kind].node){ A.bedOff(kind); A.bedOn(kind); }
+        })
+        ['catch'](function(){ A.beds[kind].file = 'missing'; });
+    });
+    return n;
   },
 
   /* PLAY ONE. Silent and harmless in every failure mode there is: no Web
@@ -5191,28 +5214,39 @@ MF.audio = {
     return true;
   },
 
-  /* ---- THE BED ----
-     Two detuned oscillators through a lowpass, and a slow wobble on the
-     cutoff. It is deliberately almost nothing: a room tone for a place
-     underground, not a tune anybody could get stuck in their head. */
-  musicOn: function(){
-    if(!this.ready || this.music) return false;
+  /* ---- THE TWO BEDS ----
+     `music` is a track, and a track is a file or it is nothing. `amb` is the
+     room tone, and when no file is there it is two detuned oscillators through
+     a lowpass with a slow wobble on the cutoff — deliberately almost nothing:
+     a room tone for a place underground, not a tune anybody could get stuck in
+     their head. They are separate because a song and a room tone are separate
+     things, and a student who wants one of them rarely wants both. */
+  bedOn: function(kind){
+    var b = this.beds[kind];
+    if(!this.ready || !b || b.node) return false;
     var c = this.ctx, t = c.currentTime;
+    var bus = kind === 'music' ? this.musicBus : this.ambBus;
     /* A SUPPLIED TRACK, IF THERE IS ONE. It loops, because a bed that stops is
        a bed a student notices — and the whole point of it is not to be
        noticed. The synthesised drone below is what plays when there is no
        file, which is every time this page is opened from `file://`. */
-    if(this.musicFile && this.musicFile !== 'missing' && this.musicFile !== 'loading'){
+    if(b.file && b.file !== 'missing' && b.file !== 'loading'){
       var mg = c.createGain();
       mg.gain.value = 0.0001;
       mg.gain.setTargetAtTime(1, t, 1.2);
       var src = c.createBufferSource();
-      src.buffer = this.musicFile; src.loop = true;
-      src.connect(mg); mg.connect(this.musicBus);
+      src.buffer = b.file; src.loop = true;
+      src.connect(mg); mg.connect(bus);
       src.start(t);
-      this.music = {g:mg, os:[src], lfo:null};
+      b.node = {g:mg, os:[src], lfo:null};
       return true;
     }
+    /* AND NO SYNTHESISED SONG. You cannot synthesise music, and a drone where
+       a student expected a track is worse than silence — silence is legible,
+       a drone reads as something being broken. The room tone is the one that
+       falls back, because a mine with no room tone is the thing the fallback
+       exists to prevent. */
+    if(kind === 'music') return false;
     var g = c.createGain();
     g.gain.value = 0.0001;
     g.gain.setTargetAtTime(0.5, t, 1.2);
@@ -5230,15 +5264,15 @@ MF.audio = {
       o.start(t);
       return o;
     });
-    lp.connect(g); g.connect(this.musicBus);
+    lp.connect(g); g.connect(bus);
     lfo.start(t);
-    this.music = {g:g, os:os, lfo:lfo};
+    b.node = {g:g, os:os, lfo:lfo};
     return true;
   },
-  musicOff: function(){
-    var m = this.music;
+  bedOff: function(kind){
+    var b = this.beds[kind], m = b && b.node;
     if(!m) return false;
-    this.music = null;
+    b.node = null;
     var t = this.ctx.currentTime;
     m.g.gain.setTargetAtTime(0.0001, t, 0.4);
     setTimeout(function(){
@@ -5298,13 +5332,18 @@ MF.audio = {
 MF.VOICE_BASE = null;
 MF.VOICE_EXT = 'm4a';
 /* ---- AND THE SAME FOR SUPPLIED SOUND (user, 2026-09-06) ----
-   Point SFX_BASE at a folder holding thud / clang / pour / stamp / tick, and
-   MUSIC_SRC at one looping bed. All null here: a self-contained file cannot
-   assume anything is beside it, and every one of them falls back to the
-   oscillators rather than to silence. */
+   SFX_BASE holds thud / clang / pour / stamp / tick. The two beds are named
+   separately because they are different things: AMBIENCE_SRC is the room tone
+   under the mine and falls back to oscillators, MUSIC_SRC is a track and falls
+   back to nothing. Set any of them to null and the site is exactly as it was —
+   nothing here is ever waited on, and no missing file can take sound away.
+
+   Licensing: everything under sfx/ is from Epidemic Sound under the user's
+   subscription. See README.md before publishing or redistributing. */
 MF.SFX_BASE = 'sfx';
 MF.SFX_EXT = 'm4a';
-MF.MUSIC_SRC = 'sfx/bed.m4a';
+MF.MUSIC_SRC = 'sfx/music.m4a';
+MF.AMBIENCE_SRC = 'sfx/bed.m4a';
 
 /* =========================================================================
    EVERY LINE MR FACTOR SAYS, WITH THE NAME OF ITS FILE.
@@ -5788,7 +5827,10 @@ MF.openAccess = function(opener){
       slide(b, 'Sound effects', 'The hammer landing, a seam running, the pour.',
         0, 1, 0.05, a.fx, function(n){ return n === 0 ? 'off' : Math.round(n*100) + '%'; },
         function(n){ a.fx = n; });
-      slide(b, 'Music', 'A quiet bed under the mine. Starts off.',
+      slide(b, 'Mine ambience', 'The room tone of the place &mdash; machinery, a long way off. Starts off.',
+        0, 1, 0.05, a.ambience, function(n){ return n === 0 ? 'off' : Math.round(n*100) + '%'; },
+        function(n){ a.ambience = n; });
+      slide(b, 'Music', 'A track over the top of it. Starts off.',
         0, 1, 0.05, a.music, function(n){ return n === 0 ? 'off' : Math.round(n*100) + '%'; },
         function(n){ a.music = n; });
 
@@ -19682,7 +19724,8 @@ MF.validate = function(){
      hosted, would be a mine broken by an ornament. Every path below is checked
      to fail silently and carry on.
      ====================================================================== */
-  var sndKeep = {fx:MF.state.access.fx, music:MF.state.access.music, mute:MF.state.access.mute};
+  var sndKeep = {fx:MF.state.access.fx, music:MF.state.access.music,
+                 ambience:MF.state.access.ambience, mute:MF.state.access.mute};
 
   /* EVERY CUE THE CODE FIRES IS A CUE THAT EXISTS. A typo in a cue name is a
      sound that never plays and nothing anywhere would say so. */
@@ -19707,7 +19750,8 @@ MF.validate = function(){
      student has pressed anything. */
   (function(){
     var cold = Object.create(MF.audio);
-    cold.ctx = null; cold.ready = false; cold.music = null;
+    cold.ctx = null; cold.ready = false;
+    cold.beds = {music:{node:null, file:null}, amb:{node:null, file:null}};
     chk('sound');
     if(cold.play('thud') !== false)
       errs.push('sound: a cue played before the Enter button built the context');
@@ -19729,18 +19773,77 @@ MF.validate = function(){
     chk('sound');
     if(MF.audio.play('thud') !== false) errs.push('sound: effects at zero did not stop a cue');
     MF.state.access.fx = 0.35;
-    /* THE MUSIC RUNS ONLY WHEN IT IS WANTED — a bed at zero volume is a phone
-       burning battery on something nobody can hear. */
-    MF.state.access.music = 0; MF.audio.apply();
+    /* A BED RUNS ONLY WHEN IT IS WANTED AND ONLY WHEN IT HAS SOMETHING TO
+       PLAY. Zero volume is a phone burning battery on something nobody can
+       hear; a music bed with no track is a song that does not exist.
+
+       THE ASSERTION IS THE IFF, not "it starts". `amb` always has something —
+       it falls back to the oscillators. `music` only has something when the
+       file arrived, which from file:// it never does. A check that simply
+       demanded the bed start would be red on every file:// open, which is the
+       one way this page is guaranteed to be used. */
+    [['music','music'],['ambience','amb']].forEach(function(p){
+      var key = p[0], kind = p[1], bed = MF.audio.beds[kind];
+      var playable = kind === 'amb' ||
+                     !!(bed.file && bed.file !== 'missing' && bed.file !== 'loading');
+      MF.state.access[key] = 0; MF.audio.apply();
+      chk('sound');
+      if(bed.node) errs.push('sound: the ' + kind + ' bed is running with its volume at zero');
+      MF.state.access[key] = 0.4; MF.audio.apply();
+      chk('sound');
+      if(!!bed.node !== playable)
+        errs.push('sound: with the ' + kind + ' volume up the bed is ' +
+                  (bed.node ? 'running' : 'silent') + ' and it has ' +
+                  (playable ? 'something' : 'nothing') + ' to play');
+      MF.state.access[key] = 0; MF.audio.apply();
+      chk('sound');
+      if(bed.node) errs.push('sound: turning the ' + kind + ' back down did not stop the bed');
+    });
+    /* AND THEY ARE TWO CONTROLS, not one wearing two labels. */
+    MF.state.access.ambience = 0.4; MF.state.access.music = 0; MF.audio.apply();
     chk('sound');
-    if(MF.audio.music) errs.push('sound: the music bed is running with its volume at zero');
-    MF.state.access.music = 0.4; MF.audio.apply();
+    if(MF.audio.beds.music.node) errs.push('sound: the ambience slider started the music bed');
     chk('sound');
-    if(!MF.audio.music) errs.push('sound: turning the music up did not start the bed');
-    MF.state.access.music = 0; MF.audio.apply();
+    if(!MF.audio.beds.amb.node) errs.push('sound: the ambience slider did not start the room tone');
     chk('sound');
-    if(MF.audio.music) errs.push('sound: turning the music back down did not stop the bed');
+    if(MF.audio.beds.amb.node && MF.audio.beds.amb.node === MF.audio.beds.music.node)
+      errs.push('sound: the two beds are the same node, so one slider moves both');
+    MF.state.access.ambience = 0; MF.audio.apply();
   }
+
+  /* THERE IS NO SYNTHESISED SONG, AND THERE IS A SYNTHESISED ROOM TONE. That
+     asymmetry is the whole reason the beds were split: a room tone can be made
+     out of oscillators and be the thing it claims to be, and a song cannot. A
+     drone arriving where a student turned on "Music" reads as a fault. */
+  if(MF.audio.ready){
+    [['music', false, 'a track'], ['amb', true, 'a room tone']].forEach(function(p){
+      var kind = p[0], want = p[1], bed = MF.audio.beds[kind];
+      var keep = bed.file;
+      bed.file = 'missing';
+      MF.audio.bedOff(kind);
+      chk('sound');
+      if(MF.audio.bedOn(kind) !== want || !!bed.node !== want)
+        errs.push('sound: with no file the ' + kind + ' bed ' +
+                  (want ? 'fell silent instead of synthesising ' + p[2]
+                        : 'synthesised something anyway, and you cannot synthesise ' + p[2]));
+      MF.audio.bedOff(kind);
+      bed.file = keep;
+    });
+  }
+
+  /* EVERY BED HAS A SOURCE NAME AND EVERY SOURCE NAME HAS A BED. A third bed
+     added without a src, or a src pointing at a bed that no longer exists,
+     would load nothing and say nothing about it. */
+  Object.keys(MF.audio.beds).forEach(function(k){
+    chk('sound');
+    if(!MF.audio.BED_SRC[k])
+      errs.push('sound: the "' + k + '" bed has no source name, so it can never load a file');
+  });
+  Object.keys(MF.audio.BED_SRC).forEach(function(k){
+    chk('sound');
+    if(!MF.audio.beds[k])
+      errs.push('sound: BED_SRC names "' + k + '", which is not a bed');
+  });
 
   /* A SUPPLIED FILE NEVER COSTS THE SYNTHESISED ONE. A cue whose recording is
      missing, still loading, or refused by the decoder must still make a noise
@@ -19762,9 +19865,11 @@ MF.validate = function(){
      same reason as above. */
   (function(){
     var cold = Object.create(MF.audio);
-    cold.ctx = null; cold.ready = false; cold.music = null;
+    cold.ctx = null; cold.ready = false;
+    cold.beds = {music:{node:null, file:null}, amb:{node:null, file:null}};
     var threw = null;
-    try { cold.play('thud'); cold.say('room-mine-1'); cold.apply(); cold.hush(); cold.musicOff(); }
+    try { cold.play('thud'); cold.say('room-mine-1'); cold.apply(); cold.hush();
+          cold.bedOff('music'); cold.bedOff('amb'); }
     catch(e){ threw = e.message; }
     chk('sound');
     if(threw) errs.push('sound: with no audio context the sound layer threw "' + threw +
@@ -19821,6 +19926,7 @@ MF.validate = function(){
     errs.push('sound: a line marked fixed has an ellipsis in it, so it is not fixed');
 
   MF.state.access.fx = sndKeep.fx; MF.state.access.music = sndKeep.music;
+  MF.state.access.ambience = sndKeep.ambience;
   MF.state.access.mute = sndKeep.mute;
   if(MF.audio.ready) MF.audio.apply();
 
