@@ -9049,7 +9049,29 @@ MF.SEAM_W = 2000;
    more zoom: the viewBox grows and the rendered height grows with it at the
    same 1.505px per unit, so a lump is the same size and there is simply more
    face to find one in. */
-MF.SEAM_H = 360;
+/* ---- AND TALLER AGAIN, TO STOP THE SCANNING (user, 2026-09-06:
+   "resize the layer so there's less scrolling") ----
+
+   The arithmetic of this is worth stating, because it is not obvious that the
+   HEIGHT is the lever on the WIDTH:
+
+       zoom            = window height / SEAM_H          (sizeSeam, §76)
+       drawn width     = SEAM_W x zoom
+       screens to scan = SEAM_W x window height / (SEAM_H x window width)
+
+   The drawing must fill the window's height exactly or it letterboxes (§76),
+   so the zoom is not free — it is whatever the window makes it. At SEAM_H 360
+   in an 803px-tall window that is 2.23 px per unit, half again the 1.505 this
+   was designed at, and a 2000-unit seam becomes 4,461px in a 931px window:
+   FOUR AND EIGHT TENTHS SCREENS of horizontal scanning for 24 lumps, each of
+   them drawn 163px across.
+
+   760 is the same seam at 1.06 px per unit — a third of the scanning, and the
+   rock that was 163px is 78. Nothing about the ore changed: `py` already
+   spreads the lumps across `SEAM_H - 132`, so the extra is more FACE, which is
+   what a seam should be. More rock in view at once, and less of it dragged
+   past. */
+MF.SEAM_H = 760;
 /* AND MORE ORE IN IT. Fifteen lumps over a seam this size is a thin scattering
    - a student scans a long way to find something worth breaking, which is the
    point of a seam, but not this far. The face is nearly twice as tall as it
@@ -9071,8 +9093,11 @@ MF.SEAM_COUNT = 24;
 
    So the two numbers are derived from one here and cannot drift again: the svg
    is sized in JS on both axes and `.seamview svg` no longer states a height.
-   1.505 is the ratio the old comment claimed the seam was already drawn at. */
-MF.SEAM_ZOOM = 1.505;
+   1.505 was the ratio the old comment claimed the seam was already drawn at,
+   and it belonged to a 360-unit seam. The seam is 760 now, so the fallback has
+   to move with it or a detached box measures a wall half again the size of the
+   one on screen — 1.06 is what an 803px window actually makes of it. */
+MF.SEAM_ZOOM = 1.06;
 
 MF.stockFace = function(){
   var L = MF.state.layer;
@@ -13112,8 +13137,19 @@ MF.validate = function(){
   try { MF.SCREENS.mine(sfCtl); MF.paintMine(); } catch(e){}
   var sfSvg = sfCtl.querySelector('.seamview svg');
   if(sfSvg){
+    /* THE HEIGHT IS DERIVED, NOT TYPED. It was a literal 542, which produced
+       bands only because the seam was 360 units tall: 542/2000 is steeper than
+       360/2000, so `meet` fitted the width and left the rest empty. The seam is
+       760 now and 542 is no longer steeper than its aspect — the control
+       quietly stopped being a fault and started reporting that the check could
+       not see something it had never been shown. §87, in the group that
+       exists for this exact defect.
+
+       Anything taller than the viewBox's own aspect letterboxes, so ask for
+       half again the seam's height and it is a fault at every SEAM_H. */
+    var sfTall = Math.round(MF.SEAM_H * 1.5);
     sfSvg.style.width = MF.SEAM_W + 'px'; sfSvg.setAttribute('width', MF.SEAM_W);
-    sfSvg.style.height = '542px'; sfSvg.setAttribute('height', '542');
+    sfSvg.style.height = sfTall + 'px'; sfSvg.setAttribute('height', String(sfTall));
   }
   var sfBad = sfFit(sfCtl);
   if(!sfBad || (sfBad.top <= 2 && sfBad.bottom <= 2))
