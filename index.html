@@ -270,6 +270,8 @@ input::placeholder, textarea::placeholder{color:#6B5B48; opacity:1}
 .order .oic{font-size:21px; line-height:1; flex:0 0 auto}
 .order .otx{display:flex; flex-direction:column; gap:1px; min-width:0}
 .order .onm{font-family:var(--display); font-size:15px; color:#FFF3DE}
+/* what the tool does, in mathematics — the reason to want it, above the price */
+.order .odoes{font-size:12.5px; color:#D7C6A6; line-height:1.3}
 .order .ost{font-size:11px; letter-spacing:.05em; text-transform:uppercase; color:#C9B695}
 .order.ready .ost{color:#8FE0C0}
 .order.short{opacity:.82}
@@ -3133,49 +3135,49 @@ MF.TOOLS = {
     ds:'Names what kind of ore a lump is before you swing at it.',
     cast:{a:0,b:0,c:12}, slots:3,
     forge:'Cast <b>12</b> out of pure metal. Three plain ingots, and one of them turns up twice.',
-    teaches:'distribution over plain numbers'
+    does:'names the form before you factor'
   },
   lantern: {
     rank:2, ic:'&#128367;', nm:'The Lantern', order:'a pit lantern for the lower workings',
     ds:'Hold it to a lump and it tells you whether a seam still runs through it — so you know when a piece is worth another swing, and when it is an element. It never says along what.',
     cast:{a:0,b:0,c:30}, slots:3,
     forge:'Cast <b>30</b> out of pure metal. Three different primes, and only one set of three will do it.',
-    teaches:'distribution'
+    does:'gives one factor; the rest is what is left'
   },
   steel: {
     rank:3, ic:'&#128296;', nm:'The Steel Pick', order:'a steel head for the common seam',
     ds:'Rips the common metal out of a lump in one blow, without you naming it. It only ever takes the metal every term is carrying — the rest of the rock is still yours to break.',
     cast:{a:0,b:3,c:12}, slots:2,
     forge:'Cast <b>3x + 12</b>. One plain metal spread over one bracket — and spreading a common metal is the move this head then runs backwards.',
-    teaches:'the common factor'
+    does:'factors out the greatest common factor'
   },
   dial: {
     rank:4, ic:'&#128207;', nm:'The Decimal Dial', order:'a fine-adjust dial for the bench',
     ds:'Nudges a lump off the whole numbers so you can watch the seam vanish — why nothing will come out, when nothing will.',
     cast:{a:1,b:3,c:2}, slots:2,
     forge:'Cast <b>x² + 3x + 2</b>. Two brackets one apart — nudge either number off a whole and the seam stops being whole, which is the whole of what the dial is for.',
-    teaches:'integers and decimals'
+    does:'tests whether it factors over the integers'
   },
   shifter: {
     rank:5, ic:'&#8646;', nm:'The Shifter', order:'a gear shifter for the winding house',
     ds:'Held to a lump it shows where its x² can have come from — the two x-parts multiplied, which is the only place an x² ever comes from.',
     cast:{a:1,b:8,c:16}, slots:2,
     forge:'Cast <b>x² + 8x + 16</b>. The same bracket twice, so there is no doubt at all where the x² came from.',
-    teaches:'exponents'
+    does:'the area model — four products in a box'
   },
   drill: {
     rank:6, ic:'&#9881;', nm:'The Drill', order:'a core drill for the assay office',
     ds:'Takes a core out of a lump and reads every pair that could run through it. It lists them all and marks none.',
     cast:{a:1,b:0,c:-25}, slots:2,
     forge:'Cast <b>x² − 25</b>. Two brackets with opposite numbers, so the middle cancels itself out and a twin seam is what comes off the mold.',
-    teaches:'patterns'
+    does:'the pair that multiplies to a·c and adds to b'
   },
   auger: {
     rank:7, ic:'&#128295;', nm:'The Powered Auger', order:'a powered auger for the loaded ore',
     ds:'Shows how a seam has to run before you drive it: what the x-part you take out must divide, and what the number must divide. On a swing that lands it traces the division out.',
     cast:{a:6,b:7,c:-3}, slots:2,
     forge:'Cast <b>6x² + 7x − 3</b>. Both ends are pinned: the x-parts have to multiply to 6 and the numbers to −3, and only one pairing also makes the middle come to 7.',
-    teaches:'loaded trinomials'
+    does:'splits the middle term, then factors by grouping'
   }
 };
 /* the board reads in ladder order, so the escalation is visible rather than
@@ -7955,13 +7957,32 @@ MF.paintOrders = function(host, st){
     b.appendChild(H('span','oic', t.ic));
     var txt = E('span','otx');
     txt.appendChild(H('span','onm', t.nm));
+    /* WHAT IT DOES, IN MATHEMATICS, ON THE CARD.
+
+       USER, 2026-09-06: "the tools need a short phrase to capture what they do
+       mathematically, and that should be included in the tool button list on
+       the left side of the forge."
+
+       The board named seven instruments and the number each one costs, and
+       said nothing about what any of them is FOR — so choosing between them
+       was choosing between prices. `t.does` is one line of mathematics per
+       tool: the GCF, the area model, the pair that multiplies to a·c.
+
+       IT REPLACED A FIELD NOBODY READ. `t.teaches` was written on all seven
+       tools and read in exactly no places — dead data, and stale with it: it
+       had the Prospector's Pick down as "distribution over plain numbers" and
+       the Shifter as "exponents", neither of which is what those two do. The
+       same shape as `F.target` in the mine (§92), found the same way: grep for
+       the field and count the reads. */
+    txt.appendChild(H('span','odoes', t.does));
     /* THE TARGET IS ON THE CARD. An order that only names a tool tells a
        student nothing about what they are being asked to make. */
     txt.appendChild(H('span','ocast', 'cast <b>' + MF.castText(t) + '</b>'));
     txt.appendChild(H('span','ost', made ? 'in your hands' : (ready ? 'you have the metal' : 'not on the rack yet')));
     b.appendChild(txt);
-    b.setAttribute('aria-label', t.nm + ', cast from ' + quadText(t.cast.a,t.cast.b,t.cast.c) + ' — ' + (made ? 'already made and on your belt' :
-      (ready ? 'you have the metal for this. Open the mold.' : 'you do not have the metal for this yet. Open the mold to see what it wants.')));
+    b.setAttribute('aria-label', t.nm + ' — ' + t.does + '. Cast from ' +
+      quadText(t.cast.a,t.cast.b,t.cast.c) + '. ' + (made ? 'Already made and on your belt.' :
+      (ready ? 'You have the metal for this. Open the mold.' : 'You do not have the metal for this yet. Open the mold to see what it wants.')));
     /* EVERY ORDER OPENS. A disabled button is a dead control that explains
        nothing; an open mold can say what it is waiting for, which is the
        thing that sends you back down the shaft knowing what to look for. */
@@ -12976,6 +12997,63 @@ MF.validate = function(){
   MF.moldMaths = pcReal;
   if(pcCtl.querySelector('.pcrow.pairs') || pcCtl.querySelector('.pcrow.merged'))
     errs.push('CONTROL: a pour chain with its working stripped out still showed the pairings');
+
+  /* ---- EVERY ORDER SAYS WHAT THE TOOL DOES, IN MATHEMATICS ----
+
+     USER, 2026-09-06: "the tools need a short phrase to capture what they do
+     mathematically, and that should be included in the tool button list."
+
+     The board named seven instruments and the number each costs, so choosing
+     between them was choosing between prices.
+
+     AND THE FIELD HAS TO BE ON THE CARD, not merely defined. `t.teaches` was
+     written on all seven tools and read nowhere — dead data that had gone
+     stale unnoticed, with the Pick down as "distribution over plain numbers"
+     and the Shifter as "exponents". A phrase nothing renders is a phrase
+     nothing can be wrong about, so this checks the DOM and not the table. */
+  (function(){
+    var obHost = document.createElement('div');
+    obHost.style.cssText = 'position:fixed; left:-13000px; top:0; width:520px';
+    document.body.appendChild(obHost);
+    var obSt = MF.state.forge;
+    MF.state.forge = {picked:null, slots:[], result:null};
+    var obProbe = document.createElement('div');
+    obHost.appendChild(obProbe);
+    try { MF.SCREENS.forge(obProbe); } catch(e){ errs.push('forge: the board threw: ' + e.message); }
+    MF.toolOrder().forEach(function(k){
+      var t = MF.TOOLS[k];
+      chk('forge');
+      if(!t.does || !String(t.does).trim()){
+        errs.push('forge: "' + t.nm + '" does not say what it does mathematically');
+        return;
+      }
+      chk('forge');
+      /* short enough to be a line on a card rather than a paragraph in it */
+      if(t.does.length > 56)
+        errs.push('forge: "' + t.nm + '" describes itself in ' + t.does.length +
+                  ' characters — the board wants a phrase, not a sentence');
+      chk('forge');
+      var card = obProbe.querySelector('.order[data-order="' + k + '"]');
+      var said = card && card.querySelector('.odoes');
+      if(!said || said.textContent.trim() !== t.does.trim())
+        errs.push('forge: the order for "' + t.nm + '" does not carry its phrase on the card — ' +
+                  'a description nothing renders is one nothing can be wrong about');
+      chk('forge');
+      if(card && (card.getAttribute('aria-label')||'').indexOf(t.does) < 0)
+        errs.push('forge: the order for "' + t.nm + '" says what it does on screen but not to a screen reader');
+    });
+    /* AND NO TWO TOOLS DO THE SAME THING. Seven phrases that repeat would be
+       seven prices again with extra words on them. */
+    chk('forge');
+    var obSeen = {}, obDup = null;
+    MF.toolOrder().forEach(function(k){
+      var d = (MF.TOOLS[k].does||'').toLowerCase();
+      if(obSeen[d]) obDup = d; else obSeen[d] = k;
+    });
+    if(obDup) errs.push('forge: two orders describe themselves identically ("' + obDup + '")');
+    obHost.remove();
+    MF.state.forge = obSt;
+  })();
 
   /* a correct forge SPENDS its metal - exactly what went in, and no more */
   chk('forge');
