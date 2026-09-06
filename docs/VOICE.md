@@ -157,9 +157,10 @@ braces — it is the only way both things stay true at once: the page has to ope
 A folder beside `index.html`, then two lines in the script block:
 
 ```js
-MF.SFX_BASE  = 'sfx';        // the folder
-MF.SFX_EXT   = 'm4a';        // or 'webm', 'mp3', 'wav'
-MF.MUSIC_SRC = 'sfx/bed.m4a' // optional, loops
+MF.SFX_BASE     = 'sfx';           // the folder
+MF.SFX_EXT      = 'm4a';           // or 'webm', 'mp3', 'wav'
+MF.AMBIENCE_SRC = 'sfx/bed.m4a';   // the room tone — loops, own slider
+MF.MUSIC_SRC    = 'sfx/music.m4a'; // the track — loops, own slider
 ```
 
 ## The five filenames
@@ -185,17 +186,32 @@ Named exactly for the cue they replace — the code fetches `<SFX_BASE>/<cue>.<e
 | Level | Peak around **−3 dBFS**, and keep the five roughly matched to each other |
 | Size | ~12 KB per second, so all five ≈ **50 KB total.** Negligible. |
 
-Music, if you supply it: **it loops**, so make it seamless — a bed that visibly restarts is a
-bed the student notices, and the entire point of it is not to be noticed. 60–120 s at 96 kbps
-mono is ≈ 1 MB.
+## The two beds
+
+They are separate, on separate buses, with separate sliders, because a room tone and a song
+are not the same request.
+
+| | |
+|---|---|
+| `AMBIENCE_SRC` | the room tone. **Falls back to oscillators** — a mine with no room tone is the thing the fallback exists to prevent. |
+| `MUSIC_SRC` | the track. **Falls back to nothing.** You cannot synthesise a song, and a drone arriving where a student turned on "Music" reads as a fault rather than as music. |
+
+Both **loop**, so both must be seamless — a bed that visibly restarts is a bed the student
+notices, and the entire point of it is not to be noticed. 60–120 s at 96 kbps mono is ≈ 1 MB.
 
 ## One caution about downloaded sound
 
-If these came from a library, **check the licence before the site is published.** Freesound
-and similar carry a mix of CC0 (no obligation), CC-BY (**requires visible attribution**) and
-non-commercial terms. A CC-BY sound needs a credit somewhere on the site, and a school site
-is still a publication. Worth five minutes now rather than a takedown later — and if any of
-them need crediting, tell me and I will put a credits line where it belongs.
+**The sound currently shipped in `sfx/` is © Epidemic Sound**, used under the author's
+subscription. `sfx/SOURCES.md` carries the full note, and the short version is: a subscription
+covers *use in content*, and GitHub Pages serves every file in that folder as a standalone
+public URL, which is a different thing. Confirm it before publishing.
+
+If you swap in library sound of your own, **check the licence before the site is published.**
+Freesound and similar carry a mix of CC0 (no obligation), CC-BY (**requires visible
+attribution**) and non-commercial terms. A CC-BY sound needs a credit somewhere on the site,
+and a school site is still a publication. Worth five minutes now rather than a takedown later
+— and if any of them need crediting on the page itself rather than in the README, say so and
+I will put a credits line in the Reading & Access panel, which is where a student would look.
 
 ## What happens if a file is wrong
 

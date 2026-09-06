@@ -1,12 +1,26 @@
 # Mr Factor's Mining Operation
 
+[![Built with Claude](https://img.shields.io/badge/built%20with-Claude%20AI-D97757?style=flat-square&logo=anthropic&logoColor=white)](https://claude.com/claude-code)
+[![Audio: Epidemic Sound](https://img.shields.io/badge/audio-Epidemic%20Sound-1D1D1D?style=flat-square)](https://www.epidemicsound.com)
+[![One file](https://img.shields.io/badge/one%20file-no%20build%20step-2E7D64?style=flat-square)](index.html)
+[![Checks](https://img.shields.io/badge/MF.validate()-12%2C549%20checks-4A6FA5?style=flat-square)](docs/VERIFICATION.md)
+
+> **Built with [Claude AI](https://claude.com/claude-code)** (Anthropic) in collaboration with the
+> author. Every commit in this repository is co-authored by Claude, and the trailer is on each
+> one — `git log` is the full record of the collaboration.
+>
+> **Music and sound effects © [Epidemic Sound](https://www.epidemicsound.com)**, used under the
+> author's active subscription. See [Credits and attribution](#credits-and-attribution).
+
 A single-file, zero-dependency site for learning to factor — built on one idea: **a prime and an irreducible polynomial are the same object.** Factoring 72 and factoring `x² − 5x + 6` are not two topics taught years apart. They are the same act, and down here they use the same three tools.
 
 **Ore looks like rock.** `x² − 5x + 6` looks like a lump.
 
 ## Run it
 
-Open `index.html`. That is the whole instruction — no build step, no server, no dependencies, no network requests, no storage. Verified: **0 external references, 0 network calls, 0 storage APIs, 136 KB.**
+Open `index.html`. That is the whole instruction — no build step, no server, no dependencies, no storage. **≈1.03 MB, one file, and it runs from `file://`.**
+
+The only thing it ever fetches is **sound**, out of `sfx/` beside it — and every one of those fetches is allowed to fail. Without the folder the cues fall back to synthesised oscillators, the music bed stays silent, and the site behaves exactly as it did before there was any audio at all. **Adding sound files can never take sound away, and removing them can never break the page.**
 
 ## The metaphor, and it is load-bearing
 
@@ -59,9 +73,13 @@ The line between a score and a grade is drawn in `docs/MR-FRACTION-PHILOSOPHY.md
 MF.validate()
 ```
 
-**2,037 checks across eleven groups, 0 errors, and two controls that must fail — and do.** It sweeps the factor engine, seam classification, **800 generated lumps across the five layers** (the ore is generated, not authored, so nobody has ever seen most of it), the printer, the pour, the forge, the seam's whole length, the doors on the surface, the no-gate rule, and the no-grades rule.
+**12,549 checks across 42 groups, 0 errors, and two controls that must fail — and do.** It sweeps the factor engine, seam classification, **hundreds of generated lumps across the five layers** (the ore is generated, not authored, so nobody has ever seen most of it), the printer, the pour, the forge, the Casting Shed's three workshops, every tool's reading and lesson, colour contrast on every rendered surface, the reading-and-access panel, the sound layer, the seam's whole length, the doors on the surface, the no-gate rule, and the no-grades rule.
 
-`MF.playthrough(layer)` drives a whole lump end to end — dig, assay, smelt, pour — and reports what it did.
+**Every check carries a control that must fail**, and a new one is proved by reintroducing the fault it exists to catch — not by watching it pass. `docs/VERIFICATION.md` is 93 rules, each written after a real failure.
+
+Run it at **380×780, 560×760, 994×700 and 1250×900**; a group green at one width has only ever proved itself at that width.
+
+`MF.playthrough(layer)` drives a whole lump end to end — dig, assay, break, pour — and reports what it did.
 
 ## Publishing to GitHub Pages
 
@@ -85,14 +103,68 @@ On the sister project this step was skipped: 67 asset paths had been verified tw
 
 ```
 index.html                       the entire site
+sfx/                             six cues and two beds — Epidemic Sound, see below
+sfx/SOURCES.md                   what was cut from where, measured levels, the licence note
 docs/MINE-SPEC.md                what v1 is, and what is deliberately out
 docs/MR-FRACTION-PHILOSOPHY.md   what makes it a Mr Fraction site (incl. §2.5a)
 docs/SITE-STATE.md               the only document that states what exists
-docs/VERIFICATION.md             42 rules, each written after a real failure
+docs/VERIFICATION.md             93 rules, each written after a real failure
+docs/VOICE.md                    the recording script for Mr Factor — generated, not typed
 .claude/agents/                  five review charters, deliberately disjoint
 tools/verify-published.js        run this ON THE LIVE URL — see above
 tools/                           serve.ps1, zz-drive.js — scaffolding, never shipped
 ```
+
+## Credits and attribution
+
+### Music and sound — © Epidemic Sound
+
+**All music and all sound effects on this site are the copyright of
+[Epidemic Sound AB](https://www.epidemicsound.com)** and are used under the site author's
+**active Epidemic Sound subscription**. They are not original to this project, they are not
+in the public domain, and no licence to them passes to anyone who clones this repository.
+
+Everything in `sfx/` is Epidemic Sound material:
+
+| | |
+|---|---|
+| `music.m4a` | the music bed — cut to a 112 s seamless loop |
+| `bed.m4a` | the mine's room tone — a 40 s loop |
+| `thud` `clang` `stamp` `tick` `pour` | the five cues |
+
+`sfx/SOURCES.md` names the specific track each one was cut from, where in it, and why.
+
+> **If you fork this, the audio does not come with you.** Delete `sfx/` and the site runs
+> exactly as it always has — every cue falls back to a synthesised one and the beds go quiet.
+> That fallback is not a convenience; it is the reason the licence can be honoured by simply
+> removing a folder.
+
+**One caution for the author, repeated from `sfx/SOURCES.md`:** on GitHub Pages every file in
+`sfx/` is directly fetchable at a public URL, and a subscription library's terms generally
+cover *use in content* rather than *redistribution as standalone files*. A subscription
+covers the use; it may not cover the hosting. Worth confirming with Epidemic Sound before the
+site is published, rather than after.
+
+### Built with Claude AI
+
+This site was **designed, written and verified in collaboration with
+[Claude](https://claude.com/claude-code)** (Claude Code, Anthropic). That is not a footnote
+about a tool that autocompleted a few lines — the metaphor, the `MF.validate()` harness, the
+93 verification rules and most of the prose were worked out in conversation and are
+attributed as such:
+
+- **Every commit carries a `Co-Authored-By: Claude` trailer.** `git log` is the complete,
+  unedited record — including the commits that record what was broken and why.
+- `docs/VERIFICATION.md` is the collaboration's actual output: 93 rules, each one written
+  immediately after a real failure, most of them failures Claude introduced.
+
+Mathematical content, pedagogy and every decision about what this teaches are the author's.
+
+### The rest
+
+Everything else — the code, the mine, the mathematics, Mr Factor himself, and all the artwork
+(which is **drawn in SVG at runtime, not shipped as images**) — is original to this project.
+There are no third-party libraries, no fonts fetched over the network, and no images.
 
 ## Status
 

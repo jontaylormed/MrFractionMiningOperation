@@ -22,7 +22,7 @@
 | **Screens** | **eight** — surface, the Stamp Mill, the Casting Shed and its three workshops, the mine, the forge |
 | **Layers** | **five**, all reachable from the first screen, none gated on anything |
 | **Instruments** | **seven**, all made at the forge, none granted |
-| **Validation** | `MF.validate()` → **12,530 checks / 42 groups / 0 errors**, two controls that must fail, and do — **run it at the width you ship from**, because `layout`, `reach`, `hollow` and `cartdraw` measure the live viewport and report it (`VERIFICATION.md` §61, §63, §65). Verified at **380×780, 560×760, 994×700 and 1250×900** |
+| **Validation** | `MF.validate()` → **12,549 checks / 42 groups / 0 errors**, two controls that must fail, and do — **run it at the width you ship from**, because `layout`, `reach`, `hollow` and `cartdraw` measure the live viewport and report it (`VERIFICATION.md` §61, §63, §65). Verified at **380×780, 560×760, 994×700 and 1250×900** |
 
 > **A check is only as wide as the space it sweeps.** The `truthy` group reported 0 errors across 642 checks while **1,970 Decimal Dial states printed a falsehood**, because it tested each lump's original integer coefficients and never nudged `c` — the one thing the dial exists to do. It now sweeps every slider position the control can reach (3,287 checks). Ask of any green result: *what did it not look at?*
 | **Runtime** | Zero dependencies, no build step, no network requests, no storage, runs from `file://` |
@@ -184,7 +184,7 @@ The face is **2280px of rock**, several screens wide, scanned by dragging, scrol
 
 ## The breaking floor: one anvil, the belt over it, and the ore on top
 
-**Measured 2026-09-06, all four widths, 0 errors over 12,530 checks in 42 groups, both controls failing.**
+**Measured 2026-09-06, all four widths, 0 errors over 12,549 checks in 42 groups, both controls failing.**
 
 **There is one box, and the anvil in it is the work.** The `workpair` is gone. It was two boxes: one held a row of chips and the belt, the other held a drawing of an anvil, two number boxes and the swing button — so **the anvil a student was looking at was not the thing their ore was on**, and the drawing was decoration beside the work. What is here now is the gallery you are standing in: the belt overhead, the anvil, the stone on its face, and whatever has come off it lying on the ground. **A first lump has nothing on the ground at all.**
 
@@ -430,6 +430,43 @@ Metals are **spent** here — this is the yard's sink. Forging *is* distributing
 > **The tutorial was outside the contrast sweep, so the sweep was widened rather than the gap documented.** The `contrast` group mounted the forge cold, then with a mold open — never **poured**, so not one pixel of the casting's tutorial was measured. It now mounts a poured forge and, separately, **the tool panel itself**, which is appended to `document.body` rather than into a screen and had therefore never been swept at all. 461 → **783 elements**, 0 failures, proved by colouring the method text `#FBF6EE` and watching nine readings fire at 1.02:1.
 
 > **Tools assist; they never gate.** The `nogate` check walks every layer with an empty yard and no tools and asserts ore still comes up.
+
+## The sound layer, and the two beds
+
+**Added 2026-09-06, at the user's request, mirroring the sister site's volume controls.** The
+site made no sound at all before this; `THUD!` and `CLANG!` were painted `<div>`s.
+
+`MF.audio` is one `AudioContext` behind three buses — `fxBus`, `ambBus`, `musicBus` — into a
+`master` that mute pulls to zero. **It never speaks first:** the context is built on the
+"Enter the operation" button and not one moment earlier, and `play`, `say` and every bed
+refuse to construct one on their own. That is enforced on a detached `Object.create(MF.audio)`
+copy rather than by nulling the live one, which is `VERIFICATION.md` §80 exactly.
+
+**Five cues, each on a moment that already has a picture** — `thud` when a seam runs, `clang`
+on a glance, `pour` at the ladle, `stamp` under the mill press, `tick` when a lump is picked
+out. Each is **synthesised by default and file-backed when a file is there**, and every
+failure — no folder, 404, a format the decoder refuses, a fetch still in flight — falls back
+to the oscillators. **Adding sound files can never take sound away.**
+
+**Two beds, not one, and they are asymmetric on purpose:**
+
+| | falls back to | why |
+|---|---|---|
+| `amb` — the mine's room tone | **the oscillators** | a mine with no room tone is the thing the fallback exists to prevent |
+| `music` — the track | **nothing** | you cannot synthesise a song, and a drone arriving where a student turned on "Music" reads as a fault rather than as music |
+
+They have separate buses and separate sliders because a room tone and a song are not the same
+request. Both start at **off**; effects start at 0.35.
+
+> **The bed assertion is an IFF, not "it starts".** A bed runs exactly when it is wanted *and*
+> has something to play. "Turning music up starts the bed" is red on every `file://` open —
+> the fetch cannot succeed there — and `file://` is the one way this page is guaranteed to be
+> used. `sound` is 101 checks; six of its controls were proved by reintroducing the fault,
+> including one slider carrying both beds and the music bed quietly synthesising a drone.
+
+**All audio in `sfx/` is © Epidemic Sound**, under the author's subscription. `sfx/SOURCES.md`
+and the README credits section carry it. Deleting the folder is a supported state, not a
+degraded one — which is exactly what makes the licence honourable by removing a directory.
 
 ## Invariants enforced in code, not asserted in prose
 
