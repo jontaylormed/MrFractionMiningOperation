@@ -1876,6 +1876,26 @@ table.rosetta td.rx{font-family:var(--display); font-size:16px; color:var(--ink)
 .backbtn{margin-bottom:10px}
 .shedfoot{border-top:2px solid var(--rule); padding-top:14px; justify-content:center}
 
+/* THE MATCHING ACTIVITY: two columns of words and the job of pairing them */
+.matchbox{background:var(--paper-2); border:3px solid var(--tan); border-radius:14px;
+  padding:14px 16px; margin:16px 0}
+.matchbox .mtlab{font-family:var(--display); font-size:11px; letter-spacing:.12em; color:var(--ore-t)}
+.matchbox .mthint{font-size:14px; color:var(--ink-soft); margin:4px 0 10px; max-width:66ch}
+.mtgrid{display:grid; grid-template-columns:1fr 1fr; gap:10px; align-items:start}
+.mtcol{display:flex; flex-direction:column; gap:7px; min-width:0}
+.mtch{font-family:var(--display); font-size:12px; letter-spacing:.06em; color:var(--ink-soft); margin-bottom:2px}
+.mtchip{font:inherit; font-size:14px; text-align:left; padding:9px 11px; border-radius:10px;
+  border:2px solid var(--tan); background:#fff; color:var(--ink); cursor:pointer; min-width:0}
+.mtchip:hover{border-color:var(--ore-t)}
+.mtchip[data-held]{border-color:var(--ore-t); background:#FDF1DF; box-shadow:0 0 0 2px rgba(176,106,32,.22)}
+/* PAIRED, NOT SCORED. It goes quiet and stops taking clicks; there is no tick,
+   no count and nothing that adds up — the same rule `nogrades` holds the rest
+   of the site to. */
+.mtchip[data-done]{border-color:var(--vein); background:#E8F2EE; color:var(--ink-soft); cursor:default}
+.mtout{margin-top:11px}
+.mtall{font-family:var(--display); font-size:15px; color:var(--vein); margin-top:8px}
+@media(max-width:430px){ .mtgrid{grid-template-columns:1fr} .mtcol:last-child{margin-top:8px} }
+
 /* the moving illustration at the head of each workshop */
 .shedart{border:3px solid var(--rock-3); border-radius:14px; overflow:hidden; background:#2E2620; margin:0 0 14px}
 /* EVERY WORD ON AN ILLUSTRATION IS HTML, pinned over the drawing in
@@ -5643,6 +5663,107 @@ MF.ROSETTA = [
     holds:function(o){ var p = ingotProduct([{m:1,k:2},{m:1,k:3}]); return p.a===o.a && p.b===o.b && p.c===o.c; } }
 ];
 
+/* =========================================================================
+   PAIRING THE TWO COLUMNS UP, WHICH IS A THING TO DO RATHER THAN A THING TO
+   BE ASKED.
+
+   USER, 2026-09-05: "the Words section assessment should have fewer questions
+   and a matching activity. Never assess this section more than the other
+   sections in the Casting Shed."
+
+   The Words room had FIVE question cards against the Molds room's three and
+   the Tools room's four - the most assessment in the building, attached to the
+   module whose content is a vocabulary list. Two of them are gone, and this is
+   what took their place: the mine's word on the left, the textbook's word on
+   the right, and the job is to put them together.
+
+   IT IS BUILT FROM MF.ROSETTA, so the activity and the table above it cannot
+   drift - the same reason the pour takes its numbers from MF.moldMaths. Six
+   pairs of the ten, chosen by MF.balanced so the room is not the same six
+   every time and the right-hand column is not in the left-hand column's order.
+
+   NOTHING IS SCORED. A pair that belongs together locks and says why; a pair
+   that does not says what each word actually means and lets go. There is no
+   count of attempts anywhere, which is the same rule the rest of the site is
+   held to by the `nogrades` group.
+   ========================================================================= */
+MF.paintMatch = function(host, o){
+  var opts = (o || {});
+  var n = opts.n || 6;
+  var pool = MF.ROSETTA.slice();
+  var pairs = MF.balanced('match|words', pool).slice(0, n);
+  var box = E('div','matchbox');
+  box.appendChild(H('div','mtlab','&#128279; PUT EACH ONE WITH ITS REAL NAME'));
+  box.appendChild(H('p','mthint','Click a word on the left, then the name it is for on the right. ' +
+    'Nothing is counted &mdash; a pair that does not go together tells you what each one means and lets go.'));
+
+  var grid = E('div','mtgrid');
+  var left = E('div','mtcol'), right = E('div','mtcol');
+  left.appendChild(H('div','mtch','What this place says'));
+  right.appendChild(H('div','mtch','What it is called'));
+  var out = E('div','mtout');
+  var held = null, done = 0;
+
+  function chipFor(r, side){
+    var b = E('button','mtchip'); b.type='button';
+    b.innerHTML = (side === 'mine') ? r.mine : r.real;
+    b.setAttribute('data-side', side);
+    b.setAttribute('aria-label', (side === 'mine' ? 'The mine\'s word: ' : 'The real name: ') +
+      String(side === 'mine' ? r.mine : r.real).replace(/<[^>]+>/g,''));
+    on(b,'click',function(){
+      if(b.hasAttribute('data-done')) return;
+      /* clicking a second one on the SAME side just moves the hold - a student
+         changing their mind is not a wrong answer */
+      /* CHANGING YOUR MIND IS NOT AN ANSWER. Picking a second word on the same
+         side has to MOVE the hold — and `held` must be cleared as well as
+         un-highlighted, or the code falls straight through to the pairing
+         branch and judges one left-hand word against another, which is not a
+         question anybody asked. */
+      if(held && held.side === side){
+        held.el.removeAttribute('data-held');
+        var wasSame = (held.el === b);
+        held = null;
+        if(wasSame) return;                  /* clicking the held one lets go */
+      }
+      if(!held){
+        held = {el:b, row:r, side:side};
+        b.setAttribute('data-held','yes');
+        return;
+      }
+      var a = held; held = null;
+      a.el.removeAttribute('data-held');
+      clear(out);
+      if(a.row === r){
+        [a.el, b].forEach(function(n2){ n2.setAttribute('data-done','yes'); n2.removeAttribute('data-held'); });
+        done++;
+        out.appendChild(H('div','note good','<b>' + String(r.mine).replace(/<[^>]+>/g,'') +
+          ' is ' + String(r.real).replace(/<[^>]+>/g,'') + '.</b> ' + r.note));
+        if(done === pairs.length)
+          out.appendChild(H('div','mtall','That is all of them. The two columns are one column.'));
+      } else {
+        var mineRow = (a.side === 'mine') ? a.row : r;
+        var realRow = (a.side === 'mine') ? r : a.row;
+        out.appendChild(H('div','note','<b>Those are two different things.</b> ' +
+          String(mineRow.mine).replace(/<[^>]+>/g,'') + ' is <b>' +
+          String(mineRow.real).replace(/<[^>]+>/g,'') + '</b>, and ' +
+          String(realRow.real).replace(/<[^>]+>/g,'') + ' is what this place calls <b>' +
+          String(realRow.mine).replace(/<[^>]+>/g,'') + '</b>.'));
+      }
+    });
+    return b;
+  }
+
+  pairs.forEach(function(r){ left.appendChild(chipFor(r, 'mine')); });
+  /* the right column is shuffled AGAINST the left, or the activity is reading
+     two lists in the same order and clicking down them */
+  MF.balanced('match|real', pairs).forEach(function(r){ right.appendChild(chipFor(r, 'real')); });
+  grid.appendChild(left); grid.appendChild(right);
+  box.appendChild(grid);
+  box.appendChild(out);
+  host.appendChild(box);
+  return box;
+};
+
 MF.paintRosetta = function(host){
   var box = E('div','panel light');
   box.appendChild(H('div','panel-tag','WHAT EVERY WORD HERE MEANS'));
@@ -6976,6 +7097,20 @@ MF.SCREENS['shed-words'] = function(host){
     '<b>the same thing</b>. They are not similar. They are the same object under two names.'));
   MF.paintRosetta(host);
 
+  /* ---- AND THEN YOU PUT THEM TOGETHER YOURSELF ----
+
+     USER, 2026-09-05: "the Words section assessment should have fewer
+     questions and a matching activity."
+
+     Reading a two-column table is a passive act, and the room was following it
+     with FIVE question cards - more assessment than any other room in the
+     building, on the module whose content is a vocabulary list. Two of those
+     cards are gone (both were recall: which pair of real names, and what does
+     loaded ore tell you) and this does that work as something you DO rather
+     than something you are asked. It is built from MF.ROSETTA, so it cannot
+     drift from the table it is about. */
+  MF.paintMatch(host, {n:6});
+
   /* BUILT FIRST, SHOWN LAST. The closer is a card in the same rotation as the
      questions above it (§41), so it is made here, detached, and handed to
      MF.paintQuestions as `also` rather than appended after the box - which is
@@ -6994,26 +7129,6 @@ MF.SCREENS['shed-words'] = function(host){
         says:'That one still comes apart. Two squares with a minus and no middle term is a <b>twin seam</b> — a difference of two squares — and it runs at (x + 3) and (x − 3).'},
        {label:'2x + 6',
         says:'Every term there is carrying a 2, so a seam runs through it. Pull the <b>common factor</b> out and you get 2(x + 3).'}
-     ]},
-    {kind:'pick',
-     q:'In the mine you <b>break</b> ore and at the forge you <b>pour</b> metal. Which pair of real names is that?',
-     options:[
-       {label:'factoring, and distributing', holds:true,
-        says:'That is the whole split, and it is why the two acts live in two buildings. Breaking takes one thing into its factors; pouring takes factors into one thing.'},
-       {label:'simplifying, and solving',
-        says:'Neither is solving — nothing on this site has an equals sign with an unknown to find. And "simplifying" does not say which direction you are going, which is exactly the thing the two buildings keep separate.'},
-       {label:'dividing, and multiplying',
-        says:'Closer than it looks, and not quite. One swing <em>is</em> a division, but factoring is the whole repeated act of breaking until nothing comes apart — and distributing is multiplying <em>across a bracket</em>, which is the part that needs its own name.'}
-     ]},
-    {kind:'pick',
-     q:'A lump is described as <b>loaded ore</b>. What does that tell you about it?',
-     options:[
-       {label:'Something sits in front of the x&sup2;', holds:true,
-        says:'That is <b>ax² + bx + c with a ≠ 1</b>. Both ends are pinned — the x-parts must multiply to a and the numbers to c — which is the situation factoring by grouping was invented for.'},
-       {label:'It is too heavy to break',
-        says:'Nothing in the mine is too heavy to break. "Loaded" is about the shape of the expression, not about difficulty — and a loaded lump can be easier than a plain one.'},
-       {label:'It has more than three terms',
-        says:'It has exactly three. Splitting the middle term to <em>make</em> four is a step <em>inside</em> the grouping method, not a description of what you started with.'}
      ]},
     {kind:'type', plain:true,
      q:'The table says <b>the common metal</b> is <b>the greatest common factor</b>. Type the common metal of <b>18x + 24</b>.',
@@ -7462,12 +7577,13 @@ MF.SCREENS.forge = function(host){
   MF._forge = {left:colL, right:colR};
   MF.paintForge();
 
-  /* NO MINE DOOR HERE EITHER (user, 2026-09-05). It read "Back to the mine"
-     rather than "Into the mine", which is the same route under another name.
-     The masthead carries it on every page. */
-  var back = E('div','row'); back.style.marginTop='14px';
-  back.appendChild(MF.jump('Out to the surface &rarr;','home'));
-  host.appendChild(back);
+  /* AND NO DOOR AT THE FOOT OF THE FORGE AT ALL (user, 2026-09-05).
+
+     The mine door went first — it read "Back to the mine" rather than "Into
+     the mine", which is the same route under another name — and the surface
+     door has now followed it. The masthead carries both on every page, so a
+     row of duplicates at the bottom of the room was navigation competing with
+     itself. The forge ends on the work. */
 };
 
 /* THE FORGE REPAINTS IN PLACE. Every click in here used to call MF.go('forge')
@@ -15824,7 +15940,7 @@ MF.validate = function(){
          you whether a question is WORTH ASKING or whether its wording is
          clear - that is a human reading, and it has not happened. */
   var qzScreens = ['shed-mold','shed-words','shed-methods'];
-  var qzSeen = 0;
+  var qzSeen = 0, qzCount = {};
   qzScreens.forEach(function(scr){
     chk('quiz');
     var probe = document.createElement('div');
@@ -15834,6 +15950,7 @@ MF.validate = function(){
     chk('quiz');
     if(!asks.length){ errs.push('quiz: the workshop "' + scr + '" asks nothing at all'); return; }
     qzSeen += asks.length;
+    qzCount[scr] = asks.length;
     /* ---- ONE AT A TIME, AND IT COMES ROUND (§41) ----
        The rooms turn a dial through their questions rather than stacking them.
        Two things have to hold, and the second is the one that could rot
@@ -15895,6 +16012,84 @@ MF.validate = function(){
   });
   chk('quiz');
   if(qzSeen < 9) errs.push('quiz: only ' + qzSeen + ' questions across the three workshops');
+
+  /* ---- NO ROOM MAY BE THE MOST-ASSESSED ROOM ----
+
+     USER, 2026-09-05: "Never assess this section more than the other sections
+     in the Casting Shed."
+
+     The Words room had five question cards against the Molds room's three and
+     the Tools room's four — the heaviest assessment in the building attached
+     to the module whose content is a vocabulary list, which is exactly
+     backwards. Stated as a rule it is checkable, so it is checked rather than
+     remembered: no workshop asks more than any other.
+
+     It is written as a SPREAD rather than a cap on one room, because the fault
+     is comparative. A cap of three on the Words room would pass just as
+     happily if the Molds room dropped to one, and the rule the user stated is
+     about the balance between them. */
+  chk('quiz');
+  var qzKeys = Object.keys(qzCount);
+  if(qzKeys.length === qzScreens.length){
+    var qzMin = Math.min.apply(null, qzKeys.map(function(k){ return qzCount[k]; }));
+    var qzMax = Math.max.apply(null, qzKeys.map(function(k){ return qzCount[k]; }));
+    if(qzMax - qzMin > 1)
+      errs.push('quiz: the workshops ask ' + qzKeys.map(function(k){ return k + ' ' + qzCount[k]; }).join(', ') +
+        ' — no room may carry more assessment than the others');
+    chk('quiz');
+    if(qzCount['shed-words'] > qzMin)
+      errs.push('quiz: the Words room asks ' + qzCount['shed-words'] + ' and the lightest room asks ' +
+        qzMin + ' — the vocabulary module must not be the most-assessed one');
+  } else {
+    errs.push('quiz: only ' + qzKeys.length + ' of ' + qzScreens.length +
+      ' workshops reported a question count, so the balance was not checked');
+  }
+  /* AND THE WORDS ROOM HAS SOMETHING TO DO, not only things to answer. What
+     replaced the two questions has to actually be there. */
+  chk('quiz');
+  var qzW = document.createElement('div');
+  MF.SCREENS['shed-words'](qzW);
+  var qzMatch = qzW.querySelector('.matchbox');
+  if(!qzMatch){
+    errs.push('quiz: the Words room lost its matching activity — the questions came out and nothing went in');
+  } else {
+    var qzMine = qzMatch.querySelectorAll('.mtchip[data-side="mine"]');
+    var qzReal = qzMatch.querySelectorAll('.mtchip[data-side="real"]');
+    chk('quiz');
+    if(qzMine.length < 4 || qzMine.length !== qzReal.length)
+      errs.push('quiz: the matching activity offers ' + qzMine.length + ' words and ' +
+        qzReal.length + ' names — every word needs exactly one name to go to');
+    /* THE TWO COLUMNS MUST NOT BE IN THE SAME ORDER, or the activity is
+       clicking straight down two lists. Same fault class as the answer that
+       sat in the first slot eight times out of eight. */
+    chk('quiz');
+    var qzSame = 0;
+    for(var qm=0; qm<qzMine.length; qm++){
+      var mineWord = qzMine[qm].textContent.trim();
+      var row = null;
+      MF.ROSETTA.forEach(function(r){ if(String(r.mine).replace(/<[^>]+>/g,'') === mineWord) row = r; });
+      if(row && qzReal[qm] && qzReal[qm].textContent.trim() === String(row.real).replace(/<[^>]+>/g,'')) qzSame++;
+    }
+    if(qzMine.length && qzSame === qzMine.length)
+      errs.push('quiz: the matching activity lists both columns in the same order — there is nothing to work out');
+    /* CHANGING YOUR MIND MUST NOT BE JUDGED. Two clicks on the same side move
+       the hold; they are not a pair. This shipped as a bug the first time —
+       `held` was un-highlighted without being cleared, so the code fell into
+       the pairing branch and told a student that two left-hand words were
+       "two different things", which is true and not an answer to anything. */
+    chk('quiz');
+    if(qzMine.length > 1){
+      var qzOut = qzMatch.querySelector('.mtout');
+      qzMine[0].dispatchEvent(new MouseEvent('click',{bubbles:true}));
+      qzMine[1].dispatchEvent(new MouseEvent('click',{bubbles:true}));
+      if((qzOut.textContent||'').trim())
+        errs.push('quiz: picking a second word on the same side was answered as a pair — ' +
+          'changing your mind is not an attempt');
+      chk('quiz');
+      if(!qzMine[1].hasAttribute('data-held') || qzMine[0].hasAttribute('data-held'))
+        errs.push('quiz: picking a second word on the same side did not move the hold onto it');
+    }
+  }
 
   /* AND THE SUPPORTED OPTION MUST NOT SIT IN THE SAME SLOT EVERY TIME.
 
