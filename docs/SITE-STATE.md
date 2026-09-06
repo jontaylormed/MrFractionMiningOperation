@@ -22,7 +22,7 @@
 | **Screens** | **eight** — surface, the Stamp Mill, the Casting Shed and its three workshops, the mine, the forge |
 | **Layers** | **five**, all reachable from the first screen, none gated on anything |
 | **Instruments** | **seven**, all made at the forge, none granted |
-| **Validation** | `MF.validate()` → **12,161 checks / 37 groups / 0 errors**, two controls that must fail, and do — **run it at the width you ship from**, because `layout`, `reach`, `hollow` and `cartdraw` measure the live viewport and report it (`VERIFICATION.md` §61, §63, §65). Verified at **380×780, 560×760, 994×700 and 1250×900** |
+| **Validation** | `MF.validate()` → **12,272 checks / 40 groups / 0 errors**, two controls that must fail, and do — **run it at the width you ship from**, because `layout`, `reach`, `hollow` and `cartdraw` measure the live viewport and report it (`VERIFICATION.md` §61, §63, §65). Verified at **380×780, 560×760, 994×700 and 1250×900** |
 
 > **A check is only as wide as the space it sweeps.** The `truthy` group reported 0 errors across 642 checks while **1,970 Decimal Dial states printed a falsehood**, because it tested each lump's original integer coefficients and never nudged `c` — the one thing the dial exists to do. It now sweeps every slider position the control can reach (3,287 checks). Ask of any green result: *what did it not look at?*
 | **Runtime** | Zero dependencies, no build step, no network requests, no storage, runs from `file://` |
@@ -184,7 +184,7 @@ The face is **2280px of rock**, several screens wide, scanned by dragging, scrol
 
 ## The breaking floor: one anvil, the belt over it, and the ore on top
 
-**Measured 2026-09-05, all four widths, 0 errors over 12,161 checks in 37 groups, both controls failing.**
+**Measured 2026-09-06, all four widths, 0 errors over 12,272 checks in 40 groups, both controls failing.**
 
 **There is one box, and the anvil in it is the work.** The `workpair` is gone. It was two boxes: one held a row of chips and the belt, the other held a drawing of an anvil, two number boxes and the swing button — so **the anvil a student was looking at was not the thing their ore was on**, and the drawing was decoration beside the work. What is here now is the gallery you are standing in: the belt overhead, the anvil, the stone on its face, and whatever has come off it lying on the ground. **A first lump has nothing on the ground at all.**
 
@@ -322,6 +322,14 @@ Plain numbers → a metal spread over a bracket → two brackets → a square �
 **THE FORGE TEACHES NOTHING.** *"There should no more lessons on the tools in the forge"* (user, 2026-09-04). The whole method, its reasoning and a practice used to be appended to the casting three seconds after a pour, when what the student is looking at is the object they just made. What is left there is a line saying the lesson has opened, and a route to it.
 
 **THE CASTING SHED IS THREE MODULES: The Words, The Molds, The Tools** — the user's own names for them (2026-09-05). The screen keys are unchanged (`shed-words`, `shed-mold`, `shed-methods`) because they are wired into the door table, four check groups and every jump on the site; what changed is what a student reads on the card.
+
+**MR FACTOR GUIDES, FROM A DOCK** (`MINE-SPEC.md` §42). He was on three of eight screens; there was a character and no guide, so *where do I start* had no answer on the site. He is a fixed portrait in the corner of every room now, opening himself once per room with two to four beats about what to **do** there, and starting again from the top whenever you tap him. He lives outside `#screen` because `MF.go` clears that element on every arrival — a guide destroyed by the act of arriving cannot greet you when you get there.
+
+> **The `guide` group (57) checks the refusals rather than the feature**, because every default for an onboarding tour breaks a rule this project already has: no scrim and nothing disabled behind him, `pointer-events:none` on the dock so it cannot swallow a click, the `nogrades` regex pointed at his own copy, and a brevity budget of 210 characters a beat. A room he has not spoken in gets a **lit helmet lamp** — no count, no badge, nothing that adds up. Controls: a room with no copy, a beat padded into a paragraph, a guide that reopens every arrival, a dock that swallows clicks, and a progress counter on the bubble. His copy is swept for contrast per room, because putting him outside `#screen` had put every word he says outside the sweep (`VERIFICATION.md` §89).
+
+**THE WORDS ROOM DOES SOMETHING INSTEAD OF ASKING A FIFTH TIME** (§45). It had five question cards against the Molds room's three and the Tools room's four — the heaviest assessment in the building on the module whose content is a vocabulary list. Three now, and **`MF.paintMatch`** took the other two: six pairs from `MF.ROSETTA`, the mine's word against the textbook's, both columns ordered separately by `MF.balanced` or it is two lists read straight down. `quiz` asserts the **spread** rather than a cap, because a cap of three would pass just as happily if the Molds room dropped to one.
+
+**AND THE YARD ON THE SURFACE HOLDS ORE** (§43). It held four steel bars and a brown blob, because the lump's silhouette and palette were literals inside `MF.oreRock`. One `MF.ORE_ART` now, with `MF.oreRock` and `MF.oreLump` over it — the mine and the surface cannot show two different rocks. `surface` asserts the yard carries **both** kinds with the right signal on each: gold and seamless, or brown with the vein through it.
 
 **THE MOLDS SHOW THE MULTIPLICATION.** The room drew an area model and one line of algebra, and the area model **only ever held one row** — a depth over two parts, `a(b + c)`. That is a number distributed over a sum, and it is not the move the mine runs backwards: the mine's job is two brackets, four products, and two middles that turn out to be the same kind of thing. `MF.pourChain` writes the pour out a line at a time — what went in, every part meeting every part, each pair multiplied out, the two middles collapsing, one object — and the room gains a third thing you can pour (**two brackets**). It does **no arithmetic of its own**: every number comes from `MF.moldMaths`, which the `mold` group already checks against `ingotProduct`, so there is no second copy to drift.
 

@@ -1685,3 +1685,93 @@ it. Measured: 10 CSS px → 21.
 
 > The halo moved to `em` in the same breath — it was 4px against type that was always 13 or
 > 21, and a fixed halo stops being a halo as the letters grow (`VERIFICATION.md` §86).
+
+## 42. Mr Factor guides, from a dock, one room at a time
+
+> *"We also need to establish how and where on the page Mr Factor guides them through a
+> tutorial."* — user, 2026-09-05; **decision: a dock, and per-room first visits**
+
+Before this he was on **three of eight screens** — two speech bubbles and a portrait on the
+front page. There was a character and no guide, so *where do I start* had no answer anywhere
+on the site.
+
+He is a fixed portrait in the corner of every room. Arrive somewhere for the first time and he
+raises a bubble with **two to four beats about what to do there**; step through and he goes
+quiet. Tap him any time and he starts again from the top, because the student who needs him
+most is the one who came back.
+
+**He lives outside `#screen` on purpose.** `MF.go` clears that element on every arrival, and a
+guide destroyed by the act of arriving somewhere cannot greet you when you get there.
+
+### What he refuses to be
+
+| | |
+|---|---|
+| **Not modal** | No scrim, nothing disabled behind him, he does not take the keyboard. `nogate` is the rule the site is built on, and a guide you must dismiss before you can work is a gate with a friendly face on it. |
+| **Not a click-eater** | The dock is `pointer-events:none`; only the controls inside it take clicks. The same fault class the `overlay` group exists for. |
+| **Not counting** | No progress across rooms, no "3 of 8", no badge with a number. A room he has not spoken in gets a **lit helmet lamp**, and that is the whole signal. |
+| **Not a wall** | Beats are capped at 210 characters and four per room. §41 was about walls of text, and a guide is the easiest place to build a new one by accident. |
+
+All four are asserted by the `guide` group rather than remembered.
+
+## 43. The yard is stocked with the ore the mine produces
+
+> *"Change the Homepage Illustration yard to contain shapes that look and colored like the ore
+> mined."* — user, 2026-09-05
+
+It held four flat steel bars and a brown blob. The reason it held neither a lump nor anything
+like one is that the lump's silhouette and palette were **literals inside `MF.oreRock`**, so
+anywhere else that wanted to draw ore had to approximate it — and did.
+
+There is one object now, `MF.ORE_ART`, and two renderers over it:
+
+- **`MF.oreRock`** — a labelled stone, with the expression cut into it.
+- **`MF.oreLump`** — the same polygon and skins as a bare `<g>`, for a scene to place and scale.
+
+The yard holds nine: four native lumps on the rack, five seamed ones on the heap. **The mine
+and the surface cannot show a student two different rocks, because there is only one rock.**
+
+> The two sides still have to be tellable apart at a glance — they are the two answers to the
+> question the face asks. `surface` asserts the yard carries **both** kinds and that each
+> carries the right signal: native metal is gold with no seam, rock that still breaks is brown
+> with the vein drawn through it. A yard of nine identical lumps would pass a "does it look
+> like ore" reading and teach the wrong thing.
+
+## 44. Where the doors are, and where they are not
+
+The rooms had grown a habit of ending on a row of ways out, and the masthead already carries
+every room on every page.
+
+- **The Forge** loses its last door. The mine door went first (it read *"Back to the mine"*
+  rather than *"Into the mine"*, the same route under another name); the surface door followed.
+  The forge ends on the work.
+- **The Casting Shed's front page** had three — the Stamp Mill, the Forge and the surface — under
+  a page whose job is to send you *into* one of three workshops. It has one: **the Forge**,
+  which is not a way out but the next step. You learn the pour here and you perform it there.
+- **The shed's workshop feet** are primary and centred. In the plain tone they read as a
+  footnote about somewhere else rather than the way on.
+
+> *"The Top Bar Buttons should be the main navigation out of the Casting Shed."* — user,
+> 2026-09-05. Everything that is merely navigation is navigation, and lives in the bar.
+
+## 45. The Words room does something rather than asking a fifth time
+
+> *"the Words section assessment should have fewer questions and a matching activity. Never
+> assess this section more than the other sections in the Casting Shed."* — user, 2026-09-05
+
+It had **five** question cards against the Molds room's three and the Tools room's four — the
+heaviest assessment in the building attached to the module whose content is a vocabulary list.
+It has three. The two that went were both pure recall, and both are things the new activity
+now does.
+
+**`MF.paintMatch`** puts six pairs from `MF.ROSETTA` in two columns — the mine's word on the
+left, the textbook's word on the right — and the job is to put them together. Built from the
+same table the room is about, so the activity and the table cannot drift. Both columns are
+ordered by `MF.balanced`, **separately**, or it is two lists read straight down.
+
+A pair that belongs together locks and says why; one that does not says what each word means
+and lets go. Nothing counts anything.
+
+> **The rule is checked as a spread, not as a cap.** A cap of three on the Words room would
+> pass just as happily if the Molds room dropped to one, and what the user stated is about the
+> balance between them.

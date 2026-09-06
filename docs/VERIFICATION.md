@@ -1902,3 +1902,55 @@ now.
 > expressed as a relationship, and the CSS did not because it was expressed as a number.**
 > Where a value only makes sense relative to another value, say so in the code, or the next
 > person to move the other value has silently broken it.
+
+## §88. The one function whose text the sweep cannot see is the one that went black on black
+
+`MF.areaModel` names its tiles `sq`, `x` and `k`. A caller asked for `x2`. Neither the tint map
+nor the ink map has that key, so the corner was painted `fill="undefined"` — black — and
+labelled in the same nothing. **A solid black rectangle with black text in it**, where the x²
+of every two-bracket pour should have been, shipping under a green `contrast` group for as
+long as that pour has existed.
+
+§59 is the whole explanation. Those labels are SVG `<text>` painted with `fill`, and
+`_measureContrast` reads `color`. Of everything drawn on this site, the one function whose
+text that sweep **structurally cannot see** is the one that failed at 1:1.
+
+> **Two fixes, because either alone is half a fix.** An unknown kind now falls back to a real
+> tile, so a typo can never again be invisible; and `modeltile` measures what is actually
+> painted — every tile's resolved `fill` against its resolved ink, read off a *mounted* svg
+> because `var(--tile-sq)` means nothing until it is in the document. The fallback stops the
+> typo being black; the check stops it being silent.
+
+And the same day, from the other direction:
+
+> **`cavity` had to ask about EXTENT, not colour.** The molten rects ran `150..362` and the
+> reveal's clip `120..390`, both chosen against a square tool icon. `x² + 13x + 42` runs
+> `124..388`, so the middle of the casting cooled to steel while both ends stayed the black of
+> the cut. Every group in the file asks whether a thing is the right *colour*; not one asked
+> whether the paint *reaches*. Six places each had their own idea of where the cavity was, and
+> a tool icon was small enough that none of them ever disagreed visibly.
+
+## §89. A guide is the feature that most wants to become a gate
+
+Every default for an onboarding tour breaks a rule this project already has: a modal you must
+dismiss, a tour you cannot skip, a progress bar across the rooms, a badge with a count on it.
+None of them would have been caught by any existing group, because no existing group knew
+there was a guide.
+
+So the `guide` group checks the refusals, not the feature:
+
+> no scrim and nothing disabled behind him (`nogate`); `pointer-events:none` on the dock so it
+> can never swallow a click meant for the room (the `overlay` fault class); the `nogrades`
+> regex pointed at his own copy and aria-labels; a brevity budget on every beat, because §41
+> was about walls of text and a guide is the easiest place to build a new one by accident.
+
+**And he lives outside `#screen`, which took him out of the contrast sweep.** That sweep mounts
+each screen into a probe; the dock is deliberately not in the screen, so every word he says was
+unmeasured the moment it was written. Closed in the same commit that added him — his copy is
+built per room and swept with it — because a surface that ships unmeasured is how §82 and §86
+both started.
+
+> The general form, now seen enough times to state plainly: **anything mounted outside the
+> element the sweep walks is invisible to it, and "outside the screen" is usually a deliberate
+> architectural choice made for a good reason.** The reason that makes it correct is also the
+> reason it goes dark.
