@@ -4960,6 +4960,316 @@ MF.GUIDE = {
   ]}
 };
 
+/* =========================================================================
+   SOUND. SYNTHESISED, AND THEREFORE STILL THERE FROM file://.
+
+   USER, 2026-09-06: build the audio — music and effects, with volume controls.
+
+   NOT ONE AUDIO FILE. This document is self-contained and has to open from
+   `file://` and work, which is the first line of CLAUDE.md; a page that fetches
+   assets does not, and a megabyte of base64 in a file that is already a
+   megabyte is not a trade worth making. Every sound here is MADE, out of
+   oscillators and filtered noise, the same way every picture on this site is
+   drawn rather than shipped.
+
+   IT IS ATTACHED TO MOMENTS THAT ALREADY HAVE A PICTURE. The THUD and the
+   CLANG have been painted words on the breaking floor since long before this;
+   the pour already runs a ladle; the mill already drops a press. Sound
+   reinforces a signal the student is already getting rather than adding a
+   channel they have to learn.
+
+   AND IT NEVER SPEAKS FIRST. Browsers refuse to start audio without a gesture,
+   which is exactly right here: the context is created and resumed on the
+   "Enter the operation" button and not one moment earlier.
+
+   VOICE IS SEPARATE AND OPTIONAL — see MF.audio.say. Recorded lines are files,
+   files need hosting, and hosting is not something a file:// page can assume.
+   If they are not there the site is exactly as it is now.
+   ========================================================================= */
+MF.audio = {
+  ctx:null, master:null, musicBus:null, fxBus:null, music:null, ready:false,
+  /* the context cannot exist before a gesture, so nothing here runs at boot */
+  start: function(){
+    if(this.ctx) { this.resume(); return this.ctx; }
+    var AC = window.AudioContext || window.webkitAudioContext;
+    if(!AC) return null;                       /* no Web Audio: stay silent */
+    try { this.ctx = new AC(); } catch(e){ return null; }
+    var c = this.ctx;
+    this.master = c.createGain();
+    this.musicBus = c.createGain();
+    this.fxBus = c.createGain();
+    this.musicBus.connect(this.master);
+    this.fxBus.connect(this.master);
+    this.master.connect(c.destination);
+    this.ready = true;
+    this.apply();
+    return c;
+  },
+  resume: function(){
+    if(this.ctx && this.ctx.state === 'suspended'){ try { this.ctx.resume(); } catch(e){} }
+  },
+  /* the panel's three controls, read straight off state */
+  apply: function(){
+    if(!this.ready) return false;
+    var a = MF.state.access, t = this.ctx.currentTime;
+    var m = a.mute ? 0 : 1;
+    this.master.gain.setTargetAtTime(m, t, 0.02);
+    this.fxBus.gain.setTargetAtTime(a.fx, t, 0.02);
+    this.musicBus.gain.setTargetAtTime(a.music, t, 0.05);
+    /* music starts and stops itself with its own volume — a bed running at
+       zero is a phone burning battery on something nobody can hear */
+    if(a.music > 0 && !a.mute) this.musicOn(); else this.musicOff();
+    return true;
+  },
+
+  /* ---- ONE ENVELOPE HELPER, so every cue decays the same way ---- */
+  _env: function(node, at, peak, attack, decay){
+    var g = this.ctx.createGain();
+    g.gain.setValueAtTime(0.0001, at);
+    g.gain.exponentialRampToValueAtTime(Math.max(0.0001, peak), at + attack);
+    g.gain.exponentialRampToValueAtTime(0.0001, at + attack + decay);
+    node.connect(g);
+    return g;
+  },
+  _noise: function(secs){
+    var c = this.ctx, n = Math.max(1, Math.floor(c.sampleRate * secs));
+    var buf = c.createBuffer(1, n, c.sampleRate), d = buf.getChannelData(0);
+    for(var i=0; i<n; i++) d[i] = Math.random() * 2 - 1;
+    var s = c.createBufferSource(); s.buffer = buf;
+    return s;
+  },
+
+  /* ---- THE CUES ---- */
+  CUES: {
+    /* A SEAM RUNS: low, round, and over quickly. It is the good outcome, so
+       it lands rather than rings — a long tail would make breaking rock feel
+       like an alarm. */
+    thud: function(A, t){
+      var o = A.ctx.createOscillator();
+      o.type = 'sine';
+      o.frequency.setValueAtTime(150, t);
+      o.frequency.exponentialRampToValueAtTime(48, t + 0.22);
+      A._env(o, t, 0.9, 0.006, 0.30).connect(A.fxBus);
+      o.start(t); o.stop(t + 0.36);
+      var n = A._noise(0.05), bp = A.ctx.createBiquadFilter();
+      bp.type = 'lowpass'; bp.frequency.value = 900;
+      n.connect(bp);
+      A._env(bp, t, 0.35, 0.002, 0.05).connect(A.fxBus);
+      n.start(t); n.stop(t + 0.07);
+    },
+    /* THE PICK GLANCES: metal on stone. Higher, thinner, and with a ring the
+       thud does not have, because the two have to be told apart with your back
+       to the screen. */
+    clang: function(A, t){
+      [1860, 2540, 3480].forEach(function(f, i){
+        var o = A.ctx.createOscillator();
+        o.type = i ? 'triangle' : 'square';
+        o.frequency.setValueAtTime(f, t);
+        o.frequency.exponentialRampToValueAtTime(f * 0.94, t + 0.4);
+        A._env(o, t, 0.16 / (i + 1), 0.003, 0.34 + i * 0.1).connect(A.fxBus);
+        o.start(t); o.stop(t + 0.6);
+      });
+      var n = A._noise(0.03), hp = A.ctx.createBiquadFilter();
+      hp.type = 'highpass'; hp.frequency.value = 2400;
+      n.connect(hp);
+      A._env(hp, t, 0.3, 0.001, 0.04).connect(A.fxBus);
+      n.start(t); n.stop(t + 0.05);
+    },
+    /* THE POUR: a swell, not a hit. It has to last as long as the metal is
+       falling, which is why it is the only cue with a body. */
+    pour: function(A, t){
+      var n = A._noise(2.2), bp = A.ctx.createBiquadFilter();
+      bp.type = 'bandpass'; bp.Q.value = 0.7;
+      bp.frequency.setValueAtTime(420, t);
+      bp.frequency.linearRampToValueAtTime(1150, t + 0.9);
+      bp.frequency.linearRampToValueAtTime(560, t + 2.0);
+      n.connect(bp);
+      var g = A.ctx.createGain();
+      g.gain.setValueAtTime(0.0001, t);
+      g.gain.linearRampToValueAtTime(0.22, t + 0.35);
+      g.gain.setValueAtTime(0.22, t + 1.5);
+      g.gain.exponentialRampToValueAtTime(0.0001, t + 2.2);
+      bp.connect(g); g.connect(A.fxBus);
+      n.start(t); n.stop(t + 2.3);
+    },
+    /* THE STAMP: heavier than the thud and with a machine's snap on the front */
+    stamp: function(A, t){
+      var o = A.ctx.createOscillator();
+      o.type = 'triangle';
+      o.frequency.setValueAtTime(110, t);
+      o.frequency.exponentialRampToValueAtTime(38, t + 0.3);
+      A._env(o, t, 1.0, 0.004, 0.42).connect(A.fxBus);
+      o.start(t); o.stop(t + 0.5);
+      var n = A._noise(0.09), bp = A.ctx.createBiquadFilter();
+      bp.type = 'bandpass'; bp.frequency.value = 1700; bp.Q.value = 1.1;
+      n.connect(bp);
+      A._env(bp, t, 0.4, 0.001, 0.09).connect(A.fxBus);
+      n.start(t); n.stop(t + 0.11);
+    },
+    /* PICKING A LUMP OUT: the smallest thing in here. A tick, not a note. */
+    tick: function(A, t){
+      var o = A.ctx.createOscillator();
+      o.type = 'triangle';
+      o.frequency.setValueAtTime(880, t);
+      o.frequency.exponentialRampToValueAtTime(640, t + 0.06);
+      A._env(o, t, 0.10, 0.002, 0.07).connect(A.fxBus);
+      o.start(t); o.stop(t + 0.12);
+    }
+  },
+
+  /* PLAY ONE. Silent and harmless in every failure mode there is: no Web
+     Audio, no gesture yet, muted, volume at zero, or a cue name that does not
+     exist. A sound that throws would take a swing down with it. */
+  play: function(name){
+    var a = MF.state.access;
+    if(a.mute || !a.fx) return false;
+    /* IT DOES NOT BUILD THE CONTEXT ITSELF. Only the Enter button does that.
+       A cue that constructed one on its own would be creating an AudioContext
+       before any gesture — which browsers warn about, suspend anyway, and
+       which would quietly make "it never speaks first" a thing that happened
+       to be true rather than a thing that is enforced. */
+    if(!this.ready) return false;
+    var cue = this.CUES[name];
+    if(!cue) return false;
+    this.resume();
+    try { cue(this, this.ctx.currentTime + 0.001); } catch(e){ return false; }
+    return true;
+  },
+
+  /* ---- THE BED ----
+     Two detuned oscillators through a lowpass, and a slow wobble on the
+     cutoff. It is deliberately almost nothing: a room tone for a place
+     underground, not a tune anybody could get stuck in their head. */
+  musicOn: function(){
+    if(!this.ready || this.music) return false;
+    var c = this.ctx, t = c.currentTime, g = c.createGain();
+    g.gain.value = 0.0001;
+    g.gain.setTargetAtTime(0.5, t, 1.2);
+    var lp = c.createBiquadFilter();
+    lp.type = 'lowpass'; lp.frequency.value = 320; lp.Q.value = 0.6;
+    var lfo = c.createOscillator(), lfoG = c.createGain();
+    lfo.frequency.value = 0.055; lfoG.gain.value = 120;
+    lfo.connect(lfoG); lfoG.connect(lp.frequency);
+    var os = [55, 82.5, 110.3].map(function(f, i){
+      var o = c.createOscillator();
+      o.type = i === 2 ? 'triangle' : 'sine';
+      o.frequency.value = f;
+      var og = c.createGain(); og.gain.value = i === 2 ? 0.18 : 0.34;
+      o.connect(og); og.connect(lp);
+      o.start(t);
+      return o;
+    });
+    lp.connect(g); g.connect(this.musicBus);
+    lfo.start(t);
+    this.music = {g:g, os:os, lfo:lfo};
+    return true;
+  },
+  musicOff: function(){
+    var m = this.music;
+    if(!m) return false;
+    this.music = null;
+    var t = this.ctx.currentTime;
+    m.g.gain.setTargetAtTime(0.0001, t, 0.4);
+    setTimeout(function(){
+      try { m.os.forEach(function(o){ o.stop(); }); m.lfo.stop(); } catch(e){}
+    }, 1400);
+    return true;
+  },
+
+  /* ---- RECORDED VOICE, WHEN THERE IS ANY ----
+
+     USER, 2026-09-06: they will record lines for Mr Factor.
+
+     A recorded line is a FILE, and files are the one thing this document has
+     never needed. So voice is strictly an enhancement: `MF.VOICE_BASE` is null
+     until somebody points it at a folder, every fetch is allowed to fail, and
+     nothing anywhere waits on it. With no files the site behaves exactly as it
+     does today — the bubble is still written, and it was always the text that
+     carried the meaning.
+
+     One file per line, fetched the first time that line is spoken and kept
+     after. See docs/VOICE.md for the formats, the sizes and the line list. */
+  voice:{}, _speaking:null,
+  say: function(id){
+    if(!MF.VOICE_BASE || !id) return false;
+    var a = MF.state.access;
+    if(a.mute || !a.fx) return false;
+    if(!this.ready) return false;              /* same rule as `play` */
+    var A = this, url = MF.VOICE_BASE.replace(/\/$/,'') + '/' + id + '.' + (MF.VOICE_EXT || 'm4a');
+    this.hush();
+    function go(buf){
+      try {
+        var s = A.ctx.createBufferSource();
+        s.buffer = buf; s.connect(A.fxBus); s.start();
+        A._speaking = s;
+      } catch(e){}
+    }
+    if(this.voice[id]){ if(this.voice[id] !== 'missing') go(this.voice[id]); return true; }
+    fetch(url).then(function(r){
+      if(!r.ok) throw new Error('no line');
+      return r.arrayBuffer();
+    }).then(function(b){
+      return A.ctx.decodeAudioData(b);
+    }).then(function(buf){
+      A.voice[id] = buf; go(buf);
+    })['catch'](function(){
+      /* NO LINE IS NOT AN ERROR. Remembered so it is not asked for twice. */
+      A.voice[id] = 'missing';
+    });
+    return true;
+  },
+  hush: function(){
+    if(this._speaking){ try { this._speaking.stop(); } catch(e){} this._speaking = null; }
+  }
+};
+/* Point this at a folder to give Mr Factor a voice. Null here, because a
+   self-contained file cannot assume anything is beside it. */
+MF.VOICE_BASE = null;
+MF.VOICE_EXT = 'm4a';
+
+/* =========================================================================
+   EVERY LINE MR FACTOR SAYS, WITH THE NAME OF ITS FILE.
+
+   USER, 2026-09-06: they will record lines for him, and want a script that is
+   kept up to date as the project proceeds.
+
+   SO IT IS GENERATED, NOT TYPED. A script written by hand beside the code is
+   a second copy of the words, and this file has already been burned twice this
+   week by a second copy quietly going stale — `t.teaches` describing tools it
+   no longer described, a ladder table three names out of date. `MF.voiceLines`
+   reads MF.GUIDE and the clank ladder and hands back what he ACTUALLY says, so
+   the script cannot drift from the site. `docs/VOICE.md` is printed from this.
+
+   STATIC AND DYNAMIC ARE MARKED, and the distinction is the whole practical
+   point of the list. His room lines are fixed words and can be read once into
+   a microphone. His HINTS ARE NOT: "the pair has to multiply to −18 and add to
+   7" has the lump's own numbers in it and is different on every rock, so it
+   can never be a recording. Those are marked `dyn` and left to the text —
+   or, if a voice is wanted there, a lead-in can be recorded and the numbers
+   left on screen where they are legible anyway.
+   ========================================================================= */
+MF.voiceLines = function(){
+  var out = [];
+  Object.keys(MF.GUIDE).forEach(function(room){
+    var g = MF.GUIDE[room];
+    (g.beats || []).forEach(function(b, i){
+      out.push({id:'room-' + room + '-' + (i+1), where:g.where, dyn:false,
+                text:String(b).replace(/<[^>]+>/g,'')});
+    });
+  });
+  /* the clank ladder. The shed rung is fixed words; the hint and the handover
+     carry the lump's own numbers and cannot be a recording. */
+  MF.CLANK_SHED.forEach(function(b, i){
+    out.push({id:'clank-shed-' + (i+1), where:'THE BREAKING FLOOR', dyn:false,
+              text:String(b).replace(/<[^>]+>/g,'')});
+  });
+  out.push({id:'clank-hint', where:'THE BREAKING FLOOR', dyn:true,
+            text:'(varies with the lump) Put the X on it: the pair has to multiply to … and add to ….'});
+  out.push({id:'clank-give', where:'THE BREAKING FLOOR', dyn:true,
+            text:'(varies with the lump) That one is fighting you, so I will just say it: … runs through it.'});
+  return out;
+};
+
 MF.guideState = {seen:{}, open:false, at:0, room:null, clanks:0, helped:0};
 
 /* =========================================================================
@@ -4999,6 +5309,13 @@ MF.guideState = {seen:{}, open:false, at:0, room:null, clanks:0, helped:0};
    student who has just got in is not stuck. */
 MF.CLANK_SPEAK = 3;      /* he says nothing at all before this */
 MF.CLANK_GIVE  = 12;     /* and hands over a factor at this */
+/* THE ONE RUNG THAT IS FIXED WORDS, held out here so `MF.voiceLines` reads the
+   same sentence a student hears rather than a copy of it. The other two rungs
+   carry the lump's own numbers and cannot be recorded at all. */
+MF.CLANK_SHED = [
+  'A few clanks in a row usually means the method rather than the arithmetic.',
+  'You have not been in <b>the Casting Shed</b> yet. Three short workshops, and The Tools is one lesson per instrument — it is the fastest way out of a run like this.'
+];
 
 /* Has this student been in the Casting Shed at all? Any of its four screens
    counts, and `guideState.seen` already records every room they have reached -
@@ -5027,10 +5344,7 @@ MF.clankAdvice = function(ore){
       'That is not you missing it. Rack it and take the next piece.'
     ]};
   }
-  if(!MF.seenShed()) return {rung:'shed', beats:[
-    'A few clanks in a row usually means the method rather than the arithmetic.',
-    'You have not been in <b>the Casting Shed</b> yet. Three short workshops, and The Tools is one lesson per instrument — it is the fastest way out of a run like this.'
-  ]};
+  if(!MF.seenShed()) return {rung:'shed', beats:MF.CLANK_SHED};
   var hints = [];
   if(ore && ore.kind === 'number'){
     hints.push('On a plain number, whatever you swing has to <b>divide it exactly</b>. Work up the small primes — 2, then 3, then 5.');
@@ -5121,6 +5435,13 @@ MF.paintGuide = function(){
     bub.appendChild(shut);
     bub.appendChild(H('div','gwhere', where));
     bub.appendChild(H('p','gtext', beats[G.at]));
+    /* AND HE SAYS IT, IF ANYBODY HAS RECORDED IT. Silent otherwise, and the
+       bubble is unchanged either way — the words were always what carried the
+       meaning and the voice is on top of them, never instead. The id is the
+       one MF.voiceLines prints, so what is recorded and what is asked for
+       cannot be two different lists. */
+    MF.audio.say(advice ? ('clank-' + advice.rung + (advice.rung === 'shed' ? '-' + (G.at+1) : ''))
+                        : ('room-' + room + '-' + (G.at+1)));
 
     var row = E('div','grow');
     var back = E('button','gbtn'); back.type='button';
@@ -5509,7 +5830,7 @@ MF.loadScreen = function(){
      is also the moment the student actually arrives on the surface, and
      MF.guideArrive refuses to fire while the splash is up. Removing `.gone`
      before the go is what makes the first greeting land on entry. */
-  on(btn,'click',function(){ q('#loadscreen').classList.add('gone'); MF.go('home'); });
+  on(btn,'click',function(){ q('#loadscreen').classList.add('gone'); MF.audio.start(); MF.go('home'); });
   return true;
 };
 
@@ -8496,7 +8817,7 @@ MF.millStamp = function(M, box){
   var nx = -1;
   for(var i=0;i<M.floor.length;i++){ if(!isPrime(M.floor[i].n)){ nx = i; break; } }
   M.at = nx >= 0 ? nx : 0;
-  M.anim = 'hit';
+  M.anim = 'hit'; MF.audio.play('stamp');
   MF.drawMill(box);
   setTimeout(function(){ a.fresh = false; c.fresh = false; }, 1200);
 };
@@ -9565,6 +9886,7 @@ MF.iconChar = function(ent){
 
 
 MF.forgePour = function(st){
+  MF.audio.play('pour');
   var t = MF.TOOLS[st.picked];
   var ingots = st.slots.map(function(s){ return s.ingot; });
   var prod = ingotProduct(ingots);
@@ -10679,7 +11001,7 @@ MF.selectRock = function(idx){
   }
 
   MF.paintInspect();
-  if(node) MF.knockRock(node, o, false);
+  if(node){ MF.knockRock(node, o, false); MF.audio.play('tick'); }
   /* ESCAPE PUTS IT AWAY, like every other panel on the site. One listener,
      hung on the document while a lump is picked out and taken off again when
      it is not - a keydown handler that outlives what it closes is the fault
@@ -12097,7 +12419,7 @@ MF.swing = function(B){
   B.swings++;
   if(!isFinite(m) || !isFinite(k)){
     B.last = {ok:false, why:'A hammer is cut to a whole shape. Those boxes only take whole numbers.'};
-    B.anim = 'glance'; MF.clank(MF.stuckOre());
+    B.anim = 'glance'; MF.clank(MF.stuckOre()); MF.audio.play('clang');
     MF.repaint(['work']); return;
   }
   var r = MF.breakOff(t.ore, {m:m, k:k});
@@ -12107,7 +12429,7 @@ MF.swing = function(B){
        not run through every term" when you typed x + 6 reads as the mine being
        wrong about arithmetic. */
     B.last = {ok:false, why:r.why, reason:r.reason, swung:{m:m, k:k}};
-    B.anim = 'glance'; MF.clank(MF.stuckOre());
+    B.anim = 'glance'; MF.clank(MF.stuckOre()); MF.audio.play('clang');
     MF.repaint(['work']); return;
   }
   var a = {ore:r.left, id:++B.seq, fresh:true}, b2 = {ore:r.right, id:++B.seq, fresh:true};
@@ -12118,7 +12440,7 @@ MF.swing = function(B){
   for(var i=0;i<B.floor.length;i++){ if(!MF.isNative(B.floor[i].ore)){ nx=i; break; } }
   if(nx >= 0) B.at = nx;
   B.rawFor = null;
-  B.anim = 'hit'; MF.clankClear();
+  B.anim = 'hit'; MF.clankClear(); MF.audio.play('thud');
   /* THE STATE CHANGES NOW AND THE PICTURE CATCHES UP.
      The splice and the repaint stay synchronous, because MF.playthrough and
      the `break` and `inplace` groups all read the floor the instant swing()
@@ -19269,6 +19591,143 @@ MF.validate = function(){
   MF.state.access.type = acSaved.type; MF.state.access.spacing = acSaved.spacing;
   MF.state.access.motion = acSaved.motion; MF.state.access.ruler = acSaved.ruler;
   MF.applyAccess();
+
+  /* ======================================================================
+     SOUND — AND ALL OF IT HAS TO SURVIVE SILENCE.
+
+     USER, 2026-09-06: build the audio.
+
+     The rule that matters most here is not how anything sounds. It is that
+     nothing on this site may DEPEND on sound: a swing that threw because Web
+     Audio was unavailable, or a lesson that waited on a voice file that is not
+     hosted, would be a mine broken by an ornament. Every path below is checked
+     to fail silently and carry on.
+     ====================================================================== */
+  var sndKeep = {fx:MF.state.access.fx, music:MF.state.access.music, mute:MF.state.access.mute};
+
+  /* EVERY CUE THE CODE FIRES IS A CUE THAT EXISTS. A typo in a cue name is a
+     sound that never plays and nothing anywhere would say so. */
+  ['thud','clang','pour','stamp','tick'].forEach(function(k){
+    chk('sound');
+    if(typeof MF.audio.CUES[k] !== 'function')
+      errs.push('sound: "' + k + '" is fired somewhere and is not a cue');
+  });
+  chk('sound');
+
+  /* IT IS SILENT UNTIL THE GESTURE.
+
+     ON A DETACHED COPY, NOT ON THE LIVE ONE. The first version of this nulled
+     `MF.audio.ctx` and put it back, and that is §80 exactly: `master`,
+     `fxBus` and `musicBus` still pointed at the old context's nodes, so the
+     next `apply()` tried to connect a node from one AudioContext to another
+     and threw. A probe that leaves state behind writes the next group's
+     failures — and here it wrote its own.
+
+     `Object.create` gives a thing with all of MF.audio's methods and none of
+     its live nodes, which is precisely the state a page is in before the
+     student has pressed anything. */
+  (function(){
+    var cold = Object.create(MF.audio);
+    cold.ctx = null; cold.ready = false; cold.music = null;
+    chk('sound');
+    if(cold.play('thud') !== false)
+      errs.push('sound: a cue played before the Enter button built the context');
+    chk('sound');
+    if(cold.ctx)
+      errs.push('sound: firing a cue built an AudioContext on its own — only the gesture may do that');
+    chk('sound');
+    if(cold.say('room-mine-1') !== false)
+      errs.push('sound: a recorded line was fetched before the context existed');
+  })();
+
+  /* MUTE AND ZERO BOTH STOP IT, and they are different controls. */
+  if(MF.audio.ready){
+    MF.state.access.mute = true; MF.audio.apply();
+    chk('sound');
+    if(MF.audio.play('thud') !== false) errs.push('sound: mute did not stop a cue');
+    MF.state.access.mute = false;
+    MF.state.access.fx = 0; MF.audio.apply();
+    chk('sound');
+    if(MF.audio.play('thud') !== false) errs.push('sound: effects at zero did not stop a cue');
+    MF.state.access.fx = 0.35;
+    /* THE MUSIC RUNS ONLY WHEN IT IS WANTED — a bed at zero volume is a phone
+       burning battery on something nobody can hear. */
+    MF.state.access.music = 0; MF.audio.apply();
+    chk('sound');
+    if(MF.audio.music) errs.push('sound: the music bed is running with its volume at zero');
+    MF.state.access.music = 0.4; MF.audio.apply();
+    chk('sound');
+    if(!MF.audio.music) errs.push('sound: turning the music up did not start the bed');
+    MF.state.access.music = 0; MF.audio.apply();
+    chk('sound');
+    if(MF.audio.music) errs.push('sound: turning the music back down did not stop the bed');
+  }
+
+  /* NO WEB AUDIO AT ALL, and the mine still swings. Detached again, for the
+     same reason as above. */
+  (function(){
+    var cold = Object.create(MF.audio);
+    cold.ctx = null; cold.ready = false; cold.music = null;
+    var threw = null;
+    try { cold.play('thud'); cold.say('room-mine-1'); cold.apply(); cold.hush(); cold.musicOff(); }
+    catch(e){ threw = e.message; }
+    chk('sound');
+    if(threw) errs.push('sound: with no audio context the sound layer threw "' + threw +
+                        '" — a mine must not be breakable by an ornament');
+  })();
+
+  /* ---- THE VOICE SCRIPT IS GENERATED, AND COVERS WHAT HE SAYS ----
+     A recording script typed beside the code is a second copy of the words,
+     and this build has been burned twice by a second copy going stale. */
+  var vl = MF.voiceLines();
+  chk('sound');
+  if(!vl.length) errs.push('sound: the voice script is empty');
+  var vSeen = {}, vDup = null;
+  vl.forEach(function(l){ if(vSeen[l.id]) vDup = l.id; else vSeen[l.id] = l; });
+  chk('sound');
+  if(vDup) errs.push('sound: two lines share the id "' + vDup + '" — one would overwrite the other');
+  /* every fixed beat Mr Factor can say has a line in the script */
+  Object.keys(MF.GUIDE).forEach(function(room){
+    (MF.GUIDE[room].beats || []).forEach(function(b, i){
+      chk('sound');
+      var id = 'room-' + room + '-' + (i+1);
+      /* COVERAGE ONLY. Comparing the script's text to the beat it was
+         GENERATED FROM is circular — it reads MF.GUIDE, so both sides move
+         together and the assertion can never fail. That version was written
+         and caught by its own control refusing to fire, which is the second
+         time this week a check has been written in terms of the thing it
+         checks. What is real is whether every beat HAS a line. */
+      if(!vSeen[id])
+        errs.push('sound: Mr Factor says something in "' + room + '" that is not in the recording script');
+    });
+  });
+  /* THE SCRIPT IS SOMETHING A PERSON CAN READ ALOUD. Markup left in it would
+     be read out as markup, and a line nobody can say in one breath is a line
+     that will be re-recorded. */
+  vl.forEach(function(l){
+    chk('sound');
+    if(/[<>]/.test(l.text))
+      errs.push('sound: the script line "' + l.id + '" still has markup in it');
+    chk('sound');
+    if(!l.text || l.text.trim().length < 8)
+      errs.push('sound: the script line "' + l.id + '" is too short to be a line');
+  });
+  /* AND THE DYNAMIC ONES ARE MARKED AS SUCH. A hint carrying the lump's own
+     numbers cannot be recorded, and a script that pretended otherwise would
+     have somebody read "multiply to dash eighteen" into a microphone once and
+     hear it over every other rock in the mine. */
+  chk('sound');
+  var vDyn = vl.filter(function(l){ return l.dyn; });
+  if(vDyn.length < 2)
+    errs.push('sound: the script marks ' + vDyn.length + ' lines as varying with the lump, ' +
+              'and the two hint rungs both do');
+  chk('sound');
+  if(vl.some(function(l){ return !l.dyn && /…|\.\.\./.test(l.text); }))
+    errs.push('sound: a line marked fixed has an ellipsis in it, so it is not fixed');
+
+  MF.state.access.fx = sndKeep.fx; MF.state.access.music = sndKeep.music;
+  MF.state.access.mute = sndKeep.mute;
+  if(MF.audio.ready) MF.audio.apply();
 
   /* 6. NOTHING ON SCREEN MAY HAVE A CEILING, A PERCENTAGE, OR A COMPARISON.
         This is a stated requirement, so it is checked mechanically rather

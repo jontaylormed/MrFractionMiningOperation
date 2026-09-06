@@ -1,0 +1,144 @@
+# Recording Mr Factor
+
+### What to record, in what format, and what it costs to host
+
+**Generated from the code, not written beside it.** The line list below comes out of
+`MF.voiceLines()`, which reads `MF.GUIDE` and the clank ladder. Re-print it with:
+
+```js
+copy(MF.voiceLines().map(l => `${l.id}\t${l.dyn ? 'VARIES' : 'fixed'}\t${l.text}`).join('\n'))
+```
+
+A script typed by hand beside the code is a second copy of the words, and this project has
+been caught twice by a second copy going quietly stale.
+
+---
+
+## 1. The format
+
+**Record to WAV. Ship AAC.**
+
+| | |
+|---|---|
+| **Record** | 48 kHz, mono, 24-bit WAV. Never record to a lossy format — you only get to encode once. |
+| **Ship** | **AAC in `.m4a`**, mono, **48 kbps**, at 44.1 or 48 kHz |
+| **Why not MP3** | Same size, audibly worse on speech, and it cannot start instantly (encoder delay). |
+| **Why not Opus** | It is *smaller* — about 30% — and it is the better codec. But `.m4a` plays everywhere including old iPads, and a school tablet on an old iOS is exactly the machine you cannot debug remotely. Take the extra 300 KB. |
+
+If you know every device is current, use **Opus in `.webm` at 32 kbps mono** and set
+`MF.VOICE_EXT = 'webm'`. It is the better answer on merit; it is the worse answer on risk.
+
+**One file per line, named by its id.** `room-mine-2.m4a`, `clank-shed-1.m4a`. The code
+fetches `MF.VOICE_BASE + '/' + id + '.' + MF.VOICE_EXT` the first time that line is spoken
+and keeps it after — so nothing is downloaded until it is needed, and a line nobody reaches
+is never fetched at all.
+
+## 2. What it costs
+
+Speech at 48 kbps mono is **6 KB per second** — 360 KB a minute.
+
+| | |
+|---|---|
+| Lines to record | **22** (2 more vary — see §4) |
+| Words | 508 |
+| Spoken length | **≈ 3 min 15 s** at an unhurried 2.6 words/second |
+| **Total, AAC 48 kbps** | **≈ 1.2 MB** |
+| Same at Opus 32 kbps | ≈ 780 KB |
+| Largest single file | `room-shed-methods-2`, ~10 s, ≈ 60 KB |
+
+**GitHub Pages will not notice this.** The published-site limit is **1 GB** and the soft
+bandwidth allowance is **100 GB/month**; a megabyte of voice is roughly a thousandth of the
+site limit. For scale, `index.html` is already about 1 MB on its own — **the entire voice
+track costs about what the page already costs.**
+
+You would have to record about **45 minutes** of dialogue before the audio outweighed the
+page, and about **fourteen hours** of it to trouble the 1 GB limit.
+
+> Do not commit the WAV masters to the same repo. A 3-minute 48 kHz mono WAV is ~17 MB, and
+> the masters for 22 takes with retakes will run to hundreds. Keep them elsewhere and commit
+> only the encoded `.m4a`.
+
+## 3. Recording notes
+
+- **Mono.** Stereo doubles the size and Mr Factor is one man with a lamp on his hat.
+- **Normalise to about −16 LUFS.** The synthesised effects sit at a fixed level; if the
+  voice is recorded hotter or quieter than that, every student will be reaching for the
+  volume. −16 LUFS is the podcast convention and lands about right against the hammer.
+- **High-pass at 80 Hz.** Removes rumble and desk thumps and costs nothing you want.
+- **Trim to ~100 ms of head and tail.** The bubble appears the moment the line starts, so
+  a half-second of room tone at the front reads as lag.
+- **One take per line, not one long take split up.** The ids have to match exactly, and
+  splitting a long recording by ear is where mismatches come from.
+- **Leave the numbers out of your mouth.** See below.
+
+## 4. Two lines that cannot be recorded
+
+`clank-hint` and `clank-give` carry **the lump's own numbers** — *"the pair has to multiply
+to −18 and add to 7"*, *"3x − 1 runs through it"*. Those are different on every rock in the
+mine, so there is no take that would be right twice.
+
+They are marked `VARIES` in the list and left to the text, which is legible on screen where
+the numbers matter most anyway. If you want a voice on that rung, record a **lead-in** only —
+something like *"Right. Let me put the X on it."* — and let the numbers stay written.
+
+## 5. Turning the voice on
+
+It is off until you point it at a folder. Two lines, near the top of the script block:
+
+```js
+MF.VOICE_BASE = 'voice';     // a folder beside index.html
+MF.VOICE_EXT  = 'm4a';
+```
+
+**Everything degrades to silence.** A missing file, a failed decode, no Web Audio at all —
+each one is caught, remembered so it is not requested twice, and ignored. The bubble is
+written either way. **The words were always what carried the meaning; the voice is on top of
+them, never instead of them**, which is also why the site still opens from `file://` with no
+folder beside it and behaves exactly as it does today.
+
+## 6. A caution about renumbering
+
+Ids are `room-<screen>-<n>`, numbered by position. **Inserting a line in the middle of a room
+renumbers every line after it**, and your recordings would then be one behind.
+
+- Adding a beat at the **end** of a room is free.
+- Inserting one in the **middle** means re-recording that room, or renaming the files.
+
+The alternative — ids derived from the words — breaks the moment you reword a line, which
+happens far more often. Positional ids are the lesser of the two, but this is the trap.
+
+---
+
+## The lines
+
+**22 fixed · 2 varying · ≈ 3 min 15 s · ≈ 1.2 MB as 48 kbps mono AAC**
+
+| file | where | line |
+|---|---|---|
+| `room-home-1` | The surface | Everything here is a building you can walk into, and the bar at the top goes to all of them. |
+| `room-home-2` | The surface | Start in the mine if you want to break something, or the Casting Shed if you would rather read first. Neither is required and neither locks. |
+| `room-home-3` | The surface | The yard in the corner is where your metal ends up. You have not put anything in it yet. |
+| `room-mine-1` | The mine | Pick a lump out of the wall and it goes in your cart. Dig as deep as you like — nothing has to be worked before you go further. |
+| `room-mine-2` | The mine | Put one on the bench and name a factor, then swing. Either the seam runs or the pick glances off, and the rock tells you which. |
+| `room-mine-3` | The mine | What is left goes back under the hammer. Keep going until nothing will come apart — that is native metal, and it is finished. |
+| `room-mine-4` | The mine | Nothing here is marked and nothing is timed. A swing that misses costs you the swing. |
+| `room-forge-1` | The forge | This is the one place on the site that multiplies instead of breaking. Metal goes into a mold and one object comes out. |
+| `room-forge-2` | The forge | Take an order off the board and I will open the mold. You spend metal out of the yard to fill it. |
+| `room-forge-3` | The forge | If the casting is sound you keep the tool. A tool never gates anything — it reads a lump for you and that is all. |
+| `room-workshop-mold-1` | The Casting Shed | Three short workshops. The Words is the vocabulary, The Molds is what a pour actually does, and The Tools is how each instrument works. |
+| `room-workshop-mold-2` | The Casting Shed | None of them is required and none is marked. Come back here when a word in the mine stops making sense. |
+| `room-shed-mold-1` | The Molds | Move the sliders and watch the pour. Whatever you put in decides what comes out — you never choose the shape. |
+| `room-shed-mold-2` | The Molds | The working underneath is the same multiplication written a line at a time. The mine runs it backwards. |
+| `room-shed-words-1` | The Words | Every mining name here is a real mathematical thing with a real name. The table has both columns. |
+| `room-shed-words-2` | The Words | Then put them together yourself in the matching activity. Nothing is counted — a pair that does not go together tells you what each word means and lets go. |
+| `room-shed-methods-1` | The Tools | One lesson per instrument you have cast. Each one walks its method a slide at a time, and every slide has the picture on it. |
+| `room-shed-methods-2` | The Tools | Under the walkthrough is a bench with three lumps on it. Take the instrument off the hook and hold it to one — that is the part that is not reading. |
+| `room-workshop-ore-1` | The Stamp Mill | Plain numbers, and the factors of everything up to a hundred. |
+| `room-workshop-ore-2` | The Stamp Mill | Put a lump on the bench and pull the lever. The press finds what divides it — and what will not come apart is a prime, which is the same object as native metal. |
+| `clank-shed-1` | The breaking floor | A few clanks in a row usually means the method rather than the arithmetic. |
+| `clank-shed-2` | The breaking floor | You have not been in the Casting Shed yet. Three short workshops, and The Tools is one lesson per instrument — it is the fastest way out of a run like this. |
+| *`clank-hint`* | **VARIES** | *Carries the lump's numbers. Do not record.* |
+| *`clank-give`* | **VARIES** | *Names a factor of the lump. Do not record.* |
+
+> **The em-dashes are breaths, not words.** Read them as a pause. They are in the written
+> line because that is how it reads on screen; do not say "dash".
