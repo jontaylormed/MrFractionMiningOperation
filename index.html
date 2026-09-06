@@ -4701,7 +4701,127 @@ MF.GUIDE = {
   ]}
 };
 
-MF.guideState = {seen:{}, open:false, at:0, room:null};
+MF.guideState = {seen:{}, open:false, at:0, room:null, clanks:0, helped:0};
+
+/* =========================================================================
+   HE WATCHES THE BREAKING FLOOR, AND HE SPEAKS WHEN IT IS EARNED.
+
+   USER, 2026-09-06: "Mr Factor's dialogue on the breaking floor should say
+   nothing once the introduction is done, until the student has three attempts
+   at factoring and gets nothing but clanks. If they have not visited the
+   Casting Shed, suggest visiting it. If they have, offer suggestions. And at
+   twelve attempts, give an explicit factor to try."
+
+   THREE THINGS MAKE THIS NOT A HINT BUTTON:
+
+   - HE IS SILENT BY DEFAULT. A guide that talks after every miss is one a
+     student learns to dismiss without reading, and by the third room they are
+     closing him reflexively. Two clanks are how the mine is supposed to feel -
+     the rock refusing IS the correctness signal (MINE-SPEC §11e), not a fault
+     to be consoled about.
+
+   - THE FIRST RUNG IS A ROOM, NOT AN ANSWER. If they have never been to the
+     Casting Shed, the useful thing is not a nudge about this lump: it is that
+     there is a building full of methods they have not opened. Answering the
+     lump instead would teach them to come back to HIM rather than to it.
+
+   - THE LAST RUNG IS A REAL FACTOR, and it is deliberate. Twelve clanks on one
+     piece is not productive struggle any more, and a student who cannot get in
+     at all learns nothing from being kept out. He gives ONE side - exactly
+     what the Lantern gives - so it hands over no more than an instrument they
+     could have forged.
+
+   NOTHING IS COUNTED AT THE STUDENT. The tally decides when he speaks and is
+   never printed, never shown as a score and never mentioned in what he says;
+   `nogrades` sweeps his copy along with everything else.
+
+   IT RESETS WHEN A SEAM RUNS. The count is about being stuck, not a career
+   total - break something and the ladder starts again from silence, because a
+   student who has just got in is not stuck. */
+MF.CLANK_SPEAK = 3;      /* he says nothing at all before this */
+MF.CLANK_GIVE  = 12;     /* and hands over a factor at this */
+
+/* Has this student been in the Casting Shed at all? Any of its four screens
+   counts, and `guideState.seen` already records every room they have reached -
+   so this is a fact about where they have been rather than a second flag that
+   could disagree with the first. */
+MF.seenShed = function(){
+  var s = MF.guideState.seen || {};
+  return !!(s['workshop-mold'] || s['shed-words'] || s['shed-mold'] || s['shed-methods']);
+};
+
+/* WHAT HE SAYS WHEN THE HAMMER WILL NOT LAND. Null while he should be quiet,
+   which is most of the time. */
+MF.clankAdvice = function(ore){
+  var G = MF.guideState, n = G.clanks;
+  if(n < MF.CLANK_SPEAK) return null;
+  if(n >= MF.CLANK_GIVE){
+    var one = null;
+    try { one = ore ? MF.simplestFactor(ore) : null; } catch(e){ one = null; }
+    if(one) return {rung:'give', beats:[
+      'That one is fighting you, so I will just say it: <b>' + ingotHtml(one) +
+        '</b> runs through it. Cut the hammer to that and swing.',
+      'What is left when it comes out is the other side, and that part is still yours to name.'
+    ]};
+    return {rung:'give', beats:[
+      'Nothing runs through that one at all. It is <b>native metal</b> — already an element, and it was never going to come apart.',
+      'That is not you missing it. Rack it and take the next piece.'
+    ]};
+  }
+  if(!MF.seenShed()) return {rung:'shed', beats:[
+    'A few clanks in a row usually means the method rather than the arithmetic.',
+    'You have not been in <b>the Casting Shed</b> yet. Three short workshops, and The Tools is one lesson per instrument — it is the fastest way out of a run like this.'
+  ]};
+  var hints = [];
+  if(ore && ore.kind === 'number'){
+    hints.push('On a plain number, whatever you swing has to <b>divide it exactly</b>. Work up the small primes — 2, then 3, then 5.');
+  } else if(ore && ore.a === 0){
+    hints.push('No x&sup2; in this one, so look for what <b>every term is carrying</b> and stand that out in front of a bracket.');
+  } else if(ore){
+    var ac = (ore.a === 1) ? ore.c : ore.a * ore.c;
+    hints.push('Put the <b>X</b> on it: the pair has to multiply to <b>' + num(ac) +
+      '</b> and add to <b>' + num(ore.b) + '</b>. Both at once, or it is not the pair.');
+    hints.push('And a hammer is cut to a whole shape. If no whole pair does both, there is nothing in there to find.');
+  }
+  if(!hints.length) hints.push('Take the pieces one at a time, and name what you think runs through the one under the pick.');
+  return {rung:'hint', beats:hints};
+};
+
+/* THE PIECE UNDER THE PICK, which is the one he is talking about. Not the
+   lump that came out of the cart — a student twelve clanks in is stuck on one
+   PIECE of it, and advice about the whole thing would be about a shape that is
+   no longer on the anvil. */
+MF.stuckOre = function(){
+  var B = MF.state.anvil;
+  if(!B || !B.floor || !B.floor.length) return null;
+  var t = B.floor[B.at];
+  return t ? t.ore : null;
+};
+
+/* CALLED WHEN THE HAMMER GLANCES. Counts, and raises him only on the rung
+   where something changed — so he does not re-open on every miss after the
+   third, which is the difference between a guide and a nag. */
+MF.clank = function(ore){
+  var G = MF.guideState;
+  G.clanks++;
+  var rung = (G.clanks >= MF.CLANK_GIVE) ? 3 : (G.clanks >= MF.CLANK_SPEAK ? 2 : 1);
+  if(rung > 1 && rung !== G.helped){
+    G.helped = rung;
+    G.open = true; G.at = 0;
+  }
+  MF.paintGuide();
+  return G.clanks;
+};
+
+/* AND A SEAM RUNNING PUTS HIM AWAY. Getting in is the signal that the student
+   is not stuck, so the ladder starts again from silence. */
+MF.clankClear = function(){
+  var G = MF.guideState;
+  if(!G.clanks && !G.helped) return;
+  G.clanks = 0; G.helped = 0;
+  if(G.open && G.room === 'mine') G.open = false;
+  MF.paintGuide();
+};
 
 /* IS THE SPLASH STILL OVER EVERYTHING? MF.boot builds the home screen behind
    it, so anything that greets a student has to know the difference between
@@ -4724,7 +4844,13 @@ MF.paintGuide = function(){
 
   var G = MF.guideState;
   if(G.room !== room){ G.room = room; G.at = 0; }
-  var beats = g.beats;
+  /* IN THE MINE HE HAS A SECOND THING TO SAY, and it outranks the room's
+     introduction: a student on their fourth clank does not need to be told
+     again what the mine is for. `MF.clankAdvice` returns null while he should
+     be quiet, which is every visit that is going well. */
+  var advice = (room === 'mine') ? MF.clankAdvice(MF.stuckOre()) : null;
+  var beats = advice ? advice.beats : g.beats;
+  var where = advice ? 'MR FACTOR' : g.where;
   if(G.at >= beats.length) G.at = beats.length - 1;
 
   if(G.open){
@@ -4734,7 +4860,7 @@ MF.paintGuide = function(){
     shut.setAttribute('aria-label','Close what Mr Factor is saying');
     on(shut,'click',function(){ G.open = false; MF.paintGuide(); focusTab(); });
     bub.appendChild(shut);
-    bub.appendChild(H('div','gwhere', g.where));
+    bub.appendChild(H('div','gwhere', where));
     bub.appendChild(H('p','gtext', beats[G.at]));
 
     var row = E('div','grow');
@@ -4774,7 +4900,7 @@ MF.paintGuide = function(){
   if(fresh && !G.open) tab.setAttribute('data-new','yes');
   tab.appendChild(MF.art(42, {lit:fresh}));
   tab.setAttribute('aria-label', (G.open ? 'Close' : 'Open') + ' what Mr Factor has to say about ' +
-    g.where.toLowerCase() + (fresh && !G.open ? '. He has not shown you this room yet.' : ''));
+    where.toLowerCase() + (fresh && !G.open ? '. He has not shown you this room yet.' : ''));
   tab.setAttribute('aria-expanded', G.open ? 'true' : 'false');
   on(tab,'click',function(){
     G.open = !G.open;
@@ -11452,7 +11578,7 @@ MF.swing = function(B){
   B.swings++;
   if(!isFinite(m) || !isFinite(k)){
     B.last = {ok:false, why:'A hammer is cut to a whole shape. Those boxes only take whole numbers.'};
-    B.anim = 'glance';
+    B.anim = 'glance'; MF.clank(MF.stuckOre());
     MF.repaint(['work']); return;
   }
   var r = MF.breakOff(t.ore, {m:m, k:k});
@@ -11462,7 +11588,7 @@ MF.swing = function(B){
        not run through every term" when you typed x + 6 reads as the mine being
        wrong about arithmetic. */
     B.last = {ok:false, why:r.why, reason:r.reason, swung:{m:m, k:k}};
-    B.anim = 'glance';
+    B.anim = 'glance'; MF.clank(MF.stuckOre());
     MF.repaint(['work']); return;
   }
   var a = {ore:r.left, id:++B.seq, fresh:true}, b2 = {ore:r.right, id:++B.seq, fresh:true};
@@ -11473,7 +11599,7 @@ MF.swing = function(B){
   for(var i=0;i<B.floor.length;i++){ if(!MF.isNative(B.floor[i].ore)){ nx=i; break; } }
   if(nx >= 0) B.at = nx;
   B.rawFor = null;
-  B.anim = 'hit';
+  B.anim = 'hit'; MF.clankClear();
   /* THE STATE CHANGES NOW AND THE PICTURE CATCHES UP.
      The splice and the repaint stay synchronous, because MF.playthrough and
      the `break` and `inplace` groups all read the floor the instant swing()
@@ -18209,6 +18335,118 @@ MF.validate = function(){
     chk('guide');
     if(!MF.guideArrive())
       errs.push('guide: coming off the loading screen did not greet the student at all');
+  })();
+
+  /* ---- THE CLANK LADDER: SILENT, THEN A ROOM, THEN HELP, THEN AN ANSWER ----
+
+     USER, 2026-09-06: "say nothing until the student has three attempts and
+     gets nothing but clanks. If they have not visited the Casting Shed,
+     suggest visiting it. If they have, offer suggestions. At twelve attempts,
+     give an explicit factor."
+
+     Every rung is checked, and so is the SILENCE, which is the rung most
+     likely to rot: a later edit that makes him helpful on the first miss would
+     break nothing and no other group would notice. Two clanks are how the mine
+     is supposed to feel. */
+  (function(){
+    var gdKeep = MF.guideState, gdScreen = MF.state.screen, gdAnvil = MF.state.anvil;
+    var lump = {kind:'poly', a:6, b:7, c:-3, id:'gd-ladder'};
+    function reset(shed){
+      MF.guideState = {seen: shed ? {'shed-mold':true} : {}, open:false, at:0,
+                       room:'mine', clanks:0, helped:0};
+      MF.state.screen = 'mine';
+      MF.state.anvil = MF.anvilInit(lump);
+      MF.state.anvil.step = 'break';
+    }
+    function said(){
+      var a = MF.clankAdvice(MF.stuckOre());
+      return a ? {rung:a.rung, text:a.beats.join(' ')} : null;
+    }
+    /* THE NUMBERS ARE THE SPEC, so they are asserted rather than followed.
+
+       Everything below counted in units of MF.CLANK_SPEAK and MF.CLANK_GIVE,
+       which made the whole block move with the constants: setting SPEAK to 1
+       changed the loop bounds too, and the control that should have caught
+       "he is helpful on the first miss" sailed through. A check written in
+       terms of the thing it is checking cannot fail. The user said three and
+       twelve; those are literals here. */
+    chk('guide');
+    if(MF.CLANK_SPEAK !== 3)
+      errs.push('guide: he starts speaking after ' + MF.CLANK_SPEAK +
+                ' clanks — the ladder is specified to stay silent for the first two');
+    chk('guide');
+    if(MF.CLANK_GIVE !== 12)
+      errs.push('guide: he hands over a factor after ' + MF.CLANK_GIVE +
+                ' clanks — the ladder is specified to hold out until twelve');
+    /* SILENT for the first two, whichever rooms they have seen */
+    [false, true].forEach(function(shed){
+      reset(shed);
+      for(var i=1; i<=2; i++){
+        MF.clank(MF.stuckOre());
+        chk('guide');
+        if(said())
+          errs.push('guide: he speaks on clank ' + i + ' — the first misses are how the mine is ' +
+                    'supposed to feel, and a guide who talks after every one is one you learn to ignore');
+      }
+    });
+    /* THE THIRD CLANK, and which rung depends on where they have been */
+    reset(false);
+    for(var n=0; n<MF.CLANK_SPEAK; n++) MF.clank(MF.stuckOre());
+    var a1 = said();
+    chk('guide');
+    if(!a1 || a1.rung !== 'shed')
+      errs.push('guide: a student who has never opened the Casting Shed is offered ' +
+                (a1 ? 'a "' + a1.rung + '" hint' : 'nothing') + ' instead of the building full of methods');
+    chk('guide');
+    if(a1 && !/casting shed/i.test(a1.text))
+      errs.push('guide: the first rung does not name the Casting Shed, so it points nowhere');
+    reset(true);
+    for(var n2=0; n2<MF.CLANK_SPEAK; n2++) MF.clank(MF.stuckOre());
+    var a2 = said();
+    chk('guide');
+    if(!a2 || a2.rung !== 'hint')
+      errs.push('guide: a student who HAS been to the Casting Shed is sent back to it ' +
+                'instead of being helped with the lump in front of them');
+    /* AND HE DOES NOT RE-OPEN ON EVERY MISS in between */
+    chk('guide');
+    var opens = 0;
+    for(var n3=MF.CLANK_SPEAK; n3<MF.CLANK_GIVE-1; n3++){
+      MF.guideState.open = false;
+      MF.clank(MF.stuckOre());
+      if(MF.guideState.open) opens++;
+    }
+    if(opens)
+      errs.push('guide: he raised himself again on ' + opens + ' clank(s) between rungs — ' +
+                'a guide that reopens on every miss is a nag');
+    /* THE LAST RUNG IS A REAL FACTOR OF THE PIECE ON THE ANVIL */
+    reset(true);
+    for(var n4=0; n4<MF.CLANK_GIVE; n4++) MF.clank(MF.stuckOre());
+    var a3 = said();
+    chk('guide');
+    if(!a3 || a3.rung !== 'give'){
+      errs.push('guide: twelve clanks and he still will not name a factor — a student who ' +
+                'cannot get in at all learns nothing from being kept out');
+    } else {
+      chk('guide');
+      /* CHECKED AGAINST THE ENGINE, not against the sentence. A hint that names
+         something which does not run through the lump is worse than silence. */
+      var one = MF.simplestFactor(MF.stuckOre());
+      if(one && !MF.breakOff(MF.stuckOre(), one).ok)
+        errs.push('guide: the factor he hands over does not run through the piece on the anvil');
+      chk('guide');
+      if(one && a3.text.indexOf(String(ingotHtml(one)).replace(/<[^>]+>/g,'')) < 0)
+        errs.push('guide: the last rung says it will name a factor and then does not name one');
+    }
+    /* AND GETTING IN PUTS HIM AWAY */
+    chk('guide');
+    MF.clankClear();
+    if(said())
+      errs.push('guide: he is still offering help after a seam ran — breaking something is ' +
+                'the signal that the student is not stuck');
+    chk('guide');
+    if(MF.guideState.clanks !== 0)
+      errs.push('guide: a seam running did not reset the clank count, so the ladder never starts over');
+    MF.guideState = gdKeep; MF.state.screen = gdScreen; MF.state.anvil = gdAnvil;
   })();
 
   /* CONTROL 1: a room with no guide copy must be caught */
