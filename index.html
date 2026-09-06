@@ -333,6 +333,12 @@ input::placeholder, textarea::placeholder{color:#6B5B48; opacity:1}
    this is the height to give back: "it does not need to be bigger than the
    thing you are making it with." 276 puts the floor at 685. */
 .craft .moldwrap{max-width:276px; margin:6px auto 8px}
+/* AND BIGGER AGAIN IN THE MOLDS ROOM, because the text is INSIDE it.
+   The terms ride the stream, and at 310px a bracket in that stream renders
+   around eight CSS pixels however wide the channel is made — the picture was
+   the binding constraint, not the type. Here the drawing is the lesson (§40),
+   so it gets the width that makes what is written in the metal legible. */
+.moldpour .moldwrap{max-width:460px}
 .moldwrap svg{display:block; width:100%; height:auto}
 .moldwrap svg *{pointer-events:none}
 
@@ -387,8 +393,14 @@ input::placeholder, textarea::placeholder{color:#6B5B48; opacity:1}
 
 /* THE NUMBERS SIT IN THE METAL. Transparent, so the liquid shows through, with
    a light stroke behind them so they hold up over sand as well as over metal. */
-.mdnum{opacity:0; paint-order:stroke; stroke:#FFE9A8; stroke-width:4px; stroke-linejoin:round}
-.mdfrom{stroke-width:3px}
+/* THE HALO IS IN `em`, NOT PIXELS. It was 4px, chosen against type that was
+   always 13 or 21. The stream now sizes itself to the longest term it is
+   carrying (up to 26px), and a fixed halo stops being a halo as the letters
+   grow — the `contrast` group requires 0.15em and caught the × at 3px on 26px
+   type the moment the type started moving. In em it scales with what it is
+   holding up, at every size the stream can choose. */
+.mdnum{opacity:0; paint-order:stroke; stroke:#FFE9A8; stroke-width:.22em; stroke-linejoin:round}
+.mdfrom{stroke-width:.25em}
 /* THE TERMS RIDE THE STREAM, SO THEY LEAVE WITH IT. Two animations: they fall
    in a beat apart (the delay is set per token in MF.moldScene) and then go at
    2.25s, which is inside the window `mdstream` fades in. Left `forwards` on
@@ -409,7 +421,7 @@ input::placeholder, textarea::placeholder{color:#6B5B48; opacity:1}
 .moldwrap[data-pour] .mdin{transform-box:fill-box; animation:mdin 1900ms ease-out forwards}
 /* the sign between them is quieter than the metals it separates */
 .mdinx{opacity:0}
-.moldwrap[data-pour] .mdinx{stroke-width:3px}
+.moldwrap[data-pour] .mdinx{stroke-width:.17em}
 /* the bright core of the stream is a highlight, not a second stream */
 @keyframes mdcore{ 0%{opacity:0} 14%{opacity:.5} 80%{opacity:.5} 100%{opacity:0} }
 .moldwrap[data-pour] .mdstream.mdcore{animation:mdcore 2600ms linear .25s backwards}
@@ -1689,6 +1701,12 @@ table.rosetta td.rx{font-family:var(--display); font-size:16px; color:var(--ink)
 .xkey .xk b{font-family:var(--display); font-weight:400; color:var(--ink)}
 .xkey .dim{opacity:.8}
 
+/* the three things you can pour: a column, hard right, so they read as one
+   list of alternatives rather than the 2 + 1 a wrapping row broke them into */
+.moldmode{display:flex; flex-direction:column; align-items:flex-end; text-align:right}
+.moldseg{display:flex; flex-direction:column; align-items:stretch; gap:6px; width:100%; max-width:210px}
+.moldseg .btn{width:100%; text-align:center}
+
 /* the pick's shortlist of shapes, and the dial's ruler */
 .kindwrap{display:block}
 .kstrip{display:flex; gap:6px; flex-wrap:wrap}
@@ -1927,6 +1945,14 @@ table.rosetta td.rx{font-family:var(--display); font-size:16px; color:var(--ink)
 .asks .askslab{font-family:var(--display); font-size:11px; letter-spacing:.12em; color:var(--ore-t)}
 .asks .askslede{font-size:14px; color:var(--ink-soft); max-width:64ch; margin:3px 0 4px}
 .ask{background:#fff; border:2px solid var(--rule); border-radius:12px; padding:13px 15px; margin-top:12px}
+/* one question showing, and the dial that turns to the next */
+.askturn{display:flex; align-items:center; gap:10px; margin-top:12px}
+.askturn .btn{flex:0 0 auto; min-width:44px; font-size:17px; line-height:1; padding:9px 12px}
+.askdots{display:flex; gap:7px; flex:1 1 auto; flex-wrap:wrap; min-width:0}
+.askdot{width:13px; height:13px; padding:0; border-radius:50%; border:2px solid var(--tan);
+  background:var(--paper); cursor:pointer; flex:0 0 auto}
+.askdot[data-on]{background:var(--ore-t); border-color:var(--ore-t)}
+.askcount{flex:0 0 auto; font-size:13px; color:var(--ink-soft)}
 .ask .qn{font-size:16px; color:var(--ink); display:flex; gap:9px; align-items:baseline}
 .ask .qt{flex:1 1 auto; min-width:0}
 .ask .qi{flex:0 0 auto; font-family:var(--display); font-size:13px; color:#FFF7EA;
@@ -6221,8 +6247,26 @@ MF.paintQuestions = function(host, o){
   box.appendChild(H('p','askslede', o.lede ||
     'Nothing here is kept and nothing here is marked. They are here because answering one is how you find out whether you followed it.'));
 
+  /* ONE AT A TIME, AND IT COMES ROUND AGAIN.
+
+     USER, 2026-09-05: "sections should show one question at a time and rotate
+     through them."
+
+     Every card is BUILT, and all but one are hidden. That matters twice: an
+     answered card keeps its chosen option and its reading when you come back
+     to it, because nothing is rebuilt and no state is thrown away; and the
+     `quiz` group's sweep - click every option, require each to say something
+     back - still reaches all of them, because a hidden node is still in the
+     document.
+
+     ROTATE means it WRAPS. Off the end of the last is the first again, so a
+     student can keep going round rather than hitting a wall and being told
+     they are finished with something that was never scored. */
+  var cards = [];
+  var extra = o.also || [];
   o.list.forEach(function(qn, qi){
     var card = E('div','ask');
+    cards.push(card);
     /* THE QUESTION TEXT GETS ITS OWN SPAN. .qn is a flex row so the number
        badge sits beside the text - and a flex container turns every inline
        <b> in the question into a SEPARATE FLEX ITEM, which then refuses to
@@ -6307,6 +6351,53 @@ MF.paintQuestions = function(host, o){
     card.appendChild(out);
     box.appendChild(card);
   });
+
+  /* A CARD THIS FUNCTION DID NOT BUILD IS STILL A QUESTION IN THE SECTION.
+
+     The Words room closes on `MF.paintMiscut` - what did the miner do wrong -
+     which is an `.ask` card built somewhere else and appended after this box.
+     Left outside the dial, that room showed TWO questions while every other
+     room showed one, which is the rule applied to whatever happened to be
+     convenient rather than to the section. It joins the rotation. */
+  extra.forEach(function(node){ if(node){ cards.push(node); box.appendChild(node); } });
+
+  /* ---- THE DIAL ROUND THEM ---- */
+  if(cards.length > 1){
+    var at = 0;
+    var nav = E('div','askturn');
+    var prev = E('button','btn askprev'); prev.type='button';
+    prev.innerHTML = '&larr;';
+    prev.setAttribute('aria-label','The question before this one');
+    var count = H('span','askcount','');
+    var dots = E('div','askdots');
+    var next = E('button','btn asknext'); next.type='button';
+    next.innerHTML = '&rarr;';
+    next.setAttribute('aria-label','The next question');
+    cards.forEach(function(_, di){
+      var d = E('button','askdot'); d.type='button';
+      d.setAttribute('aria-label','Go to question ' + (di+1));
+      on(d,'click',function(){ show(di); });
+      dots.appendChild(d);
+    });
+    function show(i){
+      at = (i + cards.length) % cards.length;             /* it comes round */
+      cards.forEach(function(c, ci){ c.hidden = (ci !== at); });
+      Array.prototype.forEach.call(dots.children, function(d, di){
+        if(di === at) d.setAttribute('data-on','yes'); else d.removeAttribute('data-on');
+        d.setAttribute('aria-current', di === at ? 'true' : 'false');
+      });
+      count.textContent = (at+1) + ' of ' + cards.length;
+    }
+    on(prev,'click',function(){ show(at - 1); });
+    on(next,'click',function(){ show(at + 1); });
+    nav.appendChild(prev);
+    nav.appendChild(dots);
+    nav.appendChild(count);
+    nav.appendChild(next);
+    box.appendChild(nav);
+    show(0);
+  }
+
   host.appendChild(box);
   return box;
 };
@@ -6589,7 +6680,7 @@ MF.shedFoot = function(host, key){
 
 /* ---------------- WORKSHOP 1: THE MOLD ---------------- */
 MF.SCREENS['shed-mold'] = function(host){
-  var st = {a:3, b:4, c:5, mode:'num'};
+  var st = {a:3, b:4, c:5, d:1, mode:'num'};
   MF.shedHead(host, 'shed-mold');
   host.appendChild(H('p','lede','Two metals go in <b>separate</b> and one object comes out <b>single</b>. ' +
     'The mold does not choose the shape — the metals do. And because the result is determined, running it backwards has a definite answer, ' +
@@ -6621,21 +6712,37 @@ MF.SCREENS['shed-mold'] = function(host){
     var w=E('div'); w.style.minWidth='170px'; w.style.flex='1 1 170px';
     w.appendChild(H('div','hint',label));
     var v=H('div','eq sm', num(st[key])); w.appendChild(v);
+    w._lab = w.firstChild;                 /* draw() retitles it per mode */
     var r=document.createElement('input');
     r.type='range'; r.min=min; r.max=max; r.step=1; r.value=st[key];
     r.setAttribute('aria-label',label);
-    on(r,'input',function(){ st[key]=parseInt(r.value,10); v.textContent=num(st[key]); draw(); });
+    /* THE KEY IS READ AT THE MOMENT OF THE DRAG, not bound when the control is
+       built. The middle slider is "First part (b)" in the two one-bracket
+       modes and "Depth on the first bracket (d)" in the two-bracket one, and
+       those are different numbers with different sensible starting values -
+       b = 4 makes 3(4 + 5) worth looking at, and d = 1 opens the brackets on
+       the MONIC case a student should meet first. One slider driving one
+       variable in both modes would have made moving it in one place silently
+       change what the other place opened on. */
+    w._key = key;
+    w._input = r; w._val = v;
+    on(r,'input',function(){ st[w._key]=parseInt(r.value,10); v.textContent=num(st[w._key]); draw(); });
     w.appendChild(r); ctrls.appendChild(w); return w;
   }
-  slider('a','Depth of the mold (a)',1,9);
+  var aw = slider('a','Depth of the mold (a)',1,9);
   var bw = slider('b','First part (b)',1,9);
-  slider('c','Second part (c)',1,9);
+  var cw = slider('c','Second part (c)',1,9);
   /* 1 1 180px, NOT 0 0 auto. Held at its natural width this pair of buttons
      could not shrink and ran 28px off the right of a 320px screen - caught by
      the  group, which exists because that is invisible in the source. */
-  var mw = E('div'); mw.style.flex='1 1 180px'; mw.style.minWidth='0';
+  /* STACKED AND ALIGNED RIGHT (user, 2026-09-05). Three buttons in a wrapping
+     row broke into 2 + 1 at most widths, which reads as two groups rather than
+     one list of three choices. Stacked they are a column of alternatives, and
+     hard right they are the last thing before the pour rather than something
+     floating in the middle of the controls. */
+  var mw = E('div','moldmode'); mw.style.flex='1 1 180px'; mw.style.minWidth='0';
   mw.appendChild(H('div','hint','What is in the mold'));
-  var seg = E('div','row');
+  var seg = E('div','moldseg');
   /* THREE THINGS YOU CAN POUR, and the third one is the mine's own job.
      The room had two - a depth over two plain parts, and a depth over an x -
      and both are ONE metal distributed over a sum. Two brackets is the shape
@@ -6707,8 +6814,31 @@ MF.SCREENS['shed-mold'] = function(host){
   MF.shedFoot(host, 'shed-mold');
 
   function draw(){
-    var a=st.a,b=st.b,c=st.c,isX=(st.mode==='x'),isTwo=(st.mode==='two');
-    bw.style.display = (isX || isTwo) ? 'none' : '';
+    var isX=(st.mode==='x'),isTwo=(st.mode==='two');
+    var a=st.a, c=st.c, b=(isTwo ? st.d : st.b);
+    /* ---- THE FIRST BRACKET CARRIES A DEPTH, SO THE x² MOVES ----
+
+       USER, 2026-09-05: "The bracket needs to update x² in the black box."
+
+       Both brackets were monic - ( x + a )( x + c ) - so the casting's x² term
+       was the literal string `x²` at every one of the 81 settings, and the one
+       shape this room could never pour was a LOADED trinomial. That is the
+       shape layers 4 and 5 are made of and the whole reason the Powered Auger
+       exists: the room built to explain the pour could not show the pour the
+       hardest ore comes out of.
+
+       So `b` stops hiding in this mode and becomes the depth on the first
+       bracket: ( b·x + a )( x + c ). At b = 1 it is exactly what it was. */
+    bw.style.display = isX ? 'none' : '';
+    aw._lab.innerHTML = isTwo ? 'First bracket, its number (a)' : 'Depth of the mold (a)';
+    bw._lab.innerHTML = isTwo ? 'Depth on the first bracket (d)' : 'First part (b)';
+    cw._lab.innerHTML = isTwo ? 'Second bracket, its number (c)' : 'Second part (c)';
+    /* the middle slider changes which number it is holding, so it has to be
+       re-pointed and re-read every time the mode moves */
+    bw._key = isTwo ? 'd' : 'b';
+    bw._input.value = st[bw._key];
+    bw._val.textContent = num(st[bw._key]);
+    bw._input.setAttribute('aria-label', bw._lab.textContent);
     Array.prototype.forEach.call(seg.children,function(btn){
       btn.style.background = (btn.dataset.mode===st.mode)?'var(--ore-t)':'var(--paper)';
       btn.style.color = (btn.dataset.mode===st.mode)?'#FFF7EA':'var(--ink)';
@@ -6722,7 +6852,7 @@ MF.SCREENS['shed-mold'] = function(host){
        stream, the terms falling down it, the metal rising in the shape - every
        time the student moves anything. */
     clear(pourHost);
-    var ings = isTwo ? [{m:1,k:a},{m:1,k:c}]
+    var ings = isTwo ? [{m:b,k:a},{m:1,k:c}]
              : (isX  ? [{m:0,k:a},{m:1,k:c}]
                      : [{m:0,k:a},{m:0,k:b+c}]);
     var prod = ingotProduct(ings);
@@ -6733,21 +6863,22 @@ MF.SCREENS['shed-mold'] = function(host){
 
     if(isTwo){
       /* TWO BRACKETS: a box with two rows and two columns, which is where the
-         four products and the two middles actually live. `a` is the first
-         bracket's number and `c` the second's, so the sliders keep meaning
-         what their labels say. */
+         four products and the two middles actually live. The first bracket's
+         side is b&middot;x rather than x, so the top-left corner is the casting's
+         real x² term and it moves with the slider. */
+      var bx = (b===1 ? 'x' : num(b)+'x');
       MF.areaModel(stageHost,{
-        rows:[{label:'x'},{label:num(a)}],
+        rows:[{label:bx},{label:num(a)}],
         cols:[{label:'x'},{label:num(c)}],
-        cells:[[{kind:'x2',text:'x²'},        {kind:'x',text:num(c)+'x'}],
-               [{kind:'x',text:num(a)+'x'},   {kind:'k',text:num(a*c)}]],
+        cells:[[{kind:'x2',text:quadText(b,0,0)}, {kind:'x',text:xt2(b*c)}],
+               [{kind:'x',text:xt2(a)},           {kind:'k',text:num(a*c)}]],
         sideMode:'show',
         caption:'Four corners, because every part of one bracket meets every part of the other. The two x corners are the same kind of thing.',
-        a11y:'A mold cut as ( x + '+num(a)+' ) by ( x + '+num(c)+' ), showing four products.'
+        a11y:'A mold cut as ( '+bx+' + '+num(a)+' ) by ( x + '+num(c)+' ), showing four products.'
       });
-      MF.pourChain(chainHost, [{m:1,k:a},{m:1,k:c}]);
-      eq.innerHTML = '( x + '+num(a)+' )( x + '+num(c)+' ) <span class="op">=</span> ' +
-        quadText(1, a + c, a * c);
+      MF.pourChain(chainHost, [{m:b,k:a},{m:1,k:c}]);
+      eq.innerHTML = '( '+bx+' + '+num(a)+' )( x + '+num(c)+' ) <span class="op">=</span> ' +
+        quadText(b, b*c + a, a * c);
       return;
     }
 
@@ -6770,6 +6901,49 @@ MF.SCREENS['shed-mold'] = function(host){
   draw();
 };
 
+  /* ---- WHAT DID THE MINER DO WRONG? ----
+
+     USER, 2026-09-05: "with the words, remove the reflection and replace with
+     what did the miner do wrong question."
+
+     The reflection asked a student to put a pair from the table into their own
+     words, and nothing was read or kept - which is a fine thing to ask and a
+     hard thing to learn from on your own. This asks the harder question:
+     somebody has used the words WRONGLY, the working is on the bench, and you
+     have to say where it went off.
+
+     ERROR ANALYSIS IS THE RIGHT CLOSER FOR THIS ROOM. Every other question
+     here asks you to pick the right name for a thing. This one shows a name
+     applied to the wrong thing and asks what the name actually means - which
+     is the difference between having the vocabulary and using it.
+
+     The mistake is the one this room exists to prevent: reading "nothing
+     divides every term" as "nothing comes apart". They are different claims
+     about different things, and the words for them are `common factor` and
+     `irreducible`. */
+  MF.WORDS_MISCUT = {
+    lab:'&#9935; WHAT DID THE MINER DO WRONG?',
+    lede:'A miner wrote this up in the log and racked the lump as finished metal. The arithmetic ' +
+      'on every line is right. The <b>word</b> at the end is not.',
+    work:[
+      {line:'x&sup2; &minus; 9', note:'the lump'},
+      {line:'1 and &minus;9 share nothing but 1', note:'checked for a common metal'},
+      {line:'so nothing comes out of it', note:'the step that is wrong'},
+      {line:'&rarr; native metal', note:'racked as finished'}
+    ],
+    q:'Where did it go wrong?',
+    options:[
+      {label:'"Nothing divides every term" is not the same claim as "nothing comes apart"', holds:true,
+       says:'That is exactly it. A <b>common factor</b> is something every term carries — this lump has none, and the miner checked that correctly. <b>Irreducible</b> means the whole thing will not come apart into two brackets, which is a different question and has a different answer here: x² − 9 is a <b>twin seam</b> and it runs at (x + 3)(x − 3).'},
+      {label:'The arithmetic is wrong &mdash; 1 and &minus;9 do share a factor',
+       says:'They do not. 1 and −9 share only 1, and the miner was right about that. The fault is not in the sum; it is in what the sum was taken to prove.'},
+      {label:'x&sup2; &minus; 9 has no middle term, so it cannot be factored',
+       says:'A missing middle term is what makes this one <em>easy</em>, not impossible. Two squares with a minus between them and nothing in the middle is the shape of a twin seam — (x + 3)(x − 3) multiplies back to x² − 9 with the middles cancelling, which is why there is no middle to see.'}
+    ],
+    after:'<b>The two words are not interchangeable.</b> A lump with no common metal in it can still come apart, ' +
+      'and a lump that comes apart can still have no common metal. That is the pair this whole table exists to keep separate.'
+  };
+
 /* ---------------- WORKSHOP 2: THE WORDS ---------------- */
 MF.SCREENS['shed-words'] = function(host){
   MF.shedHead(host, 'shed-words');
@@ -6779,7 +6953,14 @@ MF.SCREENS['shed-words'] = function(host){
     '<b>the same thing</b>. They are not similar. They are the same object under two names.'));
   MF.paintRosetta(host);
 
-  MF.paintQuestions(host, {list:[
+  /* BUILT FIRST, SHOWN LAST. The closer is a card in the same rotation as the
+     questions above it (§41), so it is made here, detached, and handed to
+     MF.paintQuestions as `also` rather than appended after the box - which is
+     what left this room showing two questions at once while every other room
+     showed one. */
+  var wMiscut = MF.paintMiscut(document.createElement('div'), MF.WORDS_MISCUT);
+
+  MF.paintQuestions(host, {also:[wMiscut], list:[
     {kind:'pick',
      q:'Which of these is <b>already native metal</b>?',
      sub:'Native metal is the mine\'s word. The maths word is on the table above.',
@@ -6829,48 +7010,6 @@ MF.SCREENS['shed-words'] = function(host){
      }}
   ]});
 
-  /* ---- WHAT DID THE MINER DO WRONG? ----
-
-     USER, 2026-09-05: "with the words, remove the reflection and replace with
-     what did the miner do wrong question."
-
-     The reflection asked a student to put a pair from the table into their own
-     words, and nothing was read or kept - which is a fine thing to ask and a
-     hard thing to learn from on your own. This asks the harder question:
-     somebody has used the words WRONGLY, the working is on the bench, and you
-     have to say where it went off.
-
-     ERROR ANALYSIS IS THE RIGHT CLOSER FOR THIS ROOM. Every other question
-     here asks you to pick the right name for a thing. This one shows a name
-     applied to the wrong thing and asks what the name actually means - which
-     is the difference between having the vocabulary and using it.
-
-     The mistake is the one this room exists to prevent: reading "nothing
-     divides every term" as "nothing comes apart". They are different claims
-     about different things, and the words for them are `common factor` and
-     `irreducible`. */
-  MF.paintMiscut(host, {
-    lab:'&#9935; WHAT DID THE MINER DO WRONG?',
-    lede:'A miner wrote this up in the log and racked the lump as finished metal. The arithmetic ' +
-      'on every line is right. The <b>word</b> at the end is not.',
-    work:[
-      {line:'x&sup2; &minus; 9', note:'the lump'},
-      {line:'1 and &minus;9 share nothing but 1', note:'checked for a common metal'},
-      {line:'so nothing comes out of it', note:'the step that is wrong'},
-      {line:'&rarr; native metal', note:'racked as finished'}
-    ],
-    q:'Where did it go wrong?',
-    options:[
-      {label:'"Nothing divides every term" is not the same claim as "nothing comes apart"', holds:true,
-       says:'That is exactly it. A <b>common factor</b> is something every term carries — this lump has none, and the miner checked that correctly. <b>Irreducible</b> means the whole thing will not come apart into two brackets, which is a different question and has a different answer here: x² − 9 is a <b>twin seam</b> and it runs at (x + 3)(x − 3).'},
-      {label:'The arithmetic is wrong &mdash; 1 and &minus;9 do share a factor',
-       says:'They do not. 1 and −9 share only 1, and the miner was right about that. The fault is not in the sum; it is in what the sum was taken to prove.'},
-      {label:'x&sup2; &minus; 9 has no middle term, so it cannot be factored',
-       says:'A missing middle term is what makes this one <em>easy</em>, not impossible. Two squares with a minus between them and nothing in the middle is the shape of a twin seam — (x + 3)(x − 3) multiplies back to x² − 9 with the middles cancelling, which is why there is no middle to see.'}
-    ],
-    after:'<b>The two words are not interchangeable.</b> A lump with no common metal in it can still come apart, ' +
-      'and a lump that comes apart can still have no common metal. That is the pair this whole table exists to keep separate.'
-  });
 
   MF.shedFoot(host, 'shed-words');
 };
@@ -7875,26 +8014,38 @@ MF.moldScene = function(key, pour, shape){
 
   /* ---- THE STREAM, AND THE TERMS RIDING DOWN IT ----
      The lip lands at about (116,46) once the group is tipped; the basin is
-     directly under it, so the metal falls the way metal falls. */
+     directly under it, so the metal falls the way metal falls.
+
+     IT IS A POUR, NOT A TRICKLE, AND THE REASON IS THE TEXT IN IT.
+
+     USER, 2026-09-05: "The Mold text in the pour area needs to be larger
+     because the animation effects are not reaching larger expressions."
+
+     The stream was 39 units wide in a 400-unit picture, so a term riding it
+     had 39 units to fit in - and `(9x + 9)` in 39 units is 10.5px, which at
+     the size this drawing actually renders is about eight CSS pixels. The
+     type was not small by choice; it was small because the channel was. So
+     the channel is 108 units at the lip, narrowing into the basin the way
+     metal actually falls, and the basin is opened up to take it. */
   svg.appendChild(S('path',{class:'mdstream',
-    d:'M105 48 C100 76, 100 102, 102 128 L136 128 C138 102, 138 74, 139 50 Z',
+    d:'M66 48 C62 78, 80 106, 88 130 L152 130 C160 106, 178 76, 174 50 Z',
     fill:'url(#'+uid+'pool)'}));
   /* the bright core of it */
   svg.appendChild(S('path',{class:'mdstream mdcore',
-    d:'M114 50 C111 76, 111 104, 113 128 L127 128 C129 104, 128 74, 128 50 Z',
+    d:'M100 50 C97 78, 106 106, 110 130 L130 130 C134 106, 143 76, 140 50 Z',
     fill:'#FFF6D8'}));
 
   /* the pouring basin and the runner that feeds the shape, under the lip */
-  svg.appendChild(S('circle',{cx:116,cy:150,r:27,fill:'#5A4B3C'}));
-  svg.appendChild(S('circle',{cx:116,cy:150,r:20,fill:'#3A3129'}));
-  svg.appendChild(S('path',{d:'M130 132 L206 172 L206 196 L130 168 Z',fill:'#3A3129'}));
-  svg.appendChild(S('path',{d:'M130 132 L206 172',fill:'none',stroke:'#D6C6A8','stroke-width':'2',opacity:'.4'}));
+  svg.appendChild(S('circle',{cx:120,cy:152,r:38,fill:'#5A4B3C'}));
+  svg.appendChild(S('circle',{cx:120,cy:152,r:30,fill:'#3A3129'}));
+  svg.appendChild(S('path',{d:'M150 136 L206 172 L206 196 L150 172 Z',fill:'#3A3129'}));
+  svg.appendChild(S('path',{d:'M150 136 L206 172',fill:'none',stroke:'#D6C6A8','stroke-width':'2',opacity:'.4'}));
   var clip = S('clipPath',{id:uid+'run'});
-  clip.appendChild(S('circle',{cx:116,cy:150,r:20}));
-  clip.appendChild(S('path',{d:'M130 132 L206 172 L206 196 L130 168 Z'}));
+  clip.appendChild(S('circle',{cx:120,cy:152,r:30}));
+  clip.appendChild(S('path',{d:'M150 136 L206 172 L206 196 L150 172 Z'}));
   defs.appendChild(clip);
   var runMetal = S('g',{'clip-path':'url(#'+uid+'run)'});
-  runMetal.appendChild(S('rect',{class:'mdrun', x:88,y:120,width:130,height:100,fill:'url(#'+uid+'hot)'}));
+  runMetal.appendChild(S('rect',{class:'mdrun', x:76,y:118,width:142,height:110,fill:'url(#'+uid+'hot)'}));
   svg.appendChild(runMetal);
 
   /* ---- THE CAVITY: the tool's own icon, blacked out ----
@@ -8010,9 +8161,19 @@ MF.moldScene = function(key, pour, shape){
        between the lip and the basin. */
     var tokens = [];
     m.into.forEach(function(s, i){ if(i) tokens.push('×'); tokens.push(s); });
-    var top = 66, bot = 120, fs = tokens.length > 3 ? 10.5 : 13;
+    /* THE TYPE IS AS BIG AS THE CHANNEL WILL TAKE, rather than a constant
+       chosen for the shortest thing that ever rides it. It was 13, or 10.5
+       once there were more than three tokens - so `(9x + 9)` and `3` were
+       rendered at the same size as each other and both at the size the WIDEST
+       one had to be. Measured off the longest token instead: the display face
+       runs about 0.60em per character, the usable channel is 88 units, and the
+       result is clamped so a one-character metal does not fill the picture and
+       a long bracket is never smaller than it was. */
+    var longest = tokens.reduce(function(n, t){ return Math.max(n, t.length); }, 1);
+    var fs = Math.max(11, Math.min(26, 88 / (0.60 * longest)));
+    var top = 64, bot = 124;
     tokens.forEach(function(tok, i){
-      var y = tokens.length === 1 ? 92 : (top + i * ((bot - top) / (tokens.length - 1)));
+      var y = tokens.length === 1 ? 94 : (top + i * ((bot - top) / (tokens.length - 1)));
       var el = txt(120, y, tok, 'mdnum mdin' + (tok === '×' ? ' mdinx' : ''), fs);
       /* each one falls a beat after the one above it, and the keyframe carries
          its own hold and exit - so this is the only delay there is */
@@ -11927,6 +12088,34 @@ MF.validate = function(){
       });
     });
   });
+  /* ---- THE CAVITY'S x² HAS TO MOVE (§41) ----
+
+     USER, 2026-09-05: "The bracket needs to update x² in the black box."
+
+     Both brackets were monic, so at every one of the 81 settings the casting's
+     square term was the literal string `x²` and the room could not pour a
+     LOADED trinomial at all - the shape layers 4 and 5 are made of, and the
+     one the Powered Auger exists for. Nothing failed, because nothing asked.
+
+     So: sweep the depth, and require the leading coefficient of what the mold
+     comes to be the depth that was set. Read off ingotProduct rather than off
+     the room, so a room that draws the right string for the wrong reason still
+     fails. */
+  var mdSeen = {};
+  [1,2,3,4,5,6,7,8,9].forEach(function(d){
+    var ing = [{m:d,k:3},{m:1,k:5}];
+    var pr = ingotProduct(ing);
+    chk('mold');
+    if(pr.a !== d)
+      errs.push('mold: a first bracket of depth ' + d + ' pours a casting whose x² term is ' +
+                pr.a + ' — the depth is not reaching the mold');
+    mdSeen[quadText(pr.a,0,0)] = true;
+  });
+  chk('mold');
+  if(Object.keys(mdSeen).length < 9)
+    errs.push('mold: the nine depths produce only ' + Object.keys(mdSeen).length +
+              ' different x² terms, so moving the bracket does not change the black box');
+
   /* CONTROL: the plain-metal pour, listed as itself again. This is the exact
      shape that shipped, so the control is the defect rather than a caricature
      of it - restore the shortcut and the 81 plain settings must fail. */
@@ -13854,6 +14043,19 @@ MF.validate = function(){
             ' lessons reached their practice, so the end of the walkthrough was not swept');
       } else { MF.SCREENS[scr](probe); }
     } catch(e){ errs.push('contrast: screen '+scr+' threw: '+e.message); return; }
+    /* A HIDDEN QUESTION IS STILL A QUESTION A STUDENT WILL READ.
+
+       The rooms show one question at a time now (§41). `_measureContrast`
+       skips `display:none` - correctly, because you cannot measure what is not
+       painted - so turning the dial from three cards to one would have quietly
+       taken two thirds of every quiz out of this sweep, and every run would
+       have gone on reporting clean over the text it stopped looking at. Same
+       shape as the THUD burst at opacity 0 and the mold's numbers (§82): the
+       fix is to reveal it before measuring, not to lower the denominator.
+
+       `hidden` is the only thing holding them back, so dropping the attribute
+       shows every card at its real colours. */
+    [].forEach.call(probe.querySelectorAll('.ask[hidden]'), function(c){ c.hidden = false; });
     MF._measureContrast(probe).forEach(function(m){
       chk('contrast');
       if(m.ratio < m.need) contrastFails.push(scr+': "'+m.text+'" ('+m.cls+') at '+m.ratio+':1, needs '+m.need);
@@ -15435,6 +15637,31 @@ MF.validate = function(){
     chk('quiz');
     if(!asks.length){ errs.push('quiz: the workshop "' + scr + '" asks nothing at all'); return; }
     qzSeen += asks.length;
+    /* ---- ONE AT A TIME, AND IT COMES ROUND (§41) ----
+       The rooms turn a dial through their questions rather than stacking them.
+       Two things have to hold, and the second is the one that could rot
+       quietly: exactly one card is showing, and going forward off the end
+       WRAPS rather than stopping. The contrast sweep reveals every hidden card
+       before it measures (it would otherwise stop looking at two thirds of
+       every quiz), so without this the rotation could break and no group on
+       the site would notice. */
+    if(asks.length > 1){
+      chk('quiz');
+      var shown = [].filter.call(asks, function(c){ return !c.hidden; });
+      if(shown.length !== 1)
+        errs.push('quiz: "' + scr + '" shows ' + shown.length + ' of its ' + asks.length +
+                  ' questions at once — they turn one at a time');
+      var qzNext = probe.querySelector('.asknext');
+      chk('quiz');
+      if(!qzNext){
+        errs.push('quiz: "' + scr + '" has more than one question and no way to turn to the next');
+      } else {
+        for(var qr=0; qr<asks.length; qr++) qzNext.dispatchEvent(new MouseEvent('click',{bubbles:true}));
+        var back = [].filter.call(asks, function(c){ return !c.hidden; });
+        if(back.length !== 1 || back[0] !== asks[0])
+          errs.push('quiz: turning all the way through "' + scr + '" did not come back round to the first question');
+      }
+    }
     Array.prototype.forEach.call(asks, function(card){
       var opts = card.querySelectorAll('.qopt');
       var typed = card.querySelectorAll('.hbox input');
@@ -16179,7 +16406,15 @@ MF.validate = function(){
   var rcCtl = document.createElement('div');
   rcStage.appendChild(rcCtl);
   var rcTall = document.createElement('div');
-  rcTall.style.cssText = 'height:900px';
+  /* TALLER THAN THE BUDGET, NOT TALLER THAN 900px.
+
+     It was a fixed 900, which is a screen and a half on a phone and LESS THAN
+     ONE on a tall desktop window - so on a 1000px-high viewport the control
+     built a cluster that fitted, saw no error, and reported that the check
+     could not see something it had never been shown. A control has to be a
+     fault at every size the check runs at, or it is only a control at the
+     sizes somebody happened to test. */
+  rcTall.style.height = (rcBudget + 200) + 'px';
   rcCtl.appendChild(H('div','beltstrap','belt'));
   rcCtl.appendChild(rcTall);
   rcCtl.appendChild(H('div','anvilore','ore'));
