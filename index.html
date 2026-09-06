@@ -1875,8 +1875,6 @@ table.rosetta td.rx{font-family:var(--display); font-size:16px; color:var(--ink)
 .shedcard .why{flex:1 1 auto}
 .backbtn{margin-bottom:10px}
 .shedfoot{border-top:2px solid var(--rule); padding-top:14px; justify-content:center}
-/* the one door at the foot of the shed's front page, centred like the others */
-.shednext{justify-content:center}
 
 /* THE MATCHING ACTIVITY: two columns of words and the job of pairing them */
 .matchbox{background:var(--paper-2); border:3px solid var(--tan); border-radius:14px;
@@ -7047,26 +7045,23 @@ MF.SCREENS['workshop-mold'] = function(host){
   host.appendChild(H('p','hint','Nothing in here is marked, timed or stored, and none of it is required. ' +
     'You can walk into the mine having read none of it — the `nogate` rule holds everywhere.'));
 
-  /* ---- ONE DOOR AT THE FOOT, AND IT IS THE NEXT STEP ----
+  /* ---- NO DOORS AT THE FOOT AT ALL ----
 
      USER, 2026-09-05: "remove the Take some ore buttons, change them to the
      Forge button, and change Out to the Surface. The Top Bar Buttons should be
      the main navigation out of the Casting Shed."
+     USER, 2026-09-06: "remove the 'To the forge' button."
 
-     There were three: the Stamp Mill, the Forge and the surface. The masthead
-     already carries all five rooms on every page, so two of those three were
-     the same route said twice — a row of ways OUT under a page whose job is to
-     send you INTO one of three workshops.
+     It went from three to one to none, and none is the version that actually
+     follows the rule. There were the Stamp Mill, the Forge and the surface,
+     under a page whose whole job is to send you INTO one of three workshops —
+     a row of ways out at the bottom of a menu. The Forge survived one round on
+     the argument that it is a next step rather than an exit; it is still a
+     room, the bar at the top still goes there, and keeping one door because it
+     is a nicer door is how the row grows back.
 
-     The Forge is the one that stays, because it is not a way out. It is where
-     what this building teaches gets used: you learn the pour here and you
-     perform it there. Everything that is merely navigation is navigation, and
-     lives in the bar at the top.
-
-     (The mine door went in the same clear-out, and for the same reason.) */
-  var go = E('div','row shednext'); go.style.marginTop='14px';
-  go.appendChild(MF.jump('To the forge, and pour one &rarr;','forge'));
-  host.appendChild(go);
+     The page ends on the three cards, which are the thing it is for.
+     Everything that is navigation lives in the bar. */
 };
 
 /* the head every workshop page wears, and the way back out of it. One
