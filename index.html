@@ -2577,6 +2577,39 @@ function ingotHtml(g){
   return linear(g.m,g.k);
 }
 function ingotText(g){ return ingotHtml(g).replace(/<[^>]+>/g,''); }
+
+/* =========================================================================
+   THE SAME METAL WITH ITS NUMBER HELD BACK.
+
+   USER, 2026-09-06: "The Lantern might give too much information. If the
+   Lantern reveals a binomial, it should hold back some of the digits. For a
+   monic factor, show the sign only and hide the digit."
+
+   The Lantern's whole job is to light ONE side, and a whole side turns out to
+   be most of the answer: handed `( x + 3 )` on a monic trinomial, the second
+   bracket follows by division and there is nothing left to do. What is worth
+   keeping is the SHAPE — how many x, and which way the sign goes — because
+   that is the part a student is actually unsure of.
+
+       x + 3    ->  x + ?
+       x − 5    ->  x − ?
+       3x − 1   ->  3x − ?
+
+   A PLAIN METAL IS NOT A BINOMIAL and is not touched. Hiding the digit of `3`
+   leaves `?`, which is not a lit side at all — it is the lantern going out.
+   The user's rule names binomials, and that is exactly where the rule earns
+   its keep.
+
+   THE SIGN SURVIVES ON PURPOSE. It is the half of a constant that students
+   most often get wrong, and it is the half the shape of the trinomial already
+   tells them — so showing it rewards reading the lump rather than the
+   instrument. */
+function ingotHeld(g){
+  if(!g || g.m === 0) return ingotHtml(g);          /* plain metal, shown whole */
+  var xs = (g.m === 1 ? 'x' : (g.m === -1 ? '−x' : num(g.m) + 'x'));
+  if(g.k === 0) return xs;                          /* nothing to hold back */
+  return xs + ' <span class="op">' + (g.k < 0 ? '−' : '+') + '</span> <span class="qm">?</span>';
+}
 /* An irreducible POLYNOMIAL is stored with m=0,k=0 and a label, so keying on
    m|k alone collapsed x²+4, x²+7 and every other pure polynomial into one
    yard chip that then counted upward as if it were the same metal. */
@@ -3290,12 +3323,12 @@ MF.SCHEMA = {
         draw:function(li){ MF.splitDiagram(li, {whole:MF.oreLabel(ore), left:null, right:null,
           key:'Neither side exists. That is what native metal <b>is</b>.'}); }}];
       return [
-        {act:'The lantern lights one side.',
-         draw:function(li){ MF.splitDiagram(li, {whole:MF.oreLabel(ore), left:'( ' + ingotHtml(one) + ' )', right:null,
-           key:'It lights the <b>simpler</b> side, and it will not light the other.'}); }},
-        {act:'The dark side is whatever is left when that one comes out.', open:true,
+        {act:'The lantern lights the <b>shape</b> of one side &mdash; how many x, and which way the sign goes.',
+         draw:function(li){ MF.splitDiagram(li, {whole:MF.oreLabel(ore), left:'( ' + ingotHeld(one) + ' )', right:null,
+           key:'It lights the <b>simpler</b> side, and not even all of that: the digit is still yours.'}); }},
+        {act:'Fill that digit in, and the dark side is whatever is left when it comes out.', open:true,
          draw:function(li){ MF.workLine(li, null,
-           [MF.oreLabel(ore), '  =  ( ', ingotHtml(one), ' ) × ( ', null, ' )'], 'wbig'); }},
+           [MF.oreLabel(ore), '  =  ( ', ingotHeld(one).replace(/<[^>]+>/g,''), ' ) × ( ', null, ' )'], 'wbig'); }},
         {act:'Name it and swing. The lantern will not say whether you have it right &mdash; the rock will.', open:true,
          draw:function(li){ MF.workLine(li, 'cut the hammer to', [null], 'wbig'); }}
       ];
@@ -4079,15 +4112,20 @@ MF.LENS.steel = function(ore){
   return {html: out, found: 'every term carries ' + num(G)};
 };
 
-/* THE PIT LANTERN: the lump written as a product, one side lit. */
+/* THE PIT LANTERN: the lump written as a product, one side lit — and on a
+   binomial, lit only as far as its SHAPE (user, 2026-09-06). A whole bracket
+   is most of the answer, because the second one follows from it by division.
+   `ingotHeld` keeps the x-part and the sign and holds the digit back; a plain
+   metal has no shape to show and is given whole. */
 MF.LENS.lantern = function(ore){
   if(MF.isNative(ore)) return null;      /* nothing to open; the chip is already the answer */
   var one = MF.simplestFactor(ore);
   if(!one) return null;
   return {
-    html: lensMark('llit','( ' + ingotHtml(one) + ' )') + lensMark('ldot','') +
+    html: lensMark('llit','( ' + ingotHeld(one) + ' )') + lensMark('ldot','') +
           lensMark('ldark','( ' + lensMark('lqm','?') + ' )'),
-    found: 'one side of it is ' + ingotText(one)
+    found: one.m === 0 ? ('one side of it is ' + ingotText(one))
+                       : ('one side of it is shaped ' + ingotHeld(one).replace(/<[^>]+>/g,''))
   };
 };
 
@@ -4319,9 +4357,15 @@ MF.TOOL_READ = {
     if(native){ MF.methodLine(host, "lantern"); return; }
     var one = MF.simplestFactor(ore);
     if(one){
+      /* THE SHAPE, NOT THE NUMBER (user, 2026-09-06). A whole bracket handed
+         over is most of the answer — the second follows by division — so the
+         lantern lights how many x and which way the sign goes, and holds the
+         digit back. A plain metal has no shape to show and is given whole. */
       host.appendChild(H('div','diaglab','WHAT THE LIGHT REACHES'));
-      MF.splitDiagram(host, {whole:MF.oreLabel(ore), left:'( ' + ingotHtml(one) + ' )', right:null,
-        key:'One side is lit. The other is whatever is left when that one comes out — and the lantern will not light it.'});
+      MF.splitDiagram(host, {whole:MF.oreLabel(ore), left:'( ' + ingotHeld(one) + ' )', right:null,
+        key: one.m === 0
+          ? 'One side is lit. The other is whatever is left when that one comes out — and the lantern will not light it.'
+          : 'The <b>shape</b> of one side, and not its number. The lantern shows you how many x and which way the sign goes; the digit is still yours, and so is the whole of the other side.'});
     }
     MF.methodLine(host, 'lantern');
     MF.paintNameSide(host, ore, pieceId);
@@ -16462,6 +16506,56 @@ MF.validate = function(){
   Object.keys(MF.SCHEMA).forEach(function(k){
     chk('schema');
     if(!MF.TOOLS[k]) errs.push('schema: there is a method for "' + k + '", which is not a tool');
+  });
+
+  /* ---- THE LANTERN LIGHTS A SHAPE, NOT A BRACKET ----
+
+     USER, 2026-09-06: "The Lantern might give too much information. If the
+     Lantern reveals a binomial, it should hold back some of the digits. For a
+     monic factor, show the sign only and hide the digit."
+
+     One whole bracket is most of the answer — the second follows from it by
+     division — so the rule below ("no more than ONE of a lump's own factors")
+     was satisfied by a reading that still left nothing to do. This is that
+     rule tightened where it was too loose: on a BINOMIAL the lantern shows how
+     many x and which way the sign goes, and holds the digit back.
+
+     A plain metal is exempt and has to be, or the lantern goes out entirely:
+     hiding the digit of `3` leaves `?`, which is not a lit side at all.
+
+     Checked on the LIT SIDE only. The dark bracket is a `?` by design and the
+     ore's own label is printed alongside — searching the whole reading for the
+     digit would trip over the lump's own coefficients and prove nothing. */
+  scSchemaOres.concat([{kind:'poly',a:1,b:8,c:16},{kind:'poly',a:2,b:7,c:3}]).forEach(function(ore){
+    var one = null;
+    try { one = MF.simplestFactor(ore); } catch(e){ one = null; }
+    if(!one || one.m === 0 || one.k === 0) return;      /* not a binomial with a digit */
+    var lens = null;
+    try { lens = MF.LENS.lantern(ore); } catch(e){ lens = null; }
+    if(!lens) return;
+    /* THE LIT HALF, PARSED RATHER THAN MATCHED. A regex for the `llit` span
+       stopped at the first `</span>` inside it — and `ingotHeld` nests two,
+       one for the sign and one for the `?` — so it captured a truncated lit
+       side, lost the redaction and reported four faults in correct code. */
+    var litBox = document.createElement('div');
+    litBox.innerHTML = String(lens.html);
+    var litEl = litBox.querySelector('.llit');
+    var lit = litEl ? litEl.innerHTML : litBox.innerHTML;
+    chk('schema');
+    if(lit.indexOf('qm') < 0 && lit.indexOf('?') < 0)
+      errs.push('schema: the lantern hands over the whole bracket ' + ingotText(one) +
+                ' on ' + MF.oreText(ore) + ' — one side complete is most of the answer');
+    chk('schema');
+    var plain = lit.replace(/<[^>]+>/g,'');
+    if(plain.indexOf(String(Math.abs(one.k))) >= 0)
+      errs.push('schema: the lantern prints the digit ' + Math.abs(one.k) + ' of ' + ingotText(one) +
+                ' on ' + MF.oreText(ore) + ' — the digit is the part the student is meant to supply');
+    /* AND THE SIGN SURVIVES, because that is the half the lump's own shape
+       already tells them and showing it rewards reading the rock. */
+    chk('schema');
+    if(plain.indexOf(one.k < 0 ? '−' : '+') < 0)
+      errs.push('schema: the lantern hides the sign of ' + ingotText(one) + ' as well as the digit — ' +
+                'the sign is what makes it a lit side rather than a blank');
   });
 
   /* HOW MANY OF A LUMP'S OWN FACTORS DOES A METHOD PRINT? More than one is the
