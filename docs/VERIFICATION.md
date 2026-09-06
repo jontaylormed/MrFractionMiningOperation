@@ -1954,3 +1954,40 @@ both started.
 > element the sweep walks is invisible to it, and "outside the screen" is usually a deliberate
 > architectural choice made for a good reason.** The reason that makes it correct is also the
 > reason it goes dark.
+
+## §90. Two faults on one line, and fixing the visible one hides the other
+
+> *"There must be no bottom-corner Mr Factor on the loading screen."* — user, 2026-09-06
+
+He was standing on the splash. The obvious fix is a z-index, and it would have been half a
+fix that made the other half permanent.
+
+`MF.boot` builds the home screen **behind** the load screen, so it is ready the instant you
+press Enter. That means `MF.go('home')` runs before the student has entered — so the dock
+unhid itself over a splash it outranked, **and** `home` came out of boot already marked seen.
+Hide the dock and the second fault survives, silently: press Enter, land on the surface, and
+the lamp is already out because he has "already" greeted you.
+
+> **A visible symptom and an invisible one can share a cause.** The question to ask of any
+> "it should not be showing there" is not only *how do I stop it showing* but **what else did
+> the thing that showed it already do?**
+
+Both are asserted: nothing paints while the splash is up, the dock ranks below it, and the
+room under it is still unseen when the splash comes off. The controls are the two halves —
+restore the z-index and it reports standing on the splash; make `MF.loading()` lie and it
+reports all three, including the greeting spent on a room nobody was looking at.
+
+## §91. Deleting the last one is usually the point
+
+The Casting Shed's front page went from three doors at its foot, to one, to none.
+
+The middle step had a reason that sounded good: the Stamp Mill and the surface were pure
+navigation and the masthead already carried them, but the Forge was *a next step* — you learn
+the pour here and you perform it there. So it stayed.
+
+It is still a room. The bar at the top still goes there. **Keeping one because it is a nicer
+one is how the row grows back**, and the rule the user actually stated — the top bar is the
+navigation — had no exception in it.
+
+> When a clear-out leaves exactly one survivor and the survivor needs a paragraph to justify
+> it, that paragraph is the tell.

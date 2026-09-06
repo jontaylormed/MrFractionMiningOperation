@@ -2396,7 +2396,10 @@ table.scan tr.hit td{background:#F1F8F5; color:var(--vein); font-weight:700}
    a friendly face on it. The portrait alone is 64px in the corner; the bubble
    only exists while it is open.
    ========================================================================= */
-.guide{position:fixed; right:14px; bottom:14px; z-index:60;
+/* z-index 40: ABOVE the page, BELOW the load screen (50) and below a dialog
+   (.scrim, 70). He was on 60 and stood in the bottom corner of the splash,
+   greeting a student who had not entered the operation yet. */
+.guide{position:fixed; right:14px; bottom:14px; z-index:40;
   display:flex; flex-direction:column; align-items:flex-end; gap:8px;
   /* the DOCK does not take clicks — only the things in it do, so it can never
      swallow a click meant for the room behind it (the fault class the
@@ -4575,6 +4578,14 @@ MF.GUIDE = {
 
 MF.guideState = {seen:{}, open:false, at:0, room:null};
 
+/* IS THE SPLASH STILL OVER EVERYTHING? MF.boot builds the home screen behind
+   it, so anything that greets a student has to know the difference between
+   "the code got here" and "the student got here". */
+MF.loading = function(){
+  var ls = q('#loadscreen');
+  return !!ls && !ls.classList.contains('gone');
+};
+
 /* the portrait, the bubble, and nothing else on the page has to know */
 MF.paintGuide = function(){
   var host = q('#guide');
@@ -4582,7 +4593,8 @@ MF.paintGuide = function(){
   var room = MF.state.screen;
   var g = MF.GUIDE[room];
   clear(host);
-  if(!g){ host.hidden = true; return null; }
+  /* he is not on the splash, whoever asked for him to be painted */
+  if(!g || MF.loading()){ host.hidden = true; return null; }
   host.hidden = false;
 
   var G = MF.guideState;
@@ -4658,6 +4670,19 @@ MF.paintGuide = function(){
    thing that talks at you every time you walk through a door. */
 MF.guideArrive = function(){
   var room = MF.state.screen;
+  /* NOT WHILE THE LOAD SCREEN IS UP.
+
+     MF.boot builds the home screen BEHIND the splash so it is ready the moment
+     you press Enter — which means MF.go('home') runs before the student has
+     entered the operation. Left alone, that spent his one greeting on a room
+     nobody was looking at yet: `home` came out of boot already marked seen, so
+     pressing Enter dropped you onto a surface with the lamp already out.
+
+     Two faults in one line. He also STOOD ON the splash, because the dock was
+     above it in the stack. The z-index is the other half of this fix; this
+     half is that his first visit to a room has to happen when the student
+     arrives in it, not when the code does. */
+  if(MF.loading()) return false;
   if(!MF.GUIDE[room]){ MF.paintGuide(); return false; }
   var first = !MF.guideState.seen[room];
   if(first){
@@ -4709,6 +4734,11 @@ MF.loadScreen = function(){
     }
     fill.style.width = pct + '%';
   }, 210);
+  /* THE SPLASH COMES OFF FIRST, AND ONLY THEN DOES HE SPEAK. MF.boot already
+     built `home` behind this screen, so the MF.go here is a repaint — but it
+     is also the moment the student actually arrives on the surface, and
+     MF.guideArrive refuses to fire while the splash is up. Removing `.gone`
+     before the go is what makes the first greeting land on entry. */
   on(btn,'click',function(){ q('#loadscreen').classList.add('gone'); MF.go('home'); });
   return true;
 };
@@ -17570,6 +17600,53 @@ MF.validate = function(){
     if(gb.left < 0)
       errs.push('guide: the bubble starts ' + Math.round(gb.left) + 'px off the left of the screen');
   })();
+  /* HE IS NOT ON THE SPLASH, AND HIS FIRST GREETING IS NOT SPENT BEHIND IT.
+
+     USER, 2026-09-06: "There must be no bottom-corner Mr Factor on the loading
+     screen."
+
+     Two faults in one line, and the second is the one that would have survived
+     a fix to the first. MF.boot builds the home screen BEHIND the load screen
+     so it is ready the moment you press Enter — so MF.go('home') ran, the dock
+     unhid itself at z-index 60 over a splash at 50, and `home` came out of
+     boot already marked seen. Hiding him would have left the second half:
+     press Enter and land on a surface with the lamp already out and nobody
+     having said anything.
+
+     So both are asserted: nothing paints while the splash is up, and the room
+     under it is still unseen when the splash comes off. */
+  (function(){
+    var ls = q('#loadscreen');
+    if(!ls){ chk('guide'); errs.push('guide: there is no load screen to check him against'); return; }
+    var wasGone = ls.classList.contains('gone');
+    ls.classList.remove('gone');
+    MF.guideState = {seen:{}, open:false, at:0, room:null};
+    MF.state.screen = 'home';
+    chk('guide');
+    if(MF.guideArrive())
+      errs.push('guide: he greeted a student who is still on the loading screen');
+    chk('guide');
+    if(MF.guideState.seen.home)
+      errs.push('guide: booting behind the splash marked the surface as already shown — ' +
+        'pressing Enter would land on a room he has nothing left to say about');
+    MF.paintGuide();
+    chk('guide');
+    if(!q('#guide').hidden)
+      errs.push('guide: the dock painted itself over the loading screen');
+    /* and the stack has to agree: under the splash, under a dialog */
+    chk('guide');
+    var gz = parseInt(getComputedStyle(q('#guide')).zIndex, 10),
+        lz = parseInt(getComputedStyle(ls).zIndex, 10);
+    if(!(gz < lz))
+      errs.push('guide: the dock sits at z-index ' + gz + ' over a load screen at ' + lz +
+        ' — it can stand on the splash');
+    if(!wasGone) { /* leave it as it was */ } else ls.classList.add('gone');
+    /* and now the student has actually entered */
+    chk('guide');
+    if(!MF.guideArrive())
+      errs.push('guide: coming off the loading screen did not greet the student at all');
+  })();
+
   /* CONTROL 1: a room with no guide copy must be caught */
   chk('guide');
   var gdReal = MF.GUIDE['shed-words'];

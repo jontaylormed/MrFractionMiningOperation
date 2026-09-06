@@ -1746,8 +1746,10 @@ every room on every page.
   rather than *"Into the mine"*, the same route under another name); the surface door followed.
   The forge ends on the work.
 - **The Casting Shed's front page** had three — the Stamp Mill, the Forge and the surface — under
-  a page whose job is to send you *into* one of three workshops. It has one: **the Forge**,
-  which is not a way out but the next step. You learn the pour here and you perform it there.
+  a page whose job is to send you *into* one of three workshops. It has **none**. The Forge
+  survived one round on the argument that it was a next step rather than an exit; it is still
+  a room, the bar still goes there, and *keeping one door because it is a nicer door is how
+  the row grows back*. The page ends on the three cards, which are the thing it is for.
 - **The shed's workshop feet** are primary and centred. In the plain tone they read as a
   footnote about somewhere else rather than the way on.
 
