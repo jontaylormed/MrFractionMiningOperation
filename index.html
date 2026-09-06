@@ -3118,11 +3118,11 @@ MF.state = {
      the object it is cast from gets harder in step:
 
        1 Prospector's  12              2 · 2 · 3         plain numbers, one repeated
-       2 Pit Lantern   30              2 · 3 · 5         three different primes
+       2 Lantern       30              2 · 3 · 5         three different primes
        3 Steel Pick    3x + 12         3 · (x + 4)       a metal spread over a bracket
-       4 Decimal Dial  x² + 3x + 2     (x+1)(x+2)        two brackets, one apart
-       5 Exponent Rail x² + 8x + 16    (x+4)(x+4)        a square: both x-parts the same
-       6 Core Drill    x² − 25         (x+5)(x−5)        a twin seam: the middle cancels
+       4 Crosscut      x² + 3x + 2     (x+1)(x+2)        two brackets, one apart
+       5 Shifter       x² + 8x + 16    (x+4)(x+4)        a square: both x-parts the same
+       6 Drill         x² − 25         (x+5)(x−5)        a twin seam: the middle cancels
        7 Powered Auger 6x² + 7x − 3    (2x+3)(3x−1)      loaded: both ends constrained
 
      The `forge` group asserts every one of these is castable from metal a yard
@@ -3156,12 +3156,27 @@ MF.TOOLS = {
     forge:'Cast <b>3x + 12</b>. One plain metal spread over one bracket — and spreading a common metal is the move this head then runs backwards.',
     does:'factors out the greatest common factor'
   },
+  /* rank 4. THE X, AND IT IS THE METHOD A SCHOOL ACTUALLY TEACHES.
+
+     USER, 2026-09-06: "the decimal dial should be the X-method of factoring."
+
+     A CROSSCUT IS A REAL WORKING: a tunnel driven ACROSS the vein rather than
+     along it, and it is drawn as a cross. The instrument that was the Decimal
+     Dial is that, at the same rank and the same cost.
+
+     IT KEEPS BOTH FACES (user's decision, same day). The X is the METHOD it
+     carries and what its lesson walks. The decimal dial is still what it DOES
+     to a lump on the bench: nudge the number on the end off a whole one and
+     watch the seam vanish. Those are not two tools bolted together — the X
+     asks "what pair of WHOLE numbers does this", and the dial is the answer to
+     "and what if there is no such pair", which is the argument underneath
+     native metal. The Drill already carries two faces for the same reason. */
   dial: {
-    rank:4, ic:'&#128207;', nm:'The Decimal Dial', order:'a fine-adjust dial for the bench',
-    ds:'Nudges a lump off the whole numbers so you can watch the seam vanish — why nothing will come out, when nothing will.',
+    rank:4, ic:'&#10005;', nm:'The Crosscut', order:'a cross-cut driven over the vein',
+    ds:'Draws the X on a lump: what the pair has to multiply to on top, what it has to add to underneath. It never fills the sides in. Nudge the end off a whole number and you can watch the seam it was hunting stop existing.',
     cast:{a:1,b:3,c:2}, slots:2,
-    forge:'Cast <b>x² + 3x + 2</b>. Two brackets one apart — nudge either number off a whole and the seam stops being whole, which is the whole of what the dial is for.',
-    does:'tests whether it factors over the integers'
+    forge:'Cast <b>x² + 3x + 2</b>. Two brackets one apart — a·c is 2 and the middle is 3, which is the smallest honest X there is.',
+    does:'the X: multiply to a·c, add to b'
   },
   shifter: {
     rank:5, ic:'&#8646;', nm:'The Shifter', order:'a gear shifter for the winding house',
@@ -3170,12 +3185,25 @@ MF.TOOLS = {
     forge:'Cast <b>x² + 8x + 16</b>. The same bracket twice, so there is no doubt at all where the x² came from.',
     does:'the area model — four products in a box'
   },
+  /* rank 6. THE TWIN SEAM, AND NOTHING ELSE NOW.
+
+     The Drill used to be the pair hunt AND the difference of two squares — the
+     general method with a special case attached. The general method is the
+     Crosscut's (rank 4), so this keeps the case that is genuinely its own: no
+     middle term, both ends square, and the pair turns out to be a number and
+     its own opposite.
+
+     It is not a lesser tool for being narrower. A twin seam is the one shape
+     you can factor ON SIGHT, without hunting anything, and knowing it by its
+     look is worth a rank of its own. Its cast has always been x² − 25, which
+     is exactly that shape — the target was already right for the job it has
+     now. */
   drill: {
     rank:6, ic:'&#9881;', nm:'The Drill', order:'a core drill for the assay office',
-    ds:'Takes a core out of a lump and reads every pair that could run through it. It lists them all and marks none.',
+    ds:'Takes a core through a lump and says whether it is a twin seam: no middle term, and both ends perfect squares. When it is, the two brackets are a number and its opposite and the middle cancels itself.',
     cast:{a:1,b:0,c:-25}, slots:2,
     forge:'Cast <b>x² − 25</b>. Two brackets with opposite numbers, so the middle cancels itself out and a twin seam is what comes off the mold.',
-    does:'the pair that multiplies to a·c and adds to b'
+    does:'the difference of two squares, on sight'
   },
   auger: {
     rank:7, ic:'&#128295;', nm:'The Powered Auger', order:'a powered auger for the loaded ore',
@@ -3302,25 +3330,53 @@ MF.SCHEMA = {
     practice: {ore:{kind:'poly',a:0,b:6,c:15}, ask:'6x + 15 &mdash; what is the biggest thing that divides both terms? Put 0 in the x-box and that number on the end.', answer:{m:0,k:3}}
   },
 
-  /* rank 4. Whole numbers versus everything else. The dial's own reading does
-     the demonstrating; the schema names what is being demonstrated. */
+  /* rank 4. THE X METHOD, which is the one a school actually teaches.
+
+     USER, 2026-09-06: "the decimal dial should be the X-method of factoring."
+
+     a·c on top, the middle underneath, and the pair that does both goes left
+     and right. On a monic lump those two ARE the bracket constants, so the
+     method finishes there; on a loaded one they split the middle term and the
+     Auger takes it on. That is why this sits at rank 4, below the box and
+     grouping: both of them are the X with more done to it.
+
+     THE LAST STEP KEEPS THE DIAL. The whole-number test is not a second tool
+     bolted on — it is the answer to the question the X asks. "What pair of
+     WHOLE numbers does this?" has to be allowed the answer "there is none",
+     or a student reads a failed hunt as their own failure rather than as a
+     fact about the rock. That is the argument underneath native metal and it
+     belongs at the end of this method, not in a room of its own. */
   dial: {
-    name: 'The whole-number test',
-    why: 'Breaking rock finds seams that sit on whole numbers, and only those. Nudge a coefficient half a step and a certain-looking seam is gone &mdash; the rock has not changed, the search has.',
+    name: 'The X method',
+    why: 'Two numbers must do two jobs at once: multiply to a&middot;c and add to the middle. Put both targets on an X and the pair you want is the one that satisfies both.',
     steps: function(ore){
+      if(ore.kind === 'number') return [
+        {act:'An X needs a middle term to sit under it, and a plain number has none.', shows:num(ore.n),
+         draw:function(li){ MF.workLine(li, 'nothing to cross here', [num(ore.n)], 'wbig'); }}
+      ];
+      if(ore.a === 0) return [
+        {act:'No x&sup2;, so there is no a&middot;c to put on top. Look for the metal every term carries.', shows:MF.oreLabel(ore),
+         draw:function(li){ MF.workLine(li, 'this one is the Steel Head’s', [MF.oreLabel(ore)], 'wbig'); }}
+      ];
+      var ac = (ore.a === 1) ? ore.c : ore.a * ore.c;
       return [
-        {act:'Take the lump as it is. Does a seam land on a whole number?', shows:MF.oreLabel(ore),
-         draw:function(li){ MF.tickLine(li, {at:2, label:'lands', ticks:6,
-           key:'On a mark. A whole ingot can sit there.'}); }},
-        {act:'Now nudge the end off a whole number and ask again.',
-         draw:function(li){ MF.tickLine(li, {at:2.4, label:'nowhere', ticks:6,
-           key:'Between two marks. Nothing whole fits, and looking harder will not move it.'}); }},
-        {act:'The rock has not changed. The search has.', open:true,
-         draw:function(li){ MF.tickLine(li, {at:2, label:null, ticks:6,
-           key:'So: on a mark, or not. Which is it for your lump?'}); }}
+        {act:(ore.a===1 ? 'The number on the end goes on top of the X.'
+                        : 'Multiply the x&sup2; by the end &mdash; a&middot;c. That goes on top.'),
+         draw:function(li){ MF.xDiagram(li, {top:num(ac), bottom:null, left:null, right:null,
+           topWhy: ore.a===1 ? '' : num(ore.a) + ' × ' + num(ore.c)}); }},
+        {act:'The middle term goes underneath it.',
+         draw:function(li){ MF.xDiagram(li, {top:num(ac), bottom:num(ore.b), left:null, right:null,
+           topWhy: ore.a===1 ? '' : num(ore.a) + ' × ' + num(ore.c)}); }},
+        {act:'The pair that does both goes on the sides. Nothing fills those in for you.', open:true,
+         draw:function(li){ MF.workLine(li, 'multiply to ' + num(ac) + ', add to ' + num(ore.b),
+           [null, '  and  ', null], 'wbig'); }},
+        /* AND THE HONEST ENDING: sometimes there is no such pair. */
+        {act:'And if no whole pair does both, there is none to find &mdash; nudge the end off a whole number and watch it go.', open:true,
+         draw:function(li){ MF.tickLine(li, {at:2.4, label:null, ticks:6,
+           key:'Between two marks. That is the rock, not you.'}); }}
       ];
     },
-    practice: {ore:{kind:'poly',a:1,b:3,c:2}, ask:'x&sup2; + 3x + 2 sits on whole numbers. Name one side of it.', answer:{m:1,k:1}}
+    practice: {ore:{kind:'poly',a:1,b:3,c:2}, ask:'x&sup2; + 3x + 2 &mdash; a&middot;c is 2 and the middle is 3. Name one side of it.', answer:{m:1,k:1}}
   },
 
   /* rank 5. THE BOX METHOD, and it is DRAWN rather than described - the
@@ -3373,47 +3429,52 @@ MF.SCHEMA = {
     practice: {ore:{kind:'poly',a:1,b:8,c:16}, ask:'x&sup2; + 8x + 16 &mdash; the box comes out square. Name one side.', answer:{m:1,k:4}}
   },
 
-  /* rank 6. The pair hunt, and the twin seam as the case where it collapses.
-     The drill lists every pair and marks none; choosing is the student's. */
+  /* rank 6. THE TWIN SEAM, AND ONLY THAT.
+
+     The general pair hunt moved to the Crosscut at rank 4 (user, 2026-09-06),
+     which is where a school teaches it. What is left here is the case that is
+     genuinely its own: the shape you can factor ON SIGHT.
+
+     A difference of two squares is not the pair hunt done quickly — it is the
+     pair hunt not being needed. Both ends square, no middle at all, so the
+     pair has to be a number and its own opposite, because that is the only
+     pair whose sum is nothing. Recognising it is the whole method. */
   drill: {
-    name: 'The pair hunt, and the difference of two squares',
-    why: 'Two numbers that multiply to the top of the X and add to the bottom are exactly the two numbers in the brackets. With no middle at all, that pair is a number and its own opposite.',
+    name: 'The difference of two squares',
+    why: 'A middle term of nothing means the two numbers in the brackets cancel &mdash; so they are a number and its own opposite. With both ends square there is exactly one such pair, and no hunting.',
     steps: function(ore){
       if(ore.kind==='number') return [
-        {act:'On a plain number the hunt is simpler: every pair that multiplies to it.', shows:num(ore.n),
-         draw:function(li){ MF.workLine(li, 'pairs that multiply to ' + num(ore.n), [null, ' × ', null], 'wbig'); }},
-        {act:'Any of them can be swung. Some leave more still to break than others.', open:true,
-         draw:function(li){ MF.splitDiagram(li, {whole:num(ore.n), left:null, right:null,
-           key:'Both sides are yours. The drill lists; it never chooses.'}); }}
+        {act:'A twin seam is a shape, and a plain number has no shape to have.', shows:num(ore.n),
+         draw:function(li){ MF.workLine(li, 'nothing square about', [num(ore.n)], 'wbig'); }}
       ];
       if(ore.a===0) return [
-        {act:'No x&sup2; here, so there is no pair to hunt. Look for the metal every term carries.', shows:MF.oreLabel(ore),
+        {act:'No x&sup2;, so there are not two squares to be the difference of.', shows:MF.oreLabel(ore),
          draw:function(li){ MF.splitDiagram(li, {whole:MF.oreLabel(ore), left:null, right:null,
-           key:'This is the Steel Head’s lump, not the drill’s.'}); }}
+           key:'This one is the Steel Head’s lump.'}); }}
       ];
-      var tgt = (ore.a===1) ? ore.c : ore.a*ore.c;
       var twin = (ore.b===0 && ore.c<0 && isSquare(ore.a) && isSquare(-ore.c));
-      /* THE X IS THE DIAGRAM SCHOOL DRAWS, and this is the method that IS it:
-         a·c on top, the middle below, the pair on the sides. Both sides stay
-         open - on a monic trinomial they are the two bracket constants, so
-         filling one in would be handing over half the answer and filling both
-         would be the whole of it, which `schema` fails the build for. */
-      var out = [
-        {act:(ore.a===1 ? 'Take the number on the end. It goes on top of the X.'
-                        : 'Multiply the x&sup2; by the end &mdash; a&middot;c. It goes on top of the X.'),
-         draw:function(li){ MF.xDiagram(li, {top:num(tgt), bottom:null, left:null, right:null,
-           topWhy: ore.a===1 ? '' : num(ore.a) + ' × ' + num(ore.c)}); }},
-        {act:'The middle goes underneath. Now the X is asking a question.',
-         draw:function(li){ MF.xDiagram(li, {top:num(tgt), bottom:num(ore.b), left:null, right:null,
-           topWhy: ore.a===1 ? '' : num(ore.a) + ' × ' + num(ore.c)}); }},
-        {act:'Two numbers do both at once. Those two are the numbers in the brackets.', open:true,
-         draw:function(li){ MF.workLine(li, 'multiply to ' + num(tgt) + ', add to ' + num(ore.b),
-           [null, '  and  ', null], 'wbig'); }}
+      if(!twin) return [
+        {act:'Two tests, and this lump fails one: is the middle nothing, and are both ends square?',
+         shows:MF.oreLabel(ore),
+         draw:function(li){ MF.workLine(li, 'middle term', [xt2(ore.b) || '0'], 'wbig'); }},
+        {act:'So it is not a twin seam. Take the X to it instead.', open:true,
+         draw:function(li){ MF.xDiagram(li, {top:num(ore.a===1?ore.c:ore.a*ore.c), bottom:num(ore.b),
+           left:null, right:null}); }}
       ];
-      if(twin) out.push({act:'A twin seam: no middle, both ends square. The pair is a number and its own opposite, so the middles cancel.',
-        draw:function(li){ MF.xDiagram(li, {top:num(tgt), bottom:'0', left:null, right:null,
-          botWhy:'nothing in the middle'}); }});
-      return out;
+      /* BOTH SIDES STAY OPEN. On a twin seam the two sides ARE the brackets,
+         so filling one is half the answer and filling both is all of it —
+         which `schema` fails the build for, and rightly. */
+      return [
+        {act:'Two tests. Is the middle term nothing, and are both ends perfect squares?',
+         shows:MF.oreLabel(ore),
+         draw:function(li){ MF.workLine(li, 'middle', ['0'], 'wbig'); }},
+        {act:'Both pass, so the pair has to add to nothing &mdash; a number and its own opposite.',
+         draw:function(li){ MF.xDiagram(li, {top:num(ore.a*ore.c), bottom:'0', left:null, right:null,
+           botWhy:'nothing in the middle'}); }},
+        {act:'So take the square root of each end. That number, plus and minus, is the two brackets.', open:true,
+         draw:function(li){ MF.workLine(li, MF.oreLabel(ore) + '  =  ',
+           ['( ', null, ' ) × ( ', null, ' )'], 'wbig'); }}
+      ];
     },
     practice: {ore:{kind:'poly',a:1,b:0,c:-25}, ask:'x&sup2; &minus; 25 has no middle term and both ends are squares. Name one side.', answer:{m:1,k:5}}
   },
@@ -4282,27 +4343,34 @@ MF.TOOL_READ = {
       MF.paintNameSide(host, ore, pieceId);
       return;
     }
-    /* THE X, WITH ONE SIDE LIT AND ONE OPEN */
-    var pr = MF.xPair(ore);
-    host.appendChild(H('div','diaglab','THE X — ' + (ore.a===1 ? 'the end on top, the middle below' : 'a·c on top, the middle below')));
-    MF.xDiagram(host, {
-      top: num(ore.a * ore.c), bottom: num(ore.b),
-      left: pr ? num(pr.p) : null, right: null,
-      topWhy: ore.a===1 ? '' : '= ' + num(ore.a) + ' × ' + num(ore.c),
-      botWhy: ''
-    });
-    if(pr){
-      MF.workLine(host, 'so the pair is', [num(pr.p), ' and ', null], 'wbig');
-      host.appendChild(H('div','hint','One side is lit. The other multiplies with it to <b>' +
-        num(ore.a*ore.c) + '</b> and adds with it to <b>' + num(ore.b) + '</b>.'));
+    /* ---- THE TWO TESTS, AND NOTHING ELSE ----
+
+       The general pair hunt is the Crosscut's now (rank 4, user 2026-09-06).
+       What this core reads is whether the lump is a TWIN SEAM, which is two
+       yes/no questions and no searching at all: is the middle nothing, and are
+       both ends perfect squares.
+
+       When it is, the reading says so and stops — the two brackets are a
+       number and its own opposite, and naming them is the student's. When it
+       is not, it says WHICH test failed and hands the lump to the X, because
+       "no" on its own is a dead reading. */
+    var dMid = (ore.b === 0), dSq = (ore.c < 0 && isSquare(ore.a) && isSquare(-ore.c));
+    host.appendChild(H('div','diaglab','THE TWO TESTS FOR A TWIN SEAM'));
+    MF.workLine(host, 'is the middle term nothing?', [dMid ? 'yes — ' + MF.oreLabel(ore) + ' has no x term' : 'no — it is ' + xt2(ore.b)], 'wbig');
+    MF.workLine(host, 'are both ends squares, with a minus between?',
+      [dSq ? 'yes' : (ore.c > 0 ? 'no — the end is positive' : 'no — one end is not a square')], 'wbig');
+    if(dMid && dSq){
+      host.appendChild(H('div','diaglab','SO THE PAIR ADDS TO NOTHING'));
+      MF.xDiagram(host, {top:num(ore.a*ore.c), bottom:'0', left:null, right:null,
+        botWhy:'nothing in the middle'});
+      host.appendChild(H('div','hint','A number and its own opposite &mdash; the only pair that adds to nothing. ' +
+        'Take the square root of each end and that is both brackets.'));
     } else {
-      host.appendChild(H('div','hint','No whole pair fills this X. That is the reading — nothing whole comes out of it.'));
-    }
-    var tgt = (ore.a===1) ? ore.c : ore.a*ore.c;
-    if(Math.abs(tgt) < 600){
-      host.appendChild(H('div','diaglab','EVERY PAIR THAT MULTIPLIES TO ' + num(tgt)));
-      MF.scanTable(host, tgt, null);
-      host.appendChild(H('div','hint','No row is marked. The drill reads the rock; it does not choose.'));
+      host.appendChild(H('div','hint','Not a twin seam, so there is nothing to read off the shape. ' +
+        'The <b>Crosscut</b> is the one for this lump &mdash; it hunts the pair instead of recognising it.'));
+      MF.xDiagram(host, {top:num(ore.a===1 ? ore.c : ore.a*ore.c), bottom:num(ore.b),
+        left:null, right:null,
+        topWhy: ore.a===1 ? '' : num(ore.a) + ' × ' + num(ore.c)});
     }
     MF.methodLine(host, 'drill');
     MF.paintNameSide(host, ore, pieceId);
@@ -4339,12 +4407,40 @@ MF.TOOL_READ = {
   },
 
   /* THE DECIMAL DIAL: why nothing will come out, when nothing will. */
+  /* THE CROSSCUT: the X first, and the dial under it.
+
+     USER, 2026-09-06: "the decimal dial should be the X-method of factoring."
+
+     The reading leads with the diagram the method IS — a·c on top, the middle
+     underneath, both sides open — and keeps the dial below it, because the two
+     are one argument. The X asks for a pair of WHOLE numbers; the dial is what
+     happens when there is not one, which is the difference between a lump you
+     have not cracked and a lump that does not crack.
+
+     BOTH SIDES STAY OPEN, as everywhere else: on a monic lump they are the
+     bracket constants, so one filled is half the answer and `schema` fails the
+     build for it. */
   dial: function(host, ore, pieceId){
     if(ore.kind==='number'){
-      host.appendChild(H('p','hint','<b>The dial is cut for lumps with an x in them.</b>'));
+      host.appendChild(H('p','hint','<b>The crosscut is cut for lumps with an x in them.</b> A plain number has no middle term to hang an X under.'));
       MF.methodLine(host, "dial");
       return;
     }
+    if(ore.a !== 0){
+      host.appendChild(H('div','diaglab','THE X &mdash; ' +
+        (ore.a===1 ? 'the end on top, the middle below' : 'a&middot;c on top, the middle below')));
+      MF.xDiagram(host, {
+        top: num(ore.a===1 ? ore.c : ore.a*ore.c),
+        bottom: num(ore.b), left:null, right:null,
+        topWhy: ore.a===1 ? '' : num(ore.a) + ' × ' + num(ore.c)
+      });
+      MF.workLine(host, 'so the pair must multiply to ' + num(ore.a===1 ? ore.c : ore.a*ore.c) +
+        ' and add to ' + num(ore.b), [null, '  and  ', null], 'wbig');
+    } else {
+      host.appendChild(H('p','hint','<b>No x&sup2;, so there is no a&middot;c to put on top.</b> The Steel Head is the one for this lump.'));
+    }
+    /* AND THE DIAL, which is the same method's honest ending */
+    host.appendChild(H('div','diaglab','AND IF NO WHOLE PAIR DOES BOTH'));
     MF.paintDial(host, {ore:ore});
     MF.methodLine(host, 'dial');
     MF.paintNameSide(host, ore, pieceId);
@@ -4373,7 +4469,7 @@ MF.TOOL_READ = {
         : [ore.a?sqTerm(ore.a):null, ore.b?xt2(ore.b):null, ore.c?num(ore.c):null].filter(Boolean);
       MF.workLine(host, null, [sTerms.join('   ')], 'wbig');
       MF.workLine(host, 'the biggest that divides them all', ['1'], 'wbig');
-      host.appendChild(H('div','hint','So there is nothing to stand in front of a bracket. The pair hunt is the way into this one:'));
+      host.appendChild(H('div','hint','So there is nothing to stand in front of a bracket. The X is the way into this one:'));
       if(ore.kind==='poly' && ore.a!==0){
         var sPr = MF.xPair(ore);
         MF.xDiagram(host, {
@@ -6457,7 +6553,7 @@ MF.LESSON_ORES = {
   steel:   [{kind:'poly',a:0,b:6,c:15}, {kind:'poly',a:2,b:10,c:12}, {kind:'poly',a:3,b:12,c:0}],
   dial:    [{kind:'poly',a:1,b:3,c:2},  {kind:'poly',a:1,b:-5,c:6}, {kind:'poly',a:2,b:7,c:3}],
   shifter: [{kind:'poly',a:1,b:-5,c:6}, {kind:'poly',a:1,b:8,c:16}, {kind:'poly',a:6,b:7,c:-3}],
-  drill:   [{kind:'poly',a:6,b:7,c:-3}, {kind:'poly',a:1,b:-5,c:6}, {kind:'poly',a:4,b:0,c:-9}],
+  drill:   [{kind:'poly',a:1,b:0,c:-25}, {kind:'poly',a:4,b:0,c:-9},  {kind:'poly',a:1,b:-5,c:6}],
   auger:   [{kind:'poly',a:6,b:7,c:-3}, {kind:'poly',a:2,b:7,c:3},  {kind:'poly',a:1,b:-5,c:6}]
 };
 
@@ -6567,10 +6663,14 @@ MF.REALWORLD = {
     body: 'Three parts of a quote come in at £6, £15 and £9. A builder does not read that as three unrelated numbers — they see three threes, and quote it as "three lots of £2, £5 and £3". Pulling the common amount out is how a quote gets checked in your head on a doorstep.',
     tie: 'That is the GCF, and it is the first thing to try on any lump for the same reason: it makes everything after it smaller.',
   },
+  /* THE GEAR PAIR MOVED WITH THE METHOD (user, 2026-09-06). "Multiply to one
+     number, add to another" IS the X, so it belongs to the instrument that
+     carries the X — and the tie now closes on the dial as well, because a pair
+     that cannot be found is the same fact in both worlds. */
   dial: {
-    where: 'Cutting stock to length',
-    body: 'A machinist cutting 2.4m lengths out of a 12m bar gets exactly five with nothing left. Ask for 2.5m and you get four and a 2m offcut — the bar has not changed, the number you asked of it has. Whole cuts exist for some lengths and not for others.',
-    tie: 'That is the whole-number test: some lumps come apart on whole numbers and some do not, and no amount of looking harder changes which.'
+    where: 'Fitting a gear pair',
+    body: 'You need two gears whose teeth multiply to a fixed ratio and whose sizes add up to the space in the housing. There is a short list of pairs that multiply right, and only some of them also fit — so you list the pairs that hit the first target and then check them against the second.',
+    tie: 'Multiply to one number, add to another: that is the X, and it is the same search a gearbox designer runs. And when no whole pair does both, the gears do not fit — which is the same fact as a lump that will not come apart, not a failure of looking.'
   },
   shifter: {
     where: 'Laying out a room',
@@ -6578,9 +6678,9 @@ MF.REALWORLD = {
     tie: 'The box method IS that rectangle, run backwards: you know the area, and you are hunting for the two sides.'
   },
   drill: {
-    where: 'Fitting a gear pair',
-    body: 'You need two gears whose teeth multiply to a fixed ratio and whose sizes add up to the space in the housing. There is a short list of pairs that multiply right, and only some of them also fit — so you list the pairs first and then check the sum.',
-    tie: 'Multiply to one number, add to another. That is the pair hunt, and it is the same search a gearbox designer runs.'
+    where: 'Multiplying either side of a round number',
+    body: '47 × 53 looks like work until you notice they are 50 − 3 and 50 + 3. Then it is 50² − 3², which is 2500 − 9, and you have done it in your head. People have leaned on round numbers this way for as long as there have been round numbers to lean on.',
+    tie: 'That is a difference of two squares, read in the other direction. The middle cancels because the two numbers are a number and its own opposite — which is exactly why the shortcut works, and exactly what the core is testing a lump for.'
   },
   auger: {
     where: 'Splitting a bill that will not split evenly',
@@ -7575,7 +7675,7 @@ MF.SCREENS['shed-methods'] = function(host){
         says:'Nothing is bought and nothing is locked. Every layer works with an empty belt — the tools only make what is already there easier to see.'}
      ]},
     {kind:'type', plain:false,
-     q:'Run <b>the pair hunt</b> yourself. <b>x&sup2; &minus; 5x + 6</b>: find the two numbers that multiply to 6 and add to &minus;5, then name <b>one</b> bracket.',
+     q:'Run <b>the X</b> yourself. <b>x&sup2; &minus; 5x + 6</b>: find the two numbers that multiply to 6 and add to &minus;5, then name <b>one</b> bracket.',
      sub:'An empty x-box means a single x.',
      cta:'Name a side',
      check:function(m,k){
@@ -13040,6 +13140,26 @@ MF.validate = function(){
   MF.moldMaths = pcReal;
   if(pcCtl.querySelector('.pcrow.pairs') || pcCtl.querySelector('.pcrow.merged'))
     errs.push('CONTROL: a pour chain with its working stripped out still showed the pairings');
+
+  /* ---- NO TWO TOOLS CARRY THE SAME METHOD ----
+
+     USER, 2026-09-06: "the decimal dial should be the X-method of factoring."
+
+     Moving the X down to rank 4 left the Drill holding a method it no longer
+     had — it was the pair hunt AND the twin seam, and the pair hunt is the X.
+     Two instruments teaching one method is not redundancy a student can see
+     around: it is two ranks of the ladder claiming to escalate while standing
+     still.
+
+     Checked on MF.SCHEMA's names rather than on the phrases, because the names
+     are what the lessons and the board both print. */
+  chk('forge');
+  var mtNames = {}, mtClash = null;
+  MF.toolOrder().forEach(function(k){
+    var n = (MF.SCHEMA[k] && MF.SCHEMA[k].name || '').toLowerCase();
+    if(mtNames[n]) mtClash = n; else mtNames[n] = k;
+  });
+  if(mtClash) errs.push('forge: two instruments carry the method "' + mtClash + '"');
 
   /* ---- EVERY ORDER SAYS WHAT THE TOOL DOES, IN MATHEMATICS ----
 
