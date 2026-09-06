@@ -1479,6 +1479,9 @@ ol.ssteps li.open::marker{color:var(--vein)}
 .lsnav{display:flex; gap:9px; align-items:center; flex-wrap:wrap; margin-top:12px}
 .lsnav .hint{flex:1 1 200px; min-width:0}
 .lsback[disabled]{opacity:.4; cursor:default}
+/* the same method's name in mathematics, sitting under the mine's name for it */
+.lesson .lsdoes{font-size:14.5px; color:var(--ore-t); font-family:var(--display);
+  line-height:1.25; margin:-3px 0 6px}
 .lstool{font-size:14px; color:var(--ink-soft); max-width:60ch; margin-top:2px}
 /* THE WHY IS SLIDE ONE, not a fold. It is the best paragraph in the lesson and
    behind a `<details>` it was one click away and therefore unread. */
@@ -1703,6 +1706,8 @@ table.rosetta td.rx{font-family:var(--display); font-size:16px; color:var(--ink)
 .schemadet summary:hover{background:#FFF6EA}
 .sdic{font-size:22px}
 .sdnm{font-family:var(--display); font-size:17px; color:var(--ink)}
+/* and what that method is, so a contents page is not seven mining names */
+.sddoes{display:block; font-family:var(--body); font-size:13px; color:var(--ore-t); line-height:1.3}
 .sdtool{font-size:13px; color:var(--ink-soft)}
 .sdbody{padding:0 15px 13px}
 .sdbody .lesson{margin-top:0}
@@ -6190,7 +6195,19 @@ MF.paintToolSchool = function(host){
     d.className = 'schemadet lessondet';
     if(i === 0) d.setAttribute('open','');       /* the first one is open */
     var sm = document.createElement('summary');
-    sm.innerHTML = '<span class="sdic">' + t.ic + '</span><span class="sdnm">' + s.name + '</span>' +
+    /* THE COLLAPSED LIST SAYS WHAT EACH METHOD IS, TOO. Seven summaries
+       reading "One side lit, one side dark" and "Testing the rock before you
+       swing" is a contents page in a private language — you cannot tell from
+       it which lesson is the GCF and which is grouping. */
+    /* A SIBLING, NOT A CHILD OF `.sdnm`. Nested inside it, the phrase joined
+       onto the method's name in `textContent` — and `schema` reads exactly
+       that to check which lessons are on the floor, so seven names it could no
+       longer recognise came back as seven lessons taught to a student who had
+       cast nothing. Markup that reads correctly to the eye and wrongly to
+       `textContent` is still wrong markup. */
+    sm.innerHTML = '<span class="sdic">' + t.ic + '</span>' +
+      '<span class="sdnm">' + s.name + '</span>' +
+      '<span class="sddoes">' + t.does + '</span>' +
       '<span class="sdtool">' + t.nm + '</span>';
     d.appendChild(sm);
     var body = E('div','sdbody');
@@ -6254,6 +6271,23 @@ MF.drawLesson = function(box, key){
   var hx = E('div','lstext');
   hx.appendChild(H('div','lslab','THE METHOD'));
   hx.appendChild(H('div','lsnm', s.name));
+  /* THE SAME METHOD'S NAME IN THE OTHER LANGUAGE.
+
+     USER, 2026-09-06: fix the `teaches` field on the tool lessons too.
+
+     `s.name` is the mine's name for the method, and for two of the seven that
+     is pure metaphor — "One side lit, one side dark", "Testing the rock before
+     you swing". A student who only ever reads that column has learned a game,
+     which is the exact failure The Words room exists to prevent. `t.does` is
+     the same method in mathematics, and the two sit together.
+
+     IT IS A NAME, NOT PROSE, and that is why the `taught` budget does not
+     count it — no more than it counts `.lsnm` above it. The two are one thing
+     under two names, which is the whole Rosetta idea. What keeps that honest
+     is that `does` is capped at 56 characters where it is defined, by the
+     `forge` group, so it cannot quietly become a paragraph in a heading's
+     clothing. */
+  hx.appendChild(H('div','lsdoes', t.does));
   hx.appendChild(H('div','lstool','<b>' + t.nm + '</b> carries it &mdash; but the method works in a notebook.'));
   head.appendChild(hx);
   wrap.appendChild(head);
@@ -7273,19 +7307,28 @@ MF.SCREENS['shed-mold'] = function(host){
      }}
   ]});
 
-  /* THE ROOM DOES NOT END ON A QUESTION (user, 2026-09-05). The questions are
-     still above; what closes the room is somewhere the same move is made by
-     people who have never heard of a mold. */
-  var mrw = E('div','realworld');
-  mrw.appendChild(H('div','rwlab','&#127758; THE SAME MOVE, OUTSIDE A MINE'));
-  mrw.appendChild(H('div','rwwhere','A mold is cut once, and every casting out of it is identical'));
-  mrw.appendChild(H('p','rwbody','That is the whole reason foundries use them. Nobody inspects each casting to find ' +
-    'out what shape it turned out to be — the shape was decided when the mold was cut, and the metal has no say in it. ' +
-    'A bakery tray, an injection mold, a stamped car panel: all of them are worth the cost of the tooling ' +
-    '<b>because the result is determined</b>.'));
-  mrw.appendChild(H('div','rwtie','That determinism is what makes the mine possible. If a pour could come out two ' +
-    'different ways, running it backwards would have no answer to hunt for — and factoring would not be a thing you could do.'));
-  host.appendChild(mrw);
+  /* ---- NO "THE SAME MOVE, OUTSIDE A MINE" HERE ----
+
+     USER, 2026-09-06: "remove the same move from outside the mine section. It
+     is confusing; it should be smart, but it really means nothing. It is
+     overly sophisticated and doesn't really make a real point."
+
+     They are right, and it is worth writing down WHY this one failed where the
+     tool lessons' real-world closes do not. Those name a place somebody makes
+     THE SAME MOVE: a scrap yard testing metal before it melts it is the assay;
+     splitting an awkward bill is grouping. A student can do the move in both
+     places.
+
+     This one named a place that shares an ABSTRACT PROPERTY — foundries and
+     bakery trays and stamped car panels are worth their tooling "because the
+     result is determined". Nobody does anything in that sentence. It is a
+     remark about determinism dressed as an example, and the room had already
+     made the point better in one line: the metals decide the shape, you never
+     choose it. Saying it again at length made it sound like a different and
+     deeper claim, which is exactly the confusion reported.
+
+     The questions above still close the room, and the last of them runs the
+     pour backwards, which is the thing the room is for. */
 
   MF.shedFoot(host, 'shed-mold');
 
@@ -16394,8 +16437,43 @@ MF.validate = function(){
      fault in it. The property being protected did not change: the room must
      not end on another of the same recognition questions it is already full
      of. So the assertion follows the closer rather than the element. */
-  [['shed-words', '.miscut', 'a what-went-wrong'],
-   ['shed-mold',  '.realworld', 'a real-world example']].forEach(function(pair){
+  /* THE MOLDS ROOM IS NO LONGER IN THIS LIST (user, 2026-09-06): "remove the
+     same move from outside the mine section. It is confusing; it should be
+     smart, but it really means nothing."
+
+     They were right, and the property this check protects has to be RESTATED
+     rather than dropped with the element. It was never "there must be a
+     real-world box" — it was "the room must not end on another of the
+     recognition questions it is already full of."
+
+     The tool lessons' real-world closes name a place somebody makes THE SAME
+     MOVE: a scrap yard testing metal before melting it is the assay. The Molds
+     one named a place that merely shares an abstract property — foundries and
+     bakery trays are worth their tooling "because the result is determined."
+     Nobody does anything in that sentence, which is why it read as clever and
+     landed as nothing.
+
+     What actually keeps that room from ending on recognition is the question
+     below: it runs the pour BACKWARDS and the engine answers it. That is
+     asserted directly now, so the property survives the box that used to carry
+     it. */
+  chk('schema');
+  (function(){
+    var mdProbe = document.createElement('div');
+    scStage.innerHTML = ''; scStage.appendChild(mdProbe);
+    try { MF.SCREENS['shed-mold'](mdProbe); }
+    catch(e){ errs.push('schema: shed-mold threw: ' + e.message); return; }
+    var typed = mdProbe.querySelectorAll('.ask .hbox input');
+    if(!typed.length)
+      errs.push('schema: the Molds room asks nothing but recognition — nothing in it ' +
+                'makes a student run a pour backwards, which is the one move the room is for');
+    chk('schema');
+    if(mdProbe.querySelector('.realworld'))
+      errs.push('schema: the Molds room has grown a real-world close again — it was removed ' +
+                'for naming a shared property rather than a shared move');
+  })();
+
+  [['shed-words', '.miscut', 'a what-went-wrong']].forEach(function(pair){
     chk('schema');
     var rwProbe = document.createElement('div');
     scStage.innerHTML = ''; scStage.appendChild(rwProbe);
@@ -17792,6 +17870,30 @@ MF.validate = function(){
       if(told.length)
         errs.push('taught: ' + told.length + ' slide(s) of ' + (body.querySelector('.lsnm')||{}).textContent +
                   ' reached the page with no picture on them');
+      /* THE METHOD IS NAMED IN BOTH LANGUAGES.
+
+         USER, 2026-09-06: fix the `teaches` field on the tool lessons too.
+         `s.name` is the mine's name for the method, and for two of the seven
+         that is pure metaphor — "One side lit, one side dark". A student who
+         only ever reads that column has learned a game, which is the failure
+         The Words room exists to prevent, shipped in the room that teaches the
+         methods.
+
+         Checked in the DOM, not the table, for the reason `teaches` rotted
+         unnoticed for months: a phrase nothing renders is a phrase nothing can
+         be wrong about. */
+      chk('taught');
+      var tgKey = null;
+      MF.toolOrder().forEach(function(k){
+        if(MF.SCHEMA[k] && MF.SCHEMA[k].name === (body.querySelector('.lsnm')||{}).textContent) tgKey = k;
+      });
+      var tgSaid = body.querySelector('.lsdoes');
+      if(!tgKey){
+        errs.push('taught: a lesson on the floor does not match any method in MF.SCHEMA');
+      } else if(!tgSaid || tgSaid.textContent.trim() !== MF.TOOLS[tgKey].does.trim()){
+        errs.push('taught: "' + MF.SCHEMA[tgKey].name + '" never says what it is in mathematics — ' +
+                  'the mine\'s name for a method is the only name on the lesson');
+      }
       chk('taught');
       var p = tgProse(body);
       if(p > 1150)
