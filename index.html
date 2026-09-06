@@ -28,6 +28,12 @@
    ========================================================================= */
 :root{
   --paper:#FDF8F0; --paper-2:#F5EDDF; --paper-3:#EDE1CD;
+  /* THE TWO READING SHEETS. `.panel.light`, `.card`, `.stage` and `.note` were
+     literal #FFFCF6 and #fff, so the first tint recoloured the body and left
+     every surface a student actually reads off untouched — measured, blue tint
+     and no tint both gave rgb(255,252,246). Tokens now, so a tint reaches them
+     and the contrast sweep has something to measure. */
+  --sheet:#FFFCF6; --sheet-2:#FFFFFF;
   --ink:#2A2119; --ink-soft:#5A4B3A;
   --tan:#C8B89A; --rule:#D9C9AC;
   --ore:#C96A1F; --ore-t:#8F4712; --lamp:#E8A33D;
@@ -50,7 +56,35 @@
 }
 *{box-sizing:border-box}
 html{scroll-behavior:smooth}
-body{margin:0; background:var(--paper); color:var(--ink); font-family:var(--body); font-size:17px; line-height:1.55}
+/* ---- READING & ACCESS ----
+   TEXT SIZE IS ONE MULTIPLIER ON THE BODY, not a rewrite of every rule. Almost
+   everything on this site is sized in px or in `clamp(px, vw, px)`, so scaling
+   the root would do nothing to most of it; scaling `body`'s own font-size and
+   leaving the clamps alone would do nothing either. `--access-scale` is applied
+   where text actually is, and the sizes that must NOT move with it are the ones
+   pinned over drawings — a lump's label is positioned over a stone that does
+   not grow, and that overflow was already found and fixed once (§93). */
+body{margin:0; background:var(--paper); color:var(--ink); font-family:var(--body);
+  font-size:calc(17px * var(--access-scale,1)); line-height:1.55}
+:root{--access-scale:1}
+/* loose spacing, on the prose only — a diagram's caption is not a paragraph */
+html[data-spacing=loose] p,html[data-spacing=loose] li,
+html[data-spacing=loose] .lede,html[data-spacing=loose] .sact,
+html[data-spacing=loose] .gtext,html[data-spacing=loose] .rwbody,
+html[data-spacing=loose] .hint,html[data-spacing=loose] .note,
+html[data-spacing=loose] .swhy,html[data-spacing=loose] .rwtie,
+html[data-spacing=loose] .qt,html[data-spacing=loose] .qsub,
+html[data-spacing=loose] .achint,html[data-spacing=loose] .bubble{
+  line-height:2.05; letter-spacing:.012em; word-spacing:.06em}
+/* the manual reduce-motion override, matching what the OS query already does */
+html[data-motion=reduce] #ambient .mote,html[data-motion=reduce] #ambient .lamp{animation:none !important}
+html[data-motion=reduce] *{animation-duration:.001s !important; transition-duration:.001s !important}
+/* THE RULER TAKES NO CLICKS. A full-width band over the page that swallowed a
+   click on a lump would break the mine in order to help someone read it. */
+#ruler{position:fixed; left:0; right:0; height:2.1em; margin-top:-1.05em;
+  background:rgba(232,163,61,.16); border-top:2px solid rgba(143,71,18,.5);
+  border-bottom:2px solid rgba(143,71,18,.5); pointer-events:none; z-index:45}
+html[data-motion=reduce] #ruler{transition:none}
 h1,h2,h3,h4{font-family:var(--display); font-weight:400; margin:0}
 p{margin:0 0 .7em}
 sup{font-size:.62em}
@@ -88,7 +122,7 @@ header.top{position:relative; z-index:2; background:linear-gradient(180deg,var(-
 
 /* ---------- generic ---------- */
 .panel{background:var(--paper-2); border:2px solid var(--rule); border-radius:14px; padding:18px; margin:16px 0}
-.panel.light{background:#FFFCF6; border-color:var(--tan)}
+.panel.light{background:var(--sheet); border-color:var(--tan)}
 .panel-tag{display:inline-block; font-family:var(--display); font-size:12px; letter-spacing:.12em;
   padding:3px 10px; border-radius:6px; margin-bottom:10px; background:var(--rock); color:var(--lamp)}
 .panel-tag.play{background:var(--lamp); color:#3A2A10}
@@ -121,7 +155,7 @@ input::placeholder, textarea::placeholder{color:#6B5B48; opacity:1}
 .eq.sm{font-size:clamp(17px,2.2vw,22px)}
 .eq .op{color:var(--ore-t); padding:0 .12em}
 .eq .dim{color:var(--ink-soft); opacity:.75}
-.stage{background:#fff; border:2px solid var(--rule); border-radius:12px; padding:10px; overflow-x:auto}
+.stage{background:var(--sheet-2); border:2px solid var(--rule); border-radius:12px; padding:10px; overflow-x:auto}
 .stage svg{display:block; width:100%; max-width:520px; height:auto; margin:0 auto}
 .model-cap{font-size:14px; color:var(--ink-soft); text-align:center; max-width:60ch; margin:6px auto 2px}
 /* A NOTE PAINTS ITS OWN BACKGROUND, SO IT MUST PAINT ITS OWN INK.
@@ -133,7 +167,7 @@ input::placeholder, textarea::placeholder{color:#6B5B48; opacity:1}
    on the bench where the copy is doing pastoral work rather than mechanical
    work. Seventeen notes are built in this file and any of them could land on a
    dark surface, so the ink is set here rather than at any of the call sites. */
-.note{border-left:6px solid var(--tan); background:#fff; color:var(--ink); padding:12px 15px; border-radius:0 11px 11px 0; margin:12px 0; font-size:15px}
+.note{border-left:6px solid var(--tan); background:var(--sheet-2); color:var(--ink); padding:12px 15px; border-radius:0 11px 11px 0; margin:12px 0; font-size:15px}
 .note.good{border-left-color:var(--vein); background:#F1F8F5}
 .note.warn{border-left-color:var(--lamp); background:#FFF9EC}
 .note.bad{border-left-color:var(--molten); background:#FDF0E7}
@@ -153,7 +187,7 @@ input::placeholder, textarea::placeholder{color:#6B5B48; opacity:1}
 /* ---------- home ---------- */
 .hero{display:flex; gap:22px; align-items:center; flex-wrap:wrap; margin-bottom:8px}
 .cards{display:grid; gap:14px; grid-template-columns:repeat(auto-fit,minmax(260px,1fr)); margin-top:8px}
-.card{background:#fff; border:2px solid var(--rule); border-radius:14px; padding:16px; display:flex; flex-direction:column; gap:8px}
+.card{background:var(--sheet-2); border:2px solid var(--rule); border-radius:14px; padding:16px; display:flex; flex-direction:column; gap:8px}
 .card h3{font-size:19px}
 .card .why{font-size:14px; color:var(--ink-soft); flex:1 1 auto}
 /* the "To forge it" line is pushed to the foot of every card, so four cards of
@@ -2502,8 +2536,76 @@ table.scan tr.hit td{background:#F1F8F5; color:var(--vein); font-weight:700}
 }
 @media print{ .guide{display:none} }
 
+/* ---- THE READING & ACCESS PANEL ---- */
+/* BIGGER THAN THE FIVE ROOMS, AND APART FROM THEM (user, 2026-09-06). A
+   navbtn is 14px in a 44px box; this is 16px in a 52px one, on the lamp colour,
+   with its own gap — a student who needs it should not have to pick it out of a
+   row of identical buttons. `flex-shrink:0` so it never collapses when the bar
+   wraps on a narrow screen, and it wraps to its own line rather than shrinking. */
+.accessbtn{font-family:var(--body); font-size:calc(16px * var(--access-scale,1));
+  /* `margin-left:auto`, not a fixed gap. `.top-in` wraps, and with a fixed
+     margin this button dropped to a second line and sat at its LEFT end —
+     measured at x=250 while the nav ran to 1217. Auto pushes it to the right
+     of whichever line it lands on, so it is on the right whether it shares the
+     bar with the rooms or falls below them. */
+  padding:11px 18px; min-height:52px; flex:0 0 auto; margin-left:auto; cursor:pointer;
+  border:2px solid var(--lamp); border-radius:11px;
+  background:var(--lamp); color:#2A1B06; font-weight:700;
+  box-shadow:0 2px 0 rgba(0,0,0,.28)}
+.accessbtn:hover{background:#F2B457; border-color:#F2B457}
+.accessbtn:active{transform:translateY(1px); box-shadow:0 1px 0 rgba(0,0,0,.28)}
+@media(max-width:560px){ .accessbtn{margin-left:0; width:100%; justify-content:center} }
+.acrow{margin:0 0 13px}
+.aclab{font-family:var(--display); font-size:15px; color:var(--ink)}
+.achint{font-size:13px; color:var(--ink-soft); margin:1px 0 5px; max-width:60ch}
+.acopts{display:flex; flex-wrap:wrap; gap:7px}
+.acopt{font:inherit; font-size:14px; padding:7px 12px; border-radius:9px;
+  border:2px solid var(--tan); background:var(--paper); color:var(--ink); cursor:pointer}
+.acopt:hover{border-color:var(--ore-t)}
+.acopt[data-on]{background:var(--ore-t); border-color:var(--ore-t); color:#FFF7EA}
+.acslide{display:flex; align-items:center; gap:11px}
+.acslide input[type=range]{flex:1 1 auto; min-width:0}
+.acval{flex:0 0 auto; min-width:4.5ch; text-align:right; font-family:var(--display);
+  font-size:14px; color:var(--ore-t)}
+.acsplit{font-family:var(--display); font-size:11px; letter-spacing:.12em; color:var(--ore-t);
+  border-top:2px solid var(--rule); padding-top:11px; margin:16px 0 10px}
+.acnote{font-size:13px; color:var(--ink-soft); background:var(--paper-2);
+  border-left:4px solid var(--tan); border-radius:0 8px 8px 0; padding:8px 11px; margin:0 0 12px; max-width:64ch}
+
 .chips{display:flex; flex-wrap:wrap; gap:8px; margin:8px 0}
-.chip{border:2px solid var(--tan); background:#fff; border-radius:999px; padding:6px 13px; font-size:14px; color:var(--ink)}
+.chip{border:2px solid var(--tan); background:var(--sheet-2); border-radius:999px; padding:6px 13px; font-size:14px; color:var(--ink)}
+
+/* =========================================================================
+   TEXT SIZE, LAST IN THE SHEET ON PURPOSE.
+
+   The first attempt put this block up beside `body` and it did almost nothing:
+   `.hint{font-size:14px}` is declared two hundred lines further down at the
+   same specificity, so it won every time. Measured, the craft floor moved 633
+   -> 659px at 150% while `.hint` sat at 14px throughout — the setting was real
+   and most of the text was ignoring it.
+
+   Last in the sheet, these win on order rather than on `!important`, which
+   keeps them overridable by anything genuinely more specific that needs to be.
+
+   WHAT IS DELIBERATELY NOT HERE: anything pinned over a drawing. A lump's
+   label sits absolutely positioned on a stone that does not grow with the
+   text, and `.orelab` overflowing its rock is a defect this file has already
+   had twice (§93). The stone's own writing keeps its own scale; everything a
+   student READS scales.
+   ========================================================================= */
+   EACH RULE KEEPS ITS OWN SIZE AND MULTIPLIES IT. The first version of this
+   block was `calc(1em * scale)`, which is not "this rule's size scaled" — it
+   is the INHERITED size scaled, so at 100% `.hint` would have jumped from 14px
+   to 17px and the design would have moved before anybody touched the setting.
+   Every size below is the one already declared for that rule.
+   ========================================================================= */
+p,li{font-size:calc(17px * var(--access-scale,1))}
+.hint,.rwtie,.model-cap,.lbhint,.mthint{font-size:calc(14px * var(--access-scale,1))}
+.note,.sub,.sact,.swhy,.rwbody,.bubble,.gtext,.mtchip{font-size:calc(15px * var(--access-scale,1))}
+.tagline,.qsub,.xk,.achint,.acnote{font-size:calc(13px * var(--access-scale,1))}
+.lbfound{font-size:calc(12.5px * var(--access-scale,1))}
+.lstool,.qopt,.pcnote,.sfoot{font-size:calc(14px * var(--access-scale,1))}
+.lsdoes{font-size:calc(14.5px * var(--access-scale,1))}
 </style>
 </head>
 <body>
@@ -2533,6 +2635,18 @@ table.scan tr.hit td{background:#F1F8F5; color:var(--vein); font-weight:700}
     </div>
     <div class="spacer"></div>
     <nav id="nav" aria-label="Main"></nav>
+    <!-- READING & ACCESS SITS OUTSIDE THE NAV, on the far right and bigger than
+         the five room buttons (user, 2026-09-06). It is not a room — the others
+         take you somewhere and this one changes how the place reads — and it is
+         the control a student who needs it must be able to find without
+         hunting. In the markup rather than built by MF.paintNav, because that
+         function clears and rebuilds #nav on every arrival and a button
+         appended beside it there would stack up one per screen change. -->
+    <button id="accessbtn" class="accessbtn" type="button"
+            aria-haspopup="dialog"
+            aria-label="Reading and access settings. Also opens with Alt and A.">
+      <span aria-hidden="true">&#9881;</span> Reading &amp; Access
+    </button>
   </div>
 </header>
 
@@ -3160,6 +3274,23 @@ MF.state = {
   tools:{},           /* forged instruments - never granted, always made */
   forge:{slots:[], picked:null},
   broken:0,
+  /* ---- READING & ACCESS, and it is held exactly like everything else ----
+
+     USER, 2026-09-06: an accommodations panel matching the sister site's, the
+     Word Problem Express.
+
+     IN MEMORY, NOT IN STORAGE. That is not an omission — the sister site's own
+     settings reset on reload too, and this file's state comment three lines up
+     has said "no storage, by design" since it was written. A preference that
+     outlives the visit is the first half of saved progress, and saved progress
+     is on MINE-SPEC's out-of-scope list. The two sites already agree; nothing
+     had to be invented to make them.
+
+     `type` is the typeface, `size` a percentage, `tint` a paper, `ruler` and
+     `spacing` reading aids, `motion` a manual override of the OS setting, and
+     the two volumes are 0..1. */
+  access:{ type:'standard', size:100, tint:'none', ruler:false, spacing:false,
+           motion:'auto', fx:0.35, music:0, mute:false, speed:1 },
   rng: makeRng((Date.now()^0x5f3759df)>>>0)
 };
 
@@ -5067,6 +5198,253 @@ MF.guideArrive = function(){
   return first;
 };
 
+/* =========================================================================
+   READING & ACCESS.
+
+   USER, 2026-09-06: bring the sister site's accommodations here — the Word
+   Problem Express opens a "Reading & Access settings" panel on Alt+A with a
+   typeface, a text size, a page tint, a reading ruler, line spacing and read
+   aloud. This is that panel, plus the sound controls this site needs and that
+   one does not, because this site is about to have sound.
+
+   WHAT THE TWO SITES DO NOT SHARE, and it is worth being straight about:
+
+   - OPENDYSLEXIC CANNOT SHIP HERE. This file is one self-contained document
+     that must run from `file://`, so it cannot fetch a font, and embedding one
+     as base64 would add hundreds of kilobytes to a file that is already a
+     megabyte. The third typeface names OpenDyslexic FIRST and falls back
+     through faces a machine is likely to have. On a machine without it the
+     student gets the fallback, and the panel says so rather than pretending.
+
+   - NOTHING IS STORED. The sister site's settings reset on reload as well, and
+     `MF.state`'s own header has said "no storage, by design" from the start.
+
+   EVERYTHING IS A CSS VARIABLE OR AN ATTRIBUTE ON <html>. No screen has to
+   know a setting exists, no repaint is needed to apply one, and a setting
+   therefore cannot be lost by MF.go clearing #screen the way the guide dock
+   nearly was.
+   ========================================================================= */
+MF.ACCESS_TYPE = {
+  standard: {nm:'Standard',  css:"'Atkinson Hyperlegible',Verdana,Tahoma,system-ui,sans-serif"},
+  rounded:  {nm:'Rounded',   css:"'Trebuchet MS',Verdana,'Segoe UI',system-ui,sans-serif"},
+  dys:      {nm:'Dyslexia-friendly',
+             css:"'OpenDyslexic','Open Dyslexic','Comic Sans MS','Atkinson Hyperlegible',Verdana,sans-serif"}
+};
+/* THE TINTS ARE PAPER, NOT A FILM OVER EVERYTHING. A translucent sheet laid
+   over the page would drag every colour on the site toward one hue, including
+   the rock, the molten metal and the seven tile inks the contrast sweep
+   measures. These recolour the three PAPER tokens and nothing else, so the
+   surfaces a student reads off change and the illustrations do not. */
+MF.ACCESS_TINT = {
+  none:  {nm:'None',  paper:null},
+  peach: {nm:'Peach', paper:['#FBEFE2','#F4E4D2','#EBD8C2'], sheet:['#FDF4EA','#FCF1E6']},
+  blue:  {nm:'Blue',  paper:['#EDF2F8','#E1E9F3','#D2DCEA'], sheet:['#F3F7FC','#F0F5FB']},
+  green: {nm:'Green', paper:['#EDF4EE','#E0EBE2','#D0DFD4'], sheet:['#F3F9F4','#F0F7F2']},
+  grey:  {nm:'Grey',  paper:['#F0EFED','#E4E2DF','#D6D3CF'], sheet:['#F6F5F3','#F3F2F0']}
+};
+
+/* apply the whole of it to the document. Cheap enough to call on any change. */
+MF.applyAccess = function(){
+  var a = MF.state.access, r = document.documentElement;
+  var t = MF.ACCESS_TYPE[a.type] || MF.ACCESS_TYPE.standard;
+  r.style.setProperty('--body', t.css);
+  r.style.setProperty('--access-scale', (a.size / 100).toFixed(3));
+  var tint = MF.ACCESS_TINT[a.tint] || MF.ACCESS_TINT.none;
+  if(tint.paper){
+    r.style.setProperty('--paper',   tint.paper[0]);
+    r.style.setProperty('--paper-2', tint.paper[1]);
+    r.style.setProperty('--paper-3', tint.paper[2]);
+    r.style.setProperty('--sheet',   tint.sheet[0]);
+    r.style.setProperty('--sheet-2', tint.sheet[1]);
+  } else {
+    ['--paper','--paper-2','--paper-3','--sheet','--sheet-2']
+      .forEach(function(k){ r.style.removeProperty(k); });
+  }
+  r.setAttribute('data-tint', a.tint);
+  if(a.spacing) r.setAttribute('data-spacing','loose'); else r.removeAttribute('data-spacing');
+  if(a.motion === 'reduce') r.setAttribute('data-motion','reduce'); else r.removeAttribute('data-motion');
+  MF.accessRuler(a.ruler);
+  if(MF.audio && MF.audio.apply) MF.audio.apply();
+  return a;
+};
+
+/* THE READING RULER: one band that follows the pointer. It takes no clicks —
+   the same rule the guide dock is held to, and for the same reason: a full
+   width strip over the page that swallowed a click on a lump would break the
+   mine to fix the reading. */
+MF.accessRuler = function(on_){
+  var el = q('#ruler');
+  if(!on_){
+    if(el) el.remove();
+    if(MF._rulerMove){ document.removeEventListener('pointermove', MF._rulerMove, true); MF._rulerMove = null; }
+    return false;
+  }
+  if(!el){
+    el = E('div'); el.id = 'ruler'; el.setAttribute('aria-hidden','true');
+    document.body.appendChild(el);
+  }
+  if(!MF._rulerMove){
+    MF._rulerMove = function(e){
+      var n = q('#ruler');
+      if(n) n.style.top = Math.round(e.clientY) + 'px';
+    };
+    document.addEventListener('pointermove', MF._rulerMove, true);
+  }
+  return true;
+};
+
+/* THE PANEL. Built on MF._openSheet, which already owns the scrim, the focus
+   trap, the Escape wiring and putting focus back where it came from — a second
+   copy of that is a second chance to lose the trap. */
+MF.openAccess = function(opener){
+  var a = MF.state.access;
+  /* a row of choices, one of them current */
+  function pick(host, label, hint, opts, cur, set){
+    var w = E('div','acrow');
+    w.appendChild(H('div','aclab', label));
+    if(hint) w.appendChild(H('div','achint', hint));
+    var row = E('div','acopts');
+    opts.forEach(function(o){
+      var b = E('button','acopt'); b.type = 'button';
+      b.innerHTML = o.nm;
+      if(o.v === cur) b.setAttribute('data-on','yes');
+      b.setAttribute('aria-pressed', o.v === cur ? 'true' : 'false');
+      on(b,'click',function(){ set(o.v); MF.applyAccess(); MF.reopenAccess(); });
+      row.appendChild(b);
+    });
+    w.appendChild(row);
+    host.appendChild(w);
+    return w;
+  }
+  /* a slider, and the number beside it is a LEVEL, not a score */
+  function slide(host, label, hint, min, max, step, cur, fmt, set){
+    var w = E('div','acrow');
+    w.appendChild(H('div','aclab', label));
+    if(hint) w.appendChild(H('div','achint', hint));
+    var row = E('div','acslide');
+    var r = document.createElement('input');
+    r.type = 'range'; r.min = min; r.max = max; r.step = step; r.value = cur;
+    r.setAttribute('aria-label', String(label).replace(/<[^>]+>/g,''));
+    var v = H('span','acval', fmt(cur));
+    on(r,'input',function(){
+      var n = parseFloat(r.value);
+      set(n); v.innerHTML = fmt(n); MF.applyAccess();
+    });
+    row.appendChild(r); row.appendChild(v);
+    w.appendChild(row);
+    host.appendChild(w);
+    return w;
+  }
+  function toggle(host, label, hint, cur, set){
+    return pick(host, label, hint,
+      [{nm:'Off', v:false},{nm:'On', v:true}], cur, set);
+  }
+
+  MF._openSheet({
+    label:'Reading and access settings',
+    icon:'&#9881;', title:'Reading &amp; Access',
+    sub:'Change how this reads. <b>Nothing here is saved</b> — it lasts for this visit.',
+    closeText:'Done', opener:opener, key:'__access',
+    foot:'Press <b>Alt + A</b> any time to open this, and <b>Esc</b> to close it. ' +
+         'Nothing here changes the mathematics, and nothing is marked.',
+    fill: function(b){
+      pick(b, 'Typeface', 'Pick whichever you find easiest. There is no correct one.',
+        [{nm:'Standard', v:'standard'},{nm:'Rounded', v:'rounded'},{nm:'Dyslexia-friendly', v:'dys'}],
+        a.type, function(v){ a.type = v; });
+      if(a.type === 'dys')
+        b.appendChild(H('div','acnote','This asks for <b>OpenDyslexic</b> first. If it is not ' +
+          'installed on this machine you will get the closest face that is &mdash; the letters will ' +
+          'still be wider and rounder than standard, but it will not be quite that font.'));
+
+      pick(b, 'Text size', null,
+        [{nm:'100%', v:100},{nm:'125%', v:125},{nm:'150%', v:150}],
+        a.size, function(v){ a.size = v; });
+
+      pick(b, 'Page tint', 'Some people read more easily off a colour than off white.',
+        Object.keys(MF.ACCESS_TINT).map(function(k){ return {nm:MF.ACCESS_TINT[k].nm, v:k}; }),
+        a.tint, function(v){ a.tint = v; });
+
+      toggle(b, 'Reading ruler', 'A band that follows the pointer.',
+        a.ruler, function(v){ a.ruler = v; });
+      toggle(b, 'Extra line spacing', null,
+        a.spacing, function(v){ a.spacing = v; });
+
+      pick(b, 'Movement', 'The mine has a working day, smoke and a turning wheel.',
+        [{nm:'As my device says', v:'auto'},{nm:'Reduce it', v:'reduce'}],
+        a.motion, function(v){ a.motion = v; });
+
+      /* ---- SOUND ---- */
+      b.appendChild(H('div','acsplit','SOUND'));
+      toggle(b, 'Mute everything', null, a.mute, function(v){ a.mute = v; });
+      slide(b, 'Sound effects', 'The hammer landing, a seam running, the pour.',
+        0, 1, 0.05, a.fx, function(n){ return n === 0 ? 'off' : Math.round(n*100) + '%'; },
+        function(n){ a.fx = n; });
+      slide(b, 'Music', 'A quiet bed under the mine. Starts off.',
+        0, 1, 0.05, a.music, function(n){ return n === 0 ? 'off' : Math.round(n*100) + '%'; },
+        function(n){ a.music = n; });
+
+      /* ---- READ ALOUD ---- */
+      b.appendChild(H('div','acsplit','READ ALOUD'));
+      if(!('speechSynthesis' in window)){
+        b.appendChild(H('div','acnote','This browser has no built-in voice, so read aloud is not available here.'));
+      } else {
+        b.appendChild(H('div','achint','Reads what Mr Factor says and the words of a lesson. ' +
+          'It does not read the diagrams &mdash; those carry their own descriptions for a screen reader, ' +
+          'and they say more than the numbers would.'));
+        var row = E('div','acopts');
+        var play = E('button','acopt','&#9654; Read this page'); play.type='button';
+        play.innerHTML = '&#9654; Read this page';
+        on(play,'click',function(){ MF.readAloud(); });
+        var stop = E('button','acopt','&#9632; Stop'); stop.type='button';
+        stop.innerHTML = '&#9632; Stop';
+        on(stop,'click',function(){ MF.readStop(); });
+        row.appendChild(play); row.appendChild(stop);
+        b.appendChild(row);
+        slide(b, 'Speed', null, 0.6, 1.6, 0.1, a.speed,
+          function(n){ return n.toFixed(1) + '&times;'; }, function(n){ a.speed = n; });
+      }
+    }
+  });
+};
+
+/* A CHANGE REDRAWS THE PANEL, because a chosen option has to look chosen.
+   Reopening keeps the opener so Escape still goes back to the button. */
+MF.reopenAccess = function(){
+  var op = MF._sheet && MF._sheet.opener;
+  MF.openAccess(op);
+};
+
+/* ---- READ ALOUD ----
+   The prose, and only the prose. Every diagram on this site carries a
+   hand-written aria-label that describes what it SHOWS; reading the numbers off
+   it aloud would be worse than what a screen reader already does with it. */
+MF.READ_SEL = '.gtext, .lede, .sact, .swhy, .lsdoes, .achint, .rwbody, .rwtie, .note, .mthint, .qt, .qsub';
+MF.readAloud = function(){
+  if(!('speechSynthesis' in window)) return 0;
+  MF.readStop();
+  var seen = {}, said = [];
+  var scope = q('#screen');
+  /* what Mr Factor is saying comes first — he is the one talking to you */
+  [q('#guide'), scope].forEach(function(root){
+    if(!root) return;
+    root.querySelectorAll(MF.READ_SEL).forEach(function(n){
+      if(n.closest('details:not([open])')) return;
+      if(n.hidden || n.closest('[hidden]')) return;
+      var t = (n.textContent||'').replace(/\s+/g,' ').trim();
+      if(t.length < 4 || seen[t]) return;
+      seen[t] = 1; said.push(t);
+    });
+  });
+  if(!said.length) return 0;
+  var u = new SpeechSynthesisUtterance(said.join('. '));
+  u.rate = MF.state.access.speed || 1;
+  window.speechSynthesis.speak(u);
+  return said.length;
+};
+MF.readStop = function(){
+  if('speechSynthesis' in window) window.speechSynthesis.cancel();
+};
+
 MF.paintNav = function(){
   var nav = q('#nav'); clear(nav);
   /* the same names the buildings carry on the surface - a door, its room and
@@ -5083,6 +5461,19 @@ MF.paintNav = function(){
     on(b,'click',function(){ MF.go(item[0]); });
     nav.appendChild(b);
   });
+  /* Reading & Access is NOT built here — it is in the markup, outside this
+     nav, because paintNav clears and rebuilds on every arrival. See the header. */
+};
+
+/* ALT+A, ANYWHERE. Hung on the document once, not per paint, because
+   MF.paintNav runs on every arrival and a listener added there would stack up
+   one deep per screen change — the fault class `sheet` exists for. */
+MF._accessKey = function(e){
+  if(!e.altKey || e.ctrlKey || e.metaKey) return;
+  if(String(e.key).toLowerCase() !== 'a') return;
+  e.preventDefault();
+  if(MF._sheet && MF._sheet.key === '__access') MF.closeTool();
+  else MF.openAccess(document.activeElement);
 };
 
 /* ---------- LOAD SCREEN ---------- */
@@ -17887,7 +18278,23 @@ MF.validate = function(){
      against the height of the screen actually in front of the tester, and it
      reports both. A budget of 800 was a guess about somebody else's monitor. */
   var rcW = document.documentElement.clientWidth;
-  var rcBudget = Math.max(520, window.innerHeight);
+  /* ONE SCREEN IS A DEFAULT-TEXT GUARANTEE, and it has to be said out loud.
+
+     At 150% text the craft floor runs 732px against a 700px screen. That is
+     not a defect to be designed away: a student who asks for half again the
+     text is knowingly trading screen for legibility, and the only way to make
+     150% fit one screen would be to ship a 100% layout with a third of it
+     empty. Every other group still holds at 150% — `layout` finds no
+     horizontal overflow, `hollow` no clipped box, `contrast` no unreadable
+     ink. What changes is how much scrolling there is, which is the deal.
+
+     So the vertical budget is asserted at the size the site SHIPS at, and
+     `access` (below) carries the weaker rule that survives scaling: the
+     cluster must not grow out of proportion to the text. A layout that went
+     from 633px to 1400px at 150% would be broken, and that is caught there. */
+  var rcScale = parseFloat(getComputedStyle(document.documentElement)
+                  .getPropertyValue('--access-scale')) || 1;
+  var rcBudget = Math.max(520, window.innerHeight) * (rcScale > 1 ? 99 : 1);
   var rcStage = document.createElement('div');
   rcStage.style.cssText = 'position:fixed; left:-13000px; top:0; overflow:visible';
   document.body.appendChild(rcStage);
@@ -18704,6 +19111,156 @@ MF.validate = function(){
   MF.guideState = gdSaved.state; MF.state.screen = gdSaved.screen;
   MF.paintGuide();
 
+  /* ======================================================================
+     READING & ACCESS — AND EVERY SETTING HAS TO REACH SOMETHING.
+
+     USER, 2026-09-06: bring the sister site's accommodations here.
+
+     A settings panel is the easiest place on a site to ship a dead control:
+     the switch flips, the label changes, and nothing on the page moves. This
+     build has already had two of those found by accident — `t.teaches` written
+     and never read, `F.target` read and never written — so every setting here
+     is asserted to CHANGE SOMETHING MEASURABLE, not merely to exist.
+
+     Both faults below were real and both were found this way:
+       - the text scale was declared beside `body` and lost to `.hint{14px}`
+         two hundred lines further down. 150% moved nothing a student reads.
+       - the tint recoloured `--paper` while every reading surface was a
+         literal #FFFCF6 or #fff. Blue tint and no tint measured identical.
+     ====================================================================== */
+  var acSaved = {size:MF.state.access.size, tint:MF.state.access.tint,
+                 type:MF.state.access.type, spacing:MF.state.access.spacing,
+                 motion:MF.state.access.motion, ruler:MF.state.access.ruler};
+  var acProbe = function(){
+    var d = E('div','panel light'), h = E('div','hint'); h.textContent = 'x';
+    var p = document.createElement('p'); p.textContent = 'x';
+    d.appendChild(h); d.appendChild(p);
+    document.body.appendChild(d);
+    var cs = getComputedStyle(d), ch = getComputedStyle(h), cp = getComputedStyle(p);
+    var o = {sheet:cs.backgroundColor, hint:ch.fontSize, para:cp.fontSize,
+             body:getComputedStyle(document.body).fontFamily,
+             line:ch.lineHeight};
+    d.remove();
+    return o;
+  };
+  MF.state.access.size = 100; MF.state.access.tint = 'none';
+  MF.state.access.type = 'standard'; MF.state.access.spacing = false;
+  MF.applyAccess();
+  var acBase = acProbe();
+
+  /* TEXT SIZE MOVES THE TEXT A STUDENT READS — not just `body`. */
+  [125, 150].forEach(function(sz){
+    MF.state.access.size = sz; MF.applyAccess();
+    var got = acProbe();
+    chk('access');
+    if(got.hint === acBase.hint)
+      errs.push('access: at ' + sz + '% text a hint is still ' + got.hint +
+                ' — the setting is not reaching the text a student reads');
+    chk('access');
+    if(got.para === acBase.para)
+      errs.push('access: at ' + sz + '% text a paragraph has not moved');
+    chk('access');
+    var want = Math.round(parseFloat(acBase.hint) * sz / 100);
+    if(Math.abs(parseFloat(got.hint) - want) > 1)
+      errs.push('access: at ' + sz + '% a 14px hint came out ' + got.hint +
+                ' rather than about ' + want + 'px — the scale is not the scale');
+  });
+  MF.state.access.size = 100; MF.applyAccess();
+
+  /* EVERY TINT REACHES THE SURFACES A STUDENT READS OFF. */
+  Object.keys(MF.ACCESS_TINT).forEach(function(k){
+    if(k === 'none') return;
+    MF.state.access.tint = k; MF.applyAccess();
+    var got = acProbe();
+    chk('access');
+    if(got.sheet === acBase.sheet)
+      errs.push('access: the "' + k + '" tint leaves a reading panel at ' + got.sheet +
+                ' — it is recolouring the body and not the paper anybody reads off');
+  });
+  MF.state.access.tint = 'none'; MF.applyAccess();
+
+  /* THE TYPEFACE ACTUALLY SWAPS, and the dyslexia option asks for the right
+     font first even though this file cannot ship it. */
+  Object.keys(MF.ACCESS_TYPE).forEach(function(k){
+    MF.state.access.type = k; MF.applyAccess();
+    var got = acProbe();
+    chk('access');
+    if(k !== 'standard' && got.body === acBase.body)
+      errs.push('access: choosing the "' + k + '" typeface changed nothing');
+    chk('access');
+    if(k === 'dys' && !/dyslexic/i.test(got.body))
+      errs.push('access: the dyslexia-friendly option does not ask for OpenDyslexic first');
+  });
+  MF.state.access.type = 'standard'; MF.applyAccess();
+
+  /* SPACING, MOTION AND THE RULER ARE REAL TOO. */
+  MF.state.access.spacing = true; MF.applyAccess();
+  chk('access');
+  if(acProbe().line === acBase.line)
+    errs.push('access: extra line spacing did not change any line height');
+  MF.state.access.spacing = false; MF.applyAccess();
+
+  MF.state.access.motion = 'reduce'; MF.applyAccess();
+  chk('access');
+  if(document.documentElement.getAttribute('data-motion') !== 'reduce')
+    errs.push('access: choosing reduced movement did not mark the document');
+  MF.state.access.motion = 'auto'; MF.applyAccess();
+
+  MF.state.access.ruler = true; MF.applyAccess();
+  chk('access');
+  var acRule = q('#ruler');
+  if(!acRule){
+    errs.push('access: the reading ruler was turned on and no ruler appeared');
+  } else {
+    chk('access');
+    /* IT MUST NOT EAT CLICKS. A full-width band over the mine that swallowed a
+       click on a lump would break the mine in order to help somebody read it —
+       the fault class `overlay` exists for. */
+    if(getComputedStyle(acRule).pointerEvents !== 'none')
+      errs.push('access: the reading ruler takes pointer events — it will swallow clicks on the ore');
+  }
+  MF.state.access.ruler = false; MF.applyAccess();
+  chk('access');
+  if(q('#ruler'))
+    errs.push('access: the reading ruler was turned off and stayed on the page');
+
+  /* AND THE LAYOUT DOES NOT BLOW UP WHEN THE TEXT GROWS.
+     `reach`'s one-screen rule is a default-text guarantee (see there). This is
+     the rule that survives scaling: 50% more text may make the forge taller,
+     but not unrecognisably so. */
+  var acFloor = function(){
+    var st = document.createElement('div');
+    st.style.cssText = 'position:fixed; left:-13000px; top:0; width:979px';
+    document.body.appendChild(st);
+    MF.state.yard = {}; MF.state.rockpile = [];
+    [{m:0,k:2},{m:0,k:3},{m:0,k:5}].forEach(function(g){ MF.addToYard(g); });
+    MF.state.forge = {picked:'lantern', slots:[], result:null};
+    var v = 0;
+    try {
+      MF.SCREENS.forge(st);
+      v = st.querySelector('.pourbtn').getBoundingClientRect().bottom -
+          st.querySelector('.castfor').getBoundingClientRect().top;
+    } catch(e){}
+    st.remove();
+    return v;
+  };
+  MF.state.access.size = 100; MF.applyAccess();
+  var acAt100 = acFloor();
+  MF.state.access.size = 150; MF.applyAccess();
+  var acAt150 = acFloor();
+  chk('access');
+  if(acAt100 > 0 && acAt150 / acAt100 > 1.6)
+    errs.push('access: at 150% text the craft floor grows from ' + Math.round(acAt100) + 'px to ' +
+              Math.round(acAt150) + 'px — half again the text should not be half again the layout');
+  chk('access');
+  if(acAt150 <= acAt100)
+    errs.push('access: the craft floor did not grow at 150% text, so the setting is not reaching it');
+
+  MF.state.access.size = acSaved.size; MF.state.access.tint = acSaved.tint;
+  MF.state.access.type = acSaved.type; MF.state.access.spacing = acSaved.spacing;
+  MF.state.access.motion = acSaved.motion; MF.state.access.ruler = acSaved.ruler;
+  MF.applyAccess();
+
   /* 6. NOTHING ON SCREEN MAY HAVE A CEILING, A PERCENTAGE, OR A COMPARISON.
         This is a stated requirement, so it is checked mechanically rather
         than trusted (philosophy 2.5a). */
@@ -18813,6 +19370,10 @@ MF.playthrough = function(layer){
    BOOT
    ========================================================================= */
 MF.boot = function(){
+  MF.applyAccess();
+  document.addEventListener('keydown', MF._accessKey, true);
+  var acBtn = q('#accessbtn');
+  if(acBtn) on(acBtn,'click',function(){ MF.openAccess(acBtn); });
   var motes = MF.ambient();
   q('#hero-art').appendChild(MF.art(46));
   MF.loadScreen();
