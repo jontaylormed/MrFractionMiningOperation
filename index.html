@@ -1874,7 +1874,7 @@ table.rosetta td.rx{font-family:var(--display); font-size:16px; color:var(--ink)
 .shedic.sm{font-size:26px; margin:0 9px 0 0; display:inline-block; vertical-align:-2px}
 .shedcard .why{flex:1 1 auto}
 .backbtn{margin-bottom:10px}
-.shedfoot{border-top:2px solid var(--rule); padding-top:14px}
+.shedfoot{border-top:2px solid var(--rule); padding-top:14px; justify-content:center}
 
 /* the moving illustration at the head of each workshop */
 .shedart{border:3px solid var(--rock-3); border-radius:14px; overflow:hidden; background:#2E2620; margin:0 0 14px}
@@ -5516,9 +5516,24 @@ MF.areaModel = function(host, o){
   var svg = S('svg',{viewBox:'0 0 '+W+' '+VH});
   var tints={sq:'var(--tile-sq)',x:'var(--tile-x)',k:'var(--tile-k)'};
   var inks ={sq:'var(--tile-sq-ink)',x:'var(--tile-x-ink)',k:'var(--tile-k-ink)'};
+  /* AN UNKNOWN KIND USED TO PAINT A BLACK HOLE.
+
+     There are three tiles - sq, x, k - and a caller asked for `x2`. Neither
+     map has that key, so the corner was built with fill="undefined" and the
+     label with fill="undefined": a solid black box with black text inside it,
+     sitting where the x² of every two-bracket pour should have been.
+
+     Nothing in the build saw it, and §59 is the reason: these labels are SVG
+     <text> painted with `fill`, and the contrast sweep reads `color`. So the
+     one function on the site that draws text the sweep cannot measure is the
+     one that shipped black on black. `modeltile` measures it properly now.
+
+     Falling back keeps a typo from ever being invisible again; the check keeps
+     the typo from being silent. Both, because either alone is half a fix. */
+  var kindOf = function(k){ return tints[k] ? k : 'k'; };
   o.rows.forEach(function(r,ri){
     o.cols.forEach(function(c,ci){
-      var cell=o.cells[ri][ci], x=padL+ci*cw, y=padT+ri*ch, kind=cell.kind||'k';
+      var cell=o.cells[ri][ci], x=padL+ci*cw, y=padT+ri*ch, kind=kindOf(cell.kind||'k');
       var rect=S('rect',{x:x,y:y,width:cw-3,height:ch-3,rx:5,fill:tints[kind],stroke:'rgba(0,0,0,.16)','stroke-width':1});
       if(cell.negative) rect.setAttribute('stroke-dasharray','6 4');
       svg.appendChild(rect);
@@ -6668,7 +6683,11 @@ MF.shedFoot = function(host, key){
   var row = E('div','row shedfoot'); row.style.marginTop='16px';
   MF.SHED.forEach(function(s){
     if(s.key===key) return;
-    var b = E('button','btn', s.nm + ' &rarr;'); b.type='button';
+    /* PRIMARY, AND CENTRED (user, 2026-09-05). These are the way on to the
+       other two workshops - the only thing at the foot of the room - and in
+       the plain `btn` tone they read as a footnote about somewhere else
+       rather than as the door out. */
+    var b = E('button','btn primary', s.nm + ' &rarr;'); b.type='button';
     b.innerHTML = s.ic + ' ' + s.nm + ' &rarr;';
     on(b,'click',function(){ MF.go(s.key); });
     row.appendChild(b);
@@ -6870,7 +6889,11 @@ MF.SCREENS['shed-mold'] = function(host){
       MF.areaModel(stageHost,{
         rows:[{label:bx},{label:num(a)}],
         cols:[{label:'x'},{label:num(c)}],
-        cells:[[{kind:'x2',text:quadText(b,0,0)}, {kind:'x',text:xt2(b*c)}],
+        /* `sq`, NOT `x2`. The kind names the TILE, and there are three of
+           them - sq, x, k. `x2` is not one, so the corner resolved to
+           fill="undefined" and ink="undefined": a solid black box with black
+           text in it, which is what a student saw where the x² should be. */
+        cells:[[{kind:'sq',text:quadText(b,0,0)}, {kind:'x',text:xt2(b*c)}],
                [{kind:'x',text:xt2(a)},           {kind:'k',text:num(a*c)}]],
         sideMode:'show',
         caption:'Four corners, because every part of one bracket meets every part of the other. The two x corners are the same kind of thing.',
@@ -7903,7 +7926,27 @@ MF.moldScene = function(key, pour, shape){
   var t = MF.TOOLS[key] || {nm: shape || 'a casting', ic:''};
   var wrap = E('div','moldwrap');
   if(pour) wrap.setAttribute('data-pour', pour.ok ? 'sound' : 'scrap');
-  var W=400, VH=300, uid='md'+(key || 'sh')+(MF._moldSeq = (MF._moldSeq||0)+1);
+  var W=470, VH=300, uid='md'+(key || 'sh')+(MF._moldSeq = (MF._moldSeq||0)+1);
+  /* ---- THE CAVITY BOX, DEFINED ONCE ----
+
+     USER, 2026-09-05, with a screenshot: "Notice how the x² is not fully grey.
+     Fix that by resizing the mold area and animation."
+
+     Six places had their own idea of where the cavity was. The glyph was
+     centred at 256; the molten rects ran 150..362; the reveal's clip ran
+     120..390; the sand stopped at 374; the runner reached 206. A tool icon is
+     square and small enough that none of them disagreed visibly - but an
+     EXPRESSION is wide, and `x² + 13x + 42` at 34px runs 124..388. So its
+     left end lay under the runner and OUTSIDE the molten rects, and its right
+     end outside them too: the middle of the casting cooled to steel while both
+     ends stayed the black of the cut. That is the screenshot exactly.
+
+     One box now, and everything is derived from it - the glyph's centre, the
+     type size that makes it fit, the mask, the three cooling layers and the
+     rise. They cannot disagree again, because there is nothing left to
+     disagree with. The picture is 70 units wider to give it the room, all of
+     it to the right of the runner where the sand was empty. */
+  var cav = {cx: 322, cy: 186, w: 214};
   var svg = S('svg',{viewBox:'0 0 '+W+' '+VH, role:'img',
     'aria-label': pour
       ? ('Seen from above: metal running down a trough into a mold cut to the shape of ' +
@@ -7924,17 +7967,17 @@ MF.moldScene = function(key, pour, shape){
   /* the bench you are leaning over */
   svg.appendChild(S('rect',{x:0,y:0,width:W,height:VH,fill:'url(#'+uid+'bench)'}));
   for(var gn=0; gn<10; gn++)
-    svg.appendChild(S('path',{d:'M0 '+(16+gn*30)+' q130 '+((gn%2)?5:-5)+' 400 '+((gn%3)?3:-3),
+    svg.appendChild(S('path',{d:'M0 '+(16+gn*30)+' q'+(W/3)+' '+((gn%2)?5:-5)+' '+W+' '+((gn%3)?3:-3),
       fill:'none',stroke:'#1B130D','stroke-width':'2',opacity:'.35'}));
 
   /* the block of sand, rammed and struck off flat.
      IT STARTS AT 96, NOT 74. The ladle above it is a vessel seen in three
      quarters rather than a flat channel, and it needs the height. The cavity
      glyph runs 111..261, so the sand still clears it at both ends. */
-  svg.appendChild(S('rect',{x:26,y:96,width:348,height:186,rx:11,fill:'url(#'+uid+'sand)',
+  svg.appendChild(S('rect',{x:26,y:96,width:W-52,height:186,rx:11,fill:'url(#'+uid+'sand)',
     stroke:'#6E6053','stroke-width':'3'}));
-  for(var sp=0; sp<110; sp++)
-    svg.appendChild(S('circle',{cx:String(34+((sp*97)%332)), cy:String(104+((sp*53)%170)),
+  for(var sp=0; sp<130; sp++)
+    svg.appendChild(S('circle',{cx:String(34+((sp*97)%(W-68))), cy:String(104+((sp*53)%170)),
       r:String(0.7+((sp*7)%3)*0.5), fill:'#6E6053', opacity:'.26'}));
 
   /* ======================================================================
@@ -8051,15 +8094,21 @@ MF.moldScene = function(key, pour, shape){
   /* ---- THE CAVITY: the tool's own icon, blacked out ----
      Rendered from MF.TOOLS[key].ic, so the hole in the sand and the thing on
      your belt can never be two different shapes. */
+  /* AN EXPRESSION IS WIDE AND AN EMOJI IS SQUARE, so a cavity cut to one
+     cannot be set at the other's size. And a FIXED size for the expression is
+     only right for the length it was chosen against: 34 fits `x² + 8x + 15`
+     and runs `9x² + 54x + 81` straight out of the box the metal fills. The
+     display face is about 0.58em per character, so the size comes off the
+     longest thing the cavity is ever asked to hold, clamped so a two-digit
+     casting does not fill the sand. */
+  var cavText = shape ? String(shape).replace(/<[^>]+>/g,'') : '';
+  var cavSize = shape ? Math.max(17, Math.min(34, cav.w / (0.58 * Math.max(cavText.length, 1)))) : 150;
   var glyph = function(cls, size){
-    /* AN EXPRESSION IS WIDE AND AN EMOJI IS SQUARE, so a cavity cut to one
-       cannot be set at the other's size: 150px of `x² + 8x + 15` runs off both
-       ends of the sand. 34 fits the same box the glyph does. */
-    var n = S('text',{x:'256',y:'186','text-anchor':'middle','dominant-baseline':'central',
-      'font-size':String(size || (shape ? 34 : 150)), class:cls});
+    var n = S('text',{x:String(cav.cx),y:String(cav.cy),'text-anchor':'middle','dominant-baseline':'central',
+      'font-size':String(size || cavSize), class:cls});
     if(shape){
       n.setAttribute('font-family',"'Black Han Sans','Arial Black',Impact,sans-serif");
-      n.textContent = String(shape).replace(/<[^>]+>/g,'');
+      n.textContent = cavText;
     } else {
       n.textContent = MF.iconChar(t.ic);
     }
@@ -8080,13 +8129,19 @@ MF.moldScene = function(key, pour, shape){
      The black cut stays underneath the whole time, so what a student watches is
      an outline turning into metal rather than a picture being wiped on.
 
-     THE NUMBERS: the glyph is centred at y=186 at 150px, so it runs from 111
-     down to 261. The rect rests EMPTY on the floor of it (y=261, height=0) and
-     the animation walks y up to 111 while height grows to 150. Both are CSS
-     geometry properties on an SVG rect, which is the same mechanism the wipe
-     already used - only the axis has changed. */
+     THE VERTICAL NUMBERS ARE IN THE KEYFRAME, and they are the tallest case:
+     a 150px glyph centred at 186 runs 111..261, so the rect rests empty on
+     y=261 and walks up to y=111 with height 150. Anything shorter is contained
+     by that sweep, which is why one keyframe serves both a tool icon and an
+     expression. Both are CSS geometry properties on an SVG rect.
+
+     THE HORIZONTAL NUMBERS ARE NOT. They were x=120 width=270 - a box that
+     stopped at 390 while a long expression reached 388 and the molten rects
+     stopped at 362, so the ends of a wide casting were never filled. They come
+     off `cav` now, with a margin, exactly as the metal does. */
+  var cavL = cav.cx - cav.w/2 - 12, cavW = cav.w + 24;
   var rc = S('clipPath',{id:uid+'rev'});
-  rc.appendChild(S('rect',{class:'mdrevrect', x:120, y:261, width:270, height:0}));
+  rc.appendChild(S('rect',{class:'mdrevrect', x:cavL, y:261, width:cavW, height:0}));
   defs.appendChild(rc);
 
   /* ---- WHAT FILLS IT IS MOLTEN METAL, NOT THE GLYPH'S OWN COLOURS ----
@@ -8119,9 +8174,12 @@ MF.moldScene = function(key, pour, shape){
   var rev = S('g',{class:'mdreveal','clip-path':'url(#'+uid+'rev)'});
   var melt = S('g',{class:'mdlive', mask:'url(#'+uid+'tool)'});
   /* one box each, all clipped to the tool by the mask above */
-  melt.appendChild(S('rect',{class:'mdhot',   x:150,y:96,width:212,height:180,fill:'url(#'+uid+'hot)'}));
-  melt.appendChild(S('rect',{class:'mdred',   x:150,y:96,width:212,height:180,fill:'url(#'+uid+'cool)'}));
-  melt.appendChild(S('rect',{class:'mdsteel', x:150,y:96,width:212,height:180,fill:'url(#'+uid+'steel)'}));
+  /* one box each, spanning the whole cavity - 150..362 was narrower than the
+     glyph it was meant to fill, which is why both ends of a long casting
+     stayed the black of the cut while the middle cooled to steel */
+  melt.appendChild(S('rect',{class:'mdhot',   x:cavL,y:96,width:cavW,height:186,fill:'url(#'+uid+'hot)'}));
+  melt.appendChild(S('rect',{class:'mdred',   x:cavL,y:96,width:cavW,height:186,fill:'url(#'+uid+'cool)'}));
+  melt.appendChild(S('rect',{class:'mdsteel', x:cavL,y:96,width:cavW,height:186,fill:'url(#'+uid+'steel)'}));
   rev.appendChild(melt);
   svg.appendChild(rev);
 
@@ -8186,9 +8244,9 @@ MF.moldScene = function(key, pour, shape){
        says it is two different things. */
     if(pour.terse){ wrap.appendChild(svg); return wrap; }
     /* the products, each above the pair that made it */
-    var n2 = m.terms.length, span = 196, x0 = 256 - span/2;
+    var n2 = m.terms.length, span = 196, x0 = cav.cx - span/2;
     m.terms.forEach(function(tm, i){
-      var x = n2===1 ? 256 : (x0 + i*(span/(n2-1)));
+      var x = n2===1 ? cav.cx : (x0 + i*(span/(n2-1)));
       var d = (1.95 + i*0.18) + 's';
       if(tm.from){
         var f = txt(x, 150, tm.from, 'mdnum mdfrom' + (tm.mid?' mdmid':''), 12);
@@ -8200,11 +8258,11 @@ MF.moldScene = function(key, pour, shape){
     });
     /* the two middles run together into one */
     if(m.merge){
-      svg.appendChild(txt(256, 150, m.mergeFrom, 'mdnum mdmergefrom', 12));
-      svg.appendChild(txt(256, 176, m.merge, 'mdnum mdmerged', 21));
+      svg.appendChild(txt(cav.cx, 150, m.mergeFrom, 'mdnum mdmergefrom', 12));
+      svg.appendChild(txt(cav.cx, 176, m.merge, 'mdnum mdmerged', 21));
     }
     /* and what is left is a single thing */
-    svg.appendChild(txt(256, 224, '= ' + m.single, 'mdnum mdsingle', 26));
+    svg.appendChild(txt(cav.cx, 224, '= ' + m.single, 'mdnum mdsingle', 26));
   }
 
   wrap.appendChild(svg);
@@ -14098,6 +14156,106 @@ MF.validate = function(){
   function cRatio(f,b){ var L1=cLum(f),L2=cLum(b);
     return Math.round(((Math.max(L1,L2)+0.05)/(Math.min(L1,L2)+0.05))*100)/100; }
   /* ======================================================================
+     THE TILES OF EVERY BOX, MEASURED AS `fill` RATHER THAN AS `color`.
+
+     USER, 2026-09-05, with a screenshot: "The black box should be a
+     better-matching color tone and contain the text x² as the other squares
+     in the diagram."
+
+     It was a solid black rectangle with black text in it. MF.areaModel names
+     its tiles `sq`, `x` and `k`; a caller asked for `x2`; neither the tint map
+     nor the ink map has that key, so the corner was painted fill="undefined" -
+     black - and labelled in the same nothing.
+
+     IT HAD SHIPPED under a green contrast group for as long as the two-bracket
+     pour has existed, and §59 is exactly why: these labels are SVG <text>
+     painted with `fill`, and `_measureContrast` reads `color`. The one
+     function on the site whose text that sweep structurally cannot see is the
+     one that went black on black.
+
+     So this measures what is actually painted - every tile's resolved fill
+     against its resolved ink - off a MOUNTED svg, because `var(--tile-sq)`
+     means nothing until it is in the document.
+     ====================================================================== */
+  var mtStage = document.createElement('div');
+  mtStage.style.cssText = 'position:fixed; left:-13000px; top:0; width:520px';
+  document.body.appendChild(mtStage);
+  ['sq','x','k'].forEach(function(kind){
+    var probe = document.createElement('div');
+    mtStage.appendChild(probe);
+    MF.areaModel(probe, {rows:[{label:'x'}], cols:[{label:'x'}],
+      cells:[[{kind:kind, text:'9x'}]], sideMode:'show'});
+    var rect = probe.querySelector('rect'), txt = probe.querySelector('rect + text');
+    chk('modeltile');
+    if(!rect || !txt){
+      errs.push('modeltile: the "' + kind + '" tile drew no ' + (rect ? 'label' : 'box'));
+    } else {
+      var tf = cRgb(getComputedStyle(rect).fill), ti = cRgb(getComputedStyle(txt).fill);
+      if(!tf || !ti){
+        errs.push('modeltile: the "' + kind + '" tile resolved to ' +
+                  (tf ? 'no ink' : 'no fill') + ' — an unnamed tile paints black on black');
+      } else {
+        chk('modeltile');
+        var tr = cRatio(ti, tf);
+        if(tr < 4.5)
+          errs.push('modeltile: the "' + kind + '" tile is ' + tr + ':1 — its number cannot be read off it');
+      }
+    }
+    mtStage.removeChild(probe);
+  });
+  /* AN UNKNOWN KIND MUST STILL PAINT SOMETHING. The fallback in MF.areaModel
+     keeps a typo visible rather than black; this is what says the fallback is
+     still there. */
+  chk('modeltile');
+  var mtBad = document.createElement('div');
+  mtStage.appendChild(mtBad);
+  MF.areaModel(mtBad, {rows:[{label:'x'}], cols:[{label:'x'}],
+    cells:[[{kind:'x2', text:'x²'}]], sideMode:'show'});
+  var mtR = mtBad.querySelector('rect');
+  if(!(mtR && cRgb(getComputedStyle(mtR).fill)))
+    errs.push('modeltile: an unknown tile kind paints nothing — the fallback is not holding');
+  mtStage.removeChild(mtBad);
+  /* EVERY BOX THE SITE ACTUALLY DRAWS, swept for a corner it cannot paint */
+  var mtSeen = 0;
+  ['drill','shifter','auger'].forEach(function(tk){
+    var s = MF.SCHEMA[tk], steps = [];
+    try { steps = s.steps(s.practice.ore) || []; } catch(e){ return; }
+    steps.forEach(function(st){
+      if(!st.draw) return;
+      var h = document.createElement('div');
+      mtStage.appendChild(h);
+      try { st.draw(h); } catch(e){}
+      [].forEach.call(h.querySelectorAll('.stage rect'), function(r){
+        mtSeen++;
+        chk('modeltile');
+        if(!cRgb(getComputedStyle(r).fill))
+          errs.push('modeltile: a corner of ' + s.name + '\'s box has no colour at all');
+      });
+      mtStage.removeChild(h);
+    });
+  });
+  chk('modeltile');
+  if(mtSeen < 4)
+    errs.push('modeltile: only ' + mtSeen + ' box corners were swept, so the lessons\' boxes were not measured');
+  /* and the Molds room's own two-bracket box, which is where it went wrong */
+  var mtRoom = document.createElement('div');
+  mtStage.appendChild(mtRoom);
+  MF.SCREENS['shed-mold'](mtRoom);
+  mtRoom.querySelector('button[data-mode="two"]').dispatchEvent(new MouseEvent('click',{bubbles:true}));
+  [].forEach.call(mtRoom.querySelectorAll('.stage rect'), function(r){
+    chk('modeltile');
+    if(!cRgb(getComputedStyle(r).fill))
+      errs.push('modeltile: a corner of the two-bracket box in the Molds room has no colour at all');
+  });
+  /* AND THE x² CORNER HAS TO SAY x², which is the other half of the report */
+  chk('modeltile');
+  var mtTexts = [].map.call(mtRoom.querySelectorAll('.stage rect + text'), function(n){ return (n.textContent||'').trim(); });
+  if(mtTexts.indexOf('x²') < 0)
+    errs.push('modeltile: the two-bracket box draws no x² corner — it says [' + mtTexts.join(', ') + ']');
+  mtStage.removeChild(mtRoom);
+  document.body.removeChild(mtStage);
+
+  /* ======================================================================
      THE CAVITY, MEASURED AS IT ACTUALLY RENDERS.
 
      `MF._measureContrast` now skips `.mdcut`, and the reason is sound: the cut
@@ -14147,6 +14305,45 @@ MF.validate = function(){
       if(cr < 3) errs.push('cavity: the cut is black on sand rgb(' +
         bg.slice(0,3).join(',') + ') at ' + cr + ':1, needs 3');
     });
+    /* ---- AND THE METAL HAS TO REACH THE WHOLE OF IT ----
+
+       USER, 2026-09-05, with a screenshot: "Notice how the x² is not fully
+       grey." The molten rects ran 150..362 and the reveal's clip 120..390,
+       both chosen against a square tool icon. `x² + 13x + 42` runs wider than
+       either, so the middle of the casting cooled to steel while both ends
+       stayed the black of the cut — and the left end sat under the runner.
+
+       Nothing measured it, because every group here asks about COLOUR and this
+       is about EXTENT. So: the longest casting the room can pour, and the
+       glyph's real box has to sit inside the metal that fills it, inside the
+       sweep that reveals it, and inside the sand it is cut into. Measured off
+       getBBox rather than off the numbers that were typed in, or it would only
+       be checking that two constants still match each other. */
+    var cavLong = document.createElement('div');
+    cavLong.style.cssText = 'position:fixed; left:-13000px; top:0; width:520px';
+    document.body.appendChild(cavLong);
+    cavLong.appendChild(MF.moldScene(null, null, quadText(9, 61, 42)));
+    var cg = cavLong.querySelector('.mdcut'),
+        cm = cavLong.querySelector('.mdsteel'),
+        ck = cavLong.querySelector('.mdrevrect'),
+        cs2 = cavLong.querySelector('rect[fill*="sand"]');
+    if(!cg || !cm || !ck || !cs2){
+      errs.push('cavity: the longest casting drew no ' +
+        (!cg ? 'cut' : (!cm ? 'metal' : (!ck ? 'pour front' : 'sand'))));
+    } else {
+      var gb = cg.getBBox();
+      [['the metal that fills it', cm], ['the pour front', ck], ['the sand', cs2]].forEach(function(pair){
+        var el = pair[1];
+        var x0 = parseFloat(el.getAttribute('x')), x1 = x0 + parseFloat(el.getAttribute('width'));
+        chk('cavity');
+        if(gb.x < x0 - 0.5 || gb.x + gb.width > x1 + 0.5)
+          errs.push('cavity: "' + (cg.textContent||'').trim() + '" runs ' +
+            Math.round(gb.x) + '..' + Math.round(gb.x + gb.width) + ' and ' + pair[0] +
+            ' only covers ' + Math.round(x0) + '..' + Math.round(x1) +
+            ' — part of the casting can never fill');
+      });
+    }
+    cavLong.remove();
   }
   cavProbe.remove();
 
