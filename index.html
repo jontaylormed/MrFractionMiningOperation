@@ -1873,7 +1873,6 @@ table.rosetta td.rx{font-family:var(--display); font-size:16px; color:var(--ink)
 .shedic{font-size:38px; line-height:1; margin:6px 0 2px}
 .shedic.sm{font-size:26px; margin:0 9px 0 0; display:inline-block; vertical-align:-2px}
 .shedcard .why{flex:1 1 auto}
-.backbtn{margin-bottom:10px}
 .shedfoot{border-top:2px solid var(--rule); padding-top:14px; justify-content:center}
 
 /* THE MATCHING ACTIVITY: two columns of words and the job of pairing them */
@@ -7097,20 +7096,18 @@ MF.SCREENS['workshop-mold'] = function(host){
 /* the head every workshop page wears, and the way back out of it. One
    function, because three copies of a back link is three chances for one of
    them to strand a student in a room with no door. */
-MF.shedHead = function(host, key, opts){
+MF.shedHead = function(host, key){
   var w = null;
   MF.SHED.forEach(function(s){ if(s.key===key) w = s; });
-  /* THE BACK BUTTON IS OPTIONAL (user, 2026-09-06: remove it from The Words).
-     The Casting Shed is in the top bar on every page, so this is the same
-     route said twice — the clear-out that took the doors off the shed's front
-     page and the foot of the Forge. Asked for in one room and done in one
-     room; the other two still carry it. */
-  if(!(opts && opts.noBack)){
-    var back = E('button','btn backbtn','&larr; The Casting Shed'); back.type='button';
-    back.innerHTML = '&larr; The Casting Shed';
-    on(back,'click',function(){ MF.go('workshop-mold'); });
-    host.appendChild(back);
-  }
+  /* NO "← THE CASTING SHED" BUTTON. It was asked for in The Words first and
+     then in all three (user, 2026-09-06), which is the same clear-out that
+     took the doors off the shed's front page, the foot of the Forge and the
+     mine door out of every teaching room: the Casting Shed is in the top bar
+     on every page, so this was the same route said twice.
+
+     THE OPTION WENT WITH IT. For one commit this was `opts.noBack`, set by one
+     caller — and a flag every caller passes the same way is not a choice, it
+     is a fact with a switch in front of it. A room head is one shape now. */
   host.appendChild(H('h2',null,'<span class="shedic sm">' + w.ic + '</span>' + w.nm));
   return w;
 };
@@ -7404,7 +7401,7 @@ MF.SCREENS['shed-mold'] = function(host){
 
 /* ---------------- WORKSHOP 2: THE WORDS ---------------- */
 MF.SCREENS['shed-words'] = function(host){
-  MF.shedHead(host, 'shed-words', {noBack:true});
+  MF.shedHead(host, 'shed-words');
   host.appendChild(MF.shedArt('words'));
   host.appendChild(H('p','lede','A metaphor is a way in until it becomes a private language, and then it is a wall. ' +
     'Everything on the left is what this place calls a thing. Everything on the right is what a textbook, a teacher and an exam paper call ' +
