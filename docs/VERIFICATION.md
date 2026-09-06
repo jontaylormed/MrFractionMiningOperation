@@ -1851,3 +1851,54 @@ the darkest stop.
 > being quietly wrong. Control: remove the filter — the sweep picks `.mdcut` and
 > `.mdcutshadow` straight back up, and `.mdmaskglyph` correctly stays out, which is the two
 > rules proving they are independent.
+
+## §86. A green group proves only what it was pointed at
+
+The `visual` group asks exactly the right questions — does this reading **draw**, does it
+leave a **?**, is it **not mostly prose** — and it had been green for weeks while the Casting
+Shed's Tools module carried one diagram in seven lessons and up to 2,082 characters of prose.
+
+Nothing was broken. `visual` sweeps `MF.TOOL_READ`, the mine's *reading of a lump*. A lesson
+renders `MF.SCHEMA[key].steps`, the *method*. **Two surfaces, one of them measured.**
+
+> This is §5 again, and it keeps arriving in a new disguise: `truthy` never moved the slider,
+> `mold` never poured plain metal, `contrast` never mounted the Stamp Mill signpost, and now
+> `visual` never looked at the room where the methods are taught. Ask of any green group not
+> just *what did it not look at* but **what else has the same shape and a different name**.
+
+The `taught` group asks the same three questions where the lesson actually is. Note what it
+had to do differently:
+
+> **A hole is a `.qm` or an SVG `?`.** `MF.areaModel` marks an unknown side with SVG text
+> rather than a span, so counting only spans would have called the Shifter's box — the one
+> diagram that was already there — a lesson with nothing left open. A check copied across
+> surfaces has to be re-derived, not re-used.
+
+> **Prose is measured through the real screen, walked to the end**, because the bench, the
+> practice and the closer only exist at particular points of the walk. And **folded copy is
+> not a wall**: text inside a closed `<details>` is excluded, which is what makes folding an
+> honest answer to "fewer walls of text" rather than a way to hide from the check.
+
+## §87. A fixed pixel size is a control that expires
+
+Two in one session, from opposite directions.
+
+**A control that stopped being a fault.** `reach` proves itself by building a bench cluster
+taller than one screen — with a spacer of `height:900px`. That is a screen and a half on a
+phone and *less than one* on a tall desktop window, so at 1000px high the control built a
+cluster that fitted, saw no error, and reported that the check could not see something it had
+never been shown. It is `rcBudget + 200` now.
+
+> **A control has to be a fault at every size the check runs at**, or it is only a control at
+> the sizes somebody happened to test in.
+
+**A constant that stopped being right.** `.mdnum` carried a 4px halo, chosen against type that
+was always 13px or 21px. The moment the pour began sizing its type to the longest term it
+carries, the `×` was 3px of halo on 26px of letter — and `contrast` caught it, because that
+assertion was written as a *ratio* (`0.15em`) rather than a number. Both halos are in `em`
+now.
+
+> The lesson is not "use em". It is that **the check survived the change because it was
+> expressed as a relationship, and the CSS did not because it was expressed as a number.**
+> Where a value only makes sense relative to another value, say so in the code, or the next
+> person to move the other value has silently broken it.

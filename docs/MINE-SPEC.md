@@ -1609,3 +1609,79 @@ already writes the `×`.
 
 > Both halves of this are in `docs/VERIFICATION.md` §84 — the exemption that described the
 > defect and licensed it, and the denominator that never once poured plain metal.
+
+## 41. The Tools draw, and the rooms turn one question at a time
+
+> *"The Tools need more diagrams and fewer walls of text."* · *"sections should show one
+> question at a time and rotate through them"* · *"The bracket needs to update x² in the black
+> box"* · *"the buttons need to be stacked and aligned on the right side"* · *"The Mold text in
+> the pour area needs to be larger because the animation effects are not reaching larger
+> expressions"* — user, 2026-09-05
+
+### Every step of a method is a picture
+
+Measured before anything was touched, across all seven lessons in the Casting Shed:
+
+```
+1 step in the whole module carried a diagram      (the Shifter's box)
+1,649–2,082 characters of prose per lesson
+34 characters of worked lines in the worst one
+```
+
+The vocabulary to fix it already existed — `MF.xDiagram`, `MF.splitDiagram`, `MF.areaModel`,
+`MF.xBox`, `MF.workLine` — and the methods had never used a line of it, because it was built
+for `MF.TOOL_READ` (the mine's *reading* of a lump) and a lesson renders `MF.SCHEMA[].steps`
+(the *method*).
+
+| tool | what it draws |
+|---|---|
+| **Pick** | the five kinds as a shortlist, one lit — it names a shape, so there is nothing to split |
+| **Lantern** | the split: one side lit, one dark |
+| **Steel** | the metal standing out in front of an empty bracket |
+| **Dial** | a ruler — a seam on a mark, then the same seam in the gap |
+| **Shifter** | the box at *both* ends of the method, not only the middle |
+| **Drill** | the X: a·c on top, the middle below, **both** sides open |
+| **Auger** | the full X-box: X → split middle → 2×2 → the seam that repeats |
+
+Two new drawers for the two methods nothing existing could express: `MF.kindStrip` and
+`MF.tickLine`. Both follow §59 — strokes in SVG, every number an HTML span pinned over them.
+
+**Both sides of the X stay open.** On a monic trinomial they *are* the two bracket constants,
+so one filled is half the answer and both is all of it — which the `schema` group already
+fails the build for. The user's rule and the build's are one rule.
+
+**And the walls came down: 1,649–2,082 → 899–1,143.** Four hint lines came to 457 characters
+in one lesson and are one line now; the seven `why` paragraphs are one claim each, because
+what they spent three sentences describing is the picture on the slide below; and the
+real-world close **folds** — it is an aside by its own title, so the anecdote folds and the
+sentence naming *which part of the method it is* stays on the page.
+
+### One question at a time
+
+Every card is built and all but one hidden, so an answered card keeps its choice and its
+reading when you come back to it. **Rotate means it wraps** — off the end of the last is the
+first again, because nothing here is scored and there is no reason to hit a wall.
+
+> The Words room was showing **two**: its closer, *what did the miner do wrong*, is an `.ask`
+> card built outside `MF.paintQuestions`. It joins the rotation through `also`, so the rule
+> belongs to the section rather than to whichever cards happened to be convenient.
+
+### The mold pours a loaded trinomial
+
+Both brackets were monic, so the casting's square term was the literal string `x²` at all 81
+settings. **The room built to explain the pour could not pour the shape the hardest ore comes
+out of** — layers 4 and 5, and the whole reason the Powered Auger exists. The first bracket
+carries a depth now, `( d·x + a )( x + c )`, on its own state so the two-bracket mode opens
+monic and the middle slider means a different thing in each mode without either disturbing
+the other.
+
+### The pour is a pour
+
+The stream was 39 units wide in a 400-unit picture, so a term riding it had 39 units to fit —
+about eight CSS pixels. **The type was not small by choice; the channel was.** The channel is
+108 units at the lip now, the basin is opened to take it, the type sizes itself off the
+longest term it carries, and the Molds room's picture is 460px because the text is *inside*
+it. Measured: 10 CSS px → 21.
+
+> The halo moved to `em` in the same breath — it was 4px against type that was always 13 or
+> 21, and a fixed halo stops being a halo as the letters grow (`VERIFICATION.md` §86).
