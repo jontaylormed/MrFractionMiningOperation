@@ -2146,3 +2146,39 @@ nothing is a failure rather than 7 KB nobody notices.
 
 The general rule: when a subsystem is verified end to end and a user still reports it missing,
 **stop testing the subsystem.** Test the path from the thing they actually touched.
+
+## §98. A sound is not "on" a moment unless it is scheduled to the same clock
+
+The hammer cue fired the instant `MF.swing` decided the outcome. `.hammerswing` runs
+`hammerarc` over **3000 ms** with the strike keyframe at **58%** — so the sound arrived
+**1740 ms before the hammer touched the ore**, while it was still winding up.
+
+Nothing was broken. `play('thud')` was called, the buffer decoded, the bus measured 0.63. The
+cue and the picture were simply describing different moments, and the user's reading of that
+was *"we need to closer match the timing"* — which is the polite version of "the sound is not
+about anything".
+
+**The fix is `playAt(name, delay)`** — Web Audio schedules a source on the audio clock, which
+is far steadier than `setTimeout` — and a gesture that lays three cues on three keyframes:
+
+| | | |
+|---|---|---|
+| 46% · 1380 ms | the downswing begins | `swish` |
+| 58% · 1740 ms | **the strike** | `thud` / `clang` |
+| + 100 ms | the rock giving way | `chip` (a hit only) |
+
+**The check reads the timings out of the stylesheet at run time** — `3000 × 0.58` parsed from
+the `@keyframes` block — rather than comparing `MF.HAMMER` to itself (§94). Retime the
+animation without retiming the sound and it says so.
+
+Two things this makes checkable that were not before:
+
+- **the order** — a swing, then the strike, then the debris; and
+- **the meaning** — `chip` follows a hit and never a glance, because loose rock coming away is
+  what "the seam ran" *sounds* like. A glance with debris on it would say the opposite of what
+  the rock did.
+
+> And when motion is reduced, every animation collapses to `.001s`, so the delay collapses too.
+> A 1.7 second wait with no picture is worse than either alone. `MF.reducedMotion()` answers
+> the OS query **and** the panel override — code that consulted only the media query would
+> keep the delay for a student who had turned animation off in the panel.

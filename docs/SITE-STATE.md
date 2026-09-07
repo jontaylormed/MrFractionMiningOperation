@@ -22,7 +22,7 @@
 | **Screens** | **eight** — surface, the Stamp Mill, the Casting Shed and its three workshops, the mine, the forge |
 | **Layers** | **five**, all reachable from the first screen, none gated on anything |
 | **Instruments** | **seven**, all made at the forge, none granted |
-| **Validation** | `MF.validate()` → **13,218 checks / 43 groups / 0 errors**, two controls that must fail, and do — **run it at the width you ship from**, because `layout`, `reach`, `hollow` and `cartdraw` measure the live viewport and report it (`VERIFICATION.md` §61, §63, §65). Verified at **380×780, 560×760, 994×700 and 1250×900** |
+| **Validation** | `MF.validate()` → **13,239 checks / 43 groups / 0 errors**, two controls that must fail, and do — **run it at the width you ship from**, because `layout`, `reach`, `hollow` and `cartdraw` measure the live viewport and report it (`VERIFICATION.md` §61, §63, §65). Verified at **380×780, 560×760, 994×700 and 1250×900** |
 
 > **A check is only as wide as the space it sweeps.** The `truthy` group reported 0 errors across 642 checks while **1,970 Decimal Dial states printed a falsehood**, because it tested each lump's original integer coefficients and never nudged `c` — the one thing the dial exists to do. It now sweeps every slider position the control can reach (3,287 checks). Ask of any green result: *what did it not look at?*
 | **Runtime** | Zero dependencies, no build step, no network requests, no storage, runs from `file://` |
@@ -184,7 +184,7 @@ The face is **2280px of rock**, several screens wide, scanned by dragging, scrol
 
 ## The breaking floor: one anvil, the belt over it, and the ore on top
 
-**Measured 2026-09-07, all four widths, 0 errors over 13,218 checks in 43 groups, both controls failing.**
+**Measured 2026-09-07, all four widths, 0 errors over 13,239 checks in 43 groups, both controls failing.**
 
 **There is one box, and the anvil in it is the work.** The `workpair` is gone. It was two boxes: one held a row of chips and the belt, the other held a drawing of an anvil, two number boxes and the swing button — so **the anvil a student was looking at was not the thing their ore was on**, and the drawing was decoration beside the work. What is here now is the gallery you are standing in: the belt overhead, the anvil, the stone on its face, and whatever has come off it lying on the ground. **A first lump has nothing on the ground at all.**
 
@@ -494,7 +494,7 @@ site made no sound at all before this; `THUD!` and `CLANG!` were painted `<div>`
 refuse to construct one on their own. That is enforced on a detached `Object.create(MF.audio)`
 copy rather than by nulling the live one, which is `VERIFICATION.md` §80 exactly.
 
-**Seven cues, each on a moment that already has a picture** — `pick` when a lump is cut out of
+**Nine cues, each on a moment that already has a picture** — `pick` when a lump is cut out of
 the wall, `thud` when a seam runs, `clang`
 on a glance, `pour` at the ladle *and* in the Molds room, `stamp` under the mill press, `tick`
 when a lump is picked out, and `hoist` when the cage moves between layers. Each is
@@ -659,3 +659,53 @@ tool being broken.
 - Eight contrast failures on gradient backgrounds — the checker walked past the gradient to the body colour. Resolving the real stops gave zero failures.
 - A 375px capture appeared to clip text; at a true 375px viewport nothing clipped.
 - A source read reported depth 5 printing its split at load; the rendered box showed the uncut lump.
+
+## The hammer is three sounds, and the rooms open the beds
+
+**USER, 2026-09-07:** *"There should be a swing, sound, and then a chip when the hammer strikes
+the ore, corresponding with the clank or thud."*
+
+**The cue was 1740 ms early.** `.hammerswing` runs `hammerarc` over 3000 ms with the strike
+keyframe at 58%, and one `play('thud')` at the moment the swing was *decided* fired while the
+hammer was still winding up. Nothing was broken — the cue played, the bus measured 0.63 — the
+sound and the picture were describing different moments. `VERIFICATION.md` §98.
+
+`MF.audio.playAt(name, delay)` schedules on the audio clock, and `MF.audio.hammer(kind)` lays
+three cues on three keyframes:
+
+| | | |
+|---|---|---|
+| 46% · 1380 ms | the downswing begins | `swish` |
+| 58% · 1740 ms | **the strike** | `thud` / `clang` (57% · 1710 ms on the bounce) |
+| + 100 ms | the rock giving way | `chip` — **a hit only** |
+
+Measured against the live animation: the arc starts **4 ms** after the cues are scheduled.
+
+**The chip never follows a glance.** Loose rock coming away is what "the seam ran" *sounds*
+like; a glance is the hammer skidding off with nothing broken, and debris on it would say the
+opposite of what the rock did. The check enforces the order *and* that meaning, reading 3000 ×
+0.58 out of the stylesheet rather than comparing `MF.HAMMER` to itself.
+
+`swish` is **the one cue with no recording behind it** — a blacksmith take is all strikes, and
+none of the supplied material contains a hammer moving through air. Filtered noise swept up and
+away is what a whoosh physically is.
+
+### What each room opens the beds at
+
+**USER, 2026-09-07:** music at 30% on the surface, no ambience; ambience at 40% on entering the
+mine.
+
+- **The music is a state default** (`MF.ACCESS_MUSIC = 0.30`) — no room enforces it, so nothing
+  can undo it.
+- **`MF.ROOM_SOUND = { mine:{ambience:0.40} }`** — the pump-jack bed is the mine's own room
+  tone, so the mine is the only room that raises it.
+
+**It is a first arrival only, and a slider the student has touched is off limits to every room
+for the rest of the visit.** A room that reasserted a volume on every arrival would be silently
+undoing the panel, and the panel is the one place on this site that promises the student is in
+charge.
+
+> **The first version had `home:{music:0.30, ambience:0}` and it was a real bug**: walking back
+> up out of the mine forced the room tone off, wiping a level the student may have set. The
+> check written for it caught it on its first run. A room may **raise** a bed it owns; a room
+> that lowers one is undoing a setting from somewhere else, and that is now its own assertion.
