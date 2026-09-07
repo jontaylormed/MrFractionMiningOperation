@@ -22,7 +22,7 @@
 | **Screens** | **eight** — surface, the Stamp Mill, the Casting Shed and its three workshops, the mine, the forge |
 | **Layers** | **five**, all reachable from the first screen, none gated on anything |
 | **Instruments** | **seven**, all made at the forge, none granted |
-| **Validation** | `MF.validate()` → **25,123 checks / 47 groups / 0 errors**, two controls that must fail, and do — **run it at the width you ship from**, because `layout`, `reach`, `hollow` and `cartdraw` measure the live viewport and report it (`VERIFICATION.md` §61, §63, §65). Verified at **380×780, 560×760, 994×700 and 1250×900** |
+| **Validation** | `MF.validate()` → **25,972 checks / 47 groups / 0 errors**, two controls that must fail, and do — **run it at the width you ship from**, because `layout`, `reach`, `hollow` and `cartdraw` measure the live viewport and report it (`VERIFICATION.md` §61, §63, §65). Verified at **380×780, 560×760, 994×700 and 1250×900** |
 
 > **A check is only as wide as the space it sweeps.** The `truthy` group reported 0 errors across 642 checks while **1,970 Decimal Dial states printed a falsehood**, because it tested each lump's original integer coefficients and never nudged `c` — the one thing the dial exists to do. It now sweeps every slider position the control can reach (3,287 checks). Ask of any green result: *what did it not look at?*
 | **Runtime** | Zero dependencies, no build step, no network requests, no storage, runs from `file://` |
@@ -184,7 +184,7 @@ The face is **2280px of rock**, several screens wide, scanned by dragging, scrol
 
 ## The breaking floor: one anvil, the belt over it, and the ore on top
 
-**Measured 2026-09-07, all four widths, 0 errors over 25,123 checks in 47 groups, both controls failing.**
+**Measured 2026-09-07, all four widths, 0 errors over 25,972 checks in 47 groups, both controls failing.**
 
 **There is one box, and the anvil in it is the work.** The `workpair` is gone. It was two boxes: one held a row of chips and the belt, the other held a drawing of an anvil, two number boxes and the swing button — so **the anvil a student was looking at was not the thing their ore was on**, and the drawing was decoration beside the work. What is here now is the gallery you are standing in: the belt overhead, the anvil, the stone on its face, and whatever has come off it lying on the ground. **A first lump has nothing on the ground at all.**
 
@@ -1026,3 +1026,49 @@ true. Worth having anyway — all three failures were a whole missing subject, n
 > The real-world entry now carries both shortcuts: `47 × 53 = 50² − 3²`, and `1001 = 10³ + 1³
 > = 11 × 91`, which is why 1001 = 7 × 11 × 13 and why any three digits repeated divide by all
 > three. The `taught` prose budget counts the folded anecdote too, so it was trimmed to fit.
+
+## When an instrument has nothing to say
+
+**USER, 2026-09-07, after driving all nine layers:** *"We need a strategy when a tool does
+nothing to help the student understand why the ore didn't change."*
+
+**Measured before designing anything: 69 of 119 tool-on-lump combinations changed nothing at
+all.** The Steel was silent on 15 lumps out of 17. More than half of every instrument-on-rock
+a student can try did visibly nothing.
+
+`MF.lensFor` returned `null` and `MF.oreDisplay` fell back to the plain label — so **a lump
+with a tool held to it was drawn exactly as a lump with no tool on it.** Three different
+situations (the tool is broken, I failed to apply it, the tool has no business here) collapsed
+into one blank.
+
+> The comment that stood there was half right, and the half it got wrong cost the most: *"null
+> is a real answer, not a failure: an instrument that has nothing to say should say nothing
+> rather than invent."* Not inventing is correct and stays. But **"say nothing" and "look
+> identical to having done nothing" are not the same thing**, and only the first was intended.
+
+### The strategy, in three parts
+
+1. **It is visibly held.** The lump changes, so the student knows the tool landed.
+2. **It cannot be mistaken for a reading.** Dimmed, nothing re-spelt, no hole drawn — because
+   the one genuinely dangerous outcome is "no bite" read as a fact about the rock.
+3. **It points at the one that does bite** — `MF.OWNS`, keyed by the assay, so the engine's own
+   classification does the pointing.
+
+**And it points with a glyph, not a sentence.** The first version wrote the instrument's name
+under the lump and the `lens` group threw it straight out — **§21: in the mine a lens re-spells
+the ore and says nothing beside it.** It was right; a caption under a rock is a panel wearing a
+different hat. It now points with the owning tool's **own belt icon**, which is where the
+student goes to pick it up. The words live in `found`, where a screen reader gets them and the
+rock does not.
+
+### What it turned up
+
+**Native lumps were being sent to the Lantern, and the Lantern's lens had nothing to say
+either** — the one instrument whose stated job is *whether a seam still runs through this*. Its
+reading always said "Nothing moves in there"; its lens declined. It now marks an element with
+the diamond the Pick already uses, because a second glyph for the same fact is a second thing
+to learn.
+
+**`reading` is 1,580 checks now.** Every tool on every bench lump must change the ore; a
+no-bite mark must not draw a hole or write words; and **the tool it points at must actually
+bite** — a dead end that points at another dead end is worse than one that says nothing.

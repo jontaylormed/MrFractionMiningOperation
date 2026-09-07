@@ -1010,6 +1010,19 @@ input::placeholder, textarea::placeholder{color:#6B5B48; opacity:1}
 .lensed .ldial{color:var(--ore-t)}
 /* the prospector's pick's mark for an element: nothing left in it */
 .lensed .lfinal{color:var(--ore-t)}
+/* ---- AN INSTRUMENT THAT DID NOT BITE ----
+   It must be tellable from an untouched lump AND from a reading, and those
+   are two different jobs. Against untouched: the tag underneath, which no
+   bare lump has. Against a reading: the expression stays exactly as it was —
+   no colour picked out of it, nothing re-spelt — because the one genuinely
+   dangerous outcome here is a student reading "no bite" as a fact about the
+   rock. The whole mark is quieter than the ore it sits on. */
+.lensed .lnone{opacity:.5}
+/* the owning instrument's own belt glyph, small and set after the ore — a
+   mark, not a caption, because nothing may be written beside a lump (§21) */
+.lensed .lnobite{font-size:.78em; opacity:.85; padding-left:.4em;
+  color:var(--ore-t); align-self:center}
+.lump .lensed .lnobite,.piece.rock .lensed .lnobite{color:var(--lamp)}
 /* on the DARK chips of the cart and the breaking floor the ink has to invert:
    --ore-t is #8F4712 and reads 1.6:1 on #4A3F34. --lamp is 6.9:1 on it. */
 .lump .lensed .lop,.lump .lensed .lshared,.lump .lensed .lsplit,.lump .lensed .lfinal,
@@ -5333,6 +5346,23 @@ MF.LENS.steel = function(ore){
    `ingotHeld` keeps the x-part and the sign and holds the digit back; a plain
    metal has no shape to show and is given whole. */
 MF.LENS.lantern = function(ore){
+  /* ---- AN ELEMENT, LIT ----
+     The lantern's stated job is whether a seam still runs through a lump, and
+     "no" is half of that answer. Its READING has always said so plainly —
+     "Nothing moves in there" — and its LENS declined, so the one instrument
+     whose business is finished metal left the ore untouched when it found
+     some. Found by the no-bite strategy: every native lump was being pointed
+     at the lantern, and the lantern had nothing to say either.
+
+     The mark is the pick's, deliberately. A diamond after the expression means
+     "this is an element" everywhere in the mine, and a second glyph for the
+     same fact would be a second thing to learn. */
+  if(MF.isNative(ore)){
+    return {
+      html: lensMark('lfinal', MF.oreLabel(ore)) + lensMark('lop',' ') + lensMark('lfinal','&#9670;'),
+      found: 'nothing moves in there'
+    };
+  }
   if(MF.isCube(ore)){
     var cl2 = MF.cubeSplit(ore);
     if(!cl2) return null;
@@ -5558,13 +5588,87 @@ MF.LENS.pick = function(ore){
   };
 };
 
-/* WHAT A LENS IS ALLOWED TO CLAIM. Handed a lump and a tool, either a reading
-   or null - and null is a real answer, not a failure: an instrument that has
-   nothing to say about this shape should say nothing rather than invent. */
+/* =========================================================================
+   WHEN AN INSTRUMENT HAS NOTHING TO SAY, IT STILL HAS TO SAY THAT.
+
+   USER, 2026-09-07, after driving all nine layers: "We need a strategy when a
+   tool does nothing to help the student understand why the ore didn't change."
+
+   MEASURED BEFORE DESIGNING ANYTHING: 69 of 119 tool-on-lump combinations
+   changed NOTHING in the ore. The Steel was silent on 15 lumps out of 17.
+   Better than half of every instrument a student can pick up and hold to a
+   rock did visibly nothing at all.
+
+   THE OLD COMMENT HERE WAS HALF RIGHT AND THE HALF IT GOT WRONG COST MORE. It
+   read: "null is a real answer, not a failure: an instrument that has nothing
+   to say about this shape should say nothing rather than invent." Not
+   inventing is correct and stays. But `MF.oreDisplay` then fell back to the
+   plain label — so a lump with a tool held to it was drawn EXACTLY as a lump
+   with no tool on it. "Say nothing" and "look identical to having done
+   nothing" are not the same thing, and only the first one was intended.
+
+   A student cannot tell those two apart from anything on screen: whether the
+   tool is broken, whether they failed to apply it, or whether the instrument
+   genuinely has no business here. Three different situations, one blank.
+
+   ---- THE STRATEGY, IN THREE PARTS ----
+
+   1. IT IS VISIBLY HELD. The lump changes, so the student knows the tool
+      landed. A dead end that looks like a dead end is information.
+   2. IT CANNOT BE MISTAKEN FOR A READING. Dimmed, no numbers, its own mark —
+      because the one genuinely dangerous outcome is a student reading "no
+      bite" as a fact about the rock.
+   3. IT POINTS AT THE ONE THAT DOES BITE. This is the part that turns a dead
+      end into a step: the panel refusals already do it (`notMyLump` and its
+      siblings), and the ore itself never did.
+
+   ---- AND IT POINTS WITH A GLYPH, NOT A SENTENCE ----
+
+   The first version wrote the instrument's NAME under the lump and the `lens`
+   group threw it straight out: "in the mine a lens re-spells the ore and says
+   nothing beside it" — §21, and one of the oldest rules here. It is right. A
+   caption under a rock is a panel wearing a different hat, and the whole point
+   of a lens is that the reading is IN the ore.
+
+   So it points with the owning tool's own icon — the same glyph that is on the
+   belt, which is where the student will go to pick it up. A mark, not prose,
+   and it names the tool exactly as the belt names it.
+   ========================================================================= */
+/* WHICH INSTRUMENT OWNS A SHAPE. Keyed by the ASSAY, so it is the engine's own
+   classification doing the pointing rather than a second opinion about what a
+   lump is. A literal, because a table that computed itself from the lenses
+   would point wherever the lenses happened to go, including at another dead
+   end. `reading` holds every one of these to actually saying something. */
+MF.OWNS = {
+  composite:'steel',  pure:'lantern', shared:'steel',  twin:'drill',
+  plain:'dial',       loaded:'auger', grouped:'auger', stacked:'shifter',
+  twoel:'dial',       cubes:'drill'
+};
+MF.toolForOre = function(ore){
+  if(!ore) return null;
+  var k = MF.assayOf(ore);
+  return MF.OWNS[k] || null;
+};
 MF.lensFor = function(ore, tk){
   var fn = MF.LENS[tk];
   if(!fn || !ore) return null;
-  try { return fn(ore) || null; } catch(e){ return null; }
+  var read = null;
+  try { read = fn(ore) || null; } catch(e){ read = null; }
+  if(read) return read;
+  /* ---- NOTHING TO SAY, SAID ---- */
+  var owner = (tk !== MF.toolForOre(ore)) ? MF.toolForOre(ore) : null;
+  var t = owner && MF.TOOLS[owner];
+  return {
+    none: true,
+    /* THE ORE UNCHANGED AND DIMMED, then the owning tool's belt glyph. No
+       number is touched and no word is added: this must be tellable from an
+       untouched lump (the mark) and from a reading (nothing re-spelt). */
+    html: lensMark('lnone', MF.oreLabel(ore)) +
+          lensMark('lnobite', t ? t.ic : '&#8709;'),
+    /* the words live here, where a screen reader gets them and the rock does
+       not. `nm` already begins "The". */
+    found: t ? 'no bite — that is ' + t.nm + '’s lump' : 'no bite on this shape'
+  };
 };
 
 /* THE ORE, AS IT SHOULD BE DRAWN RIGHT NOW. This is what every place a lump
@@ -20566,6 +20670,35 @@ MF.validate = function(){
       try { read = MF.lensFor(ore, tk); }
       catch(e){ errs.push('lens: ' + tk + ' threw on ' + MF.oreText(ore) + ': ' + e.message); return; }
       if(!read) return;                 /* nothing to say is a real answer */
+      /* ---- A "NO BITE" MARK IS NOT A RE-SPELLING ----
+         Every structural rule below asks what an instrument DID to the ore:
+         did the steel write its metal into all three terms, does each term
+         re-spell to what it was. A no-bite mark does nothing to the ore on
+         purpose — it is the lump verbatim, dimmed, with the owning tool's
+         belt glyph after it — so those questions have no answer here and
+         asking them reported the mark as a wrong re-spelling forty-odd times.
+
+         WHAT STILL APPLIES IS §21, and it is checked below like any other
+         reading: no words beside the lump. That rule threw out the first
+         version of this mark, which wrote the instrument's name under the ore,
+         and it was right to. */
+      if(read.none){
+        chk('lens');
+        var np = lensPlain(read.html);
+        if(/[a-z]{4,}/.test(np.replace(/x/g,'')))
+          errs.push('lens: ' + tk + ' on ' + MF.oreText(ore) + ' found nothing and wrote words ' +
+                    'beside the lump — "' + np + '"');
+        chk('lens');
+        /* BOTH SIDES THROUGH THE SAME FLATTENER. `MF.oreLabel` is HTML and
+           comes out of lensPlain as `x2`; `MF.oreText` uses the superscript
+           character and reads `x²`. Comparing one against the other reported
+           every no-bite mark as having changed the lump, on formatting alone. */
+        var want = lensPlain(MF.oreLabel(ore)).replace(/\s/g,'');
+        if(np.replace(/\s/g,'').indexOf(want) < 0)
+          errs.push('lens: ' + tk + ' found nothing on ' + MF.oreText(ore) +
+                    ' and changed the lump anyway — a no-bite mark leaves every number alone');
+        return;
+      }
       chk('lens');
       if(!read.html || !String(read.html).trim()){
         errs.push('lens: ' + tk + ' on ' + MF.oreText(ore) + ' returned a reading that draws nothing');
@@ -22621,6 +22754,60 @@ MF.validate = function(){
             errs.push('reading: ' + lbl + ' offers a swing at native metal, which is already finished');
         } else { chk('reading'); }
       });
+    });
+
+    /* ---- AN INSTRUMENT THAT DOES NOTHING STILL CHANGES THE ORE ----
+
+       USER, 2026-09-07: "We need a strategy when a tool does nothing to help
+       the student understand why the ore didn't change."
+
+       MEASURED FIRST: 69 of 119 tool-on-lump combinations changed nothing at
+       all, because `MF.lensFor` returned null and `MF.oreDisplay` then drew
+       the plain label — a lump with a tool held to it looked EXACTLY like a
+       lump with no tool on it. Three different situations (the tool is broken,
+       I failed to apply it, the tool has no business here) collapsed into one
+       blank, and a student had nothing to tell them apart. */
+    BENCH.forEach(function(ore){
+      tools.forEach(function(t){
+        var r = MF.lensFor(ore, t);
+        var lbl = t + ' on ' + MF.oreDisplayText(ore);
+        chk('reading');
+        if(!r) errs.push('reading: ' + lbl + ' leaves the ore exactly as it was, ' +
+                         'so nothing on screen says the instrument was even held to it');
+        if(!r) return;
+        chk('reading');
+        /* AND IT MUST NOT READ AS A FINDING. The one genuinely dangerous
+           outcome is "no bite" mistaken for a fact about the rock. */
+        var plain = String(r.html).replace(/<[^>]+>/g,'');
+        if(r.none && /\?/.test(plain))
+          errs.push('reading: ' + lbl + ' found nothing and still drew a hole, which reads as a finding');
+        chk('reading');
+        if(r.none && !/lnobite/.test(r.html))
+          errs.push('reading: ' + lbl + ' found nothing and is drawn as a bare lump');
+      });
+    });
+    /* ---- AND THE TOOL IT POINTS AT ACTUALLY BITES ----
+       A dead end that points at another dead end is worse than one that says
+       nothing, because the student spends a second trip finding out. Every
+       shape's owner is held to having a real reading for it. */
+    BENCH.forEach(function(ore){
+      var owner = MF.toolForOre(ore);
+      chk('reading');
+      if(!owner){
+        errs.push('reading: nothing owns ' + MF.oreDisplayText(ore) + ', so a tool that ' +
+                  'does not bite has nowhere to send the student');
+        return;
+      }
+      chk('reading');
+      var got = MF.lensFor(ore, owner);
+      if(!got || got.none)
+        errs.push('reading: ' + MF.oreDisplayText(ore) + ' is sent to the ' + owner +
+                  ', which has nothing to say about it either');
+    });
+    /* every assay the engine can return has an owner */
+    Object.keys(MF.ASSAY).forEach(function(k){
+      chk('reading');
+      if(!MF.OWNS[k]) errs.push('reading: the assay "' + k + '" has no instrument that owns it');
     });
 
     /* 4. THE TWO TOOLS THAT NOW NAME IT, NAME IT. A rule stated as "must not
