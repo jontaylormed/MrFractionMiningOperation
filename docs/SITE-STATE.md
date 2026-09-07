@@ -22,7 +22,7 @@
 | **Screens** | **eight** — surface, the Stamp Mill, the Casting Shed and its three workshops, the mine, the forge |
 | **Layers** | **five**, all reachable from the first screen, none gated on anything |
 | **Instruments** | **seven**, all made at the forge, none granted |
-| **Validation** | `MF.validate()` → **15,928 checks / 44 groups / 0 errors**, two controls that must fail, and do — **run it at the width you ship from**, because `layout`, `reach`, `hollow` and `cartdraw` measure the live viewport and report it (`VERIFICATION.md` §61, §63, §65). Verified at **380×780, 560×760, 994×700 and 1250×900** |
+| **Validation** | `MF.validate()` → **18,669 checks / 45 groups / 0 errors**, two controls that must fail, and do — **run it at the width you ship from**, because `layout`, `reach`, `hollow` and `cartdraw` measure the live viewport and report it (`VERIFICATION.md` §61, §63, §65). Verified at **380×780, 560×760, 994×700 and 1250×900** |
 
 > **A check is only as wide as the space it sweeps.** The `truthy` group reported 0 errors across 642 checks while **1,970 Decimal Dial states printed a falsehood**, because it tested each lump's original integer coefficients and never nudged `c` — the one thing the dial exists to do. It now sweeps every slider position the control can reach (3,287 checks). Ask of any green result: *what did it not look at?*
 | **Runtime** | Zero dependencies, no build step, no network requests, no storage, runs from `file://` |
@@ -184,7 +184,7 @@ The face is **2280px of rock**, several screens wide, scanned by dragging, scrol
 
 ## The breaking floor: one anvil, the belt over it, and the ore on top
 
-**Measured 2026-09-07, all four widths, 0 errors over 15,928 checks in 44 groups, both controls failing.**
+**Measured 2026-09-07, all four widths, 0 errors over 18,669 checks in 45 groups, both controls failing.**
 
 **There is one box, and the anvil in it is the work.** The `workpair` is gone. It was two boxes: one held a row of chips and the belt, the other held a drawing of an anvil, two number boxes and the swing button — so **the anvil a student was looking at was not the thing their ore was on**, and the drawing was decoration beside the work. What is here now is the gallery you are standing in: the belt overhead, the anvil, the stone on its face, and whatever has come off it lying on the ground. **A first lump has nothing on the ground at all.**
 
@@ -800,3 +800,66 @@ disagreeing about what a bracket looks like.
 > that was told and not shown, and 1617 then 1232 characters of prose against a budget of
 > 1150. It is 1153 now. The budget is why the slides read as short as they do, and nothing was
 > relaxed to fit.
+
+## Layer 7 — Higher Ground
+
+**`x⁴ + b·x² + c`, which is a trinomial wearing a disguise.** Put `u = x²` and `x⁴ − 5x² + 4`
+is `u² − 5u + 4` — layer 4. And the halves that come off are ordinary two-term lumps:
+
+```
+x⁴ − 5x² + 4  =  (x² − 1)(x² − 4)  =  (x−1)(x+1)(x−2)(x+2)
+```
+
+**This layer adds no method. It stacks two that already exist**, and the lesson is that the
+first move makes the second one available. A lump here takes **three swings** where nothing
+else in the mine takes more than two, and the generator asserts that **at least 60% of
+breakable lumps go past one swing** — one that stopped after the substitution would teach that
+x⁴ is a trinomial and nothing more.
+
+The hammer head reads **`( [ ] x² + [ ] )`** on a quartic and switches back to `( [ ] x + [ ] )`
+the moment the halves land on the floor. A head labelled `x +` would be telling a student they
+had typed a shape that is not in there.
+
+### `x⁴ + 4` is not an element, and that was the whole risk
+
+It is **not** enough that no whole pair multiplies to c and adds to b:
+
+```
+x⁴ + 4  =  (x² − 2x + 2)(x² + 2x + 2)
+```
+
+A quartic of this shape can also split into two quadratics whose x terms cancel —
+`(x² + sx + t)(x² − sx + t) = x⁴ + (2t − s²)x² + t²`. Putting `x⁴ + 4` on the rack as native
+metal would be the site telling a flat lie about the one claim it is built on. **`MF.isNative`
+tests both ways**, and `MF.quartCrossSplit` is the second. The generator also **refuses lumps
+that only split the cross way**, because no instrument in this mine teaches that move: every
+lump up here is either breakable the way the Shifter shows, or genuinely done.
+
+> The `quartic` group brute-forces both splits over every lump the generator can produce and
+> holds `MF.isNative` to the answer. Its control — deleting the cross test — reports
+> **30 lumps**, `x⁴ + 4` first.
+
+### What the instruments say
+
+| | |
+|---|---|
+| **Shifter** | the gear change: `(x²)² − 5(x²) + 4`, then the X, then *"look at each half again"* |
+| **Drill** | reads `x⁴ − 16` **directly** — no middle term, both ends square. Declining there would have been an instrument refusing work it can plainly do because the exponents looked unfamiliar |
+| **Lantern** | one half's shape, digit held back |
+| Steel | no plain metal in a monic quartic, and says so |
+| Crosscut, Auger | decline, and name the Shifter |
+
+**`MF.rebuild` needed degree 4** to prove a floor of four linear pieces is still the lump it
+came from. `oreMul` stays quadratic — widening it would put a four-deep loop under every swing
+in the mine — so the wider multiplier lives beside `rebuild` and nowhere else. Its first
+version dropped the four-linear case: `x − 1` is stored as `{a:0,b:1,c:-1}` and comes out as a
+length-3 array, so four of them reached length 7 and tripped the degree cap. **The zeros are
+padding, not degree**; `trimArr` is the fix.
+
+**New group `quartic` — 2,452 checks.** The substitution both ways over every pair in −8..8;
+`x⁴ + 4` by name and every `(s,t)` form by construction; the hammer taking `x²` halves and
+nothing else; 300 generated lumps brute-forced against `MF.isNative`; the depth and native
+shares held in band. Driven through the real UI: `x² − 1` runs, the head switches gear, `x − 1`
+runs, and the floor rebuilds `x⁴ − 5x² + 4`.
+
+**Two shafts remain cut and not timbered:** Two Elements (`x² + 5xy + 6y²`) is next, then Cubes.

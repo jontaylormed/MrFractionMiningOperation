@@ -2566,13 +2566,21 @@ table.scan tr.hit td{background:#F1F8F5; color:var(--vein); font-weight:700}
      measured at x=250 while the nav ran to 1217. Auto pushes it to the right
      of whichever line it lands on, so it is on the right whether it shares the
      bar with the rooms or falls below them. */
-  padding:11px 18px; min-height:52px; flex:0 0 auto; margin-left:auto; cursor:pointer;
+  padding:11px 18px; min-height:52px; flex:0 0 auto; cursor:pointer;
   border:2px solid var(--lamp); border-radius:11px;
   background:var(--lamp); color:#2A1B06; font-weight:700;
   box-shadow:0 2px 0 rgba(0,0,0,.28)}
+/* THE WRAPPER CARRIES THE `margin-left:auto` NOW, not the button, or the
+   caption would be pushed right on its own and the two would come apart. */
+.accessbtnwrap{flex:0 0 auto; margin-left:auto; display:flex;
+  flex-direction:column; align-items:stretch}
+.accesscap{font-family:var(--body); font-size:calc(11px * var(--access-scale,1));
+  line-height:1.25; color:#FFFFFF; opacity:.82; text-align:center;
+  margin-top:4px; letter-spacing:.02em}
 .accessbtn:hover{background:#F2B457; border-color:#F2B457}
 .accessbtn:active{transform:translateY(1px); box-shadow:0 1px 0 rgba(0,0,0,.28)}
-@media(max-width:560px){ .accessbtn{margin-left:0; width:100%; justify-content:center} }
+@media(max-width:560px){ .accessbtnwrap{margin-left:0; width:100%}
+  .accessbtn{width:100%; justify-content:center} }
 .acrow{margin:0 0 13px}
 .aclab{font-family:var(--display); font-size:15px; color:var(--ink)}
 .achint{font-size:13px; color:var(--ink-soft); margin:1px 0 5px; max-width:60ch}
@@ -2665,11 +2673,21 @@ p,li{font-size:calc(17px * var(--access-scale,1))}
          hunting. In the markup rather than built by MF.paintNav, because that
          function clears and rebuilds #nav on every arrival and a button
          appended beside it there would stack up one per screen change. -->
-    <button id="accessbtn" class="accessbtn" type="button"
-            aria-haspopup="dialog"
-            aria-label="Reading and access settings. Also opens with Alt and A.">
-      <span aria-hidden="true">&#9881;</span> Reading &amp; Access
-    </button>
+    <!-- AND A LINE UNDER IT SAYING WHAT ELSE IS IN THERE (user, 2026-09-07).
+         "Reading & Access" does not sound like where the volume lives, and a
+         student hunting for the music would have no reason to open it. The
+         caption is aria-hidden because the button's own label already carries
+         the whole of it for a screen reader — read out twice it would be
+         noise, and it sits INSIDE the same wrapper so `margin-left:auto` keeps
+         both of them together on the right. -->
+    <div class="accessbtnwrap">
+      <button id="accessbtn" class="accessbtn" type="button"
+              aria-haspopup="dialog"
+              aria-label="Reading and access settings, including music and sound volume. Also opens with Alt and A.">
+        <span aria-hidden="true">&#9881;</span> Reading &amp; Access
+      </button>
+      <div class="accesscap" aria-hidden="true">Music/Sound Control Options</div>
+    </div>
   </div>
 </header>
 
@@ -2704,6 +2722,9 @@ function num(n){
 }
 function isInt(n){ return Math.abs(n-Math.round(n)) < 1e-9; }
 function signed(n){ var v=Math.round(n*1e6)/1e6; return (v<0?' − ':' + ') + num(Math.abs(v)); }
+/* the same sign, with the magnitude left off when it is 1 — for a coefficient
+   standing in front of a bracket rather than a term on its own */
+function signed2(n){ return (n<0?' − ':' + ') + (Math.abs(n)===1 ? '' : num(Math.abs(n))); }
 
 /* gcd / primes */
 function gcd(a,b){ a=Math.abs(a); b=Math.abs(b); while(b){ var t=a%b; a=b; b=t; } return a; }
@@ -2946,6 +2967,78 @@ MF.asOre = asOre;
    grouping lump here has no plain seam in it at all, so the only thing to see
    is the grouping.
    ========================================================================= */
+/* =========================================================================
+   HIGHER GROUND — LAYER 7.  `x⁴ + b·x² + c`
+
+   MINE-SPEC §7 names it "higher-degree with a common metal". What it actually
+   is, and what makes it worth a shaft of its own, is a TRINOMIAL WEARING A
+   DISGUISE: put u = x² and `x⁴ − 5x² + 4` is `u² − 5u + 4`, which is layer 4.
+
+       x⁴ − 5x² + 4  =  (x² − 1)(x² − 4)  =  (x−1)(x+1)(x−2)(x+2)
+
+   AND THE PIECES GO STRAIGHT BACK UNDER THE HAMMER. Each half is an ordinary
+   two-term lump — layer 3's twin seam — so this layer is not a new method at
+   all. It is two old ones stacked, and the whole lesson is noticing that the
+   first move makes the second one available. That is why a lump here can take
+   THREE swings to finish where nothing else in the mine takes more than two.
+
+   ---- WHAT "FINISHED" MEANS UP HERE, WHICH IS THE HAZARD ----
+
+   It is NOT enough that u² + bu + c fails to factor. `x⁴ + 4` has no whole
+   pair adding to 0 and multiplying to 4, and it is still not an element:
+
+       x⁴ + 4 = (x² − 2x + 2)(x² + 2x + 2)
+
+   A quartic of this shape can also split into two quadratics that carry x
+   terms which cancel. Writing `x⁴ + 4` on the rack as native metal would be
+   the site telling a flat lie about the one claim it is built on, so the test
+   below covers BOTH ways it can come apart — and the generator refuses the
+   second kind outright, because the mine does not teach that move. Every lump
+   up here is either breakable the way the Shifter shows, or genuinely done.
+   ========================================================================= */
+MF.isQuart = function(o){ return !!o && o.kind==='quart'; };
+MF.quartOre = function(b, c){ return {kind:'quart', b:b, c:c}; };
+/* the two halves as a quadratic in x², or null */
+MF.quartSplit = function(o){
+  if(!MF.isQuart(o)) return null;
+  for(var p = -Math.abs(o.c) - Math.abs(o.b) - 1; p <= Math.abs(o.c) + Math.abs(o.b) + 1; p++){
+    if(p === 0) continue;
+    if(o.c % p !== 0) continue;
+    var q = o.c / p;
+    if(p + q !== o.b) continue;
+    /* the SIMPLER half first, the same convention the lantern lights by */
+    var lo = Math.abs(p) <= Math.abs(q) ? p : q, hi = Math.abs(p) <= Math.abs(q) ? q : p;
+    return {left:{kind:'poly', a:1, b:0, c:lo}, right:{kind:'poly', a:1, b:0, c:hi}};
+  }
+  /* c === 0 is a shared metal, not this layer's move */
+  if(o.c === 0) return {left:{kind:'poly', a:1, b:0, c:0}, right:{kind:'poly', a:1, b:0, c:o.b}};
+  return null;
+};
+/* THE OTHER WAY IT CAN COME APART, and the reason `x⁴ + 4` is not an element.
+   (x² + sx + t)(x² − sx + t) = x⁴ + (2t − s²)x² + t², so a lump splits this
+   way exactly when c is a perfect square and b = 2t − s² for some whole s. */
+MF.quartCrossSplit = function(o){
+  if(!MF.isQuart(o) || o.c < 0) return null;
+  var r = Math.round(Math.sqrt(o.c));
+  if(r * r !== o.c) return null;
+  for(var i = 0; i < 2; i++){
+    var t = i ? -r : r, s2 = 2 * t - o.b;
+    if(s2 <= 0) continue;
+    var s = Math.round(Math.sqrt(s2));
+    if(s * s !== s2) continue;
+    return {s:s, t:t};                    /* (x² + sx + t)(x² − sx + t) */
+  }
+  return null;
+};
+/* x⁴ + bx² + c, printed */
+function quart4(b, c, txt){
+  var s = txt ? 'x⁴' : 'x<sup>4</sup>';
+  if(b!==0) s += (b<0?' − ':' + ') + (Math.abs(b)===1?'' : num(Math.abs(b))) + (txt?'x²':'x<sup>2</sup>');
+  if(c!==0) s += signed(c);
+  return txt ? s.replace(/<[^>]+>/g,'') : s;
+}
+MF.quart4 = quart4;
+
 MF.isGroup = function(o){ return !!o && o.kind==='group'; };
 MF.groupOre = function(b, c, d){ return {kind:'group', b:b, c:c, d:d}; };
 /* the two brackets, or null when nothing groups. `v` is the letter. */
@@ -2981,6 +3074,8 @@ MF.isNative = function(ore){
      MIDDLE. xy + 2x + 3y + 7 has no whole grouping in it and no other seam
      either — it is an element, exactly as 97 and x² + 4 are. */
   if(ore.kind==='group') return !MF.groupSplit(ore);
+  /* BOTH ways it can come apart, or it is not an element. See MF.quartCrossSplit. */
+  if(ore.kind==='quart') return !MF.quartSplit(ore) && !MF.quartCrossSplit(ore);
   if(ore.kind==='number') return isPrime(ore.n);
   /* a constant wearing polynomial clothes: smeltPoly calls {0,0,1} 'pure',
      and 1 is not an element - it is nothing at all */
@@ -3003,8 +3098,8 @@ MF.oreMul = function(l, r){
      to NaN and compare false against everything — a silent wrong answer. It
      reports overflow instead, which every caller already handles as "this is
      not a shape I can make". Use MF.rebuild for anything with letters in it. */
-  if(l && l.kind==='group') return {overflow:true, degree:2};
-  if(r && r.kind==='group') return {overflow:true, degree:2};
+  if(l && (l.kind==='group' || l.kind==='quart')) return {overflow:true, degree:4};
+  if(r && (r.kind==='group' || r.kind==='quart')) return {overflow:true, degree:4};
   var L=oreCoeffs(l), R=oreCoeffs(r);
   var p=[L.c,L.b,L.a], q=[R.c,R.b,R.a], out=[0,0,0,0,0];
   for(var i=0;i<3;i++) for(var j=0;j<3;j++) out[i+j] += p[i]*q[j];
@@ -3024,6 +3119,7 @@ MF.oreEq = function(p, q){
   if(!p || !q || p.kind !== q.kind) return false;
   if(p.kind==='number') return p.n === q.n;
   if(p.kind==='group')  return p.b===q.b && p.c===q.c && p.d===q.d;
+  if(p.kind==='quart')  return p.b===q.b && p.c===q.c;
   return p.a===q.a && p.b===q.b && p.c===q.c && oreVar(p)===oreVar(q);
 };
 
@@ -3033,12 +3129,59 @@ MF.oreEq = function(p, q){
    sorts the pieces by letter first, and only the two-letter case needs to know
    the grouping identity. Returns null when the pieces are not a shape this
    mine can make, which is itself a finding. */
+/* ---- COEFFICIENTS, UP TO x⁴ ----
+   `oreMul` tops out at degree 2 and always will: it is the quadratic
+   arithmetic the first five layers run on, and widening it would put a
+   four-deep loop under every swing in the mine. Higher Ground needs degree 4
+   in exactly one place — proving a floor of four linear pieces is still the
+   lump it came out of — so the wider multiplier lives here, used by MF.rebuild
+   and nothing else. */
+/* TRIMMED, and that matters. `x − 1` is stored as {a:0,b:1,c:-1} and comes out
+   as [-1, 1, 0] — a degree-1 polynomial in a length-3 array. Four of those
+   multiplied without trimming reach length 7 and trip the degree cap, so a
+   floor of four linear pieces reported that it did not rebuild its own lump.
+   The zeros are padding, not degree. */
+function trimArr(A){
+  var d = A.length - 1;
+  while(d > 0 && !A[d]) d--;
+  return A.slice(0, d + 1);
+}
+function coeffArr(o){
+  if(!o) return null;
+  if(o.kind==='number') return [o.n];
+  if(o.kind==='quart')  return [o.c, 0, o.b, 0, 1];
+  if(o.kind==='poly')   return trimArr([o.c, o.b, o.a]);
+  return null;                              /* a group has two letters */
+}
+function arrToOre(A){
+  var d = A.length - 1;
+  while(d > 0 && !A[d]) d--;
+  if(d <= 2) return asOre(A[2]||0, A[1]||0, A[0]||0);
+  if(d === 4 && A[4] === 1 && !A[3] && !A[1]) return MF.quartOre(A[2]||0, A[0]||0);
+  return null;                              /* a shape this mine cannot hold */
+}
+
 MF.rebuild = function(pieces){
   /* ONE PIECE IS ALREADY THE ANSWER. A lump that never came apart — a prime,
      an irreducible quadratic, a four-term element — is its own floor, and
      running it through the multiplier would ask the quadratic engine to
      represent something it cannot. */
   if(pieces.length === 1) return pieces[0];
+  /* NOTHING WITH A SECOND LETTER: those go down the grouping path below. */
+  if(!pieces.some(function(p){ return p.kind==='poly' && oreVar(p)==='y'; })){
+    var acc = [1];
+    for(var i = 0; i < pieces.length; i++){
+      var B = coeffArr(pieces[i]);
+      if(!B) { acc = null; break; }
+      var out = [];
+      for(var j = 0; j < acc.length; j++)
+        for(var k2 = 0; k2 < B.length; k2++)
+          out[j+k2] = (out[j+k2] || 0) + acc[j] * B[k2];
+      acc = trimArr(out);
+      if(acc.length > 5) { acc = null; break; }
+    }
+    if(acc) return arrToOre(acc);
+  }
   var ys = [], rest = [];
   pieces.forEach(function(p){ (p.kind==='poly' && oreVar(p)==='y' ? ys : rest).push(p); });
   if(!ys.length){
@@ -3069,6 +3212,7 @@ MF.oreToIngot = function(ore){
      from `x + 3` in the yard, and the forge would then pour one believing it
      had the other. */
   if(ore.kind==='group') return {m:0, k:0, group:{b:ore.b,c:ore.c,d:ore.d}, label:MF.oreText(ore)};
+  if(ore.kind==='quart') return {m:0, k:0, quart:{b:ore.b,c:ore.c}, label:MF.oreText(ore)};
   if(ore.v && ore.v !== 'x') return {m:0, k:0, letter:ore.v, lin:{m:ore.b,k:ore.c}, label:MF.oreText(ore)};
   if(ore.a===0 && ore.b===0) return {m:0, k:ore.c};
   if(ore.a===0) return {m:ore.b, k:ore.c};
@@ -3093,6 +3237,27 @@ MF.breakOff = function(ore, factor){
       return no('unsound','The pieces do not add back up to the rock they came out of.');
     return {ok:true, left:left, right:right, why:'The seam runs.'};
   };
+
+  /* ---- AN x⁴ LUMP: THE SAME ALGEBRA, ONE GEAR UP ----
+     The hammer is cut to `x² + k`, and the arithmetic underneath is the plain
+     trinomial's, done in u = x². What comes off is two ORDINARY quadratics,
+     which go straight back under the hammer as layer 3 twin seams — this
+     layer adds no new move, it makes an old one reachable. */
+  if(ore.kind==='quart'){
+    var qs = MF.quartSplit(ore);
+    if(factor.m !== 1)
+      return no('glance','The hammer glanced off. Both halves of a lump like this have a single x&sup2; at the front.');
+    if(!qs)
+      return no('glance','The hammer glanced off. No two whole numbers multiply to ' + num(ore.c) +
+                         ' and add to ' + num(ore.b) + ', so it does not come apart that way.');
+    if(factor.k !== qs.left.c && factor.k !== qs.right.c)
+      return no('glance','The hammer glanced off. That half is not in there.');
+    var qL = (factor.k === qs.left.c) ? qs.left : qs.right;
+    var qR = (factor.k === qs.left.c) ? qs.right : qs.left;
+    if(qL.c * qR.c !== ore.c || qL.c + qR.c !== ore.b)
+      return no('unsound','The pieces do not add back up to the rock they came out of.');
+    return {ok:true, left:qL, right:qR, why:'The seam runs.'};
+  }
 
   /* ---- A FOUR-TERM LUMP IN TWO LETTERS ----
      It is checked before everything else because it is the only ore on the
@@ -3180,12 +3345,14 @@ MF.breakOff = function(ore, factor){
 MF.oreLabel = function(o){
   if(o.kind==='number') return num(o.n);
   if(o.kind==='group')  return group4(o.b, o.c, o.d, false);
+  if(o.kind==='quart')  return quart4(o.b, o.c, false);
   var s = quad(o.a,o.b,o.c);
   return o.v && o.v !== 'x' ? s.replace(/x/g, o.v) : s;
 };
 MF.oreText  = function(o){
   if(o.kind==='number') return num(o.n);
   if(o.kind==='group')  return group4(o.b, o.c, o.d, true);
+  if(o.kind==='quart')  return quart4(o.b, o.c, true);
   var s = quadText(o.a,o.b,o.c);
   return o.v && o.v !== 'x' ? s.replace(/x/g, o.v) : s;
 };
@@ -3193,6 +3360,7 @@ MF.oreText  = function(o){
 /* the assay answer for a lump, from the engine - never authored by hand */
 MF.assayOf = function(o){
   if(o.kind==='group')  return MF.groupSplit(o) ? 'grouped' : 'pure';
+  if(o.kind==='quart')  return MF.isNative(o) ? 'pure' : 'stacked';
   if(o.kind==='number') return isPrime(o.n) ? 'pure' : 'composite';
   return MF.smeltPoly(o.a,o.b,o.c).kind;
 };
@@ -3222,7 +3390,8 @@ MF.ASSAY = {
   twin:      {name:'Twin Seam',         tell:'Two perfect squares with a minus between them, and no middle term at all.'},
   plain:     {name:'Plain Trinomial',   tell:'One x² with nothing in front. Two numbers that multiply to c and add to b.'},
   loaded:    {name:'Loaded Trinomial',  tell:'Something sits in front of the x². The pair you hunt multiplies to a·c.'},
-  grouped:   {name:'Grouped Vein',      tell:'Four terms and two letters. Take them two at a time and the same bracket comes out of both.'}
+  grouped:   {name:'Grouped Vein',      tell:'Four terms and two letters. Take them two at a time and the same bracket comes out of both.'},
+  stacked:   {name:'Stacked Seam',      tell:'An x to the fourth. Read the x&sup2; as the unit and it is an ordinary trinomial — then look at each half again.'}
 };
 
 /* =========================================================================
@@ -3235,11 +3404,11 @@ MF.LAYERS = [
   {n:3, name:'Twin Beds',   what:'two-term ore — x² − 9, and pure ingots'},
   {n:4, name:'Trinomial',   what:'x² + bx + c'},
   {n:5, name:'Loaded Vein', what:'ax² + bx + c'},
-  {n:6, name:'Grouping',    what:'four terms, two letters — xy + 3x + 2y + 6'}
+  {n:6, name:'Grouping',    what:'four terms, two letters — xy + 3x + 2y + 6'},
+  {n:7, name:'Higher Ground', what:'x⁴ + bx² + c — a trinomial one gear up'}
 ];
 MF.SHUT_SHAFTS = [
-  {name:'Higher Ground', what:'x⁴ − 5x² + 4', note:'next shaft to open'},
-  {name:'Two Elements', what:'x² + 5xy + 6y²'},
+  {name:'Two Elements', what:'x² + 5xy + 6y²', note:'next shaft to open'},
   {name:'Cubes', what:'a³ ± b³'}
 ];
 
@@ -3393,6 +3562,33 @@ MF.rawOre = function(layer, rng){
         return MF.groupOre(gb, gc, gb*gc + off);
       }
       return MF.groupOre(gb, gc, gb*gc);
+
+    /* ---- LAYER 7: HIGHER GROUND ----
+       `x⁴ + b·x² + c`, built from the two halves rather than searched for, so
+       the breakable ones are breakable by construction.
+
+       THE PAIRS ARE CHOSEN SO THAT AT LEAST ONE HALF GOES FURTHER. A lump that
+       stops after one swing would teach that x⁴ is a trinomial and nothing
+       more; the point of the layer is that the first move MAKES the second one
+       available, and a student only meets that if the halves are worth looking
+       at again. Negative squares give twin seams, so most lumps here take three
+       swings and end with four pieces on the floor. */
+    case 7:
+      if(rng() < 0.20){
+        /* AN ELEMENT, AND IT HAS TO SURVIVE BOTH TESTS. `x⁴ + 4` fails the
+           second one — see MF.quartCrossSplit — and putting it on the rack as
+           native metal would be the site lying about its own central claim. */
+        var nb = irange(rng,-9,9), nc = irange(rng,1,26);
+        var cand = MF.quartOre(nb, nc);
+        return MF.isNative(cand) ? cand : null;
+      }
+      var half = [-1,-1,-4,-4,-9,-16,-25,1,4,9,2,3,-2,-3,-5,-6];
+      var h1 = pick(rng, half), h2 = pick(rng, half);
+      if(h1 === 0 || h2 === 0) return null;
+      /* at least one half must be a twin seam, or the lump stops in one swing */
+      if(!((h1 < 0 && isSquare(-h1)) || (h2 < 0 && isSquare(-h2)))) return null;
+      if(Math.abs(h1 * h2) > 120) return null;
+      return MF.quartOre(h1 + h2, h1 * h2);
   }
   return null;
 };
@@ -4298,6 +4494,11 @@ MF.simplestFactor = function(ore){
     var g = MF.groupSplit(ore);
     return g ? {m:1, k:g.left.c, v:'x'} : null;
   }
+  /* the simpler half, which quartSplit already puts on the left */
+  if(ore.kind==='quart'){
+    var qq = MF.quartSplit(ore);
+    return qq ? {m:1, k:qq.left.c} : null;
+  }
   if(ore.kind==='number'){
     var pf = primeFactors(ore.n);
     return pf.length > 1 ? {m:0, k:pf[0]} : null;
@@ -4617,6 +4818,7 @@ function lensMark(cls, s){ return '<span class="' + cls + '">' + s + '</span>'; 
 
 /* THE STEEL PICK: the shared metal written inside every term it hides in. */
 MF.LENS.steel = function(ore){
+  if(MF.isQuart(ore)) return null;
   var g = MF.commonMetal(ore);
   if(!g) return null;
   var terms = oreTerms(ore), G = Math.abs(g);
@@ -4638,6 +4840,15 @@ MF.LENS.steel = function(ore){
    `ingotHeld` keeps the x-part and the sign and holds the digit back; a plain
    metal has no shape to show and is given whole. */
 MF.LENS.lantern = function(ore){
+  if(MF.isQuart(ore)){
+    var qs2 = MF.quartSplit(ore);
+    if(!qs2) return null;
+    return {
+      html: lensMark('ldark','( x<sup>2</sup> ' + (qs2.left.c<0?'&minus;':'+') + ' ' + lensMark('lqm','?') + ' )') +
+            lensMark('ldark','( ' + lensMark('lqm','?') + ' )'),
+      found: 'one half of it is shaped x&sup2; ' + (qs2.left.c<0?'&minus;':'+') + ' ?'
+    };
+  }
   if(MF.isNative(ore)) return null;      /* nothing to open; the chip is already the answer */
   var one = MF.simplestFactor(ore);
   if(!one) return null;
@@ -4651,6 +4862,7 @@ MF.LENS.lantern = function(ore){
 
 /* THE CORE DRILL: the MIDDLE term, opened up as the sum it is. */
 MF.LENS.drill = function(ore){
+  if(MF.isQuart(ore)) return null;
   if(ore.kind === 'number' || ore.a === 0) return null;
   var pr = MF.xPair(ore);
   if(!pr) return null;
@@ -4666,6 +4878,16 @@ MF.LENS.drill = function(ore){
 
 /* THE EXPONENT RAIL: the END term, opened up as the product it is. */
 MF.LENS.shifter = function(ore){
+  /* THE GEAR CHANGE, IN THE ORE ITSELF: the powers come down and the lump
+     reads as a trinomial, with the pair still the student's. */
+  if(MF.isQuart(ore)){
+    return {
+      html: lensMark('lsplit','( x<sup>2</sup> )<sup>2</sup>') +
+            lensMark('lop', signed2(ore.b)) + lensMark('lsplit','( x<sup>2</sup> )') +
+            lensMark('lop', signed(ore.c)),
+      found: 'a trinomial, one gear down'
+    };
+  }
   if(ore.kind === 'number' || ore.a === 0 || !ore.c) return null;
   var pr = MF.xPair(ore);
   if(!pr) return null;
@@ -4681,6 +4903,7 @@ MF.LENS.shifter = function(ore){
 
 /* THE POWERED AUGER: the middle actually split into the two terms it makes. */
 MF.LENS.auger = function(ore){
+  if(MF.isQuart(ore)) return null;
   /* ON A FOUR-TERM LUMP THIS IS THE INSTRUMENT, so it lights the halves: the
      first bracket is drawn because x is visible in both of its terms, and the
      second is the hole — whether the SAME thing comes out of the other half is
@@ -4734,6 +4957,7 @@ MF.LENS.auger = function(ore){
    below in the vein green, which is how the same two numbers are marked
    everywhere else the X is drawn. */
 MF.LENS.dial = function(ore){
+  if(MF.isQuart(ore)) return null;
   /* a four-term lump has two middles and no a·c: there is no X to hang on it,
      and a lens that drew one anyway printed "the pair multiplies to ? and adds
      to 3" over ore with no such pair in it. */
@@ -4923,6 +5147,14 @@ MF.notMyLump = function(host, tool, line){
     'the <b>Powered Auger</b>&rsquo;s lump &mdash; it takes them two at a time.'));
   MF.methodLine(host, tool);
 };
+/* AND THE SAME FOR AN x⁴ LUMP. Five instruments read `ore.b` and `ore.c` off a
+   quartic as if the powers were the ones they were cut for, and printed an X
+   with "? × 4" on it. The Shifter is the one that changes gear. */
+MF.notMyGear = function(host, tool, line){
+  host.appendChild(H('p','hint','<b>' + line + '</b> An x to the fourth is ' +
+    'the <b>Shifter</b>&rsquo;s lump &mdash; it drops the whole thing a gear first.'));
+  MF.methodLine(host, tool);
+};
 /* the two halves a grouping lump is read in: xy + bx, then cy + d */
 MF.groupHalves = function(o){
   var one = 'xy' + (o.b<0?' − ':' + ') + (Math.abs(o.b)===1?'x':num(Math.abs(o.b))+'x');
@@ -4934,6 +5166,24 @@ MF.TOOL_READ = {
   /* THE PIT LANTERN: is there still a seam in this, and if there is, one side
      of it. This is the tool the whole repeated swing hangs off. */
   lantern: function(host, ore, pieceId){
+    if(MF.isQuart(ore)){
+      var qnat = MF.isNative(ore), qlit = E('div','lampread' + (qnat?' clear':' seamed'));
+      qlit.appendChild(H('div','big', qnat ? 'Nothing moves in there.' : 'A seam still runs through this one.'));
+      qlit.appendChild(H('div','sm', qnat
+        ? 'No whole-number seam runs through it &mdash; not as a trinomial in x&sup2;, and not any other way either. It is an element.'
+        : 'It comes apart into two halves, and each half is worth looking at again. The lantern lights the shape of one.'));
+      host.appendChild(qlit);
+      if(!qnat){
+        host.appendChild(H('div','diaglab','WHAT THE LIGHT REACHES'));
+        var qh = MF.quartSplit(ore);
+        MF.splitDiagram(host, {whole:MF.oreLabel(ore),
+          left:'( x<sup>2</sup> ' + (qh.left.c < 0 ? '&minus;' : '+') + ' ? )', right:null,
+          key:'A single x&sup2; and which way the sign goes. The digit is yours, and so is the whole of the other half.'});
+      }
+      MF.methodLine(host, 'lantern');
+      if(!qnat) MF.paintNameSide(host, ore, pieceId);
+      return;
+    }
     if(MF.isGroup(ore)){
       var gnat = MF.isNative(ore), glit = E('div','lampread' + (gnat?' clear':' seamed'));
       glit.appendChild(H('div','big', gnat ? 'Nothing moves in there.' : 'A seam still runs through this one.'));
@@ -4983,6 +5233,34 @@ MF.TOOL_READ = {
 
   /* THE CORE DRILL: the X, and the pairs that could fill it. */
   drill: function(host, ore, pieceId){
+    if(MF.isQuart(ore)){
+      /* ---- AND SOMETIMES IT IS EXACTLY THIS DRILL'S LUMP ----
+         x⁴ − 16 has no middle term and both ends are squares: (x²)² − 4². The
+         drill's own two tests pass on it, and the answer it reads off is the
+         same one the Shifter's gear change arrives at. Declining here would
+         have been the instrument refusing work it can plainly do, on the
+         grounds that the exponents looked unfamiliar. */
+      if(ore.b === 0 && ore.c < 0 && isSquare(-ore.c)){
+        var qr = Math.round(Math.sqrt(-ore.c));
+        host.appendChild(H('div','diaglab','THE TWO TESTS FOR A TWIN SEAM'));
+        /* THE SAME TWO LINES THE DRILL ASKS OF EVERY LUMP. `MF.tickLine` is a
+           number line, not a list of questions — the first version called it
+           and drew an empty ruler under a heading promising two tests. */
+        MF.workLine(host, 'is the middle term nothing?',
+          ['yes — ' + MF.oreLabel(ore) + ' has no x<sup>2</sup> term'], 'wbig');
+        MF.workLine(host, 'are both ends squares, with a minus between?',
+          ['yes — x<sup>4</sup> is ( x<sup>2</sup> )<sup>2</sup>, and ' + num(-ore.c) + ' is ' + num(qr) + '<sup>2</sup>'], 'wbig');
+        host.appendChild(H('div','diaglab','SO THE PAIR ADDS TO NOTHING'));
+        MF.splitDiagram(host, {whole:MF.oreLabel(ore),
+          left:'( x<sup>2</sup> &minus; ? )', right:'( x<sup>2</sup> + ? )',
+          key:'The same number both times, once each way. Which number is yours &mdash; and then one of these two halves comes apart again.'});
+        MF.methodLine(host, 'drill');
+        MF.paintNameSide(host, ore, pieceId);
+        return;
+      }
+      MF.notMyGear(host, 'drill', 'No middle term missing and no minus between two squares, so there is nothing here to read off the shape.');
+      return;
+    }
     if(MF.isGroup(ore)){
       MF.notMyLump(host, 'drill', 'Nothing here is squared, so there are no two squares to find a difference between.');
       return;
@@ -5060,6 +5338,26 @@ MF.TOOL_READ = {
       MF.notMyLump(host, 'shifter', 'No x&sup2; here to put in the first corner of a box.');
       return;
     }
+    /* ---- THE GEAR CHANGE, WHICH IS WHAT THIS INSTRUMENT IS ----
+       x⁴ is x² squared, so reading the x² as the unit turns the whole lump
+       into an ordinary trinomial. The shifter does the reading and stops:
+       WHICH pair is the student's, and so is the second look at each half. */
+    if(MF.isQuart(ore)){
+      var qn = MF.isNative(ore), qsp = MF.quartSplit(ore);
+      host.appendChild(H('div','diaglab','DROP IT A GEAR &mdash; READ THE x&sup2; AS THE UNIT'));
+      MF.workLine(host, null, [MF.oreLabel(ore), '   becomes   ',
+        '( x<sup>2</sup> )<sup>2</sup>' + signed2(ore.b) + '( x<sup>2</sup> )' + signed(ore.c)], 'wbig');
+      host.appendChild(H('div','diaglab','AND NOW IT IS A TRINOMIAL'));
+      MF.xDiagram(host, {top:num(ore.c), bottom:num(ore.b), left:null, right:null});
+      MF.workLine(host, 'so the pair must multiply to ' + num(ore.c) +
+        ' and add to ' + num(ore.b), [null, '  and  ', null], 'wbig');
+      host.appendChild(H('div','hint', qn
+        ? '<b>And no whole pair does both</b>, so it does not come apart this way &mdash; nor any other. This one is finished.'
+        : '<b>Then look at each half again.</b> A half like x&sup2; &minus; 4 is two squares with a minus between them, and the Drill knows what to do with that. That second look is where a lump like this actually finishes.'));
+      MF.methodLine(host, 'shifter');
+      if(!qn) MF.paintNameSide(host, ore, pieceId);
+      return;
+    }
     if(ore.kind==='number' || ore.a===0){
       host.appendChild(H('p','hint','<b>No x² in this one.</b> The box needs one for its first corner.'));
       MF.methodLine(host, "shifter");
@@ -5103,6 +5401,10 @@ MF.TOOL_READ = {
      bracket constants, so one filled is half the answer and `schema` fails the
      build for it. */
   dial: function(host, ore, pieceId){
+    if(MF.isQuart(ore)){
+      MF.notMyGear(host, 'dial', 'The crosscut hangs an X under an x&sup2;, and the front of this one is a fourth power.');
+      return;
+    }
     if(MF.isGroup(ore)){
       MF.notMyLump(host, 'dial', 'The crosscut hangs an X under one middle term, and this lump has two.');
       return;
@@ -5143,6 +5445,16 @@ MF.TOOL_READ = {
 
   /* THE STEEL PICK: the common metal, drawn out in front of a bracket. */
   steel: function(host, ore, pieceId){
+    if(MF.isQuart(ore)){
+      /* the generator makes these monic on purpose, so the honest reading is
+         that there is no plain metal — and that is what leaves the gear
+         change as the only move. */
+      host.appendChild(H('div','diaglab','WHAT EVERY TERM DIVIDES BY'));
+      MF.workLine(host, null, [MF.oreLabel(ore)], 'wbig');
+      MF.workLine(host, 'the biggest that divides them all', ['1'], 'wbig');
+      MF.notMyGear(host, 'steel', 'So there is nothing to stand in front of a bracket.');
+      return;
+    }
     if(MF.isGroup(ore)){
       /* THE ONE THING THE STEEL CAN HONESTLY SAY HERE, and it is worth saying:
          a grouping lump on this layer is deliberately monic, so there is no
@@ -5221,6 +5533,10 @@ MF.TOOL_READ = {
   /* THE POWERED AUGER: the full X-box on loaded ore — and the whole method on
      a four-term one, which is the shaft it was really always for. */
   auger: function(host, ore, pieceId){
+    if(MF.isQuart(ore)){
+      MF.notMyGear(host, 'auger', 'Three terms, and no middle worth splitting until the powers come down.');
+      return;
+    }
     if(MF.isGroup(ore)){
       var gh = MF.groupHalves(ore), gs = MF.groupSplit(ore);
       host.appendChild(H('div','diaglab','1 &mdash; TAKE THEM TWO AT A TIME'));
@@ -11178,7 +11494,12 @@ MF.LAYER_LOOK = [
      walking towards red heat and this one is below all of it. The ore reads
      green because nothing else in the mine does, and a student arriving here
      should be able to see at a glance that the rock has changed. */
-  {sky:'#2A3330', rock:'#26302C', rock2:'#141A18', ore:'#5FC28A', glint:'#B7F2D0', strata:'#303B36', grit:'#3A4640'}
+  {sky:'#2A3330', rock:'#26302C', rock2:'#141A18', ore:'#5FC28A', glint:'#B7F2D0', strata:'#303B36', grit:'#3A4640'},
+  /* LAYER 7. Deeper still, and the coldest ground in the mine — a blue-violet
+     rock with pale ore in it. Every layer so far has been a different colour
+     from the one above it, because a student who has descended should be able
+     to tell WHERE they are without reading the heading. */
+  {sky:'#2A2A38', rock:'#272733', rock2:'#15151E', ore:'#9AA8F0', glint:'#D8DEFF', strata:'#333342', grit:'#3E3E4E'}
 ];
 
 /* the rocks currently exposed on the face - you look before you break */
@@ -12697,7 +13018,8 @@ MF.paintAssay = function(host, B){
   var accepted = MF.assayAccepts(ore);
   var opts = (ore.kind==='number') ? ['pure','composite']
             : (MF.isGroup(ore) ? ['pure','grouped']
-                               : ['pure','shared','twin','plain','loaded']);
+            : (MF.isQuart(ore) ? ['pure','stacked']
+                               : ['pure','shared','twin','plain','loaded']));
   var wrap = E('div','choices');
   MF.balanced(ore.id+'|assay', opts).forEach(function(k){
     var why = MF.ASSAY[k].tell;
@@ -12847,7 +13169,7 @@ MF.echoHammer = function(B){
      raw strings for emptiness: an empty x-part parses to 1, so testing the
      PARSED values reported an untouched bar as "cut to (x)" - a shape nobody
      had chosen, sitting there looking like a suggestion. */
-  var isGrp = B._pieceIsGroup;
+  var isGrp = B._pieceIsGroup, isQrt = B._pieceIsQuart;
   if(String(B.raw.k).trim()==='' && (isGrp || String(B.raw.m).trim()==='')){
     echo.innerHTML = isGrp
       ? 'the head is empty — pick a letter and type the number with it'
@@ -12861,7 +13183,8 @@ MF.echoHammer = function(B){
   }
   echo.innerHTML = 'the hammer is cut to <b>' +
     (isGrp ? '(' + linearV(1, k, (B.raw.v === 'y' ? 'y' : 'x')) + ')'
-           : (m===0 ? num(k) : '(' + ingotHtml({m:m,k:k}) + ')')) + '</b>';
+     : isQrt ? '(' + quad(m, 0, k) + ')'
+     : (m===0 ? num(k) : '(' + ingotHtml({m:m,k:k}) + ')')) + '</b>';
 };
 
 /* =========================================================================
@@ -13178,6 +13501,7 @@ MF.paintBreak = function(host, B){
   } else {
     B._pieceIsNum = (pieces[B.at].ore.kind === 'number');
     B._pieceIsGroup = (pieces[B.at].ore.kind === 'group');
+    B._pieceIsQuart = (pieces[B.at].ore.kind === 'quart');
     fl.appendChild(H('div','anvilcue','<b>Click the ore.</b> The hammer will ask what you are cutting out of it.'));
   }
 
@@ -13304,12 +13628,13 @@ MF.openHammer = function(B, opener){
   if(!B) return;
   var t = B.floor[B.at];
   if(!t || MF.isNative(t.ore)) return;
-  var ore = t.ore, isNum = ore.kind === 'number', isGrp = MF.isGroup(ore);
+  var ore = t.ore, isNum = ore.kind === 'number', isGrp = MF.isGroup(ore), isQrt = MF.isQuart(ore);
   /* the boxes are cut for the lump under the hammer: an x-shaped head on a
      plain number is a swing that can never land */
   if(B.rawFor !== t.id){ B.raw = MF.pickDefault(ore); B.rawFor = t.id; }
   B._pieceIsNum = isNum;
   B._pieceIsGroup = isGrp;
+  B._pieceIsQuart = isQrt;
 
   MF._openSheet({
     label: 'The hammer, over ' + MF.oreDisplayText(ore),
@@ -13374,11 +13699,14 @@ MF.openHammer = function(B, opener){
         box.appendChild(H('span','paren','('));
         var mi = document.createElement('input'); mi.type='text'; mi.inputMode='numeric';
         mi.value = B.raw.m; mi.placeholder = '1';
-        mi.setAttribute('aria-label','how many x — leave it empty for a single x, or put 0 for a plain number');
+        mi.setAttribute('aria-label', isQrt ? 'how many x squared — leave it empty for a single x squared' : 'how many x — leave it empty for a single x, or put 0 for a plain number');
         on(mi,'input',function(){ B.raw.m = mi.value; MF.echoHammer(B); });
         on(mi,'keydown',fire);
         box.appendChild(mi);
-        box.appendChild(H('span','paren','x +'));
+        /* ONE GEAR UP, AND THE HEAD HAS TO SAY SO. A lump on Higher Ground
+           comes apart into x&sup2; halves, so a head labelled "x +" would be
+           telling a student they had typed a shape that is not in there. */
+        box.appendChild(H('span','paren', isQrt ? 'x&sup2; +' : 'x +'));
       }
       var ki = document.createElement('input'); ki.type='text'; ki.inputMode='numeric';
       ki.value = B.raw.k; ki.placeholder = '0';
@@ -14516,7 +14844,7 @@ MF.validate = function(){
         var piece = floor[at];
         /* the engine's own idea of what is in there, one factor of it */
         var one = null;
-        if(piece.kind==='group'){ one = MF.simplestFactor(piece); }
+        if(piece.kind==='group' || piece.kind==='quart'){ one = MF.simplestFactor(piece); }
         else if(piece.kind==='number'){ one = {m:0, k:primeFactors(piece.n)[0]}; }
         else {
           var pr = MF.smeltPoly(piece.a,piece.b,piece.c);
@@ -20740,6 +21068,143 @@ MF.validate = function(){
   })();
 
   /* ======================================================================
+     HIGHER GROUND — LAYER 7.  `x⁴ + b·x² + c`
+
+     A TRINOMIAL WEARING A DISGUISE: put u = x² and it is layer 4. The halves
+     that come off are ordinary two-term lumps, so this layer adds no method —
+     it stacks two that exist, and the lesson is that the first move makes the
+     second one available.
+
+     THE WHOLE RISK IS IN THE WORD "FINISHED". It is not enough that no whole
+     pair multiplies to c and adds to b: `x⁴ + 4` fails that test and is still
+     (x² − 2x + 2)(x² + 2x + 2). Writing it on the rack as native metal would
+     be the site telling a flat lie about the one claim it is built on. The
+     sweep below brute-forces BOTH ways a quartic of this shape can split, over
+     every lump the generator can produce, and holds MF.isNative to the answer.
+     ====================================================================== */
+  (function(){
+    var qRng = makeRng(707070);
+    /* ---- THE SUBSTITUTION, BOTH WAYS ---- */
+    for(var qp = -8; qp <= 8; qp++){
+      for(var qq2 = -8; qq2 <= 8; qq2++){
+        if(!qp || !qq2) continue;
+        var made = MF.quartOre(qp + qq2, qp * qq2);
+        chk('quartic');
+        if(MF.isNative(made))
+          errs.push('quartic: ' + MF.oreText(made) + ' is (x² ' + (qp<0?'−':'+') + ' ' +
+                    Math.abs(qp) + ')(x² ' + (qq2<0?'−':'+') + ' ' + Math.abs(qq2) +
+                    ') and the engine calls it finished');
+        var sp = MF.quartSplit(made);
+        chk('quartic');
+        if(!sp || sp.left.c * sp.right.c !== made.c || sp.left.c + sp.right.c !== made.b)
+          errs.push('quartic: ' + MF.oreText(made) + ' did not come apart into halves that rebuild it');
+        chk('quartic');
+        if(!(sp && Math.abs(sp.left.c) <= Math.abs(sp.right.c)))
+          errs.push('quartic: ' + MF.oreText(made) + ' lit the harder half first');
+      }
+    }
+    /* ---- `x⁴ + 4` IS NOT AN ELEMENT, AND NOR IS ANYTHING LIKE IT ----
+       The named case, plus a brute force over the whole shape. */
+    chk('quartic');
+    if(MF.isNative(MF.quartOre(0, 4)))
+      errs.push('quartic: x⁴ + 4 is on the rack as native metal, and it is (x² − 2x + 2)(x² + 2x + 2)');
+    /* EVERY (s,t) FORM, checked against the engine's own verdict. */
+    for(var st = 1; st <= 6; st++){
+      for(var tt = 1; tt <= 6; tt++){
+        var cross = MF.quartOre(2*tt - st*st, tt*tt);
+        chk('quartic');
+        if(MF.isNative(cross))
+          errs.push('quartic: ' + MF.oreText(cross) + ' splits as (x² + ' + st + 'x + ' + tt +
+                    ')(x² − ' + st + 'x + ' + tt + ') and the engine calls it finished');
+      }
+    }
+
+    /* ---- THE HAMMER TAKES x² HALVES AND NOTHING ELSE ---- */
+    var qt = MF.quartOre(-5, 4);                 /* (x² − 1)(x² − 4) */
+    [[-1,'x² − 1','x² − 4'], [-4,'x² − 4','x² − 1']].forEach(function(p){
+      var got = MF.breakOff(qt, {m:1, k:p[0]});
+      chk('quartic');
+      if(!got.ok || MF.oreText(got.left) !== p[1] || MF.oreText(got.right) !== p[2])
+        errs.push('quartic: swinging ' + p[1] + ' at x⁴ − 5x² + 4 gave ' +
+                  (got.ok ? MF.oreText(got.left) + ' and ' + MF.oreText(got.right) : got.reason));
+    });
+    chk('quartic');
+    if(MF.breakOff(qt, {m:1, k:-2}).ok)
+      errs.push('quartic: x² − 2 came out of x⁴ − 5x² + 4, and it is not in there');
+    chk('quartic');
+    if(MF.breakOff(qt, {m:2, k:-1}).ok)
+      errs.push('quartic: 2x² − 1 came out of a lump whose halves carry a single x²');
+
+    /* ---- THE GENERATOR ---- */
+    var qStack = 0, qNat = 0, qSeen = 0, qDeep = 0;
+    for(var qi = 0; qi < 300; qi++){
+      var qo = MF.digOre(7, qRng);
+      if(!qo) continue;
+      qSeen++;
+      chk('quartic');
+      if(!MF.isQuart(qo)){ errs.push('quartic: layer 7 handed out ' + MF.oreText(qo)); continue; }
+      var qk = MF.assayOf(qo);
+      chk('quartic');
+      if(qk !== 'stacked' && qk !== 'pure') errs.push('quartic: ' + MF.oreText(qo) + ' assays as "' + qk + '"');
+      /* NATIVE MEANS NATIVE. Brute force, independent of MF.isNative. */
+      var reallyBreaks = !!MF.quartSplit(qo) || !!MF.quartCrossSplit(qo);
+      chk('quartic');
+      if(MF.isNative(qo) === reallyBreaks)
+        errs.push('quartic: ' + MF.oreText(qo) + ' is called ' + (MF.isNative(qo) ? 'finished' : 'breakable') +
+                  ' and a brute-force search says the opposite');
+      /* AND THE MINE ONLY HANDS OUT LUMPS IT CAN TEACH. A quartic that only
+         comes apart the cross way is beyond every instrument here. */
+      chk('quartic');
+      if(!MF.quartSplit(qo) && MF.quartCrossSplit(qo))
+        errs.push('quartic: ' + MF.oreText(qo) + ' only splits a way this mine never teaches');
+      if(MF.isNative(qo)){ qNat++; continue; }
+      qStack++;
+      /* break it all the way down and check the floor rebuilds the lump */
+      var floor = [qo], guard = 0;
+      while(guard++ < 12){
+        var at = -1;
+        for(var fi=0; fi<floor.length; fi++){ if(!MF.isNative(floor[fi])){ at=fi; break; } }
+        if(at < 0) break;
+        var one = MF.simplestFactor(floor[at]);
+        if(!one) break;
+        var br = MF.breakOff(floor[at], one);
+        if(!br.ok) break;
+        floor.splice(at, 1, br.left, br.right);
+      }
+      if(floor.length >= 3) qDeep++;
+      chk('quartic');
+      if(!floor.every(MF.isNative))
+        errs.push('quartic: ' + MF.oreText(qo) + ' never broke down to native metal');
+      chk('quartic');
+      if(!MF.oreEq(MF.rebuild(floor), qo))
+        errs.push('quartic: the pieces of ' + MF.oreText(qo) + ' do not multiply back to it');
+    }
+    chk('quartic');
+    if(qSeen < 150) errs.push('quartic: layer 7 only produced ' + qSeen + ' lumps out of 300 tries');
+    /* ---- AND MOST OF THEM GO FURTHER THAN ONE SWING ----
+       A lump that finishes in one would teach that x⁴ is a trinomial and
+       nothing more. The whole point of the layer is the SECOND look. */
+    chk('quartic');
+    if(qStack && qDeep < qStack * 0.6)
+      errs.push('quartic: only ' + qDeep + ' of ' + qStack + ' breakable lumps go past one swing — ' +
+                'the layer is teaching a substitution and stopping there');
+    chk('quartic');
+    if(qNat < qSeen * 0.05 || qNat > qSeen * 0.45)
+      errs.push('quartic: ' + qNat + ' of ' + qSeen + ' lumps up there are finished — ' +
+                'the layer is either a ritual or a wall');
+
+    /* ---- DEGREE FOUR REBUILDS, WHICH oreMul CANNOT DO ---- */
+    chk('quartic');
+    var four = MF.rebuild([{kind:'poly',a:0,b:1,c:-1},{kind:'poly',a:0,b:1,c:1},
+                           {kind:'poly',a:0,b:1,c:-2},{kind:'poly',a:0,b:1,c:2}]);
+    if(!MF.oreEq(four, MF.quartOre(-5,4)))
+      errs.push('quartic: (x−1)(x+1)(x−2)(x+2) rebuilt as ' + (four ? MF.oreText(four) : 'nothing'));
+    chk('quartic');
+    if(!MF.oreMul(qt, {kind:'number',n:2}).overflow)
+      errs.push('quartic: the quadratic multiplier accepted an x⁴ lump instead of refusing it');
+  })();
+
+  /* ======================================================================
      WHAT THE SEVEN INSTRUMENTS ACTUALLY SAY, ON ORE THEY WERE NOT WRITTEN FOR.
 
      USER, 2026-09-06: "All tools have not been tested by the user because the
@@ -20786,7 +21251,13 @@ MF.validate = function(){
       {kind:'poly', a:0,  b:5,  c:15,  done:false},
       {kind:'poly', a:0,  b:5,  c:3,   done:true},
       {kind:'poly', a:-1, b:0,  c:9,   done:false},
-      {kind:'poly', a:1,  b:-2, c:-15, done:false}
+      {kind:'poly', a:1,  b:-2, c:-15, done:false},
+      /* and the two deep shafts, so every instrument is held to them too */
+      {kind:'group', b:3,  c:2,  d:6,   done:false},
+      {kind:'group', b:3,  c:2,  d:7,   done:true},
+      {kind:'quart', b:-5, c:4,  done:false},
+      {kind:'quart', b:0,  c:-16, done:false},
+      {kind:'quart', b:3,  c:7,  done:true}
     ];
     /* AND THE ENGINE IS HELD TO THE LITERAL, not asked to supply it. If these
        two ever disagree, that is a finding in itself and it is reported here
@@ -21630,7 +22101,7 @@ MF.playthrough = function(layer){
     for(var i=0;i<B.floor.length;i++){ if(!MF.isNative(B.floor[i].ore)){ at=i; break; } }
     if(at < 0) break;
     var pc = B.floor[at].ore, one = null;
-    if(pc.kind==='group') one = MF.simplestFactor(pc);
+    if(pc.kind==='group' || pc.kind==='quart') one = MF.simplestFactor(pc);
     else if(pc.kind==='number') one = {m:0, k:primeFactors(pc.n)[0]};
     else {
       var pr = MF.smeltPoly(pc.a,pc.b,pc.c);
