@@ -22,7 +22,7 @@
 | **Screens** | **eight** — surface, the Stamp Mill, the Casting Shed and its three workshops, the mine, the forge |
 | **Layers** | **five**, all reachable from the first screen, none gated on anything |
 | **Instruments** | **seven**, all made at the forge, none granted |
-| **Validation** | `MF.validate()` → **13,239 checks / 43 groups / 0 errors**, two controls that must fail, and do — **run it at the width you ship from**, because `layout`, `reach`, `hollow` and `cartdraw` measure the live viewport and report it (`VERIFICATION.md` §61, §63, §65). Verified at **380×780, 560×760, 994×700 and 1250×900** |
+| **Validation** | `MF.validate()` → **15,925 checks / 44 groups / 0 errors**, two controls that must fail, and do — **run it at the width you ship from**, because `layout`, `reach`, `hollow` and `cartdraw` measure the live viewport and report it (`VERIFICATION.md` §61, §63, §65). Verified at **380×780, 560×760, 994×700 and 1250×900** |
 
 > **A check is only as wide as the space it sweeps.** The `truthy` group reported 0 errors across 642 checks while **1,970 Decimal Dial states printed a falsehood**, because it tested each lump's original integer coefficients and never nudged `c` — the one thing the dial exists to do. It now sweeps every slider position the control can reach (3,287 checks). Ask of any green result: *what did it not look at?*
 | **Runtime** | Zero dependencies, no build step, no network requests, no storage, runs from `file://` |
@@ -184,7 +184,7 @@ The face is **2280px of rock**, several screens wide, scanned by dragging, scrol
 
 ## The breaking floor: one anvil, the belt over it, and the ore on top
 
-**Measured 2026-09-07, all four widths, 0 errors over 13,239 checks in 43 groups, both controls failing.**
+**Measured 2026-09-07, all four widths, 0 errors over 15,925 checks in 44 groups, both controls failing.**
 
 **There is one box, and the anvil in it is the work.** The `workpair` is gone. It was two boxes: one held a row of chips and the belt, the other held a drawing of an anvil, two number boxes and the swing button — so **the anvil a student was looking at was not the thing their ore was on**, and the drawing was decoration beside the work. What is here now is the gallery you are standing in: the belt overhead, the anvil, the stone on its face, and whatever has come off it lying on the ground. **A first lump has nothing on the ground at all.**
 
@@ -709,3 +709,62 @@ charge.
 > up out of the mine forced the room tone off, wiping a level the student may have set. The
 > check written for it caught it on its first run. A room may **raise** a bed it owns; a room
 > that lowers one is undoing a setting from somewhere else, and that is now its own assertion.
+
+## Layer 6 — the Grouping shaft
+
+**USER, 2026-09-07:** continue building the other shafts. `MINE-SPEC.md` §7 settles *which*
+and *how many*: **"Grouping ships first"**, and **"one shaft opens per release — four families
+shipped together is four separate recognitions with four separate methods, all under-taught."**
+So Grouping is finished and **Higher Ground** now carries the *next shaft to open* note.
+
+**The ore is `xy + b·x + c·y + d`, and it needs one number fewer than it looks:**
+
+```
+(x + c)(y + b) = xy + b·x + c·y + b·c
+```
+
+Four terms group **exactly when the end is the product of the two in the middle.** Nothing is
+hunted — that is what makes it the purest separation move in the mine, and why it makes the
+loaded trinomial feel inevitable rather than arbitrary. It is **deliberately monic**: a common
+metal would be layer 2's lesson wearing a disguise, so there is no plain seam in these at all.
+
+**About a quarter of the layer does not group, and that is the layer as much as the grouping
+is.** If every four-term lump came apart, "check the end against the product of the middle"
+would be a ritual rather than a question, and a student would learn to swing without looking.
+The share is asserted between 10% and 45% rather than hoped for.
+
+### The second letter is where the risk was
+
+`x + 3` and `y + 3` have identical coefficients and are **not the same bracket.**
+
+- **`MF.oreEq`** compares the letter; **`MF.rebuild`** multiplies a floor back together
+  whatever letters are in it.
+- **`MF.oreMul` stays one variable forever** and now *refuses* a group rather than running it
+  through `oreCoeffs` and returning NaN — a silent wrong answer, and what 71 of the first
+  validate run's failures were made of.
+- **The hammer asks which letter** — two dies on the head, replacing the x-count box, because
+  both brackets carry a single letter and a box that can only be filled one way should not be
+  there. **The right number on the wrong letter glances**, which is the mistake this layer
+  exists to make available.
+- **A y-bracket reaches the yard labelled**, like an irreducible quadratic, so the forge can
+  never pour one believing it had the other. Grouping metals go on the rack and cannot be
+  spent — the same standing the quadratics already had.
+
+### What the instruments say about it
+
+| | |
+|---|---|
+| **Auger** | the real method: the two halves, one bracket pulled off the first, and the second left as **the hole** — whether the *same* thing comes out of the other half is the entire question |
+| **Lantern** | the shape of one bracket, digit held back, per its own rule |
+| Steel | there is no plain metal in a monic four-term lump, and says so |
+| Crosscut, Shifter, Drill | decline, and name the Auger |
+
+**Five of them had been reading `ore.b` and `ore.c` as if a four-term lump were a quadratic**,
+printing "? × 2" and "is the middle term nothing? no — it is 3x". Saying nothing would have
+been better than saying that, because it was confident.
+
+**New group `grouping` — 2,574 checks.** The identity from both directions over every b,c in
+−6..6; both letters swinging and the wrong letter glancing; 300 generated lumps classified,
+broken and rebuilt; the native share held in band; the yard keeping the letter. Driven through
+the real UI as well as the API — dig, cart, bench, `y + 2` glances, `y + 3` runs, floor is
+`y + 3 · x + 2`, both on the rack.
