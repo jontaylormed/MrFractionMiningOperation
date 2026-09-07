@@ -22,7 +22,7 @@
 | **Screens** | **eight** — surface, the Stamp Mill, the Casting Shed and its three workshops, the mine, the forge |
 | **Layers** | **five**, all reachable from the first screen, none gated on anything |
 | **Instruments** | **seven**, all made at the forge, none granted |
-| **Validation** | `MF.validate()` → **13,197 checks / 43 groups / 0 errors**, two controls that must fail, and do — **run it at the width you ship from**, because `layout`, `reach`, `hollow` and `cartdraw` measure the live viewport and report it (`VERIFICATION.md` §61, §63, §65). Verified at **380×780, 560×760, 994×700 and 1250×900** |
+| **Validation** | `MF.validate()` → **13,218 checks / 43 groups / 0 errors**, two controls that must fail, and do — **run it at the width you ship from**, because `layout`, `reach`, `hollow` and `cartdraw` measure the live viewport and report it (`VERIFICATION.md` §61, §63, §65). Verified at **380×780, 560×760, 994×700 and 1250×900** |
 
 > **A check is only as wide as the space it sweeps.** The `truthy` group reported 0 errors across 642 checks while **1,970 Decimal Dial states printed a falsehood**, because it tested each lump's original integer coefficients and never nudged `c` — the one thing the dial exists to do. It now sweeps every slider position the control can reach (3,287 checks). Ask of any green result: *what did it not look at?*
 | **Runtime** | Zero dependencies, no build step, no network requests, no storage, runs from `file://` |
@@ -184,7 +184,7 @@ The face is **2280px of rock**, several screens wide, scanned by dragging, scrol
 
 ## The breaking floor: one anvil, the belt over it, and the ore on top
 
-**Measured 2026-09-07, all four widths, 0 errors over 13,197 checks in 43 groups, both controls failing.**
+**Measured 2026-09-07, all four widths, 0 errors over 13,218 checks in 43 groups, both controls failing.**
 
 **There is one box, and the anvil in it is the work.** The `workpair` is gone. It was two boxes: one held a row of chips and the belt, the other held a drawing of an anvil, two number boxes and the swing button — so **the anvil a student was looking at was not the thing their ore was on**, and the drawing was decoration beside the work. What is here now is the gallery you are standing in: the belt overhead, the anvil, the stone on its face, and whatever has come off it lying on the ground. **A first lump has nothing on the ground at all.**
 
@@ -494,12 +494,38 @@ site made no sound at all before this; `THUD!` and `CLANG!` were painted `<div>`
 refuse to construct one on their own. That is enforced on a detached `Object.create(MF.audio)`
 copy rather than by nulling the live one, which is `VERIFICATION.md` §80 exactly.
 
-**Six cues, each on a moment that already has a picture** — `thud` when a seam runs, `clang`
+**Seven cues, each on a moment that already has a picture** — `pick` when a lump is cut out of
+the wall, `thud` when a seam runs, `clang`
 on a glance, `pour` at the ladle *and* in the Molds room, `stamp` under the mill press, `tick`
 when a lump is picked out, and `hoist` when the cage moves between layers. Each is
 **synthesised by default and file-backed when a file is there**, and every failure — no
 folder, 404, a format the decoder refuses, a fetch still in flight — falls back to the
 oscillators. **Adding sound files can never take sound away.**
+
+**THE PICK SWING WAS SILENT, AND 132 SOUND CHECKS SAID NOTHING. USER, 2026-09-07:**
+*"There should be a sound a pick axe... There are no sounds. Something is very broken that you
+think is working."*
+
+`MF.breakRock` — the **"Swing the pick"** button, a 400 ms pick-arm animation and a nine-shard
+burst, the loudest gesture in the mine — fired no cue at all. The faint noise a student *did*
+hear was `tick`, which belongs to merely **selecting** a lump one step earlier. Every check was
+about the sound *layer* — a cue can fire, fall back, be muted, be levelled, duck the beds — and
+**none asked whether the button a student presses fires one.** `VERIFICATION.md` §97.
+
+A literal `GESTURES` table now names every physical moment and the cue it owes, plus the
+reverse: a cue nothing plays is a failure, not 7 KB nobody notices.
+
+**And the two hammer outcomes are now two real hammer strikes**, chosen by how they decay
+rather than by spectral tilt — the physically true distinction and a much louder one:
+
+| | RMS | still ringing at 180 ms | |
+|---|---|---|---|
+| `thud` — the seam runs | −21.5 | −36.9 | **lands and stops** |
+| `clang` — the pick glances | −23.0 | −18.8 | **bounces and sings** |
+
+19.5 dB apart, which is what "tellable with your back to the screen" means as a number. The
+old `clang` came from a take literally named *"Put Hammer In Box"* — a set-down, and a
+confident metallic clunk is what success sounds like, not a miss.
 
 **THE BEDS DUCK UNDER A CUE. USER, 2026-09-07:** *"I am hearing the elevator. But I am barely
 hearing any sound effect for the pick. And i hear nothing for the hammer."*

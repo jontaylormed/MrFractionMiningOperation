@@ -5144,6 +5144,39 @@ MF.audio = {
 
   /* ---- THE CUES ---- */
   CUES: {
+    /* ---- THE PICK AT THE FACE ----
+
+       USER, 2026-09-07: "There should be a sound a pick axe."
+
+       THERE WAS NOT ONE, AND NOTHING SAID SO. `MF.breakRock` runs a 400 ms
+       pick-arm animation and a nine-shard burst to cut a lump out of the wall,
+       and it was silent — the loudest gesture in the mine with nothing on it.
+       The faint `tick` a student did hear belongs to merely SELECTING a lump,
+       one step earlier, which is why the pick read as "barely there".
+
+       Every group was green through all of it: `sound` proved the cues can be
+       fired and can fall back, and nothing anywhere asked whether the button a
+       student actually presses fires one. That is the gap §97 is about. */
+    pick: function(A, t){
+      /* the bite, then the spoil coming down after it */
+      var o = A.ctx.createOscillator();
+      o.type = 'triangle';
+      o.frequency.setValueAtTime(190, t);
+      o.frequency.exponentialRampToValueAtTime(62, t + 0.16);
+      A._env(o, t, 0.75, 0.004, 0.20).connect(A.fxBus);
+      o.start(t); o.stop(t + 0.28);
+      var n = A._noise(0.42), bp = A.ctx.createBiquadFilter();
+      bp.type = 'bandpass'; bp.Q.value = 0.8;
+      bp.frequency.setValueAtTime(2600, t);
+      bp.frequency.exponentialRampToValueAtTime(700, t + 0.34);
+      n.connect(bp);
+      var g = A.ctx.createGain();
+      g.gain.setValueAtTime(0.0001, t);
+      g.gain.linearRampToValueAtTime(0.34, t + 0.012);
+      g.gain.exponentialRampToValueAtTime(0.0001, t + 0.44);
+      bp.connect(g); g.connect(A.fxBus);
+      n.start(t); n.stop(t + 0.46);
+    },
     /* A SEAM RUNS: low, round, and over quickly. It is the good outcome, so
        it lands rather than rings — a long tail would make breaking rock feel
        like an alarm. */
@@ -5363,7 +5396,7 @@ MF.audio = {
 
      THE TICK IS NOT IN THE TABLE ON PURPOSE. It fires on every lump picked
      out of the wall, and a bed that dips on every pick is a bed that pumps. */
-  DUCK: { thud:{d:0.30, t:0.28}, clang:{d:0.30, t:0.28}, stamp:{d:0.30, t:0.32},
+  DUCK: { pick:{d:0.30, t:0.34}, thud:{d:0.30, t:0.28}, clang:{d:0.30, t:0.30}, stamp:{d:0.30, t:0.32},
           pour:{d:0.45, t:2.00}, hoist:{d:0.45, t:3.40} },
   duck: function(name){
     var D = this.DUCK[name];
@@ -11919,6 +11952,12 @@ MF.breakRock = function(idx, dest){
   var rocks = MF.state.face, o = rocks[idx];
   if(!o || MF.state.breaking) return;
   MF.state.breaking = true;
+  /* AND IT MAKES A NOISE (user, 2026-09-07). This is "Swing the pick" — the
+     pick-arm swings, nine shards fly, and until now it was silent. It goes
+     here rather than in the click handler so the sound belongs to the swing
+     itself, and cannot be fired twice by a double click: the `breaking` guard
+     above is the same one that stops the animation running twice. */
+  MF.audio.play('pick');
   var startLayer = MF.state.faceLayer;
 
   var reduced = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -20368,6 +20407,65 @@ MF.validate = function(){
       errs.push('sound: effects default to ' + MF.ACCESS_FX +
                 ', which puts a hammer landing below the bed it lands over');
   }
+
+  /* ---- EVERY PHYSICAL GESTURE IN THE MINE MAKES A NOISE ----
+
+     USER, 2026-09-07: "There should be a sound a pick axe... There are no
+     sounds. Something is very broken that you think is working."
+
+     THEY WERE RIGHT AND EVERY GROUP WAS GREEN. `MF.breakRock` — the "Swing
+     the pick" button, a 400 ms pick-arm animation and a nine-shard burst, the
+     loudest gesture in the mine — fired nothing at all. The faint noise a
+     student did hear was `tick`, which belongs to merely SELECTING a lump one
+     step earlier, so the pick read as "barely there".
+
+     NOTHING CAUGHT IT BECAUSE EVERY SOUND CHECK WAS ABOUT THE SOUND LAYER.
+     They proved a cue can be fired, can fall back, can be muted, is levelled
+     against its neighbours — all true, all green, and none of them asked
+     whether the button a student presses fires one. Proving an instrument
+     works is not proving anything is holding it.
+
+     THIS IS A SOURCE CHECK, AND THAT IS A REAL LIMIT. It proves the call is
+     written in the function, not that it runs on every path through it. A
+     behavioural version would have to drive `breakRock`, which sets a
+     `breaking` flag and runs on timers — §80 says a probe that leaves state
+     behind writes the next group's failures. The weaker check that exists
+     beats the stronger one that does not, and the limit is written down here
+     rather than assumed. */
+  (function(){
+    var GESTURES = [
+      ['cutting a lump out of the wall', 'breakRock',  'pick'],
+      ['bringing the hammer down',       'swing',      'thud'],
+      ['the hammer glancing off',        'swing',      'clang'],
+      ['the mill press dropping',        'millStamp',  'stamp'],
+      ['the forge pouring',              'forgePour',  'pour'],
+      ['picking a lump out of the seam', 'selectRock', 'tick']
+    ];
+    GESTURES.forEach(function(g){
+      var fn = MF[g[1]];
+      chk('sound');
+      if(typeof fn !== 'function'){
+        errs.push('sound: "' + g[0] + '" is listed as a gesture and MF.' + g[1] + ' is not a function');
+        return;
+      }
+      var src = fn.toString();
+      chk('sound');
+      if(src.indexOf("play('" + g[2] + "')") < 0 && src.indexOf('play("' + g[2] + '")') < 0 &&
+         src.indexOf("playSettled('" + g[2] + "'") < 0)
+        errs.push('sound: ' + g[0] + ' makes no noise — MF.' + g[1] +
+                  ' never fires the "' + g[2] + '" cue');
+    });
+    /* AND NO CUE IS WIRED TO NOTHING. A sound in the folder that no gesture
+       plays is 7 KB of download and a thing somebody will later "fix". */
+    var wired = {};
+    GESTURES.forEach(function(g){ wired[g[2]] = 1; });
+    wired.hoist = 1;                 /* the layer buttons, built in a loop */
+    Object.keys(MF.audio.CUES).forEach(function(k){
+      chk('sound');
+      if(!wired[k])
+        errs.push('sound: the "' + k + '" cue exists and nothing in the mine plays it');
+    });
+  })();
 
   /* ---- THE BEDS GET OUT OF THE WAY, AND THE TICK DOES NOT MAKE THEM ---- */
   Object.keys(MF.audio.DUCK).forEach(function(k){

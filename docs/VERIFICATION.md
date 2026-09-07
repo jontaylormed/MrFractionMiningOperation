@@ -2108,3 +2108,41 @@ for the length of the probe. No automation, nothing to fight, identical at every
 > A flaky check trains you to re-run until it passes, which is the exact opposite of what a
 > check is for. When one appears, **do not raise the tolerance** — find what is moving.
 > Something in the system is genuinely non-deterministic and you have just been shown where.
+
+## §97. Proving the instrument works is not proving anything is holding it
+
+The user: *"There are no sounds... Something is very broken that you think is working."*
+They were right, and the `sound` group was 132 checks of green.
+
+**`MF.breakRock` — the "Swing the pick" button, a 400 ms pick-arm animation and a nine-shard
+burst, the loudest gesture in the mine — fired no cue at all.** The faint noise a student did
+hear was `tick`, which belongs to merely *selecting* a lump one step earlier. So the pick read
+as "barely there" and the whole effects layer read as broken.
+
+Every check was about the **sound layer**: a cue can be fired, can fall back to synth, can be
+muted, is levelled against its neighbours, ducks the beds. All true. **None asked whether the
+button a student presses fires one.**
+
+My own testing had the identical blind spot. I called `MF.swing(B)` directly and reported the
+hammer verified — but `MF.swing` is not what a student clicks, and I never once clicked
+"Swing the pick" because I did not know it existed. **A gesture you have never heard of cannot
+appear in a list you write from memory**, which is why the list now lives in the file:
+
+```js
+var GESTURES = [
+  ['cutting a lump out of the wall', 'breakRock', 'pick'],
+  ...
+];
+```
+
+Plus the reverse — every cue in `CUES` must be claimed by some gesture — so a sound wired to
+nothing is a failure rather than 7 KB nobody notices.
+
+> **It is a source check** (`fn.toString().indexOf("play('pick')")`), and that limit is
+> written in the comment beside it. It proves the call is *in* the function, not that it runs
+> on every path. A behavioural version would have to drive `breakRock`, which sets a
+> `breaking` flag and runs on timers — §80 territory. **The weaker check that exists beats the
+> stronger one that does not.**
+
+The general rule: when a subsystem is verified end to end and a user still reports it missing,
+**stop testing the subsystem.** Test the path from the thing they actually touched.
