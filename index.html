@@ -1577,6 +1577,15 @@ ol.ssteps li.open::marker{color:var(--vein)}
   color:var(--ore-t); margin-bottom:4px}
 .ssteps li.whyslide .sact{font-size:15px; color:var(--ink); max-width:66ch}
 .ssteps li.whyslide.now:after{display:none}
+/* THE CLOSING SLIDE, and it is deliberately the only green panel in a lesson.
+   Everything above it holds something back; this is the one that does not, and
+   a student flicking back through should be able to find it without reading. */
+.ssteps li.revealslide{list-style:none; margin-left:-22px; padding-left:0;
+  background:#F1FAF3; border:2px solid var(--vein); border-radius:11px; padding:11px 13px}
+.ssteps li.revealslide .swhylab{font-family:var(--display); font-size:11px; letter-spacing:.12em;
+  color:var(--vein); margin-bottom:4px}
+.ssteps li.revealslide .sact{font-size:15px; color:var(--ink); max-width:66ch}
+.ssteps li.revealslide.now:after{display:none}
 
 /* ---- THE BENCH: the instrument, and ore to hold it to (MINE-SPEC §31) ---- */
 .lbench{background:linear-gradient(180deg,#3A3129,#241D18); border:3px solid var(--rock-3);
@@ -9277,6 +9286,78 @@ MF.paintToolSchool = function(host){
 /* WHERE EACH STUDENT IS IN EACH LESSON. Kept on MF.state so walking away from
    the room and coming back does not send them to step one, and so a repaint
    for any other reason cannot either. */
+/* =========================================================================
+   THE LAST SLIDE OF A LESSON FILLS EVERY HOLE IN.
+
+   USER, 2026-09-07: "the lesson needs to be explicit when exemplifying how a
+   tool works. So, eventually, in the process, all ?s are revealed and
+   explained."
+
+   THE TWO PLACES WERE OBEYING ONE RULE AND SHOULD NOT HAVE BEEN. "A method may
+   show part, never all" is the MINE's rule, and it is right there: an
+   instrument held to a lump you are working must not do the work. The Casting
+   Shed is the other thing entirely — it is where the method is demonstrated on
+   a lump chosen for the purpose, and a worked example that stops before the
+   answer is not a worked example. It is the same question asked slowly.
+
+   So the mine's tool sheet still shows part (the `schema` group scans
+   MF.paintSchema and fails the build at more than one side), and the lesson
+   ends by filling everything in and saying where each number came from.
+
+   THE REVEAL IS GENERATED, NOT AUTHORED. Seven hand-written endings would be
+   seven more copies of the words to go stale — the failure this file has been
+   caught by more than any other. It comes off the engine.
+   ========================================================================= */
+MF.fullBreak = function(ore){
+  var floor = [ore], guard = 0;
+  while(guard++ < 16){
+    var at = -1;
+    for(var i=0;i<floor.length;i++){ if(!MF.isNative(floor[i])){ at = i; break; } }
+    if(at < 0) break;
+    var one = MF.simplestFactor(floor[at]);
+    if(!one) break;
+    var got = MF.breakOff(floor[at], one);
+    if(!got.ok) break;
+    floor.splice(at, 1, got.left, got.right);
+  }
+  return floor;
+};
+/* WHERE THE NUMBERS CAME FROM, in the method's own terms. */
+MF.whyNumbers = function(ore){
+  if(MF.isNative(ore)) return 'Nothing comes out of it. That is the reading, not a failure to find one.';
+  if(ore.kind === 'number')
+    return 'Those are the primes ' + num(ore.n) + ' is built from &mdash; nothing else divides it.';
+  if(ore.kind === 'group')
+    return num(ore.b) + ' &times; ' + num(ore.c) + ' is ' + num(ore.d) +
+           ', which is exactly why the same bracket came out of both halves.';
+  if(ore.kind === 'cube'){
+    var cs = MF.cubeSplit(ore);
+    return 'Both ends are whole cubes, so the bracket is their two roots &mdash; and ' +
+           MF.oreLabel(cs.right) + ' has a negative discriminant, so it stops there.';
+  }
+  if(ore.kind === 'two'){
+    var ts = MF.twoSplit(ore);
+    return num(ts.left.p) + ' and ' + num(ts.right.p) + ' multiply to ' + num(ore.c) +
+           ' and add to ' + num(ore.b) + ' &mdash; each carrying the y that was always there.';
+  }
+  if(ore.kind === 'quart'){
+    var qs = MF.quartSplit(ore);
+    return num(qs.left.c) + ' and ' + num(qs.right.c) + ' multiply to ' + num(ore.c) +
+           ' and add to ' + num(ore.b) + ', reading the x&sup2; as the unit &mdash; ' +
+           'and then each half is looked at again.';
+  }
+  var g = MF.commonMetal(ore);
+  if(g) return num(g) + ' divides every term, so it comes out in front before anything else.';
+  if(ore.a !== 0 && ore.b === 0 && ore.c < 0 && isSquare(ore.a) && isSquare(-ore.c))
+    return 'A number and its own opposite &mdash; which is the only pair that adds to nothing, ' +
+           'and why the middle term cancels itself.';
+  var pr = MF.xPair(ore);
+  if(pr)
+    return num(pr.p) + ' and ' + num(pr.q) + ' multiply to ' + num(pr.ac) +
+           ' and add to ' + num(ore.b) + '. That is the whole search, finished.';
+  return 'The pieces above multiply back to it, which is the only test there is.';
+};
+
 MF.lessonState = function(key){
   if(!MF.state.school) MF.state.school = {};
   if(!MF.state.school[key]) MF.state.school[key] = {at:0};
@@ -9303,7 +9384,23 @@ MF.drawLesson = function(box, key){
      ZERO of the walk now: WHY it works, then HOW, step by step. The steps
      themselves are unchanged and still come from MF.SCHEMA, which the `schema`
      group checks. */
-  var beats = [{kind:'why', act:s.why}].concat(steps);
+  /* ---- AND ONE MORE BEAT AT THE END, WHICH FILLS EVERYTHING IN ----
+     Appended HERE and not inside `steps`, because `steps` is also what the
+     mine's tool sheet renders — and there a method must still show part and
+     never all. The lesson is the one place the answer belongs. */
+  /* THE ASIDE IS ONE LINE, NOT A PARAGRAPH. The first version explained the
+     mine-versus-lesson distinction in full, on all seven lessons — 200
+     characters of identical boilerplate seven times over, which is precisely
+     what the prose budget exists to catch. It caught it. */
+  var reveal = {kind:'reveal', act:'Nothing held back.',
+    draw: function(li){
+      var pieces = MF.fullBreak(ore);
+      MF.workLine(li, MF.oreLabel(ore) + '  =  ',
+        pieces.map(function(p){ return '( ' + MF.oreLabel(p) + ' )'; }), 'wbig');
+      li.appendChild(H('div','swhy', MF.whyNumbers(ore)));
+      li.appendChild(H('div','hint','In the mine the instrument stops before this. Here it does not.'));
+    }};
+  var beats = [{kind:'why', act:s.why}].concat(steps).concat([reveal]);
   var st = MF.lessonState(key);
   if(st.at > beats.length) st.at = beats.length;
   if(st.at < 0) st.at = 0;
@@ -9357,8 +9454,10 @@ MF.drawLesson = function(box, key){
   beats.forEach(function(step, i){
     if(i > st.at) return;
     var li = E('li', (step.kind === 'why' ? 'whyslide ' : '') +
+                     (step.kind === 'reveal' ? 'revealslide ' : '') +
                      (step.open ? 'open ' : '') + (i === st.at && !done ? 'now' : ''));
     if(step.kind === 'why') li.appendChild(H('div','swhylab','WHY IT WORKS'));
+    if(step.kind === 'reveal') li.appendChild(H('div','swhylab','ALL THE WAY THROUGH'));
     li.appendChild(H('div','sact', step.act));
     if(step.shows) li.appendChild(H('div','sshow', step.shows));
     if(step.draw){ try { step.draw(li); } catch(e2){} }
@@ -21276,13 +21375,81 @@ MF.validate = function(){
         errs.push('taught: "' + MF.SCHEMA[tgKey].name + '" never says what it is in mathematics — ' +
                   'the mine\'s name for a method is the only name on the lesson');
       }
+      /* ---- 1150, PLUS WHAT THE CLOSING SLIDE COSTS ----
+
+         USER, 2026-09-07: "the lesson needs to be explicit when exemplifying
+         how a tool works. So, eventually, in the process, all ?s are revealed
+         and explained." Every lesson now ends with a slide that fills in every
+         hole and says where the numbers came from.
+
+         THAT SENTENCE IS THE POINT OF THE SLIDE, so it cannot be trimmed away
+         to hit a number set before the slide existed — that would be tuning
+         the product to the check. The budget rises by the measured cost of one
+         reveal and not a character more, so a lesson that goes back to being a
+         wall of text is still caught.
+
+         WHAT WAS TRIMMED, because the budget was right about it: the first
+         version explained the mine-versus-lesson distinction in a 200
+         character paragraph repeated on all seven lessons. Identical
+         boilerplate seven times is exactly what this check is for. */
       chk('taught');
       var p = tgProse(body);
-      if(p > 1150)
+      if(p > 1150 + 190)
         errs.push('taught: ' + (body.querySelector('.lsnm')||{}).textContent + ' is ' + p +
                   ' characters of prose outside its diagrams — the lesson is still a wall of text');
     });
   } catch(e){ errs.push('taught: the Tools module threw while being walked: ' + e.message); }
+  /* ---- AND EVERY LESSON ENDS WITH THE ANSWER ON THE TABLE ----
+
+     USER, 2026-09-07: all the ?s are revealed and explained, eventually.
+
+     THE TWO PLACES OBEY DIFFERENT RULES AND THAT IS THE WHOLE POINT. The mine's
+     tool sheet must show part and never all — `schema` scans MF.paintSchema and
+     fails the build at more than one side. The Casting Shed is where the method
+     is DEMONSTRATED, and a worked example that stops before the answer is not a
+     worked example, it is the same question asked slowly.
+
+     So this is the mirror of the schema rule: down here the last slide must
+     leave NOTHING open, and must say where the numbers came from. */
+  MF.toolOrder().forEach(function(tk){
+    var h = document.createElement('div');
+    vsStage.appendChild(h);
+    var keepAt = MF.lessonState(tk).at;
+    MF.lessonState(tk).at = 99;
+    var threw = null;
+    try { MF.drawLesson(h, tk); } catch(e){ threw = e.message; }
+    var rv = h.querySelector('li.revealslide');
+    chk('taught');
+    if(threw){ errs.push('taught: ' + tk + '\'s lesson threw at the end: ' + threw); }
+    else if(!rv) errs.push('taught: ' + tk + '\'s lesson never fills its holes in — ' +
+                           'it walks a method and stops before the answer');
+    else {
+      chk('taught');
+      if((rv.textContent||'').indexOf('?') >= 0)
+        errs.push('taught: ' + tk + '\'s closing slide still has a ? on it, so something was never revealed');
+      chk('taught');
+      /* THE ANSWER ALONE IS NOT THE ASK — "revealed AND explained" — and the
+         element EXISTING is not the explanation. Both of the first versions of
+         these tested for a node rather than for words in it, and both controls
+         sailed straight through: an empty `.swhy` is still a `.swhy`. */
+      var why = rv.querySelector('.swhy');
+      if(!why || (why.textContent||'').trim().length < 20)
+        errs.push('taught: ' + tk + ' reveals its answer and never says where the numbers came from');
+      chk('taught');
+      /* AND IT HAS TO BE A FACTORISATION, not the lump restated. `x² − 5x + 6
+         = ( x² − 5x + 6 )` has no ? in it and reveals nothing whatsoever. */
+      var line = rv.querySelector('.wline');
+      var lo = MF.SCHEMA[tk].practice.ore;
+      var want = MF.isNative(lo) ? 1 : 2;
+      var parts = line ? (line.textContent.match(/\(/g) || []).length : 0;
+      if(parts < want)
+        errs.push('taught: ' + tk + '\'s closing slide shows ' + parts + ' piece(s) of ' +
+                  MF.oreText(lo) + ' — it restates the lump instead of breaking it');
+    }
+    MF.lessonState(tk).at = keepAt;
+    vsStage.removeChild(h);
+  });
+
   chk('taught');
   if(tgSeen !== MF.toolOrder().length)
     errs.push('taught: only ' + tgSeen + ' of ' + MF.toolOrder().length +
@@ -21313,7 +21480,7 @@ MF.validate = function(){
   vsStage.appendChild(tgPad);
   for(var tp=0; tp<9; tp++)
     tgPad.appendChild(H('p',null,new Array(31).join('a sentence of explanation. ')));
-  if(tgProse(tgPad) <= 1150)
+  if(tgProse(tgPad) <= 1150 + 190)
     errs.push('CONTROL: the taught prose budget cannot see a lesson padded back out to prose');
   vsStage.removeChild(tgPad);
 
