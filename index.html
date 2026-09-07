@@ -4110,10 +4110,10 @@ MF.TOOLS = {
      now. */
   drill: {
     rank:6, ic:'&#9881;', nm:'The Drill', order:'a core drill for the assay office',
-    ds:'Takes a core through a lump and says whether it is a twin seam: no middle term, and both ends perfect squares. When it is, the two brackets are a number and its opposite and the middle cancels itself.',
+    ds:'Takes a core and reads the two ends. Two squares with a minus and no middle term is a twin seam &mdash; the brackets are a number and its own opposite. Two whole cubes is a cube seam: one bracket comes off, and the piece behind it never breaks.',
     cast:{a:1,b:0,c:-25}, slots:2,
     forge:'Cast <b>x² − 25</b>. Two brackets with opposite numbers, so the middle cancels itself out and a twin seam is what comes off the mold.',
-    does:'the difference of two squares, on sight'
+    does:'two squares or two cubes, read off the ends'
   },
   auger: {
     rank:7, ic:'&#128295;', nm:'The Powered Auger', order:'a powered auger for the loaded ore',
@@ -9586,10 +9586,15 @@ MF.REALWORLD = {
     body: 'A floor 7m by 5m is 35m². Tile it in two strips — 4m and 3m — and it is 20 + 15, the same floor described twice. Every kitchen fitter and every tiler works in this rectangle, and none of them call it the distributive property.',
     tie: 'The box method IS that rectangle, run backwards: you know the area, and you are hunting for the two sides.'
   },
+  /* BOTH IDENTITIES NOW, because the lesson above it teaches both. This entry
+     said "that is a difference of two squares" at the foot of a walkthrough
+     whose four slides and whose practice are entirely about CUBES — a second
+     copy of the words going stale, one screen below the thing it contradicts,
+     which is the failure this file has been caught by more than any other. */
   drill: {
-    where: 'Multiplying either side of a round number',
-    body: '47 × 53 looks like work until you notice they are 50 − 3 and 50 + 3. Then it is 50² − 3², which is 2500 − 9, and you have done it in your head. People have leaned on round numbers this way for as long as there have been round numbers to lean on.',
-    tie: 'That is a difference of two squares, read in the other direction. The middle cancels because the two numbers are a number and its own opposite — which is exactly why the shortcut works, and exactly what the core is testing a lump for.'
+    where: 'Two shortcuts people already use',
+    body: '47 × 53 is 50 − 3 and 50 + 3, so it is 50² − 3² = 2491, in your head. And 1001 is 10³ + 1³, so it is 11 × 91 — which is why 1001 = 7 × 11 × 13, and why any three digits repeated divide by all three.',
+    tie: 'Both are this instrument read backwards: a difference of two squares, and a sum of two cubes. Neither is hunted for — you look at the two ends and the brackets follow.'
   },
   auger: {
     where: 'Splitting a bill that will not split evenly',
@@ -21911,6 +21916,41 @@ MF.validate = function(){
     if(cNat < cSeen * 0.05 || cNat > cSeen * 0.45)
       errs.push('cubes: ' + cNat + ' of ' + cSeen + ' lumps are finished — ' +
                 'the layer is either a ritual or a wall');
+
+    /* ---- WHAT THE DRILL SAYS ABOUT ITSELF, IN ALL FOUR PLACES IT SAYS IT ----
+
+       Opening this shaft widened one instrument's job, and an instrument
+       describes itself in four separate strings: `ds` on the order board,
+       `does` in the belt list, the schema's `name`, and the real-world
+       tie-back at the foot of its lesson. THREE OF THE FOUR WENT STALE and
+       stayed green — the tie-back read "that is a difference of two squares"
+       directly underneath four slides and a practice entirely about cubes.
+
+       THIS IS THE FILE'S MOST FREQUENT FAILURE, not a new one: a second copy
+       of the words drifting away from the code. It has cost `t.teaches`, the
+       voice script, and now this. Every one of the four is held to naming both
+       identities, because the lesson teaches both.
+
+       The limit, written down rather than assumed: this checks the strings
+       mention the right words, not that the sentences around them are true.
+       That is still worth having — all three failures here were a whole missing
+       subject, not a subtle one. */
+    ['ds','does'].forEach(function(f){
+      var s = String(MF.TOOLS.drill[f] || '').toLowerCase();
+      chk('cubes');
+      if(s.indexOf('cube') < 0)
+        errs.push('cubes: the Drill\'s "' + f + '" line still describes only squares, and it reads cubes now');
+      chk('cubes');
+      if(s.indexOf('square') < 0)
+        errs.push('cubes: the Drill\'s "' + f + '" line dropped the squares it has always read');
+    });
+    var rwD = String(MF.REALWORLD.drill.body + ' ' + MF.REALWORLD.drill.tie).toLowerCase();
+    chk('cubes');
+    if(rwD.indexOf('cube') < 0)
+      errs.push('cubes: the Drill\'s real-world tie-back sits under four cube slides and never mentions a cube');
+    chk('cubes');
+    if(rwD.indexOf('square') < 0)
+      errs.push('cubes: the Drill\'s real-world tie-back dropped the squares');
 
     /* ---- AND THE MAP HAS NOTHING LEFT ON IT THAT IS NOT REAL ---- */
     chk('cubes');

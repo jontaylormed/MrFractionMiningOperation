@@ -22,7 +22,7 @@
 | **Screens** | **eight** — surface, the Stamp Mill, the Casting Shed and its three workshops, the mine, the forge |
 | **Layers** | **five**, all reachable from the first screen, none gated on anything |
 | **Instruments** | **seven**, all made at the forge, none granted |
-| **Validation** | `MF.validate()` → **25,117 checks / 47 groups / 0 errors**, two controls that must fail, and do — **run it at the width you ship from**, because `layout`, `reach`, `hollow` and `cartdraw` measure the live viewport and report it (`VERIFICATION.md` §61, §63, §65). Verified at **380×780, 560×760, 994×700 and 1250×900** |
+| **Validation** | `MF.validate()` → **25,123 checks / 47 groups / 0 errors**, two controls that must fail, and do — **run it at the width you ship from**, because `layout`, `reach`, `hollow` and `cartdraw` measure the live viewport and report it (`VERIFICATION.md` §61, §63, §65). Verified at **380×780, 560×760, 994×700 and 1250×900** |
 
 > **A check is only as wide as the space it sweeps.** The `truthy` group reported 0 errors across 642 checks while **1,970 Decimal Dial states printed a falsehood**, because it tested each lump's original integer coefficients and never nudged `c` — the one thing the dial exists to do. It now sweeps every slider position the control can reach (3,287 checks). Ask of any green result: *what did it not look at?*
 | **Runtime** | Zero dependencies, no build step, no network requests, no storage, runs from `file://` |
@@ -184,7 +184,7 @@ The face is **2280px of rock**, several screens wide, scanned by dragging, scrol
 
 ## The breaking floor: one anvil, the belt over it, and the ore on top
 
-**Measured 2026-09-07, all four widths, 0 errors over 25,117 checks in 47 groups, both controls failing.**
+**Measured 2026-09-07, all four widths, 0 errors over 25,123 checks in 47 groups, both controls failing.**
 
 **There is one box, and the anvil in it is the work.** The `workpair` is gone. It was two boxes: one held a row of chips and the belt, the other held a drawing of an anvil, two number boxes and the swing button — so **the anvil a student was looking at was not the thing their ore was on**, and the drawing was decoration beside the work. What is here now is the gallery you are standing in: the belt overhead, the anvil, the stone on its face, and whatever has come off it lying on the ground. **A first lump has nothing on the ground at all.**
 
@@ -997,3 +997,32 @@ empty would be a promise nobody has decided to keep**, so the array is empty and
 the build if anything is added to it without a layer behind it.
 
 **All nine layers play through end to end**: `playthrough(1..9)` all whole.
+
+### The lesson, and the three copies that went stale under it
+
+**The Drill's lesson shipped with layer 9** (commit `1839720`) as **"Two ends, read on sight"** —
+four slides on `x³ − 8`, practising the bracket that comes off. Squares and cubes are two
+instances of one habit, which is what this instrument has always been for.
+
+**But opening the shaft widened the instrument's job, and an instrument describes itself in
+four separate strings.** Three of them went stale and stayed green:
+
+| | |
+|---|---|
+| `ds` — the order board | still "says whether it is a twin seam" |
+| `does` — the belt list | still "the difference of two squares, on sight" |
+| `REALWORLD.tie` | **"that is a difference of two squares"** — directly under four cube slides |
+| `SCHEMA.name` | correct |
+
+The tie-back is the worst of the three: it sat one screen below a walkthrough and a practice
+that were **entirely about cubes**, contradicting them.
+
+**This is the file's most frequent failure, not a new one** — a second copy of the words
+drifting away from the code. It has cost `t.teaches`, the voice script, and now this. All four
+strings are now held to naming **both** identities, with the limit written down beside the
+check: it proves the strings mention the right words, not that the sentences around them are
+true. Worth having anyway — all three failures were a whole missing subject, not a subtle one.
+
+> The real-world entry now carries both shortcuts: `47 × 53 = 50² − 3²`, and `1001 = 10³ + 1³
+> = 11 × 91`, which is why 1001 = 7 × 11 × 13 and why any three digits repeated divide by all
+> three. The `taught` prose budget counts the folded anecdote too, so it was trimmed to fit.
