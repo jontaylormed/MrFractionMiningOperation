@@ -2813,6 +2813,39 @@ function ingotHeld(g){
 function ingotKey(g){ return g.label ? ('poly|'+g.label) : (g.m+'|'+g.k); }
 /* product of a list of ingots -> {a,b,c}. Degree above 2 returns null. */
 function ingotProduct(list){
+  /* ---- METAL THAT IS NOT `m·x + k` ----
+
+     USER, 2026-09-07: "The forge doesn't take the deep shaft metals."
+
+     IT COULD NOT EVEN HOLD THEM. Every metal that is not a plain number or an
+     x-linear — an irreducible quadratic, a y-bracket, `x + 2y`, a four-term
+     element — reaches the yard as a LABELLED ingot with m and k zeroed, which
+     is what stops the forge pouring one believing it had something else. The
+     loop below then multiplied those zeros and got 0, so four layers' worth of
+     metal was worth nothing in the mold and nothing said so.
+
+     Anything carrying its own ore goes through MF.rebuild instead, which is
+     the same arithmetic the breaking floor proves itself with. A result the
+     mold cannot hold comes back as an overflow WITH the casting on it, so the
+     forge can say what you actually made rather than only that it was wrong. */
+  var wide = list.some(function(g){
+    if(!g || !g.ore) return false;
+    /* A y-BRACKET IS `m·y + k` AND LOOKS EXACTLY LIKE AN x ONE. It has a === 0
+       like any linear, so a test that only read the degree let `y − 4` fall
+       through to the quadratic loop, which multiplied it as if the letter said
+       x — and with m and k zeroed on a labelled ingot, to nothing at all. */
+    if(g.ore.v && g.ore.v !== 'x') return true;
+    return !(g.ore.kind === 'number' || (g.ore.kind === 'poly' && g.ore.a === 0));
+  });
+  if(wide){
+    var made = MF.rebuild(list.map(function(g){
+      return g.ore || asOre(0, g.m, g.k);
+    }));
+    if(!made) return {overflow:true, degree:0};
+    if(made.kind === 'number') return {a:0, b:0, c:made.n, ore:made};
+    if(made.kind === 'poly' && !made.v) return {a:made.a, b:made.b, c:made.c, ore:made};
+    return {overflow:true, ore:made};
+  }
   var poly = [1];                          /* coefficients, ascending powers */
   for(var i=0;i<list.length;i++){
     var g=list[i], next=[];
@@ -3381,21 +3414,27 @@ MF.rebuild = function(pieces){
    POLYNOMIAL carries its label, matching what the yard has always stored
    (ingotKey). NEVER use the result for arithmetic - see MF.oreMul. */
 MF.oreToIngot = function(ore){
-  if(ore.kind==='number') return {m:0, k:ore.n};
+  /* EVERY INGOT CARRIES THE ORE IT CAME FROM (user, 2026-09-07). `m` and `k`
+     are what the forge's quadratic arithmetic reads and they stay exactly as
+     they were; `ore` is what lets `ingotProduct` multiply the metals that do
+     not fit in two numbers. Without it a labelled ingot multiplied to zero and
+     the deep shafts produced metal the mold could not hold at all. */
+  var tag = function(g){ g.ore = ore; return g; };
+  if(ore.kind==='number') return tag({m:0, k:ore.n});
   /* A FOUR-TERM ELEMENT, or a bracket in the OTHER letter, is stored the way
      an irreducible quadratic is: labelled, with m and k zeroed so nothing can
      multiply it. `y + 3` returned as {m:1,k:3} would be indistinguishable
      from `x + 3` in the yard, and the forge would then pour one believing it
      had the other. */
-  if(ore.kind==='group') return {m:0, k:0, group:{b:ore.b,c:ore.c,d:ore.d}, label:MF.oreText(ore)};
-  if(ore.kind==='quart') return {m:0, k:0, quart:{b:ore.b,c:ore.c}, label:MF.oreText(ore)};
-  if(ore.kind==='two')   return {m:0, k:0, two:{b:ore.b,c:ore.c}, label:MF.oreText(ore)};
-  if(ore.kind==='cube')  return {m:0, k:0, cube:{a:ore.a,d:ore.d}, label:MF.oreText(ore)};
-  if(ore.kind==='bi')    return {m:0, k:0, bi:ore.p, label:MF.oreText(ore)};
-  if(ore.v && ore.v !== 'x') return {m:0, k:0, letter:ore.v, lin:{m:ore.b,k:ore.c}, label:MF.oreText(ore)};
-  if(ore.a===0 && ore.b===0) return {m:0, k:ore.c};
-  if(ore.a===0) return {m:ore.b, k:ore.c};
-  return {m:0, k:0, poly:{a:ore.a,b:ore.b,c:ore.c}, label:MF.oreText(ore)};
+  if(ore.kind==='group') return tag({m:0, k:0, group:{b:ore.b,c:ore.c,d:ore.d}, label:MF.oreText(ore)});
+  if(ore.kind==='quart') return tag({m:0, k:0, quart:{b:ore.b,c:ore.c}, label:MF.oreText(ore)});
+  if(ore.kind==='two')   return tag({m:0, k:0, two:{b:ore.b,c:ore.c}, label:MF.oreText(ore)});
+  if(ore.kind==='cube')  return tag({m:0, k:0, cube:{a:ore.a,d:ore.d}, label:MF.oreText(ore)});
+  if(ore.kind==='bi')    return tag({m:0, k:0, bi:ore.p, label:MF.oreText(ore)});
+  if(ore.v && ore.v !== 'x') return tag({m:0, k:0, letter:ore.v, lin:{m:ore.b,k:ore.c}, label:MF.oreText(ore)});
+  if(ore.a===0 && ore.b===0) return tag({m:0, k:ore.c});
+  if(ore.a===0) return tag({m:ore.b, k:ore.c});
+  return tag({m:0, k:0, poly:{a:ore.a,b:ore.b,c:ore.c}, label:MF.oreText(ore)});
 };
 
 MF.breakOff = function(ore, factor){
@@ -10918,7 +10957,17 @@ MF.SCREENS['workshop-ore'] = function(host){
    An irreducible polynomial in the yard is stored with m:0,k:0 and a label -
    it multiplies to nothing - so it is not a candidate for any mold. */
 MF.castableFrom = function(target, slots, have){
-  var pool = have.filter(function(e){ return !(e.ingot.m===0 && e.ingot.k===0); });
+  /* THE FILTER WAS THE OTHER HALF OF WHY THE DEEP METALS WERE UNSPENDABLE.
+     `m===0 && k===0` is exactly what a LABELLED ingot looks like — an
+     irreducible quadratic, a y-bracket, a four-term element — so every one of
+     them was dropped from the pool before the search began, and the forge
+     could not so much as consider them. What it was reaching for is "nothing
+     at all", which is 0 and 1, and that is what it excludes now. */
+  var pool = have.filter(function(e){
+    var g = e.ingot;
+    if(g.ore) return !(g.ore.kind === 'number' && Math.abs(g.ore.n) <= 1);
+    return !(g.m===0 && g.k===0);
+  });
   var found = null;
   (function walk(start, chosen){
     if(found) return;
@@ -11297,12 +11346,21 @@ MF.paintCraft = function(host, st){
    - it is the difference between watching four numbers appear and seeing why
    they are those four numbers. */
 MF.moldMaths = function(ingots, prod){
-  var wrap = function(g){ return (g.m===0) ? num(g.k) : '(' + ingotText(g) + ')'; };
+  /* A LABELLED INGOT IS NEITHER `num(k)` NOR `ingotText` — both read m and k,
+     which are zero on it, so a yard full of deep metal poured as "0 0 0". It
+     has its own label, and now its own ore behind that. */
+  var wrap = function(g){
+    if(g.ore && !(g.ore.kind === 'number')) return '(' + MF.oreText(g.ore) + ')';
+    if(g.label) return '(' + g.label + ')';
+    return (g.m===0) ? num(g.k) : '(' + ingotText(g) + ')';
+  };
   var out = {
     into: ingots.map(wrap),
     terms: [], merge: null, mergeFrom: null, single: null
   };
-  if(prod.overflow){ out.single = 'over'; return out; }
+  /* AND WHEN IT RAN OVER, SAY WHAT IT MADE. `over` on its own is the mold
+     telling a student their metal came to nothing, which is not true. */
+  if(prod.overflow){ out.single = prod.ore ? MF.oreText(prod.ore) : 'over'; return out; }
   out.single = quadText(prod.a, prod.b, prod.c);
 
   /* THERE IS NO "ALL PLAIN METAL" SHORTCUT, AND THE ONE THAT WAS HERE LIED.
@@ -11917,8 +11975,15 @@ MF.forgePour = function(st){
 MF.forgeJudge = function(t, ingots, prod){
   var want = t.cast;
   if(prod.overflow)
-    return {ok:false, why:'That is more metal than the mold holds — it has run over the sides. ' +
-      'The order is for <b>' + MF.castText(t) + '</b>, and what you poured is bigger than that.'};
+    /* AND IT SAYS WHAT CAME OUT, when it can (user, 2026-09-07). A pour of
+       deep-shaft metal makes a real object — `x + 2` and `x² + 2x + 4` cast
+       `x³ + 8` — and the forge used to answer only "bigger than that", which
+       is true and tells a student nothing about what they just made. */
+    return {ok:false, why: (prod.ore
+        ? 'That casts <b>' + MF.oreLabel(prod.ore) + '</b>, which is a sound object &mdash; ' +
+          'just not this one. The order is for <b>' + MF.castText(t) + '</b>.'
+        : 'That is more metal than the mold holds — it has run over the sides. ' +
+          'The order is for <b>' + MF.castText(t) + '</b>, and what you poured is bigger than that.')};
   /* AS FEW WORDS AS THE VERDICT NEEDS. The pour shows what went in, what it
      makes and what it comes to, over the metal - so the prose that used to
      re-say all of it in a paragraph is gone. What is left is the part a
