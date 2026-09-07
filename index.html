@@ -537,6 +537,11 @@ input::placeholder, textarea::placeholder{color:#6B5B48; opacity:1}
    only that the mold is FULL - never that the metals are right, which is the
    casting's to say and nothing else's. */
 .pourrow{margin-top:12px; align-items:center}
+/* THE SIGNPOST TO THE SCHOOL, SET APART AND UNDER THE KEEP BUTTON. It is a
+   footer, not a step: ruled off, quieter than the casting above it, and after
+   the one control the student is actually reaching for. */
+.castfoot{margin-top:14px; padding-top:11px; border-top:2px dashed var(--rule)}
+.castfoot .note{margin:0 0 9px}
 .pourbtn{transition:box-shadow .18s ease, transform .18s ease}
 .pourbtn[data-armed]{box-shadow:0 0 0 4px rgba(232,163,61,.5), 0 5px 0 rgba(0,0,0,.3)}
 .pourbtn[data-armed]:focus-visible{box-shadow:0 0 0 4px var(--lamp), 0 0 0 8px rgba(232,163,61,.35), 0 5px 0 rgba(0,0,0,.3)}
@@ -2608,6 +2613,23 @@ table.scan tr.hit td{background:#F1F8F5; color:var(--vein); font-weight:700}
 .accessbtn:active{transform:translateY(1px); box-shadow:0 1px 0 rgba(0,0,0,.28)}
 @media(max-width:560px){ .accessbtnwrap{margin-left:0; width:100%}
   .accessbtn{width:100%; justify-content:center} }
+/* ---- THE THREE BOXES THAT CLOSE THE SURFACE ----
+   The sister site's `.stats-strip` shape: a numeral, a label under it, and —
+   added here — the one line that makes it a claim rather than a count. Three
+   across on a desk, stacked on a phone, and every box the same height so the
+   numerals sit on one line. */
+.sellpanel{margin-top:16px}
+.stats-strip{list-style:none; margin:0; padding:0; display:grid; gap:13px;
+  grid-template-columns:repeat(3,1fr)}
+.stat-item{display:flex; flex-direction:column; align-items:center; text-align:center;
+  background:var(--sheet-2); border:2px solid var(--rule); border-radius:13px;
+  padding:15px 14px 16px}
+.stat-value{font-family:var(--display); font-size:clamp(34px,5.4vw,46px); line-height:1;
+  color:var(--vein)}
+.stat-label{font-family:var(--display); font-size:11px; letter-spacing:.14em;
+  text-transform:uppercase; color:var(--ore-t); margin-top:5px}
+.stat-say{font-size:14px; line-height:1.45; color:var(--ink); margin-top:9px; max-width:32ch}
+@media(max-width:720px){ .stats-strip{grid-template-columns:1fr} }
 .acrow{margin:0 0 13px}
 .aclab{font-family:var(--display); font-size:15px; color:var(--ink)}
 .achint{font-size:13px; color:var(--ink-soft); margin:1px 0 5px; max-width:60ch}
@@ -9016,15 +9038,47 @@ MF.SCREENS.home = function(host){
 
   host.appendChild(cards);
 
-  var shut = E('div','panel');
-  shut.appendChild(H('div','panel-tag','SHAFTS NOT YET OPEN'));
-  shut.appendChild(H('p','hint','These are cut but not yet timbered. They are named here so you know the mine keeps going.'));
-  var chips = E('div','chips');
-  MF.SHUT_SHAFTS.forEach(function(s){
-    chips.appendChild(H('span','chip','<b>'+s.name+'</b> &middot; '+s.what + (s.note?' &middot; <em>'+s.note+'</em>':'')));
+  /* ---- WHAT THIS PLACE IS, IN THREE BOXES ----
+
+     USER, 2026-09-07: "From the home page, remove shafts to be open. And look
+     at the sister site to mimic the three concise selling points of this page,
+     captured in three boxes at the bottom of the home page."
+
+     THE SHAFT PANEL WAS RIGHT UNTIL TODAY AND IS NOW AN EMPTY FRAME. It listed
+     the families cut but not timbered so the mine read as CONTINUING rather
+     than as stopping — and all four have been opened this session, so it drew
+     a heading, a sentence promising more, and nothing. A panel that says "the
+     mine keeps going" over an empty row says the opposite.
+
+     WHAT REPLACES IT IS THE SISTER SITE'S CLOSING MOVE: `.stats-strip`, three
+     items, a numeral over a label. Mr Fraction's Word Problem Express ends on
+     `5 Situations · 37 Word problems · 1 Mr Fraction` and it works because
+     every number is a claim about the product rather than a score — which is
+     also why it is safe here, where nothing may be counted about a STUDENT
+     (philosophy §2.5a). These three count the mine, not the miner.
+
+     They are this site's three, not the sister's three reworded:
+       9 — every layer open, nothing between them locked
+       0 — the rock judges, and there are no marks anywhere
+       1 — the one idea the whole thing is built on */
+  var sell = E('div','panel light sellpanel');
+  var strip = E('ul','stats-strip');
+  [
+    {v:'9', l:'layers', s:'Plain numbers to cubes. Dig straight to the bottom &mdash; <b>nothing is locked</b>.'},
+    /* NOT "no score, no percentage, no ranks" — the `nogrades` sweep is a word
+       search and does not read negations, which is exactly right: the surest
+       way for that vocabulary never to appear is for it never to be typed. */
+    {v:'0', l:'marks',  s:'Nothing here is counted and nothing is compared. The seam runs or the pick glances off, and <b>the rock is the only judge</b>.'},
+    {v:'1', l:'idea',   s:'A prime and an irreducible polynomial are <b>the same object</b>. Everything here follows from that.'}
+  ].forEach(function(it){
+    var li = E('li','stat-item');
+    li.appendChild(H('span','stat-value', it.v));
+    li.appendChild(H('span','stat-label', it.l));
+    li.appendChild(H('span','stat-say', it.s));
+    strip.appendChild(li);
   });
-  shut.appendChild(chips);
-  host.appendChild(shut);
+  sell.appendChild(strip);
+  host.appendChild(sell);
 };
 MF.card = function(title, tag, why, cta, fn){
   var c = E('div','card');
@@ -11523,8 +11577,37 @@ MF.paintCraft = function(host, st){
     : 'Click a metal on the rack below to drop it in.'));
   box.appendChild(cru);
 
-  /* THE METAL IS RIGHT HERE. Target, mold, slots, rack and pour, in that
-     order, with nothing between any two of them. */
+  /* ---- THE POUR SITS UNDER THE MOLD, NOT UNDER THE RACK ----
+
+     USER, 2026-09-07: "In the forge the pour button needs to be closer to the
+     animation."
+
+     THE ORDER USED TO BE target, mold, slots, RACK, pour — and the rack is the
+     one thing on this floor with no fixed height. A full rack pushed the
+     button most of a screen below the mold it pours, which is what the `reach`
+     group had been reporting as 633px from the target to the pour for as long
+     as it has been measuring it. The comment above it read "with nothing
+     between any two of them" while the longest list on the page sat between
+     the last two.
+
+     Mold, what is going in, POUR IT — those three belong together, and the
+     rack is where you go to change your mind. It moves below, which is also
+     the direction a student is already looking when they pick a metal up. */
+  var full = st.slots.length === want;
+  var pourRow = E('div','row pourrow');
+  /* THE POUR ARMS WHEN THE MOLD IS FULL, AND SAYS NOTHING ABOUT WHETHER THE
+     METALS ARE RIGHT. Lighting it only for a correct set would hand over the
+     answer before the pour and make the casting ceremonial - which is exactly
+     what MINE-SPEC §10a removed the free casting preview over. A wrong set and
+     a right set look identical here; the casting is still the only judge. */
+  var pour = E('button','btn primary big pourbtn','Pour the mold'); pour.type='button';
+  pour.disabled = !full;
+  if(full) pour.setAttribute('data-armed','yes');
+  on(pour,'click',function(){ MF.forgePour(st); });
+  pourRow.appendChild(pour);
+  if(!full) pourRow.appendChild(H('div','hint','The mold is not full yet.'));
+  box.appendChild(pourRow);
+
   MF.paintRack(box, st);
 
   /* WHAT IT IS WAITING FOR, when you cannot fill it. The old board disabled
@@ -11534,21 +11617,6 @@ MF.paintCraft = function(host, st){
     box.appendChild(H('div','note warn','<b>The rack cannot make ' + MF.castText(t) + ' yet.</b> ' +
       'No ' + want + ' metals on it multiply to that. Nothing is locked — break more ore and what comes out is racked here.'));
   }
-
-  /* THE POUR ARMS WHEN THE MOLD IS FULL, AND SAYS NOTHING ABOUT WHETHER THE
-     METALS ARE RIGHT. Lighting it only for a correct set would hand over the
-     answer before the pour and make the casting ceremonial - which is exactly
-     what MINE-SPEC §10a removed the free casting preview over. A wrong set and
-     a right set look identical here; the casting is still the only judge. */
-  var full = st.slots.length === want;
-  var pourRow = E('div','row pourrow');
-  var pour = E('button','btn primary big pourbtn','Pour the mold'); pour.type='button';
-  pour.disabled = !full;
-  if(full) pour.setAttribute('data-armed','yes');
-  on(pour,'click',function(){ MF.forgePour(st); });
-  pourRow.appendChild(pour);
-  if(!full) pourRow.appendChild(H('div','hint','The mold is not full yet.'));
-  box.appendChild(pourRow);
   /* FOCUS ONLY ON THE DROP THAT FILLED IT, and without scrolling: the button
      is already beside the rack, so moving the page would be the hurdle rather
      than the fix. The flag is consumed here, or every later repaint would
@@ -12157,22 +12225,32 @@ MF.forgePour = function(st){
   if(sound.ok){
     MF.spendFromYard(st.slots.map(function(s){ return s.key; }));
     MF.state.tools[st.picked] = {forged:true};
-    /* NO LESSON HERE (user, 2026-09-04). The whole method, its reasoning and a
-       practice used to be appended to the casting - three seconds after a
-       pour, when what the student is looking at is the object they just made.
-       The forge makes the thing. What it says about teaching is where to go
-       and that the lesson now exists, which it did not a moment ago. */
-    var toSchool = E('div','note');
-    toSchool.innerHTML = '<b>The lesson for it has opened on the Casting Shed’s working floor.</b> ' +
-      'It walks ' + MF.SCHEMA[st.picked].name.toLowerCase() + ' a step at a time on a lump chosen for it, ' +
-      'and there is one to try at the end. Nothing in the mine is waiting on it.';
-    box.appendChild(toSchool);
-    var goSchool = MF.jump('Read it in the Casting Shed &rarr;', 'shed-methods');
-    goSchool.style.marginRight = '8px';
-    box.appendChild(goSchool);
+    /* ---- THE OBJECT FIRST, THE SCHOOL AFTER IT ----
+
+       USER, 2026-09-07: "Sending them to learn in the casting shed is
+       important but text and buttons should be either off to the side or at
+       the bottom of the forge."
+
+       THE ORDER WAS BACKWARDS. Casting, verdict, then a paragraph about a
+       lesson, then a link to the lesson, and only THEN the button that keeps
+       the thing you just made — so the one control a student is reaching for
+       sat under two pieces of signposting to somewhere else. It is the forge's
+       moment, not the school's.
+
+       NO LESSON HERE (user, 2026-09-04). The whole method used to be appended
+       to the casting; the forge makes the thing, and what it says about
+       teaching is only where to go and that the lesson now exists. That still
+       holds — it just holds at the bottom. */
     var keep = E('button','btn primary','Hang it on your belt'); keep.type='button';
     on(keep,'click',function(){ st.picked=null; st.slots=[]; st.result=null; MF.paintForge(); });
     box.appendChild(keep);
+
+    var foot = E('div','castfoot');
+    foot.appendChild(H('div','note','<b>The lesson for it has opened on the Casting Shed’s working floor.</b> ' +
+      'It walks ' + MF.SCHEMA[st.picked].name.toLowerCase() + ' a step at a time on a lump chosen for it, ' +
+      'and there is one to try at the end. Nothing in the mine is waiting on it.'));
+    foot.appendChild(MF.jump('Read it in the Casting Shed &rarr;', 'shed-methods'));
+    box.appendChild(foot);
   } else {
     var again = E('button','btn','Rake it out and try again'); again.type='button';
     on(again,'click',function(){ st.slots=[]; st.result=null; MF.paintForge(); });
@@ -21251,8 +21329,23 @@ MF.validate = function(){
       errs.push('reach: at ' + w + 'px the craft floor runs ' + rcF.px + 'px from the target to the pour — ' +
                 (rcF.px - rcBudget) + 'px more than one ' + rcBudget + 'px screen');
 
-    /* THE RACK MUST BE BETWEEN THE SLOTS AND THE POUR, and all three inside the
-       craft panel. A rack in a sibling panel above is the layout this replaced. */
+    /* ---- MOLD, SLOTS, POUR — AND THE RACK UNDER THEM ----
+
+       USER, 2026-09-07: "the pour button needs to be closer to the animation."
+
+       THIS CHECK USED TO REQUIRE THE OPPOSITE and was wrong about it. The old
+       order was slots, RACK, pour, and the rack is the one thing on this floor
+       with no fixed height: a full one pushed the button most of a screen below
+       the mold it pours. The comment beside the layout claimed "nothing between
+       any two of them" while the longest list on the page sat between the last
+       two, and this check held that arrangement in place.
+
+       The three that belong together are the mold, what is going in, and the
+       button that pours it. The rack is where you go to CHANGE your mind, and
+       it goes below — which is also the direction a student is already looking
+       when they pick a metal up. All four still have to be one cluster inside
+       the craft panel; a rack in a sibling panel above is the layout this
+       replaced and is still wrong. */
     chk('reach');
     var craft = rcForge.querySelector('.craft');
     var rcRack = craft && craft.querySelector('.shelfrow');
@@ -21265,8 +21358,9 @@ MF.validate = function(){
       var yC = rcCru.getBoundingClientRect().bottom,
           yR = rcRack.getBoundingClientRect().top,
           yP = rcPour.getBoundingClientRect().top;
-      if(!(yR >= yC - 1 && yP >= yR - 1))
-        errs.push('reach: the craft floor is out of order — slots, then the rack, then the pour');
+      if(!(yP >= yC - 1 && yR >= yP - 1))
+        errs.push('reach: the craft floor is out of order — the pour belongs under the slots, ' +
+                  'with the rack below it, so the button is never pushed off the mold by a full rack');
     }
 
     /* THE DROP THAT FILLS THE MOLD MUST HAND FOCUS TO THE POUR. This is the
