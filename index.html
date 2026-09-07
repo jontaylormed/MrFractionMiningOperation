@@ -4012,8 +4012,60 @@ MF.SCHEMA = {
      was built to draw and had only one caller for. */
   shifter: {
     name: 'The box method',
-    why: 'An x&sup2; can only come from two x-parts multiplied, and the end only from the two numbers multiplied. Put those in opposite corners and the sides are forced.',
+    why: 'An x&sup2; can only come from two x-parts multiplied, and the end only from the two numbers multiplied. Put those in opposite corners and the sides are forced. Change gear first and a fourth power goes in the same box.',
     steps: function(ore){
+      /* ---- HIGHER GROUND: THE GEAR CHANGE, THEN THE SAME BOX ----
+
+         THE BOX IS NOT REPLACED HERE, IT IS REACHED. A quartic lesson that
+         dropped the area model would have cost this instrument its own method
+         in order to teach a substitution, so the gear change goes on the FRONT
+         of the box rather than instead of it. The last slide is the one thing
+         the trinomial version never has to say: look at each half again.
+
+         THE CELL TEXT IS PLAIN CHARACTERS. `MF.areaModel` draws its cells as
+         SVG <text> and sets textContent, so `x<sup>4</sup>` in there reaches
+         the screen as the literal string `x<sup>4</sup>` — which is what the
+         first version of this slide did. Markup belongs in `act` and `caption`
+         and nowhere near a cell. */
+      if(MF.isQuart(ore)){
+        var qh = MF.quartSplit(ore);
+        return [
+          {act:'x&sup2; multiplied by itself is x&#8308;. So read the x&sup2; as the unit.',
+           draw:function(li){
+             MF.workLine(li, null, [MF.oreLabel(ore), '   is   ',
+               '( x<sup>2</sup> )<sup>2</sup>' + signed2(ore.b) + '( x<sup>2</sup> )' + signed(ore.c)], 'wbig');
+           }},
+          {act:'Which is a trinomial, and it goes in the box like any other.',
+           draw:function(li){
+             MF.areaModel(li, {
+               rows:[{label:'?'},{label:'?'}], cols:[{label:'?'},{label:'?'}],
+               cells:[[{kind:'sq',text:'x⁴'},{kind:'x',text:''}],
+                      [{kind:'x',text:''},{kind:'k',text:num(ore.c)}]],
+               caption:'Opposite corners, exactly as before &mdash; only the powers are one gear up.',
+               a11y:'A two by two box with x to the fourth in one corner and ' + num(ore.c) + ' opposite it.'
+             });
+           }},
+          {act:'The sides carry a single x&sup2;, and both are still yours.', open:true,
+           draw:function(li){
+             MF.areaModel(li, {
+               rows:[{label:'?'},{label:'?'}], cols:[{label:'?'},{label:'?'}],
+               cells:[[{kind:'sq',text:'x⁴'},{kind:'x',text:'?'}],
+                      [{kind:'x',text:'?'},{kind:'k',text:num(ore.c)}]],
+               caption:'These two have to come to ' + (Math.abs(ore.b)===1?'':num(Math.abs(ore.b))) +
+                       'x<sup>2</sup>' + (ore.b<0?', taken away':'') + '. That is the whole check.',
+               a11y:'The same box one gear up, both sides unknown.'
+             });
+           }},
+          {act:'And then the part a trinomial never has: look at each half again.', open:true,
+           draw:function(li){
+             MF.splitDiagram(li, {whole:MF.oreLabel(ore),
+               left: qh ? '( x<sup>2</sup> ' + (qh.left.c<0?'&minus;':'+') + ' ? )' : null, right:null,
+               key: qh
+                 ? 'A half like x<sup>2</sup> &minus; 4 is two squares with a minus between them, and comes apart again. That second look is where a lump like this finishes.'
+                 : 'No whole pair does both, so it does not come apart this way &mdash; nor any other. This one is finished.'});
+           }}
+        ];
+      }
       if(ore.kind==='number' || ore.a===0) return [
         {act:'The box needs an x&sup2; for its first corner, and there is none in this one.', shows:MF.oreLabel(ore),
          draw:function(li){ MF.workLine(li, 'no x² to put in a corner', [MF.oreLabel(ore)], 'wbig'); }}
@@ -4054,7 +4106,13 @@ MF.SCHEMA = {
          }}
       ];
     },
-    practice: {ore:{kind:'poly',a:1,b:8,c:16}, ask:'x&sup2; + 8x + 16 &mdash; the box comes out square. Name one side.', answer:{m:1,k:4}}
+    /* THE LESSON WALKS WHATEVER THIS LUMP IS — MF.drawLesson runs steps() on
+       it — and it is the quartic now, because the gear change is the move a
+       student has met nowhere else. The box is not lost: it is slides two and
+       three of the walk above, drawn one gear up. */
+    practice: {ore:MF.quartOre(-5,4),
+               ask:'x&#8308; &minus; 5x&sup2; + 4 &mdash; read the x&sup2; as the unit and the pair multiplies to 4, adds to &minus;5. Name one half.',
+               answer:{m:1,k:-1}}
   },
 
   /* rank 6. THE TWIN SEAM, AND ONLY THAT.
@@ -4649,7 +4707,7 @@ MF.paintNameSide = function(host, ore, pieceId){
   if(!here || MF.isNative(here.ore)) return null;
 
   var isNum = (ore.kind==='number');
-  var isGrp = MF.isGroup(ore), nsv = 'x';
+  var isGrp = MF.isGroup(ore), isQrt = MF.isQuart(ore), nsv = 'x';
   var wrap = E('div','nameside');
   wrap.appendChild(H('div','nslab','THE OTHER SIDE'));
   wrap.appendChild(H('div','nshint','Write what you think it is, then take it to the anvil. The hammer is the only thing here that confirms anything.'));
@@ -4663,9 +4721,10 @@ MF.paintNameSide = function(host, ore, pieceId){
   } else if(!isNum){
     box.appendChild(H('span','paren','('));
     mi = document.createElement('input'); mi.type='text'; mi.inputMode='numeric'; mi.placeholder='1';
-    mi.setAttribute('aria-label','how many x — leave it empty for a single x, or put 0 for a plain number');
+    mi.setAttribute('aria-label', isQrt ? 'how many x squared — leave it empty for a single x squared'
+                                        : 'how many x — leave it empty for a single x, or put 0 for a plain number');
     box.appendChild(mi);
-    box.appendChild(H('span','paren','x +'));
+    box.appendChild(H('span','paren', isQrt ? 'x&sup2; +' : 'x +'));
   }
   var ki = document.createElement('input'); ki.type='text'; ki.inputMode='numeric'; ki.placeholder='0';
   ki.setAttribute('aria-label', isNum ? 'the number you think runs through it' : 'the number on the end');
@@ -8711,7 +8770,7 @@ MF.lessonPractice = function(host, key){
   pr.appendChild(H('div','prask', p.ask));
 
   var isNum = (p.ore.kind === 'number');
-  var isGrp = MF.isGroup(p.ore);
+  var isGrp = MF.isGroup(p.ore), isQrt = MF.isQuart(p.ore);
   var row = E('div','nsrow');
   var bx = E('div','hbox');
   var mi = null, pv = 'x';
@@ -8726,9 +8785,10 @@ MF.lessonPractice = function(host, key){
   } else if(!isNum){
     bx.appendChild(H('span','paren','('));
     mi = document.createElement('input'); mi.type='text'; mi.inputMode='numeric'; mi.placeholder='1';
-    mi.setAttribute('aria-label','how many x — leave it empty for a single x, or put 0 for a plain number');
+    mi.setAttribute('aria-label', isQrt ? 'how many x squared — leave it empty for a single x squared'
+                                        : 'how many x — leave it empty for a single x, or put 0 for a plain number');
     bx.appendChild(mi);
-    bx.appendChild(H('span','paren','x +'));
+    bx.appendChild(H('span','paren', isQrt ? 'x&sup2; +' : 'x +'));
   }
   var ki = document.createElement('input'); ki.type='text'; ki.inputMode='numeric'; ki.placeholder='0';
   ki.setAttribute('aria-label', isNum ? 'the number you are taking out' : 'the number on the end');
