@@ -5269,6 +5269,38 @@ MF.audio = {
     b.node = {g:g, os:os, lfo:lfo};
     return true;
   },
+  /* WHAT THE PANEL IS ALLOWED TO SAY ABOUT A LAYER.
+
+     USER, 2026-09-07: opened the site in Edge and heard neither the music nor
+     the supplied cues. Both defaults are off, and a page opened by
+     double-clicking the file cannot fetch anything beside it — Chromium blocks
+     `fetch` on a `file:` URL — so the recordings never arrive, the cues quietly
+     fall back to oscillators and the music bed has nothing to play at all.
+
+     EVERY PART OF THAT IS WORKING AS BUILT, AND THAT IS THE PROBLEM. A layer
+     that degrades silently is indistinguishable from a layer that is broken,
+     and the person it misleads first is whoever is testing it. So the panel
+     says which of the three it is, next to the slider that would have turned
+     it on. */
+  layerState: function(kind){
+    if(!this.ready) return 'idle';                 /* before the gesture */
+    if(kind === 'fx'){
+      var names = Object.keys(this.CUES), got = 0, load = 0;
+      names.forEach(function(n){
+        var v = this.sfx[n];
+        if(v && v !== 'missing' && v !== 'loading') got++;
+        else if(v === 'loading') load++;
+      }, this);
+      if(got === names.length) return 'file';
+      if(load) return 'loading';
+      return got ? 'part' : 'synth';
+    }
+    var b = this.beds[kind];
+    if(!b) return 'idle';
+    if(b.file && b.file !== 'missing' && b.file !== 'loading') return 'file';
+    if(b.file === 'loading') return 'loading';
+    return kind === 'amb' ? 'synth' : 'none';
+  },
   bedOff: function(kind){
     var b = this.beds[kind], m = b && b.node;
     if(!m) return false;
@@ -5823,16 +5855,44 @@ MF.openAccess = function(opener){
 
       /* ---- SOUND ---- */
       b.appendChild(H('div','acsplit','SOUND'));
+      /* SAY WHAT IS ACTUALLY PLAYING. See MF.audio.layerState — a layer that
+         degrades in silence is indistinguishable from one that is broken. */
+      var SAY = {
+        fx: {
+          synth:'The recorded cues are not loading from here, so these are the <b>made-up</b> ones &mdash; ' +
+                'oscillators, not a real hammer. They still fire on everything.',
+          part:'Some of the recorded cues are not loading from here; those ones are synthesised instead.',
+          loading:'The recordings are still arriving. Synthesised cues until they do.'
+        },
+        amb: {
+          synth:'The recording is not loading from here, so this is a <b>synthesised</b> room tone.',
+          loading:'The recording is still arriving.'
+        },
+        music: {
+          none:'<b>There is no track to play from here.</b> A song cannot be synthesised, so this ' +
+               'slider will stay silent until the file loads &mdash; which it will on the published site.',
+          loading:'The track is still arriving.'
+        }
+      };
+      function saySo(row, kind){
+        var st = MF.audio.layerState(kind), msg = SAY[kind] && SAY[kind][st];
+        if(msg) row.appendChild(H('div','acnote', msg));
+      }
       toggle(b, 'Mute everything', null, a.mute, function(v){ a.mute = v; });
-      slide(b, 'Sound effects', 'The hammer landing, a seam running, the pour.',
+      saySo(slide(b, 'Sound effects', 'The hammer landing, a seam running, the pour.',
         0, 1, 0.05, a.fx, function(n){ return n === 0 ? 'off' : Math.round(n*100) + '%'; },
-        function(n){ a.fx = n; });
-      slide(b, 'Mine ambience', 'The room tone of the place &mdash; machinery, a long way off. Starts off.',
+        function(n){ a.fx = n; }), 'fx');
+      saySo(slide(b, 'Mine ambience', 'The room tone of the place &mdash; machinery, a long way off. Starts off.',
         0, 1, 0.05, a.ambience, function(n){ return n === 0 ? 'off' : Math.round(n*100) + '%'; },
-        function(n){ a.ambience = n; });
-      slide(b, 'Music', 'A track over the top of it. Starts off.',
+        function(n){ a.ambience = n; }), 'amb');
+      saySo(slide(b, 'Music', 'A track over the top of it. Starts off.',
         0, 1, 0.05, a.music, function(n){ return n === 0 ? 'off' : Math.round(n*100) + '%'; },
-        function(n){ a.music = n; });
+        function(n){ a.music = n; }), 'music');
+      /* AND WHY IT IS QUIET WHEN NOTHING IS WRONG. Both beds start at zero, so
+         a student who has heard nothing has heard exactly what was built. */
+      if(!a.music && !a.ambience)
+        b.appendChild(H('div','achint','<b>The two beds start off.</b> Nothing is wrong if the ' +
+          'mine is quiet &mdash; move either slider up and it starts.'));
 
       /* ---- READ ALOUD ---- */
       b.appendChild(H('div','acsplit','READ ALOUD'));
@@ -19829,6 +19889,83 @@ MF.validate = function(){
       MF.audio.bedOff(kind);
       bed.file = keep;
     });
+  }
+
+  /* ---- A LAYER THAT CANNOT PLAY MUST SAY SO ----
+
+     USER, 2026-09-07: opened it in Edge and heard neither the music nor the
+     supplied cues. Nothing was broken. Both beds start at zero, and a page
+     opened by double-clicking the file cannot fetch what sits beside it, so
+     the recordings never arrive at all.
+
+     THAT IS THE DEFECT — not the silence, the silence being unexplained. A
+     layer that degrades quietly is indistinguishable from a layer that is
+     broken, and the first person it misleads is whoever is testing it. So the
+     panel is required to name which of the three it is, and this is what makes
+     that a requirement rather than a courtesy. */
+  if(MF.audio.ready){
+    var panelKeep = {sfx:MF.audio.sfx,
+                     music:MF.audio.beds.music.file, amb:MF.audio.beds.amb.file};
+    var panelSay = function(){
+      /* a probe that leaves a modal open writes the next group's failures */
+      [].slice.call(document.querySelectorAll('.scrim')).forEach(function(s){ s.remove(); });
+      MF.openAccess();
+      var sc = document.querySelector('.scrim');
+      var t = sc ? sc.textContent.replace(/\s+/g,' ') : '';
+      [].slice.call(document.querySelectorAll('.scrim')).forEach(function(s){ s.remove(); });
+      return t;
+    };
+    /* NOTHING LOADS — the file:// case, which is how this page is guaranteed
+       to be opened at least once. */
+    MF.audio.sfx = {};
+    MF.audio.beds.music.file = 'missing'; MF.audio.beds.amb.file = 'missing';
+    chk('sound');
+    if(MF.audio.layerState('music') !== 'none')
+      errs.push('sound: with no track the music layer reports "' + MF.audio.layerState('music') +
+                '" rather than having nothing to play');
+    chk('sound');
+    if(MF.audio.layerState('amb') !== 'synth')
+      errs.push('sound: with no recording the room tone should report that it is synthesised');
+    chk('sound');
+    if(MF.audio.layerState('fx') !== 'synth')
+      errs.push('sound: with no recordings the cues should report that they are synthesised');
+    var dark = panelSay();
+    chk('sound');
+    if(!/no track to play/i.test(dark))
+      errs.push('sound: the music slider is silent about there being no track, so a student ' +
+                'turning it up gets nothing and no reason');
+    chk('sound');
+    if(!/synthesised room tone/i.test(dark))
+      errs.push('sound: the ambience slider does not say it is running the synthesised tone');
+    chk('sound');
+    if(!/not loading from here/i.test(dark))
+      errs.push('sound: the effects slider does not say the recordings are missing');
+    /* AND WITH EVERYTHING PRESENT IT MUST NOT CRY WOLF. A panel that warns
+       about missing files on the published site is a panel nobody reads.
+
+       THE GUARD READS THE BUFFERS, NOT `layerState`. The first version asked
+       `layerState('music') === 'file'` before running this — so a layerState
+       that lied about everything skipped the check that exists to catch a
+       layerState that lies. The control proved it: patching layerState to
+       report 'none' for everything left this green. Third time this build a
+       check has been written in terms of the thing it checks. */
+    MF.audio.sfx = panelKeep.sfx;
+    MF.audio.beds.music.file = panelKeep.music; MF.audio.beds.amb.file = panelKeep.amb;
+    var realBuf = function(v){ return !!v && v !== 'missing' && v !== 'loading'; };
+    var allSfx = Object.keys(MF.audio.CUES).every(function(k){ return realBuf(MF.audio.sfx[k]); });
+    if(realBuf(MF.audio.beds.music.file) && allSfx){
+      var lit = panelSay();
+      chk('sound');
+      if(/not loading|no track to play|synthesised room tone/i.test(lit))
+        errs.push('sound: the panel warns about missing audio while every file is loaded');
+    } else { chk('sound'); }
+    /* THE SILENCE ITSELF IS EXPLAINED. Both beds start at zero on purpose. */
+    var qKeep = {m:MF.state.access.music, a:MF.state.access.ambience};
+    MF.state.access.music = 0; MF.state.access.ambience = 0;
+    chk('sound');
+    if(!/beds start off/i.test(panelSay()))
+      errs.push('sound: with both beds at zero the panel does not say the quiet is deliberate');
+    MF.state.access.music = qKeep.m; MF.state.access.ambience = qKeep.a;
   }
 
   /* EVERY BED HAS A SOURCE NAME AND EVERY SOURCE NAME HAS A BED. A third bed
