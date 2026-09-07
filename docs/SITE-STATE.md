@@ -22,7 +22,7 @@
 | **Screens** | **eight** — surface, the Stamp Mill, the Casting Shed and its three workshops, the mine, the forge |
 | **Layers** | **five**, all reachable from the first screen, none gated on anything |
 | **Instruments** | **seven**, all made at the forge, none granted |
-| **Validation** | `MF.validate()` → **12,549 checks / 42 groups / 0 errors**, two controls that must fail, and do — **run it at the width you ship from**, because `layout`, `reach`, `hollow` and `cartdraw` measure the live viewport and report it (`VERIFICATION.md` §61, §63, §65). Verified at **380×780, 560×760, 994×700 and 1250×900** |
+| **Validation** | `MF.validate()` → **13,174 checks / 43 groups / 0 errors**, two controls that must fail, and do — **run it at the width you ship from**, because `layout`, `reach`, `hollow` and `cartdraw` measure the live viewport and report it (`VERIFICATION.md` §61, §63, §65). Verified at **380×780, 560×760, 994×700 and 1250×900** |
 
 > **A check is only as wide as the space it sweeps.** The `truthy` group reported 0 errors across 642 checks while **1,970 Decimal Dial states printed a falsehood**, because it tested each lump's original integer coefficients and never nudged `c` — the one thing the dial exists to do. It now sweeps every slider position the control can reach (3,287 checks). Ask of any green result: *what did it not look at?*
 | **Runtime** | Zero dependencies, no build step, no network requests, no storage, runs from `file://` |
@@ -184,7 +184,7 @@ The face is **2280px of rock**, several screens wide, scanned by dragging, scrol
 
 ## The breaking floor: one anvil, the belt over it, and the ore on top
 
-**Measured 2026-09-06, all four widths, 0 errors over 12,549 checks in 42 groups, both controls failing.**
+**Measured 2026-09-07, all four widths, 0 errors over 13,174 checks in 43 groups, both controls failing.**
 
 **There is one box, and the anvil in it is the work.** The `workpair` is gone. It was two boxes: one held a row of chips and the belt, the other held a drawing of an anvil, two number boxes and the swing button — so **the anvil a student was looking at was not the thing their ore was on**, and the drawing was decoration beside the work. What is here now is the gallery you are standing in: the belt overhead, the anvil, the stone on its face, and whatever has come off it lying on the ground. **A first lump has nothing on the ground at all.**
 
@@ -430,6 +430,58 @@ Metals are **spent** here — this is the yard's sink. Forging *is* distributing
 > **The tutorial was outside the contrast sweep, so the sweep was widened rather than the gap documented.** The `contrast` group mounted the forge cold, then with a mold open — never **poured**, so not one pixel of the casting's tutorial was measured. It now mounts a poured forge and, separately, **the tool panel itself**, which is appended to `document.body` rather than into a screen and had therefore never been swept at all. 461 → **783 elements**, 0 failures, proved by colouring the method text `#FBF6EE` and watching nine readings fire at 1.02:1.
 
 > **Tools assist; they never gate.** The `nogate` check walks every layer with an empty yard and no tools and asserts ore still comes up.
+
+## The seven instruments, audited on ore they were not written for
+
+**USER, 2026-09-06:** *"All tools have not been tested by the user because the user has been
+using them for a long time in the mine."* Driving an instrument yourself teaches you what it
+says about the lumps you happen to dig, which is the least representative sample there is.
+
+Every tool was held to a fixed bench of 21 shapes and to ~300 generated lumps each. **Every
+group was green while all of this was true**, because `lens` and `schema` ask whether a
+reading exists and whether it over-shares, `visual` asks whether a hole is somewhere on the
+panel, and `contrast` asks about colour — **none of them asked whether the sentence is well
+formed, or whether the tool is telling the truth about the lump in front of it.**
+
+**Three fixed 2026-09-07:**
+
+1. **The Auger printed `x² + −2x + ? + 6`.** Its split step joined every term with `" + "`
+   regardless of sign — **137 of 307 swept lumps, 45% of the mine.** The same defect as the
+   `x² + 0x − 9` the "one formatter" rule was written after. Both call sites now go through
+   **`MF.termLine`**, where the signs are the joiner's job. *A hole carries its own sign:*
+   `?` stands for a whole signed term, because printing `+ ?` where the answer is `−3x` is
+   both wrong and a leak — it hands over the sign the student is being asked for.
+2. **The Steel invited a swing at native metal.** On the prime 97 it said *"The X is the way
+   into this one"* — there is no a·c on a number — and then *"Both sides are still yours.
+   Name one and swing."* It now names the lump finished and offers nothing.
+3. **The Drill handed over everything, and offered a swing at a prime.** On 97 it printed the
+   pair table and *"Any of them can be swung; some leave more still to break."* On 72 it laid
+   out all 24 rows **with no `?` anywhere** — the only reading in the build that held nothing
+   back. A prime now gets named as one; a composite keeps the table but leads with `72 = ? × ?`.
+
+**Native metal is the one object this site calls complete, and a tool telling a student to
+keep swinging at it is the site contradicting its own thesis in the room where the thesis
+lives.** It is not a wording slip: a student who swings is told the pick glanced off, and has
+no way to learn it never could have run.
+
+| tool | admits a finished lump, before → after |
+|---|---|
+| Lantern | 7/7 → 7/7 |
+| Steel | **0/7 → 7/7** |
+| Drill | **0/7 → 6/7** |
+| Crosscut | 5/7 |
+| Pick, Shifter, Auger | **0/7 — still open** |
+
+**Still open, reported and not yet fixed:** the Pick is identical on all 21 shapes and leaves
+no hole; the Crosscut still renders a vestigial "DECIMAL DIAL" block under its old name, on
+exactly the lumps it has just declined; both X sides remain `?`; and Pick, Shifter and Auger
+say nothing about native metal.
+
+**New group `reading` — 619 checks.** No printed sign-run, no unresolved value, no throw, no
+swing offered at a lump the bench *literally* marks finished, and the two tools that now name
+it must keep naming it. See `VERIFICATION.md` §94 and §95 — the first version of this group
+guarded itself with `MF.isNative`, the exact call the fix turns on, and its control was then
+misread because `validate()` only returned the first twenty errors.
 
 ## The sound layer, and the two beds
 

@@ -2038,3 +2038,50 @@ was choosing between were both wrong: two fixed bands, neither of them near.
 > The candidates are now **above the lump** and **below the lump**, with the wall's edges kept
 > only for when neither fits. Same ordering rule, better options: 329px → 20px, and at that
 > width the worst case and the median are now the same number.
+
+## §94. A check written in terms of the thing it checks can never fail
+
+Four times in this build. The pattern is always the same and always invisible
+in review, because the code reads exactly like a correct check:
+
+| what it asserted | what it consulted to decide whether to assert it |
+|---|---|
+| `CLANK_SPEAK` is three clanks | a count expressed in `CLANK_SPEAK` |
+| the voice script matches what he says | `MF.GUIDE`, which the script is generated from |
+| the panel does not warn when every file is present | `layerState`, the function under test |
+| a tool must not invite a swing at native metal | `MF.isNative`, the call the fix turns on |
+
+**The tell is never the assertion. It is the guard.** All four had a correct
+assertion sitting behind a condition that moved with the defect.
+
+Two of the four passed a naive control and looked proved. The one that caught
+them was **patching the shared function to lie** rather than corrupting one
+call site: a lying `isNative` made the group skip the exact seven lumps it
+existed to test, and the group stayed green.
+
+**The fix is a literal.** `BENCH` now carries `done:true`/`done:false` written
+out by hand for all 21 lumps, and a separate check holds `MF.isNative` to that
+list. A literal cannot move with the code. When the two disagree, that is a
+finding and it is reported — instead of silently changing which branch every
+check below it takes.
+
+> Where a literal is genuinely impossible, the guard must come from a
+> *different* source than the assertion. Never the same function twice.
+
+## §95. Read the whole error list, not the first twenty
+
+`MF.validate()` returned `detail: errs.slice(0, 20)`, and a control was read as
+**not firing** when it had fired six times — the `ore` and `break` groups run
+earlier, so 486 cascading errors from the patched function pushed every
+`reading:` line off the end of the visible list.
+
+Twenty is right for a console glance and wrong for a control. A control that
+introduces a fault in a *shared* function does not produce one error; it
+produces hundreds, and the one you are looking for is not near the front.
+
+`validate()` now also returns `all` — the complete array. **Filter `all`,
+report from `detail`.**
+
+The failure mode is the worst kind: it says the check you just wrote does not
+work, so the honest response is to weaken or delete it. §5's "read the
+denominator" has a partner — *read the whole numerator too.*

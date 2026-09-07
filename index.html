@@ -3724,8 +3724,8 @@ MF.SCHEMA = {
          draw:function(li){ MF.workLine(li, 'multiply to ' + num(ac) + ', add to ' + num(ore.b),
            [null, '  and  ', null], 'wbig'); }},
         {act:'Split the middle into those two pieces &mdash; four terms instead of three.', open:true,
-         draw:function(li){ MF.workLine(li, null,
-           [sqTerm(ore.a), '  +  ', null, '  +  ', null, '  +  ', num(ore.c)], 'wbig'); }},
+         draw:function(li){ MF.termLine(li, null,
+           [sqTerm(ore.a), null, null, num(ore.c)], 'wbig'); }},
         {act:'The four go in a box. Pull the common metal off each row and column.', open:true,
          draw:function(li){
            MF.xBox(li, {
@@ -3885,6 +3885,39 @@ MF.workLine = function(host, label, parts, cls){
   row.appendChild(eq);
   host.appendChild(row);
   return row;
+};
+
+/* THE SAME LINE, BUT THE SIGNS ARE THE JOINER'S JOB.
+
+   THE DEFECT THIS EXISTS TO KILL: the auger's split step put ' + ' between
+   every term regardless of sign, so `x² + −2x + ? + 6` reached the screen on
+   137 of 307 swept lumps — 45% of the mine. It is the same class as the
+   `x² + 0x − 9` that the "one formatter" rule in SITE-STATE was written after,
+   and it survived because every group asked whether the tools SAY something,
+   and none asked whether what they say is well formed.
+
+   A HOLE CARRIES ITS OWN SIGN. `?` stands for a whole signed term, never for a
+   magnitude with a known + in front of it. Printing `+ ?` where the answer is
+   −3x would be wrong AND a leak: it hands over the sign the student is being
+   asked for, which is half of what a hole is hiding. So a hole is joined with
+   a space and nothing else. */
+MF.termLine = function(host, label, terms, cls){
+  var parts = [];
+  terms.forEach(function(t, i){
+    if(t === null || t === undefined){
+      if(i) parts.push('   ');
+      parts.push(null);
+      return;
+    }
+    var s = String(t);
+    if(i){
+      var neg = s.charAt(0) === '−' || s.charAt(0) === '-';
+      parts.push(neg ? '  −  ' : '  +  ');
+      if(neg) s = s.slice(1);
+    }
+    parts.push(s);
+  });
+  return MF.workLine(host, label, parts, cls);
 };
 
 /* =========================================================================
@@ -4594,9 +4627,29 @@ MF.TOOL_READ = {
   /* THE CORE DRILL: the X, and the pairs that could fill it. */
   drill: function(host, ore, pieceId){
     if(ore.kind==='number'){
+      /* A PRIME IS NOT A SEARCH. This branch used to print the pair table for
+         97 — `1 and 97`, `−1 and −97` — and then say "Any of them can be
+         swung; some leave more still to break." Swinging 1 at a prime does
+         nothing, and there is nothing still to break. It was the site
+         inviting a swing at the one object it elsewhere calls finished. */
+      if(MF.isNative(ore)){
+        host.appendChild(H('div','diaglab','NOTHING PAIRS OFF THIS ONE'));
+        MF.workLine(host, 'the only pair there is', ['1  and  ' + num(ore.n)], 'wbig');
+        host.appendChild(H('div','hint','<b>' + num(ore.n) + ' is a prime</b>, so that pair is the ' +
+          'number and nothing. It is native metal &mdash; the same object as an irreducible ' +
+          'polynomial, and there is nothing in there for the drill to hunt.'));
+        MF.methodLine(host, "drill");
+        return;                     /* and no swing is offered at a finished lump */
+      }
+      /* AND THE SEARCH STILL HAS A HOLE IN IT. Every other instrument shows
+         part and holds something back; this one laid out all 24 rows of 72
+         with no ? anywhere, which is the one thing a method here may not do.
+         The table is the candidates; the choice is what is held back, and now
+         it is written as a hole rather than left implied. */
       MF.workLine(host, 'every pair that multiplies to', [num(ore.n)], 'wbig');
+      MF.workLine(host, null, [num(ore.n) + '  =  ', null, '  ×  ', null], 'wbig');
       MF.scanTable(host, ore.n, null);
-      host.appendChild(H('div','hint','No row is marked. Any of them can be swung; some leave more still to break.'));
+      host.appendChild(H('div','hint','<b>No row is marked, and the drill will not mark one.</b> Any of them can be swung; some leave more still to break.'));
       MF.methodLine(host, "drill");
       MF.paintNameSide(host, ore, pieceId);
       return;
@@ -4733,8 +4786,30 @@ MF.TOOL_READ = {
         : [ore.a?sqTerm(ore.a):null, ore.b?xt2(ore.b):null, ore.c?num(ore.c):null].filter(Boolean);
       MF.workLine(host, null, [sTerms.join('   ')], 'wbig');
       MF.workLine(host, 'the biggest that divides them all', ['1'], 'wbig');
-      host.appendChild(H('div','hint','So there is nothing to stand in front of a bracket. The X is the way into this one:'));
+      /* WHAT COMES NEXT DEPENDS ON THE LUMP, AND IT USED TO NOT.
+
+         This branch said "The X is the way into this one" on every lump with
+         no common metal — including the prime 97 and including 5x + 3 — and
+         then offered "Both sides are still yours. Name one and swing."
+
+         NATIVE METAL IS THE ONE OBJECT THIS SITE CALLS FINISHED. Inviting a
+         swing at it is the site contradicting its own thesis, in the room
+         where the thesis lives. And on a number or a linear lump there is no
+         a·c to put on top of anything, so the X was not merely unhelpful, it
+         was not available. Six of seven instruments were silent about native
+         metal; this is the first of them to say it. */
+      if(MF.isNative(ore)){
+        host.appendChild(H('div','hint','<b>And nothing else is coming out either.</b> ' +
+          (ore.kind==='number'
+            ? num(ore.n) + ' is a prime.'
+            : 'No whole-number seam runs through it.') +
+          ' It is native metal &mdash; already the most refined thing in the mine. ' +
+          'The steel has nothing to bite on because there is nothing left in there to bite.'));
+        MF.methodLine(host, 'steel');
+        return;                     /* and no swing is offered at a finished lump */
+      }
       if(ore.kind==='poly' && ore.a!==0){
+        host.appendChild(H('div','hint','So there is nothing to stand in front of a bracket. The X is the way into this one:'));
         var sPr = MF.xPair(ore);
         MF.xDiagram(host, {
           top: num(ore.a*ore.c), bottom: num(ore.b),
@@ -4742,6 +4817,7 @@ MF.TOOL_READ = {
           topWhy: ore.a===1 ? '' : '= ' + num(ore.a) + ' × ' + num(ore.c)
         });
       } else {
+        host.appendChild(H('div','hint','So there is nothing to stand in front of a bracket, and no x&sup2; to hang an X under either. What is left is to name a factor yourself.'));
         MF.splitDiagram(host, {whole:MF.oreLabel(ore), left:null, right:null,
           key:'Both sides are still yours. Name one and swing.'});
       }
@@ -4782,7 +4858,7 @@ MF.TOOL_READ = {
       topWhy: '= ' + num(ore.a) + ' × ' + num(ore.c)
     });
     host.appendChild(H('div','diaglab','2 — SPLIT THE MIDDLE WITH THAT PAIR'));
-    MF.workLine(host, null, [sqTerm(ore.a), ' + ', pr ? xt2(pr.p) : null, ' + ', null, ' + ', num(ore.c)], 'wbig');
+    MF.termLine(host, null, [sqTerm(ore.a), pr ? xt2(pr.p) : null, null, num(ore.c)], 'wbig');
     host.appendChild(H('div','diaglab','3 — THE FOUR TERMS GO IN THE BOX'));
     MF.xBox(host, {
       rows:[{label:'?'},{label:'?'}],
@@ -19774,6 +19850,146 @@ MF.validate = function(){
   MF.applyAccess();
 
   /* ======================================================================
+     WHAT THE SEVEN INSTRUMENTS ACTUALLY SAY, ON ORE THEY WERE NOT WRITTEN FOR.
+
+     USER, 2026-09-06: "All tools have not been tested by the user because the
+     user has been using them for a long time in the mine." Driving an
+     instrument yourself teaches you what it says about the lumps you happen to
+     dig, which is the least representative sample there is.
+
+     THE AUDIT THAT FOLLOWED FOUND THREE THINGS NOTHING WAS LOOKING FOR, and
+     every group was green while all three were true. `lens` and `schema` ask
+     whether a reading EXISTS and whether it over-shares; `visual` asks whether
+     a hole is somewhere on the panel; `contrast` asks about colour. None of
+     them asked whether the sentence is well formed, and none asked whether the
+     tool is telling the truth about the lump in front of it.
+     ====================================================================== */
+  (function(){
+    /* ONE FIXED BENCH, AND `done` IS WRITTEN OUT BY HAND.
+
+       The first version of this asked `MF.isNative(ore)` to decide whether the
+       no-swing rule applied. Its control — making isNative stop recognising
+       numbers and linear ore, which is precisely the fault the steel and drill
+       used to have — left the group green, because a lying isNative made the
+       check skip the exact lumps it exists to test. FOURTH CIRCULAR CHECK IN
+       THIS BUILD (VERIFICATION §80's cousin: a check written in terms of the
+       thing it checks can never fail).
+
+       So `done` is a literal. A literal cannot move with the code. The engine
+       is then held to it below rather than consulted about it. */
+    var BENCH = [
+      {kind:'number', n:72,  done:false}, {kind:'number', n:97,  done:true},
+      {kind:'number', n:13,  done:true},  {kind:'number', n:4,   done:false},
+      {kind:'number', n:100, done:false},
+      {kind:'poly', a:3,  b:12, c:0,   done:false},
+      {kind:'poly', a:10, b:-40,c:-50, done:false},
+      {kind:'poly', a:1,  b:0,  c:-9,  done:false},
+      {kind:'poly', a:4,  b:0,  c:-25, done:false},
+      {kind:'poly', a:1,  b:-5, c:6,   done:false},
+      {kind:'poly', a:1,  b:5,  c:6,   done:false},
+      {kind:'poly', a:6,  b:7,  c:-3,  done:false},
+      {kind:'poly', a:4,  b:-16,c:15,  done:false},
+      {kind:'poly', a:1,  b:0,  c:4,   done:true},
+      {kind:'poly', a:1,  b:1,  c:1,   done:true},
+      {kind:'poly', a:2,  b:3,  c:5,   done:true},
+      {kind:'poly', a:1,  b:0,  c:2,   done:true},
+      {kind:'poly', a:0,  b:5,  c:15,  done:false},
+      {kind:'poly', a:0,  b:5,  c:3,   done:true},
+      {kind:'poly', a:-1, b:0,  c:9,   done:false},
+      {kind:'poly', a:1,  b:-2, c:-15, done:false}
+    ];
+    /* AND THE ENGINE IS HELD TO THE LITERAL, not asked to supply it. If these
+       two ever disagree, that is a finding in itself and it is reported here
+       instead of quietly changing which branch every check below takes. */
+    BENCH.forEach(function(o){
+      chk('reading');
+      if(MF.isNative(o) !== o.done)
+        errs.push('reading: the bench says ' + MF.oreDisplayText(o) + ' is ' +
+                  (o.done ? 'finished' : 'breakable') + ' and the engine says the opposite');
+    });
+    var read = function(tool, ore){
+      var h = E('div'); document.body.appendChild(h);
+      var threw = null;
+      try { MF.TOOL_READ[tool](h, ore, '__audit'); } catch(e){ threw = e.message; }
+      var txt = (h.textContent || '').replace(/\s+/g, ' ');
+      h.parentNode.removeChild(h);           /* §80: leave nothing on the page */
+      return {txt:txt, threw:threw};
+    };
+    var tools = MF.toolOrder();
+
+    tools.forEach(function(t){
+      BENCH.forEach(function(ore){
+        var r = read(t, ore);
+        var lbl = t + ' on ' + MF.oreDisplayText(ore);
+        /* 1. IT DOES NOT THROW. An instrument is optional; a crash is not. */
+        chk('reading');
+        if(r.threw) errs.push('reading: ' + lbl + ' threw "' + r.threw + '"');
+
+        /* 2. THE SENTENCE IS WELL FORMED.
+
+           THE DEFECT: the auger's split step joined every term with " + "
+           regardless of sign, printing `x² + −2x + ? + 6` on 137 of 307 swept
+           lumps — 45% of the mine. It is the `x² + 0x − 9` defect again, the
+           one the "one formatter" rule was written after, and it survived
+           because every group asked whether the tools SAY something and none
+           asked whether what they say can be read aloud. */
+        chk('reading');
+        var run = r.txt.match(/[+−] *[+−] *\d/);
+        if(run) errs.push('reading: ' + lbl + ' prints "' + run[0] + '" — two signs in a row');
+        chk('reading');
+        if(/undefined|NaN|\[object/.test(r.txt))
+          errs.push('reading: ' + lbl + ' printed a value that never resolved');
+
+        /* 3. AND IT DOES NOT INVITE A SWING AT FINISHED METAL.
+
+           THE DEFECT: the steel said "The X is the way into this one" and then
+           "Both sides are still yours. Name one and swing." on the prime 97 —
+           there is no a·c on a number and nothing left in a prime. The drill
+           laid out `1 and 97`, `−1 and −97` and said "Any of them can be
+           swung; some leave more still to break."
+
+           NATIVE METAL IS THE ONE OBJECT THIS SITE CALLS COMPLETE. A tool
+           telling a student to keep swinging at it is the site contradicting
+           its own thesis in the room where the thesis lives — and it is not a
+           wording slip, because a student who swings is told the pick glanced
+           off and has no way to learn it never could have run. */
+        if(ore.done){                     /* the literal, never MF.isNative */
+          chk('reading');
+          if(/name one and swing|can be swung|still yours/i.test(r.txt))
+            errs.push('reading: ' + lbl + ' offers a swing at native metal, which is already finished');
+        } else { chk('reading'); }
+      });
+    });
+
+    /* 4. THE TWO TOOLS THAT NOW NAME IT, NAME IT. A rule stated as "must not
+          invite a swing" is satisfied by a tool that says nothing at all, so
+          this is the other half: on finished metal these two say so. */
+    [['steel', 'nothing.*bite|is a prime|no whole-number seam'],
+     ['lantern','nothing moves|is a prime|no whole-number seam']].forEach(function(p){
+      [{kind:'number',n:97}, {kind:'poly',a:1,b:0,c:4}, {kind:'poly',a:0,b:5,c:3}].forEach(function(o){
+        chk('reading');
+        if(!(new RegExp(p[1],'i')).test(read(p[0], o).txt))
+          errs.push('reading: the ' + p[0] + ' does not say that ' + MF.oreDisplayText(o) + ' is finished');
+      });
+    });
+    chk('reading');
+    if(!/is a prime/i.test(read('drill', {kind:'number',n:97}).txt))
+      errs.push('reading: the drill does not say that 97 is a prime');
+
+    /* 5. AND A METHOD SHOWS PART, NEVER ALL.
+
+          THE DEFECT: the drill's number branch printed all 24 rows of 72's
+          pair table with no ? anywhere on the panel — the only reading in the
+          build that held nothing back. `visual` did not catch it because it
+          requires a hole SOMEWHERE on the panel and the anvil supplies one. */
+    [{kind:'number',n:72}, {kind:'number',n:100}, {kind:'number',n:4}].forEach(function(o){
+      chk('reading');
+      if((read('drill', o).txt.match(/\?/g) || []).length < 1)
+        errs.push('reading: the drill hands over every pair of ' + num(o.n) + ' and holds nothing back');
+    });
+  })();
+
+  /* ======================================================================
      SOUND — AND ALL OF IT HAS TO SURVIVE SILENCE.
 
      USER, 2026-09-06: build the audio.
@@ -20107,7 +20323,7 @@ MF.validate = function(){
 
   var out = {checked:checked, byGroup:counts, errors:errs.length,
              control: (controlFailed && bannedControl) ? 'both controls failed as required' : 'A CONTROL DID NOT FAIL',
-             detail: errs.slice(0,20)};
+             detail: errs.slice(0,20), all: errs};
   console.log('[mine] validate:', out.checked, 'checks,', out.errors, 'errors, control:', out.control);
   if(errs.length) console.warn(errs.slice(0,20));
   return out;
