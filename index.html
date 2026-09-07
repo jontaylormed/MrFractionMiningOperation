@@ -3270,6 +3270,10 @@ MF.ambient = function(){
    Counts are INVENTORY, never a grade: no ceiling, no ratio, no comparison
    (philosophy 2.5a).
    ========================================================================= */
+/* THE EFFECTS DEFAULT, AS A NAMED VALUE. Named so the sound group can hold
+   it to a floor against a literal rather than against itself. */
+MF.ACCESS_FX = 0.85;
+
 MF.state = {
   screen:'home',
   layer:1,
@@ -3301,10 +3305,16 @@ MF.state = {
   /* THREE SOUND LEVELS, NOT TWO. A song and a room tone are different things
      and a student may well want one without the other: the pump-jack bed makes
      the mine feel like a working place, and the music is music. Both start off
-     (user, 2026-09-06: a room of thirty machines should not hum), effects
-     start quiet. */
+     (user, 2026-09-06: a room of thirty machines should not hum).
+
+     EFFECTS DO NOT START QUIET, AND THEY USED TO. 0.35 was chosen as a polite
+     default and measured as a mistake: the beds sit at about −21 dB RMS and
+     the cues at −24 to −28, so a further 9 dB cut put a hammer landing UNDER
+     the music it lands over. The user reported them as not working, which is
+     the correct reading of a sound you cannot hear. `MF.ACCESS_FX` is the
+     value and the sound group holds it to a floor. */
   access:{ type:'standard', size:100, tint:'none', ruler:false, spacing:false,
-           motion:'auto', fx:0.35, music:0, ambience:0, mute:false, speed:1 },
+           motion:'auto', fx:MF.ACCESS_FX, music:0, ambience:0, mute:false, speed:1 },
   rng: makeRng((Date.now()^0x5f3759df)>>>0)
 };
 
@@ -5207,6 +5217,45 @@ MF.audio = {
       o.frequency.exponentialRampToValueAtTime(640, t + 0.06);
       A._env(o, t, 0.10, 0.002, 0.07).connect(A.fxBus);
       o.start(t); o.stop(t + 0.12);
+    },
+    /* THE CAGE: an old lift, engaging and arriving (user, 2026-09-07).
+
+       IT IS THE ONE CUE WITH TRAVEL IN IT. A layer change is the only move on
+       this site that is a journey rather than an event — the shaft goes down
+       and the rock at the bottom is different — so the sound has a start, a
+       middle and a stop where every other cue is a single hit.
+
+       The synth is a motor: a low sawtooth pulled through a lowpass that opens
+       as it gets going and closes as it settles, with a knock at each end. */
+    hoist: function(A, t){
+      var o = A.ctx.createOscillator();
+      o.type = 'sawtooth';
+      o.frequency.setValueAtTime(58, t);
+      o.frequency.linearRampToValueAtTime(72, t + 0.5);
+      o.frequency.linearRampToValueAtTime(66, t + 2.4);
+      o.frequency.linearRampToValueAtTime(44, t + 3.1);
+      var lp = A.ctx.createBiquadFilter();
+      lp.type = 'lowpass'; lp.Q.value = 3;
+      lp.frequency.setValueAtTime(160, t);
+      lp.frequency.linearRampToValueAtTime(760, t + 0.6);
+      lp.frequency.linearRampToValueAtTime(620, t + 2.4);
+      lp.frequency.linearRampToValueAtTime(140, t + 3.2);
+      o.connect(lp);
+      var g = A.ctx.createGain();
+      g.gain.setValueAtTime(0.0001, t);
+      g.gain.linearRampToValueAtTime(0.26, t + 0.35);
+      g.gain.setValueAtTime(0.26, t + 2.4);
+      g.gain.exponentialRampToValueAtTime(0.0001, t + 3.3);
+      lp.connect(g); g.connect(A.fxBus);
+      o.start(t); o.stop(t + 3.4);
+      /* the knock leaving, and the knock landing */
+      [0, 2.55].forEach(function(at){
+        var k = A._noise(0.08), bp = A.ctx.createBiquadFilter();
+        bp.type = 'lowpass'; bp.frequency.value = 420;
+        k.connect(bp);
+        A._env(bp, t + at, 0.34, 0.002, 0.10).connect(A.fxBus);
+        k.start(t + at); k.stop(t + at + 0.12);
+      });
     }
   },
 
@@ -5277,6 +5326,7 @@ MF.audio = {
     var cue = this.CUES[name];
     if(!cue) return false;
     this.resume();
+    this.duck(name);
     /* the recording if there is one, the oscillators if there is not */
     var buf = this.sfx[name];
     if(buf && buf !== 'missing'){
@@ -5287,6 +5337,50 @@ MF.audio = {
       } catch(e){ /* fall through and synthesise */ }
     }
     try { cue(this, this.ctx.currentTime + 0.001); } catch(e){ return false; }
+    return true;
+  },
+
+  /* ---- THE BEDS GET OUT OF THE WAY OF A CUE ----
+
+     USER, 2026-09-07: "I am hearing the elevator. But I am barely hearing any
+     sound effect for the pick. And i hear nothing for the hammer."
+
+     THE HAMMER WAS FIRING CORRECTLY. Driven through the real bench, `thud`
+     lands on every seam that runs and `clang` on every glance — verified. The
+     problem was that nobody could hear it.
+
+     DURATION WAS DOING THE WORK. The elevator is four seconds of continuous
+     motor; the hammer is four tenths of a second. Two beds running at about
+     −21 dB RMS mask a 0.4 s transient at −26 no matter how the file is
+     levelled, and levelling it further only gets you to the point of clipping.
+     Compression was tried and made it worse: it pulls down the transient that
+     dominates the RMS more than it lifts the tail, and it cost 6 dB of the
+     spectral tilt that makes a scrape tellable from an impact.
+
+     So the beds duck instead — the ordinary answer, and the one that works
+     whatever the student has the sliders set to, and works for the
+     synthesised cues too.
+
+     THE TICK IS NOT IN THE TABLE ON PURPOSE. It fires on every lump picked
+     out of the wall, and a bed that dips on every pick is a bed that pumps. */
+  DUCK: { thud:{d:0.30, t:0.28}, clang:{d:0.30, t:0.28}, stamp:{d:0.30, t:0.32},
+          pour:{d:0.45, t:2.00}, hoist:{d:0.45, t:3.40} },
+  duck: function(name){
+    var D = this.DUCK[name];
+    if(!D || !this.ready) return false;
+    var A = this, a = MF.state.access, t = this.ctx.currentTime;
+    [['musicBus', a.music], ['ambBus', a.ambience]].forEach(function(p){
+      var node = A[p[0]], full = p[1];
+      if(!node || !full) return;
+      var g = node.gain;
+      /* cancel first: two cues in quick succession must not stack their ramps
+         and leave a bed stuck down. The second one simply re-ducks. */
+      g.cancelScheduledValues(t);
+      g.setValueAtTime(g.value, t);
+      g.linearRampToValueAtTime(full * D.d, t + 0.05);
+      g.setValueAtTime(full * D.d, t + D.t);
+      g.linearRampToValueAtTime(full, t + D.t + 0.45);
+    });
     return true;
   },
 
@@ -5433,6 +5527,26 @@ MF.audio = {
   },
   hush: function(){
     if(this._speaking){ try { this._speaking.stop(); } catch(e){} this._speaking = null; }
+  },
+
+  /* ---- A CUE FOR SOMETHING THAT REPAINTS WHILE A FINGER IS STILL MOVING ----
+
+     USER, 2026-09-07: the mold should make a noise. The forge pour already
+     did; the Molds room in the Casting Shed did not.
+
+     IT COULD NOT SIMPLY CALL `play`. That room re-pours on every slider tick,
+     so a cue on the repaint would fire forty times across one drag — and the
+     forty-first is the only one that matches what the student ended up with.
+     This waits for the hand to stop, then pours once.
+
+     The wait is DELIBERATELY LONGER than the repaint. A pour is a 2.2 second
+     swell; overlapping two of them is worse than being slightly late. */
+  _settle: {},
+  playSettled: function(name, ms){
+    var A = this, s = this._settle;
+    if(s[name]) clearTimeout(s[name]);
+    s[name] = setTimeout(function(){ s[name] = null; A.play(name); }, ms || 420);
+    return true;
   }
 };
 /* Point this at a folder to give Mr Factor a voice. Null here, because a
@@ -5965,10 +6079,15 @@ MF.openAccess = function(opener){
         0, 1, 0.05, a.music, function(n){ return n === 0 ? 'off' : Math.round(n*100) + '%'; },
         function(n){ a.music = n; }), 'music');
       /* AND WHY IT IS QUIET WHEN NOTHING IS WRONG. Both beds start at zero, so
-         a student who has heard nothing has heard exactly what was built. */
+         a student who has heard nothing has heard exactly what was built.
+
+         IT SITS UNDER THE TWO SLIDERS IT IS ABOUT, not at the foot of the
+         section (user, 2026-09-07). Below the read-aloud rule it read as a
+         verdict on the sound layer — "the mine is quiet" — when it is only
+         ever a note about two controls that have not been moved yet. */
       if(!a.music && !a.ambience)
-        b.appendChild(H('div','achint','<b>The two beds start off.</b> Nothing is wrong if the ' +
-          'mine is quiet &mdash; move either slider up and it starts.'));
+        b.appendChild(H('div','acnote','Both of these start at zero, so an untouched mine is ' +
+          'silent under the tools. Move either one up and it begins.'));
 
       /* ---- READ ALOUD ---- */
       b.appendChild(H('div','acsplit','READ ALOUD'));
@@ -8702,6 +8821,8 @@ MF.SCREENS['shed-mold'] = function(host){
                           quadText(prod.a, prod.b, prod.c));
     sc.setAttribute('data-pour','sound');
     pourHost.appendChild(sc);
+    /* and it makes a noise, once the sliders have stopped moving */
+    MF.audio.playSettled('pour');
 
     if(isTwo){
       /* TWO BRACKETS: a box with two rows and two columns, which is where the
@@ -10410,6 +10531,11 @@ MF.paintShaft = function(){
     b.appendChild(H('div','hint', L.what));
     if(MF.state.layer===L.n) b.setAttribute('aria-current','true');
     on(b,'click',function(){
+      /* THE CAGE (user, 2026-09-07). A layer change is the only move on this
+         site that is a journey rather than an event, and it was the only one
+         of the big ones with no sound on it. Moving to the layer you are
+         already on is not a journey, so it does not ring. */
+      if(MF.state.layer !== L.n) MF.audio.play('hoist');
       MF.state.layer = L.n;
       if(L.n > MF.state.deepest) MF.state.deepest = L.n;
       MF.paintMine();
@@ -20005,7 +20131,7 @@ MF.validate = function(){
 
   /* EVERY CUE THE CODE FIRES IS A CUE THAT EXISTS. A typo in a cue name is a
      sound that never plays and nothing anywhere would say so. */
-  ['thud','clang','pour','stamp','tick'].forEach(function(k){
+  ['thud','clang','pour','stamp','tick','hoist'].forEach(function(k){
     chk('sound');
     if(typeof MF.audio.CUES[k] !== 'function')
       errs.push('sound: "' + k + '" is fired somewhere and is not a cue');
@@ -20048,7 +20174,7 @@ MF.validate = function(){
     MF.state.access.fx = 0; MF.audio.apply();
     chk('sound');
     if(MF.audio.play('thud') !== false) errs.push('sound: effects at zero did not stop a cue');
-    MF.state.access.fx = 0.35;
+    MF.state.access.fx = MF.ACCESS_FX;
     /* A BED RUNS ONLY WHEN IT IS WANTED AND ONLY WHEN IT HAS SOMETHING TO
        PLAY. Zero volume is a phone burning battery on something nobody can
        hear; a music bed with no track is a song that does not exist.
@@ -20179,9 +20305,149 @@ MF.validate = function(){
     var qKeep = {m:MF.state.access.music, a:MF.state.access.ambience};
     MF.state.access.music = 0; MF.state.access.ambience = 0;
     chk('sound');
-    if(!/beds start off/i.test(panelSay()))
+    if(!/start at zero/i.test(panelSay()))
       errs.push('sound: with both beds at zero the panel does not say the quiet is deliberate');
     MF.state.access.music = qKeep.m; MF.state.access.ambience = qKeep.a;
+  }
+
+  /* ---- THE CUES ARE LEVELLED AGAINST EACH OTHER ----
+
+     USER, 2026-09-07: "the sound effects are not working or either very soft
+     or completely wrong."
+
+     TWO CAUSES, AND ONLY ONE OF THEM WAS IN THE FILES. Measured: the beds sit
+     at about −21 dB RMS and the cues at −24 to −28, and the cues were then
+     multiplied by an fx default of 0.35 — another 9 dB down. A hammer landing
+     was arriving 9 dB UNDER the music. The default is now 0.85.
+
+     The other cause was spread: clang was 4.5 dB louder than thud and stamp,
+     so the same slider position gave one cue you could hear and two you could
+     not. THAT is what this checks, and it checks it by decoding the buffers
+     rather than by trusting the encoder — the last levelling pass aimed at
+     −3 dB and one cue came back at +1.6, seventeen decibels above the rest,
+     and nothing said so. */
+  if(MF.audio.ready){
+    var lvl = {}, IMPACT = ['thud','clang','stamp'];
+    Object.keys(MF.audio.CUES).forEach(function(k){
+      var buf = MF.audio.sfx[k];
+      if(!buf || typeof buf === 'string') return;
+      var d = buf.getChannelData(0), pk = 0, sum = 0;
+      for(var i = 0; i < d.length; i++){ var v = Math.abs(d[i]); if(v > pk) pk = v; sum += d[i]*d[i]; }
+      lvl[k] = {pk: 20*Math.log(pk||1e-9)/Math.LN10, rms: 10*Math.log((sum/d.length)||1e-18)/Math.LN10};
+    });
+    Object.keys(lvl).forEach(function(k){
+      /* NOTHING CLIPS. AAC reconstructs above the PCM peak, which is how a
+         cue aimed at −3 came back over full scale once already. */
+      chk('sound');
+      if(lvl[k].pk > -1.0)
+        errs.push('sound: the "' + k + '" recording peaks at ' + lvl[k].pk.toFixed(1) +
+                  ' dBFS — an encode that overshot, and it will clip on playback');
+    });
+    /* THE THREE IMPACTS ARE WITHIN A FEW dB OF EACH OTHER, because they are
+       the same gesture at different moments and one slider sets all three. */
+    var have = IMPACT.filter(function(k){ return lvl[k]; });
+    if(have.length === IMPACT.length){
+      var rs = have.map(function(k){ return lvl[k].rms; });
+      var spread = Math.max.apply(null, rs) - Math.min.apply(null, rs);
+      chk('sound');
+      if(spread > 5)
+        errs.push('sound: the impact cues span ' + spread.toFixed(1) + ' dB — ' +
+                  'one slider sets all three, so at any setting some are audible and some are not');
+    } else { chk('sound'); }
+    /* AND THE TICK IS THE QUIETEST THING IN THE SET. It fires on every lump
+       picked out, so it is the sound heard most and wanted least. */
+    if(lvl.tick && lvl.thud){
+      chk('sound');
+      if(lvl.tick.rms > lvl.thud.rms - 2)
+        errs.push('sound: the tick is not quieter than the thud, and it fires far more often');
+    } else { chk('sound'); }
+    /* THE DEFAULT IS NOT A WHISPER. A cue 9 dB under the music is a cue the
+       student reasonably reports as broken. */
+    chk('sound');
+    if(MF.ACCESS_FX < 0.6)
+      errs.push('sound: effects default to ' + MF.ACCESS_FX +
+                ', which puts a hammer landing below the bed it lands over');
+  }
+
+  /* ---- THE BEDS GET OUT OF THE WAY, AND THE TICK DOES NOT MAKE THEM ---- */
+  Object.keys(MF.audio.DUCK).forEach(function(k){
+    chk('sound');
+    if(!MF.audio.CUES[k])
+      errs.push('sound: the duck table names "' + k + '", which is not a cue');
+  });
+  chk('sound');
+  if(MF.audio.DUCK.tick)
+    errs.push('sound: the tick ducks the beds — it fires on every lump picked out, ' +
+              'so the bed would pump all the way along the seam');
+  if(MF.audio.ready){
+    var dKeep = {m:MF.state.access.music, a:MF.state.access.ambience};
+    MF.state.access.music = 0.5; MF.state.access.ambience = 0.5; MF.audio.apply();
+    chk('sound');
+    if(MF.audio.duck('thud') !== true)
+      errs.push('sound: a hammer landing does not move the beds out of its way, ' +
+                'and a 0.4s transient under a running bed is a cue nobody hears');
+    chk('sound');
+    if(MF.audio.duck('tick') !== false)
+      errs.push('sound: picking a lump ducked the beds');
+    chk('sound');
+    if(MF.audio.duck('not-a-cue') !== false)
+      errs.push('sound: ducking an unknown cue did something');
+    /* A BED AT ZERO HAS NOTHING TO DUCK, and must not be left holding a
+       scheduled ramp back up to a level nobody asked for.
+
+       IT IS MEASURED ON A FRESH GainNode, NOT ON THE LIVE BUS.
+
+       Two versions of this were wrong before this one, both for the same
+       reason: the live bus always has automation in flight. Reading it after
+       `apply()` reports the value it is easing AWAY from (`setTargetAtTime` is
+       an exponential approach), and `cancelScheduledValues` does not stop a
+       `setTargetAtTime` that started before the cancel time — so the residual
+       ramp kept pulling the value up. The result passed at three widths and
+       failed at the fourth, which is worse than failing at all four: a check
+       that is sometimes green is a check nobody trusts.
+
+       A node with no history has no ramp to fight. */
+    var probeBus = MF.audio.ctx.createGain();
+    probeBus.gain.value = 0;                      /* a bed that is switched off */
+    var realBus = MF.audio.musicBus;
+    MF.audio.musicBus = probeBus;
+    MF.state.access.music = 0; MF.state.access.ambience = 0;
+    var dThrew = null;
+    try { MF.audio.duck('pour'); } catch(e){ dThrew = e.message; }
+    MF.audio.musicBus = realBus;
+    chk('sound');
+    if(dThrew) errs.push('sound: ducking a silent bed threw "' + dThrew + '"');
+    chk('sound');
+    if(probeBus.gain.value > 0.001)
+      errs.push('sound: ducking pushed a bed that was off back up to audible');
+    /* §80: the duck above scheduled ramps on the real buses. Clear them, or
+       the next group inherits a bed easing somewhere nobody asked for. */
+    MF.state.access.music = dKeep.m; MF.state.access.ambience = dKeep.a;
+    var dEnd = MF.audio.ctx.currentTime;
+    [MF.audio.musicBus, MF.audio.ambBus].forEach(function(bus){
+      bus.gain.cancelScheduledValues(dEnd);
+      bus.gain.setValueAtTime(MF.state.access.mute ? 0 : bus.gain.value, dEnd);
+    });
+    MF.audio.apply();
+  }
+
+  /* ---- A REPAINTING ROOM POURS ONCE, NOT FORTY TIMES ----
+     The Molds room re-pours on every slider tick. A cue on the repaint would
+     fire across the whole drag, and only the last one matches what the student
+     ended up holding. */
+  if(MF.audio.ready){
+    var pKeep = MF.audio.play, pFired = 0;
+    MF.audio.play = function(){ pFired++; return true; };
+    for(var pi = 0; pi < 40; pi++) MF.audio.playSettled('pour', 5000);
+    chk('sound');
+    if(pFired !== 0)
+      errs.push('sound: dragging a slider fired ' + pFired + ' pours before the hand stopped');
+    chk('sound');
+    if(!MF.audio._settle.pour)
+      errs.push('sound: the settled pour left no cue pending, so it will never sound at all');
+    clearTimeout(MF.audio._settle.pour);          /* §80: leave no timer behind */
+    MF.audio._settle.pour = null;
+    MF.audio.play = pKeep;
   }
 
   /* EVERY BED HAS A SOURCE NAME AND EVERY SOURCE NAME HAS A BED. A third bed

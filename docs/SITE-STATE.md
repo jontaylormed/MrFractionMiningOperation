@@ -22,7 +22,7 @@
 | **Screens** | **eight** — surface, the Stamp Mill, the Casting Shed and its three workshops, the mine, the forge |
 | **Layers** | **five**, all reachable from the first screen, none gated on anything |
 | **Instruments** | **seven**, all made at the forge, none granted |
-| **Validation** | `MF.validate()` → **13,174 checks / 43 groups / 0 errors**, two controls that must fail, and do — **run it at the width you ship from**, because `layout`, `reach`, `hollow` and `cartdraw` measure the live viewport and report it (`VERIFICATION.md` §61, §63, §65). Verified at **380×780, 560×760, 994×700 and 1250×900** |
+| **Validation** | `MF.validate()` → **13,197 checks / 43 groups / 0 errors**, two controls that must fail, and do — **run it at the width you ship from**, because `layout`, `reach`, `hollow` and `cartdraw` measure the live viewport and report it (`VERIFICATION.md` §61, §63, §65). Verified at **380×780, 560×760, 994×700 and 1250×900** |
 
 > **A check is only as wide as the space it sweeps.** The `truthy` group reported 0 errors across 642 checks while **1,970 Decimal Dial states printed a falsehood**, because it tested each lump's original integer coefficients and never nudged `c` — the one thing the dial exists to do. It now sweeps every slider position the control can reach (3,287 checks). Ask of any green result: *what did it not look at?*
 | **Runtime** | Zero dependencies, no build step, no network requests, no storage, runs from `file://` |
@@ -184,7 +184,7 @@ The face is **2280px of rock**, several screens wide, scanned by dragging, scrol
 
 ## The breaking floor: one anvil, the belt over it, and the ore on top
 
-**Measured 2026-09-07, all four widths, 0 errors over 13,174 checks in 43 groups, both controls failing.**
+**Measured 2026-09-07, all four widths, 0 errors over 13,197 checks in 43 groups, both controls failing.**
 
 **There is one box, and the anvil in it is the work.** The `workpair` is gone. It was two boxes: one held a row of chips and the belt, the other held a drawing of an anvil, two number boxes and the swing button — so **the anvil a student was looking at was not the thing their ore was on**, and the drawing was decoration beside the work. What is here now is the gallery you are standing in: the belt overhead, the anvil, the stone on its face, and whatever has come off it lying on the ground. **A first lump has nothing on the ground at all.**
 
@@ -494,11 +494,31 @@ site made no sound at all before this; `THUD!` and `CLANG!` were painted `<div>`
 refuse to construct one on their own. That is enforced on a detached `Object.create(MF.audio)`
 copy rather than by nulling the live one, which is `VERIFICATION.md` §80 exactly.
 
-**Five cues, each on a moment that already has a picture** — `thud` when a seam runs, `clang`
-on a glance, `pour` at the ladle, `stamp` under the mill press, `tick` when a lump is picked
-out. Each is **synthesised by default and file-backed when a file is there**, and every
-failure — no folder, 404, a format the decoder refuses, a fetch still in flight — falls back
-to the oscillators. **Adding sound files can never take sound away.**
+**Six cues, each on a moment that already has a picture** — `thud` when a seam runs, `clang`
+on a glance, `pour` at the ladle *and* in the Molds room, `stamp` under the mill press, `tick`
+when a lump is picked out, and `hoist` when the cage moves between layers. Each is
+**synthesised by default and file-backed when a file is there**, and every failure — no
+folder, 404, a format the decoder refuses, a fetch still in flight — falls back to the
+oscillators. **Adding sound files can never take sound away.**
+
+**THE BEDS DUCK UNDER A CUE. USER, 2026-09-07:** *"I am hearing the elevator. But I am barely
+hearing any sound effect for the pick. And i hear nothing for the hammer."*
+
+The hammer was firing correctly — verified by driving the real bench. **Duration was doing the
+work:** the elevator is four seconds of continuous motor, the hammer four tenths of a second,
+and two beds at ~−21 dB RMS mask a short transient however it is levelled. Levelling harder
+only reaches the point of clipping, and compression was measured to make it *worse* — it pulls
+down the transient that dominates the RMS and cost 6 dB of the spectral tilt that makes a
+scrape tellable from an impact.
+
+So `MF.audio.DUCK` pulls both beds down **~10 dB for 0.28 s** on the three impacts, gentler and
+longer for the pour and the hoist. Measured live: 0.600 → 0.180 → 0.600. **The `tick` is
+deliberately not in that table** — it fires on every lump picked out of the wall, and a bed
+that dips on every pick is a bed that pumps.
+
+**The Molds room pours through `playSettled`, not `play`.** That room re-pours on every slider
+tick, so a cue on the repaint fired forty times across one drag and only the last matched what
+the student ended up holding. It waits 420 ms for the hand to stop, then pours once.
 
 **Two beds, not one, and they are asymmetric on purpose:**
 
@@ -508,12 +528,12 @@ to the oscillators. **Adding sound files can never take sound away.**
 | `music` — the track | **nothing** | you cannot synthesise a song, and a drone arriving where a student turned on "Music" reads as a fault rather than as music |
 
 They have separate buses and separate sliders because a room tone and a song are not the same
-request. Both start at **off**; effects start at 0.35.
+request. Both start at **off**; effects start at **`MF.ACCESS_FX` = 0.85**, up from 0.35 — the beds sit at ~−21 dB RMS and the cues at −24 to −28, so a further 9 dB cut had been putting a hammer landing *underneath the music it lands over*. The `sound` group holds the default to a floor of 0.6.
 
 > **The bed assertion is an IFF, not "it starts".** A bed runs exactly when it is wanted *and*
 > has something to play. "Turning music up starts the bed" is red on every `file://` open —
 > the fetch cannot succeed there — and `file://` is the one way this page is guaranteed to be
-> used. `sound` is 101 checks; six of its controls were proved by reintroducing the fault,
+> used. `sound` is 132 checks; six of its controls were proved by reintroducing the fault,
 > including one slider carrying both beds and the music bed quietly synthesising a drone.
 
 **All audio in `sfx/` is © Epidemic Sound**, under the author's subscription. `sfx/SOURCES.md`

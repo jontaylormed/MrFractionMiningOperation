@@ -147,7 +147,7 @@ happens far more often. Positional ids are the lesser of the two, but this is th
 
 # Supplied sound effects
 
-The five cues are **synthesised by default and file-backed when you supply files.** Drop them
+The **six** cues are **synthesised by default and file-backed when you supply files.** Drop them
 in and they take over; leave them out and the oscillators carry on. That is not belt and
 braces — it is the only way both things stay true at once: the page has to open from
 `file://` and make a noise, *and* a real recorded hammer beats a sine wave.
@@ -163,7 +163,7 @@ MF.AMBIENCE_SRC = 'sfx/bed.m4a';   // the room tone — loops, own slider
 MF.MUSIC_SRC    = 'sfx/music.m4a'; // the track — loops, own slider
 ```
 
-## The five filenames
+## The six filenames
 
 Named exactly for the cue they replace — the code fetches `<SFX_BASE>/<cue>.<ext>`.
 
@@ -173,7 +173,8 @@ Named exactly for the cue they replace — the code fetches `<SFX_BASE>/<cue>.<e
 | `clang.m4a` | the pick glances off | **metal on stone, with a tail.** It must be tellable from `thud` with your back to the screen. ~400 ms |
 | `pour.m4a` | the forge pours | the only one with a body — **1.5–2.5 s**, a swell rather than a hit |
 | `stamp.m4a` | the mill press drops | **heavier than the thud**, with a machine's snap on the front. ~350 ms |
-| `tick.m4a` | a lump is picked out | **the smallest thing in the set.** Under 100 ms. A tick, not a note. |
+| `tick.m4a` | a lump is picked out | **the smallest thing in the set.** Under 200 ms. A tick, not a note &mdash; and the one cue that does **not** duck the beds, because it fires on every lump in the wall. |
+| `hoist.m4a` | the cage moves between layers | **the only cue with travel in it** &mdash; a start, a middle and a stop. 3&ndash;4 s. |
 
 ## Specs
 
@@ -183,8 +184,15 @@ Named exactly for the cue they replace — the code fetches `<SFX_BASE>/<cue>.<e
 | Channels | **Mono** |
 | Bitrate | **96 kbps** — higher than the voice, because effects have transients and are short |
 | Trim | **No leading silence.** The cue fires the instant the hammer lands; 80 ms of head reads as lag. |
-| Level | Peak around **−3 dBFS**, and keep the five roughly matched to each other |
-| Size | ~12 KB per second, so all five ≈ **50 KB total.** Negligible. |
+| Level | Peak **between −4 and −2 dBFS**, and keep the three impacts within a few dB of each other by RMS. One slider sets all of them, so a 4 dB spread means some are audible and some are not — the `sound` group fails the build over 5 dB. |
+| Ceiling | **Never above −1 dBFS after encoding.** AAC reconstructs above the PCM peak: a pass aimed at −1.5 came back at −0.98. The group decodes the buffer and measures it rather than trusting the encoder. |
+| Size | ~12 KB per second. The five short cues ≈ **25 KB**; the hoist adds ≈ 50 KB. Negligible. |
+
+**The beds duck under a cue rather than the cue being made louder.** `MF.audio.DUCK` pulls
+both beds down ~10 dB for the length of an impact. That is why a 0.4 s hammer can be heard
+over a track — no amount of levelling gets a short transient past two continuous beds, and
+trying only takes you to the point of clipping. If you add a cue that fires *often*, leave it
+out of `DUCK`: a bed that dips constantly is a bed that pumps.
 
 ## The two beds
 

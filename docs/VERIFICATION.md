@@ -2085,3 +2085,26 @@ report from `detail`.**
 The failure mode is the worst kind: it says the check you just wrote does not
 work, so the honest response is to weaken or delete it. §5's "read the
 denominator" has a partner — *read the whole numerator too.*
+
+## §96. A check that is green three times and red the fourth is worse than one that always fails
+
+The duck probe set a bed's volume to zero, called `apply()`, and read the bus. It passed at
+380, 560 and 1250 px and **failed at 994** — the same code, the same page, four widths.
+
+The cause is Web Audio, not layout. `apply()` uses `setTargetAtTime`, an exponential approach
+with no end time, and **`cancelScheduledValues` does not stop a `setTargetAtTime` that started
+before the cancel time.** So the residual ramp kept pulling the value back up, and whether the
+probe caught it depended entirely on how long the preceding groups had taken.
+
+Two wrong versions preceded the right one, both reading the live bus:
+
+1. set the volume, call `apply()`, read the gain — reports the value it is easing **away**
+   from. Same trap that ate a scroll measurement earlier in this project (§ smooth transitions).
+2. cancel and pin the gain first — still loses to the in-flight `setTargetAtTime`.
+
+**The fix was to measure a node with no history:** a fresh `GainNode` swapped in for the bus
+for the length of the probe. No automation, nothing to fight, identical at every width.
+
+> A flaky check trains you to re-run until it passes, which is the exact opposite of what a
+> check is for. When one appears, **do not raise the tolerance** — find what is moving.
+> Something in the system is genuinely non-deterministic and you have just been shown where.
