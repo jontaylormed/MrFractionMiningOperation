@@ -5335,6 +5335,7 @@ MF.LENS.lantern = function(ore){
   }
   /* the shape of one bracket, y included — the digit stays the miner's */
   if(MF.isTwo(ore)){
+    var tsL = MF.twoSplit(ore);
     var t2l = MF.twoSplit(ore);
     if(!t2l) return null;
     return {
@@ -5479,16 +5480,17 @@ MF.LENS.auger = function(ore){
 /* ONE X, DRAWN ONCE. The dial lens and the two-element lens want the same
    picture with different numbers in it, and two copies of this markup would be
    two chances for them to disagree about which corner is the product. */
-function lensX(top, bot){
+function lensX(top, bot, left){
+  var one = (left !== null && left !== undefined);
   return '<span class="lensx" role="img" aria-label="An X. Top: ' + top +
       ', what the pair multiplies to. Bottom: ' + bot +
-      ', what it adds to. Both sides unknown.">' +
+      ', what it adds to. ' + (one ? 'Left: ' + left + '. Right unknown.' : 'Both sides unknown.') + '">' +
       '<svg viewBox="0 0 100 68" aria-hidden="true" focusable="false">' +
         '<path d="M22 12 L78 56"/><path d="M78 12 L22 56"/>' +
       '</svg>' +
       '<b class="lxtop">' + top + '</b>' +
       '<b class="lxbot">' + bot + '</b>' +
-      '<b class="lxside lxl">?</b>' +
+      '<b class="lxside lxl">' + (one ? left : '?') + '</b>' +
       '<b class="lxside lxr">?</b>' +
     '</span>';
 }
@@ -5497,8 +5499,9 @@ MF.LENS.dial = function(ore){
   /* THE X IS EXACTLY RIGHT HERE — the pair multiplies to the end and adds
      to the middle, same as any trinomial. Only the answers wear a y. */
   if(MF.isTwo(ore)){
+    var tsL = MF.twoSplit(ore);
     return {
-      html: MF.oreLabel(ore) + lensX(num(ore.c), num(ore.b)),
+      html: MF.oreLabel(ore) + lensX(num(ore.c), num(ore.b), tsL ? num(tsL.left.p) : null),
       found: 'the pair multiplies to ' + num(ore.c) + ' and adds to ' + num(ore.b)
     };
   }
@@ -5510,8 +5513,9 @@ MF.LENS.dial = function(ore){
   if(MF.isGroup(ore)) return null;
   if(ore.kind === 'number' || ore.a === 0 || !ore.c) return null;
   var ac = (ore.a === 1) ? ore.c : ore.a * ore.c;
+  var dprL = MF.xPair(ore);
   return {
-    html: MF.oreLabel(ore) + lensX(num(ac), num(ore.b)),
+    html: MF.oreLabel(ore) + lensX(num(ac), num(ore.b), dprL ? num(dprL.p) : null),
     found: 'the pair multiplies to ' + num(ac) + ' and adds to ' + num(ore.b)
   };
 };
@@ -6057,9 +6061,18 @@ MF.TOOL_READ = {
      happens when there is not one, which is the difference between a lump you
      have not cracked and a lump that does not crack.
 
-     BOTH SIDES STAY OPEN, as everywhere else: on a monic lump they are the
-     bracket constants, so one filled is half the answer and `schema` fails the
-     build for it. */
+     THREE NUMBERS AND ONE QUESTION MARK (user, 2026-09-07): "Crosscut is being
+     used, the student needs to see 3 numbers and only one question mark" —
+     said alongside "it took me a while to get x + 4 factor", which is the same
+     report from the other end. With both sides blank the instrument states two
+     targets and hands back the entire search, which is what every other tool
+     on this site is careful not to do: the Lantern lights one side, the Steel
+     shows the metal and holds the bracket, the Auger pulls one half.
+
+     SO THE CROSSCUT FILLS ONE SIDE AND HOLDS THE OTHER, like the rest of them.
+     `schema` permits it — the rule is that a method may show PART and never
+     all, and it counts whole rendered factor strings; a bare number in an X
+     cell is not one. One side given, one side yours, and the hammer confirms. */
   dial: function(host, ore, pieceId){
     if(MF.isCube(ore)){ MF.notMyCube(host, 'dial', 'An X hangs under a middle term, and this one has no middle term at all.'); return; }
     if(MF.isBi(ore)){ MF.readBracket(host, 'dial', ore); return; }
@@ -6070,13 +6083,16 @@ MF.TOOL_READ = {
        are COEFFICIENTS, and the y was there all along wearing a 1. */
     if(MF.isTwo(ore)){
       var tn = MF.isNative(ore);
+      var tsp2 = MF.twoSplit(ore);
       host.appendChild(H('div','diaglab','THE X &mdash; the end on top, the middle below'));
-      MF.xDiagram(host, {top:num(ore.c), bottom:num(ore.b), left:null, right:null});
+      MF.xDiagram(host, {top:num(ore.c), bottom:num(ore.b),
+        left: tsp2 ? num(tsp2.left.p) : null, right:null});
       MF.workLine(host, 'so the pair must multiply to ' + num(ore.c) +
-        ' and add to ' + num(ore.b), [null, '  and  ', null], 'wbig');
+        ' and add to ' + num(ore.b), [tsp2 ? num(tsp2.left.p) : null, '  and  ', null], 'wbig');
       host.appendChild(H('div','diaglab','AND EACH ONE COMES WITH A y'));
       MF.splitDiagram(host, {whole:MF.oreLabel(ore),
-        left:'( x + ? y )', right:'( x + ? y )',
+        left: tsp2 ? '( x ' + (tsp2.left.p<0?'&minus; '+num(-tsp2.left.p):'+ '+num(tsp2.left.p)) + 'y )' : '( x + ? y )',
+        right:'( x + ? y )',
         key: tn
           ? 'No whole pair does both, so nothing comes out of this one. It is an element.'
           : 'The same two numbers a plain trinomial would give you &mdash; each carrying the y that was always there, wearing a 1.'});
@@ -6100,13 +6116,17 @@ MF.TOOL_READ = {
     if(ore.a !== 0){
       host.appendChild(H('div','diaglab','THE X &mdash; ' +
         (ore.a===1 ? 'the end on top, the middle below' : 'a&middot;c on top, the middle below')));
+      var dpr = MF.xPair(ore);
       MF.xDiagram(host, {
         top: num(ore.a===1 ? ore.c : ore.a*ore.c),
-        bottom: num(ore.b), left:null, right:null,
+        bottom: num(ore.b), left: dpr ? num(dpr.p) : null, right:null,
         topWhy: ore.a===1 ? '' : num(ore.a) + ' × ' + num(ore.c)
       });
       MF.workLine(host, 'so the pair must multiply to ' + num(ore.a===1 ? ore.c : ore.a*ore.c) +
-        ' and add to ' + num(ore.b), [null, '  and  ', null], 'wbig');
+        ' and add to ' + num(ore.b), [dpr ? num(dpr.p) : null, '  and  ', null], 'wbig');
+      if(dpr)
+        host.appendChild(H('div','hint','One of the pair is given. The other is what is left when you ask ' +
+          'the same two questions of it &mdash; and the hammer is the only thing that confirms it.'));
     } else {
       host.appendChild(H('p','hint','<b>No x&sup2;, so there is no a&middot;c to put on top.</b> The Steel Head is the one for this lump.'));
     }
@@ -19482,11 +19502,31 @@ MF.validate = function(){
       if(!top || top.textContent.trim() !== '12' || !bot || bot.textContent.trim() !== '7')
         errs.push('schema: the X on x² + 7x + 12 does not carry 12 over 7 — ' +
                   'the product goes on top and the sum underneath');
+      /* ---- ONE SIDE GIVEN, ONE SIDE HELD ----
+
+         THIS CHECK USED TO DEMAND BOTH SIDES OPEN, and the user overruled it
+         on 2026-09-07 after driving the mine: "Crosscut is being used, the
+         student needs to see 3 numbers and only one question mark", and in the
+         same breath "it took me a while to get x + 4 factor" — the same report
+         from the other end.
+
+         They are right, and the old rule was the odd one out. Every other
+         instrument here shows part: the Lantern lights one side, the Steel
+         gives the metal and holds the bracket, the Auger pulls one half. The
+         Crosscut alone stated two targets and handed back the whole search,
+         which is not restraint, it is a diagram of a question.
+
+         THE RULE IT MUST STILL OBEY IS THE REAL ONE: part, never all. So this
+         now fails BOTH ways — a Crosscut that fills neither side is useless,
+         and one that fills both has done the factorisation for them. */
       chk('schema');
-      /* BOTH SIDES OPEN. On a monic lump they are the bracket constants, so
-         one filled is half the answer and both is all of it. */
-      if(sides.length !== 2 || [].some.call(sides, function(s){ return s.textContent.trim() !== '?'; }))
-        errs.push('schema: the Crosscut fills a side of its own X in — those two are the brackets');
+      var filled = [].filter.call(sides, function(s){ return s.textContent.trim() !== '?'; });
+      if(sides.length !== 2)
+        errs.push('schema: the Crosscut\'s X has ' + sides.length + ' sides');
+      else if(filled.length === 0)
+        errs.push('schema: the Crosscut leaves both sides of its X open and hands back the whole search');
+      else if(filled.length === 2)
+        errs.push('schema: the Crosscut fills both sides of its own X — that is the factorisation, not a method');
     }
     lxHost.remove();
     MF.state.tools = lxSaved.tools; MF.state.cart = lxSaved.cart;
