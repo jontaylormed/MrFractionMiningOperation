@@ -2182,3 +2182,22 @@ Two things this makes checkable that were not before:
 > A 1.7 second wait with no picture is worse than either alone. `MF.reducedMotion()` answers
 > the OS query **and** the panel override — code that consulted only the media query would
 > keep the delay for a student who had turned animation off in the panel.
+
+## §99. Do not run `perl -0pi` over index.html
+
+Two entity bugs needed fixing in a lesson. A `perl -0pi -e "s/.../.../"` pass fixed them and
+**re-encoded the entire file**, corrupting UTF-8 across **997 lines it had no business
+touching** — `x²` became `xÃÂ²` in code written weeks earlier and never opened that day.
+
+This file is full of `²`, `⁴`, `−`, `·`, `—` and `&mdash;` — there is a superscript or a real
+minus sign on nearly every screen. Perl's `-0` slurp mode reads bytes and writes back through
+whatever encoding layer happens to be in effect, so a one-line substitution rewrites every
+multi-byte character in the file.
+
+**`git checkout index.html` and redo it with the editor.** The damage is invisible in the
+diff summary — it reads as a large refactor — and invisible on screen until a student opens
+the one panel that happens to show a corrupted character.
+
+> `sed -i` on single lines has been safe here throughout; it is the whole-file slurp that does
+> it. And the tell is the diff stat: **an edit that touches four lines and reports 997
+> deletions has not done what you asked.** Check the stat before the commit, not after.
