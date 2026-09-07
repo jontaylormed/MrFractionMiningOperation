@@ -4106,6 +4106,42 @@ MF.SCHEMA = {
     name: 'The X method',
     why: 'Two numbers must do two jobs at once: multiply to a&middot;c and add to the middle. Put both targets on an X and the pair you want is the one that satisfies both.',
     steps: function(ore){
+      /* ---- TWO ELEMENTS: THE SAME X, AND THE ANSWERS WEAR A y ----
+
+         THE HUNT IS NOT NEW AND THE LESSON SAYS SO IN ITS FIRST WORD. What is
+         new is the last step, which every trinomial lesson before this one
+         could skip: the pair the X finds are COEFFICIENTS, not whole bracket
+         ends. A student who has only ever met x² + 5x + 6 has been reading
+         "the numbers on the ends" as the ends themselves, and the y was
+         invisible the whole time because it was 1.
+
+         So the walk is the ordinary X for three slides and then the one that
+         matters — which is also why this branch keeps the tick-line ending
+         rather than inventing a new one. Nothing about "no whole pair, no
+         seam" changes when a letter turns up. */
+      if(MF.isTwo(ore)){
+        var tsp = MF.twoSplit(ore);
+        return [
+          {act:'The same X as ever. End on top, middle underneath.',
+           draw:function(li){ MF.xDiagram(li, {top:num(ore.c), bottom:num(ore.b), left:null, right:null}); }},
+          {act:'And the same hunt.', open:true,
+           draw:function(li){ MF.workLine(li, 'multiply to ' + num(ore.c) + ', add to ' + num(ore.b),
+             [null, '  and  ', null], 'wbig'); }},
+          {act:'What is new is where they land. Each carries a y.', open:true,
+           draw:function(li){
+             MF.splitDiagram(li, {whole:MF.oreLabel(ore), left:'( x + ? y )', right:'( x + ? y )',
+               key:'The pair are how many <b>y</b> &mdash; not the whole end of a bracket.'});
+           }},
+          {act:'Which is what x&sup2; + 5x + 6 was doing all along.',
+           draw:function(li){
+             MF.workLine(li, null, ['( x + 2', null, ' )( x + 3', null, ' )'], 'wbig');
+             li.appendChild(H('div','swhy','A 1 in the holes gives the plain trinomial. A y gives this one.'));
+           }},
+          {act:'And no whole pair still means no seam.', open:true,
+           draw:function(li){ MF.tickLine(li, {at:2.4, label:null, ticks:6,
+             key: tsp ? 'Between two marks is the rock, not you.' : 'This one lands between the marks.'}); }}
+        ];
+      }
       if(ore.kind === 'number') return [
         {act:'An X needs a middle term to sit under it, and a plain number has none.', shows:num(ore.n),
          draw:function(li){ MF.workLine(li, 'nothing to cross here', [num(ore.n)], 'wbig'); }}
@@ -4132,7 +4168,13 @@ MF.SCHEMA = {
            key:'Between two marks. That is the rock, not you.'}); }}
       ];
     },
-    practice: {ore:{kind:'poly',a:1,b:3,c:2}, ask:'x&sup2; + 3x + 2 &mdash; a&middot;c is 2 and the middle is 3. Name one side of it.', answer:{m:1,k:1}}
+    /* THE LESSON WALKS WHATEVER THIS LUMP IS. It is the two-letter one now,
+       because the X on a plain trinomial is already the Crosscut's reading in
+       the mine and its practice everywhere else — what a student has NOT met
+       is the pair landing as coefficients. */
+    practice: {ore:MF.twoOre(5,6),
+               ask:'x&sup2; + 5xy + 6y&sup2; &mdash; the pair multiplies to 6 and adds to 5. Name one bracket, and remember the y.',
+               answer:{m:1,k:2}}
   },
 
   /* rank 5. THE BOX METHOD, and it is DRAWN rather than described - the
@@ -4839,7 +4881,7 @@ MF.paintNameSide = function(host, ore, pieceId){
   if(!here || MF.isNative(here.ore)) return null;
 
   var isNum = (ore.kind==='number');
-  var isGrp = MF.isGroup(ore), isQrt = MF.isQuart(ore), nsv = 'x';
+  var isGrp = MF.isGroup(ore), isQrt = MF.isQuart(ore), isTwo = MF.isTwo(ore), nsv = 'x';
   var wrap = E('div','nameside');
   wrap.appendChild(H('div','nslab','THE OTHER SIDE'));
   wrap.appendChild(H('div','nshint','Write what you think it is, then take it to the anvil. The hammer is the only thing here that confirms anything.'));
@@ -4850,6 +4892,8 @@ MF.paintNameSide = function(host, ore, pieceId){
     box.appendChild(H('span','paren','('));
     MF.letterPick(box, 'x', function(v){ nsv = v; });
     box.appendChild(H('span','paren','+'));
+  } else if(isTwo){
+    box.appendChild(H('span','paren','( x +'));
   } else if(!isNum){
     box.appendChild(H('span','paren','('));
     mi = document.createElement('input'); mi.type='text'; mi.inputMode='numeric'; mi.placeholder='1';
@@ -4859,15 +4903,17 @@ MF.paintNameSide = function(host, ore, pieceId){
     box.appendChild(H('span','paren', isQrt ? 'x&sup2; +' : 'x +'));
   }
   var ki = document.createElement('input'); ki.type='text'; ki.inputMode='numeric'; ki.placeholder='0';
-  ki.setAttribute('aria-label', isNum ? 'the number you think runs through it' : 'the number on the end');
+  ki.setAttribute('aria-label', isNum ? 'the number you think runs through it'
+                  : (isTwo ? 'how many y in this bracket' : 'the number on the end'));
   box.appendChild(ki);
-  if(!isNum) box.appendChild(H('span','paren',')'));
+  if(isTwo) box.appendChild(H('span','paren','y )'));
+  else if(!isNum) box.appendChild(H('span','paren',')'));
   row.appendChild(box);
 
   var say = E('div','nssay');
   var go = E('button','btn primary','Cut the hammer to it'); go.type='button';
   on(go,'click',function(){
-    var m = isGrp ? 1 : (isNum ? 0 : MF.readPickM(mi.value));
+    var m = (isGrp || isTwo) ? 1 : (isNum ? 0 : MF.readPickM(mi.value));
     var k = MF.readInt(ki.value);
     if(!isFinite(m) || !isFinite(k) || isNaN(m) || isNaN(k)){
       clear(say).appendChild(H('div','hint','That is not a whole number, so there is nothing to cut the head to yet.'));
@@ -9033,7 +9079,7 @@ MF.lessonPractice = function(host, key){
   pr.appendChild(H('div','prask', p.ask));
 
   var isNum = (p.ore.kind === 'number');
-  var isGrp = MF.isGroup(p.ore), isQrt = MF.isQuart(p.ore);
+  var isGrp = MF.isGroup(p.ore), isQrt = MF.isQuart(p.ore), isTwo = MF.isTwo(p.ore);
   var row = E('div','nsrow');
   var bx = E('div','hbox');
   var mi = null, pv = 'x';
@@ -9045,6 +9091,8 @@ MF.lessonPractice = function(host, key){
     bx.appendChild(H('span','paren','('));
     MF.letterPick(bx, 'x', function(v){ pv = v; });
     bx.appendChild(H('span','paren','+'));
+  } else if(isTwo){
+    bx.appendChild(H('span','paren','( x +'));
   } else if(!isNum){
     bx.appendChild(H('span','paren','('));
     mi = document.createElement('input'); mi.type='text'; mi.inputMode='numeric'; mi.placeholder='1';
@@ -9054,15 +9102,17 @@ MF.lessonPractice = function(host, key){
     bx.appendChild(H('span','paren', isQrt ? 'x&sup2; +' : 'x +'));
   }
   var ki = document.createElement('input'); ki.type='text'; ki.inputMode='numeric'; ki.placeholder='0';
-  ki.setAttribute('aria-label', isNum ? 'the number you are taking out' : 'the number on the end');
+  ki.setAttribute('aria-label', isNum ? 'the number you are taking out'
+                  : (isTwo ? 'how many y in this bracket' : 'the number on the end'));
   bx.appendChild(ki);
-  if(!isNum) bx.appendChild(H('span','paren',')'));
+  if(isTwo) bx.appendChild(H('span','paren','y )'));
+  else if(!isNum) bx.appendChild(H('span','paren',')'));
   row.appendChild(bx);
 
   var out = E('div','prout');
   var go = E('button','btn primary','Try it'); go.type='button';
   on(go,'click',function(){
-    var m = isGrp ? 1 : (isNum ? 0 : MF.readPickM(mi.value));
+    var m = (isGrp || isTwo) ? 1 : (isNum ? 0 : MF.readPickM(mi.value));
     var k = MF.readInt(ki.value);
     clear(out);
     if(!isFinite(m) || !isFinite(k) || isNaN(m) || isNaN(k)){

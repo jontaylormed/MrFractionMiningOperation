@@ -22,7 +22,7 @@
 | **Screens** | **eight** — surface, the Stamp Mill, the Casting Shed and its three workshops, the mine, the forge |
 | **Layers** | **five**, all reachable from the first screen, none gated on anything |
 | **Instruments** | **seven**, all made at the forge, none granted |
-| **Validation** | `MF.validate()` → **21,835 checks / 46 groups / 0 errors**, two controls that must fail, and do — **run it at the width you ship from**, because `layout`, `reach`, `hollow` and `cartdraw` measure the live viewport and report it (`VERIFICATION.md` §61, §63, §65). Verified at **380×780, 560×760, 994×700 and 1250×900** |
+| **Validation** | `MF.validate()` → **21,841 checks / 46 groups / 0 errors**, two controls that must fail, and do — **run it at the width you ship from**, because `layout`, `reach`, `hollow` and `cartdraw` measure the live viewport and report it (`VERIFICATION.md` §61, §63, §65). Verified at **380×780, 560×760, 994×700 and 1250×900** |
 
 > **A check is only as wide as the space it sweeps.** The `truthy` group reported 0 errors across 642 checks while **1,970 Decimal Dial states printed a falsehood**, because it tested each lump's original integer coefficients and never nudged `c` — the one thing the dial exists to do. It now sweeps every slider position the control can reach (3,287 checks). Ask of any green result: *what did it not look at?*
 | **Runtime** | Zero dependencies, no build step, no network requests, no storage, runs from `file://` |
@@ -184,7 +184,7 @@ The face is **2280px of rock**, several screens wide, scanned by dragging, scrol
 
 ## The breaking floor: one anvil, the belt over it, and the ore on top
 
-**Measured 2026-09-07, all four widths, 0 errors over 21,835 checks in 46 groups, both controls failing.**
+**Measured 2026-09-07, all four widths, 0 errors over 21,841 checks in 46 groups, both controls failing.**
 
 **There is one box, and the anvil in it is the work.** The `workpair` is gone. It was two boxes: one held a row of chips and the belt, the other held a drawing of an anvil, two number boxes and the swing button — so **the anvil a student was looking at was not the thing their ore was on**, and the drawing was decoration beside the work. What is here now is the gallery you are standing in: the belt overhead, the anvil, the stone on its face, and whatever has come off it lying on the ground. **A first lump has nothing on the ground at all.**
 
@@ -889,3 +889,62 @@ the anvil's hammer, this practice, and "the other side" under a tool reading.
 > the screen as the literal text `&sup4;`; it is `&#8308;` now. And `MF.areaModel` draws its
 > cells as SVG `<text>` and sets `textContent`, so `x<sup>4</sup>` in a cell printed as that
 > exact string. **Markup belongs in `act` and `caption` and nowhere near a cell.**
+
+## Layer 8 — Two Elements
+
+**`x² + b·xy + c·y²` is the plain trinomial with a second letter on it, and nothing else:**
+
+```
+x² + 5xy + 6y²  =  (x + 2y)(x + 3y)        2 × 3 = 6,  2 + 3 = 5
+```
+
+The pair hunt is layer 4's, unchanged. What is different is only what the brackets *look*
+like — and that is the whole lesson. A student who has been told "the numbers on the ends
+multiply to c" finds out here that they were never numbers, they were **coefficients**, and the
+y was invisible because it was 1.
+
+### The test for "finished" is complete here, which the quartic's was not
+
+The lump is degree 2 and **monic in x**, so any split into two linear forms over ℤ has leading
+coefficients multiplying to 1 — both brackets are `x + something·y`, and the somethings are
+exactly a whole pair. **There is no third way in.** Asserted by brute force over every b in
+−9..9 and c in −20..20 rather than reasoned about and left there.
+
+| | |
+|---|---|
+| `two` | the lump, `x² + bxy + cy²` |
+| `bi` | one bracket, `x + p·y` — not a shape `poly` can hold, which has one variable |
+
+**The hammer head reads `( x + [ ] y )`** — one box, because both brackets are monic in x and
+there is nothing to choose between the letters. That is the opposite of a grouping lump, where
+the two letters sit in *different* brackets and the head has to ask which. `MF.swing` now
+supplies the 1 for every head with no x-count box rather than reading an empty string left over
+from another lump.
+
+`x + 2y` reaches the yard **labelled**, so the forge cannot pour it believing it had `x + 2`.
+
+### What the instruments say
+
+| | |
+|---|---|
+| **Crosscut** | the pair hunt, and then the one slide that matters: the pair land as *coefficients* |
+| **Drill** | reads `x² − 9y²` **directly** — no middle term, both ends squares, and the second being a letter squared changes nothing about the shape it recognises |
+| **Lantern** | one bracket's shape including the y, digit held back |
+| Steel | a lump with a single x² at the front never carries a plain metal |
+| Shifter, Auger | decline, and name the Crosscut |
+
+**Each shaft has gone to a different instrument** — Grouping to the Auger, Higher Ground to the
+Shifter, Two Elements to the Crosscut. `MF.readBracket` gives all seven the same answer on a
+single bracket rather than each inventing a reason.
+
+**New group `twoel` — 2,928 checks**, including a **sign-coverage** assertion: a layer that only
+ever handed out `x² + 5xy + 6y²` would teach the shape rather than the method, so all four sign
+combinations have to turn up. Its control — a generator drawing only positives — reports one of
+four.
+
+### The lesson
+
+The Crosscut's lesson walks the two-letter lump in five slides: the same X, the same hunt,
+**what is new is where they land**, then `x² + 5x + 6` was doing this all along with a y of 1,
+and finally — unchanged — no whole pair still means no seam. The `taught` group rejected it
+once at 1380 characters against the 1150 budget.
