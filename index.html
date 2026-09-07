@@ -5720,8 +5720,26 @@ MF.audio = {
         .then(function(b){ return A.ctx.decodeAudioData(b); })
         .then(function(buf){
           A.beds[kind].file = buf;
-          /* if it was already running on the synth, swap it for the real one */
+          /* ---- AND THEN ASK AGAIN WHETHER IT SHOULD BE RUNNING ----
+
+             USER, 2026-09-07: "The music is not starting when I first enter the
+             surface. It should start right after the loading page at 30%."
+
+             THE OLD LINE ONLY SWAPPED A BED THAT WAS ALREADY PLAYING, and the
+             music is never already playing. `start()` fires `loadBeds()` and
+             `apply()` in the same breath, so `apply()` runs while the track is
+             still in flight; `bedOn('music')` correctly refuses — a song has no
+             synth fallback — and returns with no node. When the file finally
+             landed, `if(node)` was false and nothing started it. The music
+             waited for a slider nobody had a reason to touch.
+
+             THE ROOM TONE HID IT. `amb` falls back to oscillators, so it always
+             HAD a node by the time its file arrived, and the swap branch worked
+             — the one bed with a fallback was masking the bug in the one
+             without. `apply()` asks the real question instead: is this wanted,
+             and is there now something to play? */
           if(A.beds[kind].node){ A.bedOff(kind); A.bedOn(kind); }
+          else A.apply();
         })
         ['catch'](function(){ A.beds[kind].file = 'missing'; });
     });
@@ -20855,6 +20873,43 @@ MF.validate = function(){
       chk('sound');
       if(bed.node) errs.push('sound: turning the ' + kind + ' back down did not stop the bed');
     });
+    /* ---- A BED THAT ARRIVES LATE STILL STARTS ----
+
+       USER, 2026-09-07: the music did not start on entering the surface.
+
+       `start()` fires `loadBeds()` and `apply()` together, so `apply()` always
+       runs while the track is still in flight. The bed is wanted, has nothing
+       yet, and correctly does not start — and the question has to be asked
+       AGAIN when the file lands. It was not: the old code only swapped a bed
+       that was already playing, which the music, having no synth fallback,
+       never is.
+
+       THE FALLBACK HID IT. `amb` always has a node by the time its file
+       arrives, so the swap branch worked there — the one bed with a fallback
+       was masking the bug in the one without, which is why every earlier sound
+       check passed. This drives the real sequence: wanted, empty, then filled. */
+    ['music','amb'].forEach(function(kind){
+      var key = kind === 'music' ? 'music' : 'ambience';
+      var was = MF.audio.beds[kind].file;
+      MF.audio.bedOff(kind);
+      MF.audio.beds[kind].file = 'loading';
+      MF.state.access[key] = 0.4;
+      MF.audio.apply();                       /* the gesture, mid-fetch */
+      chk('sound');
+      if(kind === 'music' && MF.audio.beds[kind].node)
+        errs.push('sound: the music bed started while it still had nothing to play');
+      /* the file lands */
+      MF.audio.beds[kind].file = was;
+      if(MF.audio.beds[kind].node){ MF.audio.bedOff(kind); MF.audio.bedOn(kind); }
+      else MF.audio.apply();
+      var playable = kind === 'amb' || (was && was !== 'missing' && was !== 'loading');
+      chk('sound');
+      if(playable && !MF.audio.beds[kind].node)
+        errs.push('sound: the ' + kind + ' bed was wanted before its file arrived and never started once it had');
+      MF.state.access[key] = 0;
+      MF.audio.apply();
+    });
+
     /* AND THEY ARE TWO CONTROLS, not one wearing two labels. */
     MF.state.access.ambience = 0.4; MF.state.access.music = 0; MF.audio.apply();
     chk('sound');
