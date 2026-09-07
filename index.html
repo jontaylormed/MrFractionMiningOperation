@@ -3020,6 +3020,88 @@ MF.asOre = asOre;
 
    `x² + bxy + cy²` also never carries a common metal: the x² coefficient is 1.
    ========================================================================= */
+/* =========================================================================
+   CUBES — LAYER 9, AND THE LAST SHAFT ON THE MAP.  `a·x³ + d`
+
+   TWO IDENTITIES, READ OFF THE SHAPE:
+
+       p³x³ − q³  =  (px − q)(p²x² + pqx + q²)
+       p³x³ + q³  =  (px + q)(p²x² − pqx + q²)
+
+   MINE-SPEC §7 writes it `a³ ± b³`. It is the same identity with x in the
+   first slot, which is the form school teaches and — far more useful here —
+   the form whose PIECES THE MINE ALREADY HOLDS. `x − 2` is an ordinary linear
+   and `x² + 2x + 4` is an ordinary quadratic, so nothing new goes to the yard,
+   nothing new goes to the forge, and the second piece is native metal by the
+   engine's own existing test rather than by a rule written for this layer.
+
+   THE SECOND FACTOR NEVER COMES APART, and that is worth meeting. Its
+   discriminant is p²q² − 4p²q² = −3p²q², negative for every p and q, so
+   `x² + 2x + 4` is an element for exactly the reason `x² + 4` is. A student
+   who has been breaking things for eight layers finds one here that stops
+   after a single swing and is finished — not because they missed something.
+
+   ---- AND "FINISHED" IS ONE QUESTION, NOT TWO ----
+
+   A cubic factors over ℤ if and only if it has a linear factor: there is no
+   way to write a degree-3 as two quadratics. So the whole test is whether a
+   rational root exists, and for `a·x³ + d` with gcd(a,d)=1 that happens
+   exactly when |a| and |d| are both perfect cubes. Both statements are proved
+   by brute force in the `cubes` group rather than trusted here.
+   ========================================================================= */
+MF.isCube = function(o){ return !!o && o.kind==='cube'; };
+MF.cubeOre = function(a, d){ return {kind:'cube', a:a, d:d}; };
+/* the whole cube root of n, or null */
+function cubeRoot(n){
+  var s = n < 0 ? -1 : 1, m = Math.abs(n);
+  var r = Math.round(Math.cbrt ? Math.cbrt(m) : Math.pow(m, 1/3));
+  for(var i = Math.max(0, r-2); i <= r+2; i++) if(i*i*i === m) return s*i;
+  return null;
+}
+MF.cubeRoot = cubeRoot;
+MF.cubeSplit = function(o){
+  if(!MF.isCube(o) || !o.a || !o.d) return null;
+  var p = cubeRoot(o.a), q = cubeRoot(o.d);
+  if(p === null || q === null || p <= 0) return null;
+  /* a·x³ + d with d = q³ gives (px + q)(p²x² − pqx + q²). A negative q makes
+     it the difference, and the signs follow from the arithmetic rather than
+     from a second branch. */
+  return {left:  {kind:'poly', a:0,   b:p,     c:q},
+          right: {kind:'poly', a:p*p, b:-p*q,  c:q*q}};
+};
+/* ---- DOES ANYTHING LINEAR COME OUT OF IT AT ALL ----
+   The rational root theorem, searched: a root p/q of `a·x³ + d` has p dividing
+   d and q dividing a. This is what `isNative` asks, and it is deliberately NOT
+   `cubeSplit` — `2x³ − 16` comes apart at x = 2 and is not a difference of
+   cubes, so a mine that tested only for the identity would put it on the rack
+   as an element. The generator keeps such lumps out; this makes sure that if
+   one ever arrives, the engine still tells the truth about it. */
+MF.cubeRational = function(o){
+  if(!MF.isCube(o) || !o.a) return null;
+  var ps = [], qs = [], i;
+  for(i = 1; i <= Math.abs(o.d); i++) if(o.d % i === 0) ps.push(i);
+  for(i = 1; i <= Math.abs(o.a); i++) if(o.a % i === 0) qs.push(i);
+  if(!o.d) ps.push(0);
+  for(var pi = 0; pi < ps.length; pi++){
+    for(var qi = 0; qi < qs.length; qi++){
+      var p = ps[pi], q = qs[qi];
+      for(var s = 1; s >= -1; s -= 2){
+        /* a(sp/q)³ + d = 0  ⟺  a·s·p³ + d·q³ = 0 */
+        if(o.a * s * p*p*p + o.d * q*q*q === 0) return {p:s*p, q:q};
+      }
+    }
+  }
+  return null;
+};
+
+/* a·x³ + d, printed */
+function cube3(a, d, txt){
+  var s = (a===1 ? '' : (a===-1 ? '−' : num(a))) + 'x' + (txt ? '³' : '<sup>3</sup>');
+  if(d!==0) s += signed(d);
+  return txt ? s.replace(/<[^>]+>/g,'') : s;
+}
+MF.cube3 = cube3;
+
 MF.isTwo = function(o){ return !!o && o.kind==='two'; };
 MF.twoOre = function(b, c){ return {kind:'two', b:b, c:c}; };
 /* one bracket of it: `x + p·y`. A binomial in two letters, which is not a
@@ -3135,6 +3217,11 @@ MF.isNative = function(ore){
   /* NO WHOLE PAIR, NO FACTORISATION — and unlike the quartic that really is
      the whole test. See the header on MF.twoSplit for why. */
   if(ore.kind==='two')   return !MF.twoSplit(ore);
+  /* A CUBIC FACTORS IFF IT HAS A LINEAR FACTOR — there is no way to write a
+     degree 3 as two quadratics — so the whole test is whether a rational root
+     exists. Searched rather than pattern-matched, because `2x³ − 16` has one
+     and is not a difference of cubes. */
+  if(ore.kind==='cube')  return !MF.cubeRational(ore);
   /* `x + 2y` has a 1 in front of the x, so nothing divides it but 1 */
   if(ore.kind==='bi')    return true;
   /* BOTH ways it can come apart, or it is not an element. See MF.quartCrossSplit. */
@@ -3162,7 +3249,7 @@ MF.oreMul = function(l, r){
      reports overflow instead, which every caller already handles as "this is
      not a shape I can make". Use MF.rebuild for anything with letters in it. */
   var wide = function(o){
-    return !!o && (o.kind==='group' || o.kind==='quart' || o.kind==='two' || o.kind==='bi');
+    return !!o && o.kind !== 'number' && o.kind !== 'poly';
   };
   if(wide(l) || wide(r)) return {overflow:true, degree:4};
   var L=oreCoeffs(l), R=oreCoeffs(r);
@@ -3180,12 +3267,22 @@ MF.oreSame = function(prod, ore){
    Letters included: `x + 3` and `y + 3` have identical coefficients and are
    not the same bracket, and the sweep that rebuilds a broken lump has to be
    able to tell them apart or the grouping shaft would pass by accident. */
+/* A LINEAR TIMES A QUADRATIC, WHICH IS DEGREE 3 AND SO NOT `oreMul`'s WORK.
+   One place needs it — proving a cube seam's two pieces rebuild the lump the
+   moment it is swung — and it goes through the same array multiplier the
+   floor rebuild uses, so the swing and the sweep cannot disagree. */
+MF.oreMul3 = function(l, r){
+  var out = MF.rebuild([l, r]);
+  return out ? out : {overflow:true, degree:3};
+};
+
 MF.oreEq = function(p, q){
   if(!p || !q || p.kind !== q.kind) return false;
   if(p.kind==='number') return p.n === q.n;
   if(p.kind==='group')  return p.b===q.b && p.c===q.c && p.d===q.d;
   if(p.kind==='quart')  return p.b===q.b && p.c===q.c;
   if(p.kind==='two')    return p.b===q.b && p.c===q.c;
+  if(p.kind==='cube')   return p.a===q.a && p.d===q.d;
   if(p.kind==='bi')     return p.p===q.p;
   return p.a===q.a && p.b===q.b && p.c===q.c && oreVar(p)===oreVar(q);
 };
@@ -3217,6 +3314,7 @@ function coeffArr(o){
   if(!o) return null;
   if(o.kind==='number') return [o.n];
   if(o.kind==='quart')  return [o.c, 0, o.b, 0, 1];
+  if(o.kind==='cube')   return [o.d, 0, 0, o.a];
   if(o.kind==='two' || o.kind==='bi') return null;    /* two letters, handled above */
   if(o.kind==='poly')   return trimArr([o.c, o.b, o.a]);
   return null;                              /* a group has two letters */
@@ -3225,6 +3323,8 @@ function arrToOre(A){
   var d = A.length - 1;
   while(d > 0 && !A[d]) d--;
   if(d <= 2) return asOre(A[2]||0, A[1]||0, A[0]||0);
+  /* a·x³ + d — the two middle terms cancel, which is the whole identity */
+  if(d === 3 && !A[2] && !A[1]) return MF.cubeOre(A[3], A[0]||0);
   if(d === 4 && A[4] === 1 && !A[3] && !A[1]) return MF.quartOre(A[2]||0, A[0]||0);
   return null;                              /* a shape this mine cannot hold */
 }
@@ -3290,6 +3390,7 @@ MF.oreToIngot = function(ore){
   if(ore.kind==='group') return {m:0, k:0, group:{b:ore.b,c:ore.c,d:ore.d}, label:MF.oreText(ore)};
   if(ore.kind==='quart') return {m:0, k:0, quart:{b:ore.b,c:ore.c}, label:MF.oreText(ore)};
   if(ore.kind==='two')   return {m:0, k:0, two:{b:ore.b,c:ore.c}, label:MF.oreText(ore)};
+  if(ore.kind==='cube')  return {m:0, k:0, cube:{a:ore.a,d:ore.d}, label:MF.oreText(ore)};
   if(ore.kind==='bi')    return {m:0, k:0, bi:ore.p, label:MF.oreText(ore)};
   if(ore.v && ore.v !== 'x') return {m:0, k:0, letter:ore.v, lin:{m:ore.b,k:ore.c}, label:MF.oreText(ore)};
   if(ore.a===0 && ore.b===0) return {m:0, k:ore.c};
@@ -3315,6 +3416,26 @@ MF.breakOff = function(ore, factor){
       return no('unsound','The pieces do not add back up to the rock they came out of.');
     return {ok:true, left:left, right:right, why:'The seam runs.'};
   };
+
+  /* ---- A CUBE, AND THE ORDINARY HAMMER TAKES IT ----
+     The bracket that comes off is a plain linear — `x − 2`, `2x + 3` — so the
+     head needs no new shape here, which is the whole reason this layer sits on
+     x rather than on a second letter. What is left behind is an ordinary
+     quadratic that the engine already knows is finished. */
+  if(ore.kind==='cube'){
+    var cs = MF.cubeSplit(ore);
+    if(!cs){
+      var rat = MF.cubeRational(ore);
+      return no('glance', rat
+        ? 'The hammer glanced off. Something does come out of this one, but not by the cubes — this is not a shape the mine teaches.'
+        : 'The hammer glanced off. Neither end is a whole cube, so there is no cube seam in it.');
+    }
+    if(factor.m !== cs.left.b || factor.k !== cs.left.c)
+      return no('glance','The hammer glanced off. That is not the bracket a cube seam gives.');
+    if(!MF.oreEq(MF.oreMul3(cs.left, cs.right), ore))
+      return no('unsound','The pieces do not add back up to the rock they came out of.');
+    return {ok:true, left:cs.left, right:cs.right, why:'The seam runs.'};
+  }
 
   /* ---- TWO LETTERS ALL THE WAY THROUGH ----
      The hammer is cut to `x + k·y`, and the pair hunt underneath is layer 4's
@@ -3447,6 +3568,7 @@ MF.oreLabel = function(o){
   if(o.kind==='group')  return group4(o.b, o.c, o.d, false);
   if(o.kind==='quart')  return quart4(o.b, o.c, false);
   if(o.kind==='two')    return two3(o.b, o.c, false);
+  if(o.kind==='cube')   return cube3(o.a, o.d, false);
   if(o.kind==='bi')     return biText(o.p, false);
   var s = quad(o.a,o.b,o.c);
   return o.v && o.v !== 'x' ? s.replace(/x/g, o.v) : s;
@@ -3456,6 +3578,7 @@ MF.oreText  = function(o){
   if(o.kind==='group')  return group4(o.b, o.c, o.d, true);
   if(o.kind==='quart')  return quart4(o.b, o.c, true);
   if(o.kind==='two')    return two3(o.b, o.c, true);
+  if(o.kind==='cube')   return cube3(o.a, o.d, true);
   if(o.kind==='bi')     return biText(o.p, true);
   var s = quadText(o.a,o.b,o.c);
   return o.v && o.v !== 'x' ? s.replace(/x/g, o.v) : s;
@@ -3466,6 +3589,7 @@ MF.assayOf = function(o){
   if(o.kind==='group')  return MF.groupSplit(o) ? 'grouped' : 'pure';
   if(o.kind==='quart')  return MF.isNative(o) ? 'pure' : 'stacked';
   if(o.kind==='two')    return MF.twoSplit(o) ? 'twoel' : 'pure';
+  if(o.kind==='cube')   return MF.isNative(o) ? 'pure' : 'cubes';
   if(o.kind==='bi')     return 'pure';
   if(o.kind==='number') return isPrime(o.n) ? 'pure' : 'composite';
   return MF.smeltPoly(o.a,o.b,o.c).kind;
@@ -3498,7 +3622,8 @@ MF.ASSAY = {
   loaded:    {name:'Loaded Trinomial',  tell:'Something sits in front of the x². The pair you hunt multiplies to a·c.'},
   grouped:   {name:'Grouped Vein',      tell:'Four terms and two letters. Take them two at a time and the same bracket comes out of both.'},
   stacked:   {name:'Stacked Seam',      tell:'An x to the fourth. Read the x&sup2; as the unit and it is an ordinary trinomial — then look at each half again.'},
-  twoel:     {name:'Two Elements',      tell:'Two letters all the way through. The pair still multiplies to the end and adds to the middle — it is the y that is new, not the hunt.'}
+  twoel:     {name:'Two Elements',      tell:'Two letters all the way through. The pair still multiplies to the end and adds to the middle — it is the y that is new, not the hunt.'},
+  cubes:     {name:'Cube Seam',         tell:'Both ends are whole cubes. One bracket comes off on sight, and what is left behind never comes apart at all.'}
 };
 
 /* =========================================================================
@@ -3513,11 +3638,15 @@ MF.LAYERS = [
   {n:5, name:'Loaded Vein', what:'ax² + bx + c'},
   {n:6, name:'Grouping',    what:'four terms, two letters — xy + 3x + 2y + 6'},
   {n:7, name:'Higher Ground', what:'x⁴ + bx² + c — a trinomial one gear up'},
-  {n:8, name:'Two Elements', what:'x² + bxy + cy² — the same hunt, two letters'}
+  {n:8, name:'Two Elements', what:'x² + bxy + cy² — the same hunt, two letters'},
+  {n:9, name:'Cubes',        what:'x³ ± a cube — one bracket on sight, and the rest is finished'}
 ];
-MF.SHUT_SHAFTS = [
-  {name:'Cubes', what:'a³ ± b³', note:'next shaft to open'}
-];
+/* EMPTY, AND IT STAYS EMPTY UNTIL THERE IS SOMETHING REAL TO PUT IN IT.
+   Four shafts were drawn on the map from the first build so the mine would
+   read as CONTINUING rather than as stopping; all four are cut and timbered
+   now. A fifth invented here to keep the list from being empty would be a
+   promise nobody has decided to keep — see how MF.paintShafts handles none. */
+MF.SHUT_SHAFTS = [];
 
 MF.digOre = function(layer, rng){
   var tries = 0;
@@ -3717,6 +3846,31 @@ MF.rawOre = function(layer, rng){
         return MF.isNative(cand) ? cand : null;
       }
       return MF.twoOre(tp + tq, tp * tq);
+
+    /* ---- LAYER 9: CUBES ----
+       `p³x³ ± q³`, built from p and q so the identity is there by construction.
+
+       gcd(a, d) = 1 IS ENFORCED, and it is not tidiness. With a common metal,
+       `2x³ − 16` has a root at x = 2 and is NOT a difference of cubes — so a
+       student would meet a lump that comes apart by a move this shaft does not
+       teach, and the Drill would have to either lie about it or refuse work
+       that is plainly there. Coprime lumps make "both ends are whole cubes"
+       and "something linear comes out" the same question, which is exactly the
+       recognition the layer is for. */
+    case 9:
+      var cp = pick(rng,[1,1,1,2,2,3]), cq = irange(rng,1,5);
+      var cs2 = rng() < 0.5 ? -1 : 1;
+      if(rng() < 0.20){
+        /* AN ELEMENT: one end is not a whole cube, so nothing linear comes out
+           and the whole cubic is finished. */
+        var nd = irange(rng,2,60);
+        if(cubeRoot(nd) !== null) return null;
+        var cand = MF.cubeOre(1, cs2 * nd);
+        return MF.isNative(cand) ? cand : null;
+      }
+      var ca = cp*cp*cp, cd = cs2 * cq*cq*cq;
+      if(gcd(Math.abs(ca), Math.abs(cd)) !== 1) return null;
+      return MF.cubeOre(ca, cd);
   }
   return null;
 };
@@ -4296,9 +4450,49 @@ MF.SCHEMA = {
      pair has to be a number and its own opposite, because that is the only
      pair whose sum is nothing. Recognising it is the whole method. */
   drill: {
-    name: 'The difference of two squares',
-    why: 'A middle term of nothing means the two numbers in the brackets cancel &mdash; so they are a number and its own opposite. With both ends square there is exactly one such pair, and no hunting.',
+    name: 'Two ends, read on sight',
+    why: 'Some lumps need no hunting: the two ends give the brackets. Squares give a number and its own opposite; cubes give one bracket and a piece that never comes apart.',
     steps: function(ore){
+      /* ---- CUBES: THE SAME KIND OF MOVE, A DIFFERENT IDENTITY ----
+
+         This instrument's whole character is recognising rather than
+         searching, and a cube seam is that exactly: look at the front, look at
+         the end, and if both are whole cubes one bracket is already known.
+
+         THE LAST SLIDE IS THE ONE THAT MATTERS AND IT IS NOT THE METHOD. The
+         piece left behind has discriminant −3p²q², negative always, so it is
+         native metal every single time. A student who has spent eight layers
+         learning that you keep going until nothing comes apart meets a lump
+         here that stops after ONE swing and is genuinely finished. */
+      if(MF.isCube(ore)){
+        var csp = MF.cubeSplit(ore);
+        var ra = cubeRoot(ore.a), rd = cubeRoot(ore.d);
+        return [
+          {act:'Two ends, no middle. Are both whole cubes?',
+           draw:function(li){
+             MF.workLine(li, 'the front', [ra === null ? 'not a cube' : num(ra) + ' × ' + num(ra) + ' × ' + num(ra)], 'wbig');
+             MF.workLine(li, 'the end', [rd === null ? 'not a cube' : num(rd) + ' × ' + num(rd) + ' × ' + num(rd)], 'wbig');
+           }},
+          {act: csp ? 'Both are, so one bracket is already known: the two roots, with the lump’s own sign.'
+                    : 'One is not, so there is no cube seam here.',
+           open:true,
+           draw:function(li){
+             MF.splitDiagram(li, {whole:MF.oreLabel(ore),
+               left: csp ? '( ' + (Math.abs(ra)===1?'':num(ra)) + 'x ' + (rd<0?'&minus;':'+') + ' ? )' : null,
+               right:null,
+               key: csp ? 'No hunting. The roots <b>are</b> the bracket.' : 'Nothing to read off.'});
+           }},
+          {act:'The piece behind it has three terms.', open:true,
+           draw:function(li){
+             MF.workLine(li, null, ['( ', null, ' )( ', null, 'x<sup>2</sup>', '  ', null, 'x  ', null, ' )'], 'wbig');
+           }},
+          {act:'That piece never comes apart. Not for any cube.',
+           draw:function(li){
+             MF.workLine(li, csp ? MF.oreLabel(csp.right) + '  is' : 'the piece behind it is', ['an element'], 'wbig');
+             li.appendChild(H('div','swhy','Its discriminant is always negative &mdash; so this finishes in <b>one</b> swing.'));
+           }}
+        ];
+      }
       if(ore.kind==='number') return [
         {act:'A twin seam is a shape, and a plain number has no shape to have.', shows:num(ore.n),
          draw:function(li){ MF.workLine(li, 'nothing square about', [num(ore.n)], 'wbig'); }}
@@ -4332,7 +4526,13 @@ MF.SCHEMA = {
            ['( ', null, ' ) × ( ', null, ' )'], 'wbig'); }}
       ];
     },
-    practice: {ore:{kind:'poly',a:1,b:0,c:-25}, ask:'x&sup2; &minus; 25 has no middle term and both ends are squares. Name one side.', answer:{m:1,k:5}}
+    /* THE CUBE IS THE PRACTICE NOW. The twin seam is still what this
+       instrument reads in the mine on every layer-3 lump, and its walkthrough
+       is still here for one — but a student meets `x² − 25` constantly and
+       meets a cube seam only down the last shaft. */
+    practice: {ore:MF.cubeOre(1,-8),
+               ask:'x&sup3; &minus; 8 &mdash; both ends are whole cubes. Name the bracket that comes off it.',
+               answer:{m:1,k:-2}}
   },
 
   /* rank 7. FACTORING BY GROUPING, in full, on the loaded ore it exists for.
@@ -4726,6 +4926,12 @@ MF.simplestFactor = function(ore){
     var t2 = MF.twoSplit(ore);
     return t2 ? {m:1, k:t2.left.p} : null;
   }
+  /* the linear bracket — the identity names it, and the quadratic is whatever
+     is left when it comes out */
+  if(ore.kind==='cube'){
+    var c3 = MF.cubeSplit(ore);
+    return c3 ? {m:c3.left.b, k:c3.left.c} : null;
+  }
   /* the simpler half, which quartSplit already puts on the left */
   if(ore.kind==='quart'){
     var qq = MF.quartSplit(ore);
@@ -5055,6 +5261,7 @@ function lensMark(cls, s){ return '<span class="' + cls + '">' + s + '</span>'; 
 
 /* THE STEEL PICK: the shared metal written inside every term it hides in. */
 MF.LENS.steel = function(ore){
+  if(MF.isCube(ore)) return null;
   if(MF.isTwo(ore) || MF.isBi(ore)) return null;
   if(MF.isQuart(ore)) return null;
   var g = MF.commonMetal(ore);
@@ -5078,6 +5285,15 @@ MF.LENS.steel = function(ore){
    `ingotHeld` keeps the x-part and the sign and holds the digit back; a plain
    metal has no shape to show and is given whole. */
 MF.LENS.lantern = function(ore){
+  if(MF.isCube(ore)){
+    var cl2 = MF.cubeSplit(ore);
+    if(!cl2) return null;
+    return {
+      html: lensMark('ldark','( ' + (Math.abs(cl2.left.b)===1?'':num(cl2.left.b)) + 'x ' + (cl2.left.c<0?'&minus;':'+') + ' ' + lensMark('lqm','?') + ' )') +
+            lensMark('ldark','( ' + lensMark('lqm','?') + ' )'),
+      found: 'one side of it is shaped ' + (Math.abs(cl2.left.b)===1?'':num(cl2.left.b)) + 'x ' + (cl2.left.c<0?'&minus;':'+') + ' ?'
+    };
+  }
   /* the shape of one bracket, y included — the digit stays the miner's */
   if(MF.isTwo(ore)){
     var t2l = MF.twoSplit(ore);
@@ -5111,6 +5327,17 @@ MF.LENS.lantern = function(ore){
 
 /* THE CORE DRILL: the MIDDLE term, opened up as the sum it is. */
 MF.LENS.drill = function(ore){
+  /* the identity, in the ore itself: the bracket the two cube roots give,
+     with the digit still the miner's */
+  if(MF.isCube(ore)){
+    var cl = MF.cubeSplit(ore);
+    if(!cl) return null;
+    return {
+      html: lensMark('ldark','( ' + (Math.abs(cl.left.b)===1?'':num(cl.left.b)) + 'x ' + (cl.left.c<0?'&minus;':'+') + ' ' + lensMark('lqm','?') + ' )') +
+            lensMark('ldark','( ' + lensMark('lqm','?') + ' )'),
+      found: 'both ends are whole cubes'
+    };
+  }
   if(MF.isTwo(ore) || MF.isBi(ore)) return null;
   if(MF.isQuart(ore)) return null;
   if(ore.kind === 'number' || ore.a === 0) return null;
@@ -5128,6 +5355,7 @@ MF.LENS.drill = function(ore){
 
 /* THE EXPONENT RAIL: the END term, opened up as the product it is. */
 MF.LENS.shifter = function(ore){
+  if(MF.isCube(ore)) return null;
   if(MF.isTwo(ore) || MF.isBi(ore)) return null;
   /* THE GEAR CHANGE, IN THE ORE ITSELF: the powers come down and the lump
      reads as a trinomial, with the pair still the student's. */
@@ -5154,6 +5382,7 @@ MF.LENS.shifter = function(ore){
 
 /* THE POWERED AUGER: the middle actually split into the two terms it makes. */
 MF.LENS.auger = function(ore){
+  if(MF.isCube(ore)) return null;
   if(MF.isTwo(ore) || MF.isBi(ore)) return null;
   if(MF.isQuart(ore)) return null;
   /* ON A FOUR-TERM LUMP THIS IS THE INSTRUMENT, so it lights the halves: the
@@ -5225,6 +5454,7 @@ function lensX(top, bot){
     '</span>';
 }
 MF.LENS.dial = function(ore){
+  if(MF.isCube(ore)) return null;
   /* THE X IS EXACTLY RIGHT HERE — the pair multiplies to the end and adds
      to the middle, same as any trinomial. Only the answers wear a y. */
   if(MF.isTwo(ore)){
@@ -5417,6 +5647,13 @@ MF.notMyLump = function(host, tool, line){
    with "? × 4" on it. The Shifter is the one that changes gear. */
 /* AND FOR A LUMP WITH A y THROUGH EVERY TERM. The Crosscut is the one that
    hunts a pair, and the pair hunt is the whole of this shape. */
+/* AND FOR AN x³ LUMP. The Drill is the instrument that reads an identity off
+   the shape without hunting anything, which is exactly what a cube seam is. */
+MF.notMyCube = function(host, tool, line){
+  host.appendChild(H('p','hint','<b>' + line + '</b> An x cubed is ' +
+    'the <b>Drill</b>&rsquo;s lump &mdash; it reads the two ends and takes one bracket off on sight.'));
+  MF.methodLine(host, tool);
+};
 MF.notMyPair = function(host, tool, line){
   host.appendChild(H('p','hint','<b>' + line + '</b> Two letters all the way through is ' +
     'the <b>Crosscut</b>&rsquo;s lump &mdash; the hunt is the same, only the brackets look different.'));
@@ -5448,6 +5685,25 @@ MF.TOOL_READ = {
   /* THE PIT LANTERN: is there still a seam in this, and if there is, one side
      of it. This is the tool the whole repeated swing hangs off. */
   lantern: function(host, ore, pieceId){
+    if(MF.isCube(ore)){
+      var cnat = MF.isNative(ore), clit = E('div','lampread' + (cnat?' clear':' seamed'));
+      clit.appendChild(H('div','big', cnat ? 'Nothing moves in there.' : 'A seam still runs through this one.'));
+      clit.appendChild(H('div','sm', cnat
+        ? 'Neither end is a whole cube and nothing linear comes out of it either. It is an element.'
+        : 'One bracket comes off it, and what is left behind is finished the moment it lands.'));
+      host.appendChild(clit);
+      if(!cnat){
+        var csp2 = MF.cubeSplit(ore);
+        host.appendChild(H('div','diaglab','WHAT THE LIGHT REACHES'));
+        MF.splitDiagram(host, {whole:MF.oreLabel(ore),
+          left: csp2 ? '( ' + (Math.abs(csp2.left.b)===1?'':num(csp2.left.b)) + 'x ' + (csp2.left.c<0?'&minus;':'+') + ' ? )' : null,
+          right:null,
+          key:'How many x, and which way the sign goes. The digit is yours &mdash; and so is the whole three-term piece behind it.'});
+      }
+      MF.methodLine(host, 'lantern');
+      if(!cnat) MF.paintNameSide(host, ore, pieceId);
+      return;
+    }
     if(MF.isBi(ore)){ MF.readBracket(host, 'lantern', ore); return; }
     if(MF.isTwo(ore)){
       var tnat = MF.isNative(ore), tlit = E('div','lampread' + (tnat?' clear':' seamed'));
@@ -5538,6 +5794,37 @@ MF.TOOL_READ = {
   /* THE CORE DRILL: the X, and the pairs that could fill it. */
   drill: function(host, ore, pieceId){
     if(MF.isBi(ore)){ MF.readBracket(host, 'drill', ore); return; }
+    /* ---- THE OTHER IDENTITY THIS DRILL READS ON SIGHT ----
+       Two squares with a minus between them was always its one trick. A cube
+       seam is the same KIND of move — look at the two ends, and if both are
+       whole cubes one bracket comes off without hunting anything. What is
+       different, and worth a line of its own, is that the piece left behind
+       never comes apart at all. */
+    if(MF.isCube(ore)){
+      var cn = MF.isNative(ore), csp = MF.cubeSplit(ore);
+      var ra = cubeRoot(ore.a), rd = cubeRoot(ore.d);
+      host.appendChild(H('div','diaglab','THE TEST FOR A CUBE SEAM'));
+      MF.workLine(host, 'is the front a whole cube?',
+        [ra === null ? 'no — nothing cubed gives ' + num(ore.a)
+                     : 'yes — ' + num(ra) + '<sup>3</sup> is ' + num(ore.a)], 'wbig');
+      MF.workLine(host, 'and the end?',
+        [rd === null ? 'no — nothing cubed gives ' + num(ore.d)
+                     : 'yes — ' + num(rd) + '<sup>3</sup> is ' + num(ore.d)], 'wbig');
+      if(csp){
+        host.appendChild(H('div','diaglab','SO ONE BRACKET COMES OFF ON SIGHT'));
+        MF.splitDiagram(host, {whole:MF.oreLabel(ore),
+          left:'( ' + (Math.abs(ra)===1?'':num(ra)) + 'x ' + (rd<0?'&minus;':'+') + ' ? )',
+          right:null,
+          key:'The two cube roots, with the sign the lump already has. What is left is a three-term piece &mdash; and <b>that one never comes apart</b>, which is the part worth remembering.'});
+      } else {
+        host.appendChild(H('div','hint','<b>So there is no cube seam in it.</b> ' + (cn
+          ? 'And nothing else runs through it either &mdash; this one is finished.'
+          : 'Something does come out of this lump, but not by the cubes.')));
+      }
+      MF.methodLine(host, 'drill');
+      if(csp) MF.paintNameSide(host, ore, pieceId);
+      return;
+    }
     if(MF.isTwo(ore)){
       /* x² − y² IS a twin seam, and this drill reads it. Both ends are
          squares and there is no middle term — the fact that the second one is
@@ -5662,6 +5949,7 @@ MF.TOOL_READ = {
 
   /* THE EXPONENT RAIL: the X carried into the box. */
   shifter: function(host, ore, pieceId){
+    if(MF.isCube(ore)){ MF.notMyCube(host, 'shifter', 'The box wants an x&sup2; in its first corner, and this one starts a power higher.'); return; }
     if(MF.isBi(ore)){ MF.readBracket(host, 'shifter', ore); return; }
     if(MF.isTwo(ore)){
       MF.notMyPair(host, 'shifter', 'The box wants a plain number in the corner opposite the x&sup2;, and this one ends in y&sup2;.');
@@ -5734,6 +6022,7 @@ MF.TOOL_READ = {
      bracket constants, so one filled is half the answer and `schema` fails the
      build for it. */
   dial: function(host, ore, pieceId){
+    if(MF.isCube(ore)){ MF.notMyCube(host, 'dial', 'An X hangs under a middle term, and this one has no middle term at all.'); return; }
     if(MF.isBi(ore)){ MF.readBracket(host, 'dial', ore); return; }
     /* ---- THE PAIR HUNT, UNCHANGED, WITH A y ON THE ANSWERS ----
        This is the Crosscut's own method meeting the only shape where the two
@@ -5800,6 +6089,13 @@ MF.TOOL_READ = {
 
   /* THE STEEL PICK: the common metal, drawn out in front of a bracket. */
   steel: function(host, ore, pieceId){
+    if(MF.isCube(ore)){
+      host.appendChild(H('div','diaglab','WHAT EVERY TERM DIVIDES BY'));
+      MF.workLine(host, null, [MF.oreLabel(ore)], 'wbig');
+      MF.workLine(host, 'the biggest that divides both', ['1'], 'wbig');
+      MF.notMyCube(host, 'steel', 'So there is nothing to stand in front of a bracket.');
+      return;
+    }
     if(MF.isBi(ore)){ MF.readBracket(host, 'steel', ore); return; }
     if(MF.isTwo(ore)){
       host.appendChild(H('div','diaglab','WHAT EVERY TERM DIVIDES BY'));
@@ -5896,6 +6192,7 @@ MF.TOOL_READ = {
   /* THE POWERED AUGER: the full X-box on loaded ore — and the whole method on
      a four-term one, which is the shaft it was really always for. */
   auger: function(host, ore, pieceId){
+    if(MF.isCube(ore)){ MF.notMyCube(host, 'auger', 'Two terms, so there is no middle to split and nothing to take two at a time.'); return; }
     if(MF.isBi(ore)){ MF.readBracket(host, 'auger', ore); return; }
     if(MF.isTwo(ore)){
       MF.notMyPair(host, 'auger', 'Three terms, and the pair goes straight into the brackets &mdash; there is no middle to split first.');
@@ -11877,7 +12174,11 @@ MF.LAYER_LOOK = [
      TWO ore colours worth naming — this is the layer where a second element
      runs through everything, so the seam carries a warm metal through cold
      rock rather than one colour on its own. */
-  {sky:'#33262E', rock:'#2E2229', rock2:'#191218', ore:'#E8A0B4', glint:'#FFD8E2', strata:'#3A2B33', grit:'#46343D'}
+  {sky:'#33262E', rock:'#2E2229', rock2:'#191218', ore:'#E8A0B4', glint:'#FFD8E2', strata:'#3A2B33', grit:'#46343D'},
+  /* LAYER 9, the bottom of the mine. Black rock and a hard white metal —
+     nothing warm left down here, and the ore reads brighter against it than
+     anything above, because this is as deep as the workings go. */
+  {sky:'#1E1E1E', rock:'#1F1F21', rock2:'#0D0D0F', ore:'#E6E9EF', glint:'#FFFFFF', strata:'#2A2A2D', grit:'#343438'}
 ];
 
 /* the rocks currently exposed on the face - you look before you break */
@@ -13398,7 +13699,8 @@ MF.paintAssay = function(host, B){
             : (MF.isGroup(ore) ? ['pure','grouped']
             : (MF.isQuart(ore) ? ['pure','stacked']
             : (MF.isTwo(ore)   ? ['pure','twoel']
-                               : ['pure','shared','twin','plain','loaded'])));
+            : (MF.isCube(ore)  ? ['pure','cubes']
+                               : ['pure','shared','twin','plain','loaded']))));
   var wrap = E('div','choices');
   MF.balanced(ore.id+'|assay', opts).forEach(function(k){
     var why = MF.ASSAY[k].tell;
@@ -21468,6 +21770,156 @@ MF.validate = function(){
     chk('grouping');
     if(String(yi.label).indexOf('y') < 0)
       errs.push('grouping: a y-bracket in the yard is not labelled with its letter');
+  })();
+
+  /* ======================================================================
+     CUBES — LAYER 9, THE LAST SHAFT.  `a·x³ + d`
+
+         p³x³ − q³ = (px − q)(p²x² + pqx + q²)
+         p³x³ + q³ = (px + q)(p²x² − pqx + q²)
+
+     TWO THINGS MAKE THIS LAYER DIFFERENT FROM EVERY OTHER, and both are
+     checked below rather than described.
+
+     1. THE SECOND PIECE NEVER COMES APART. Its discriminant is −3p²q², which
+        is negative for every p and q there are, so the quadratic left behind
+        is native metal ALWAYS. A student meets a lump here that stops after
+        one swing and is genuinely finished.
+
+     2. "FINISHED" IS ONE QUESTION, NOT TWO. A cubic factors over ℤ iff it has
+        a linear factor — there is no way to write a degree 3 as two
+        quadratics — so `isNative` searches for a rational root rather than
+        pattern-matching the identity. That matters: `2x³ − 16` has a root at
+        x = 2 and is NOT a difference of cubes, and a mine that tested only for
+        the identity would put it on the rack as an element.
+     ====================================================================== */
+  (function(){
+    var cRng = makeRng(909090);
+    /* ---- THE IDENTITY, AND THE PIECE THAT IS ALWAYS FINISHED ---- */
+    for(var cp = 1; cp <= 5; cp++){
+      for(var cq = 1; cq <= 6; cq++){
+        [1,-1].forEach(function(sg){
+          var a = cp*cp*cp, d = sg * cq*cq*cq;
+          if(gcd(a, Math.abs(d)) !== 1) return;
+          var made = MF.cubeOre(a, d);
+          chk('cubes');
+          if(MF.isNative(made))
+            errs.push('cubes: ' + MF.oreText(made) + ' is a cube seam and the engine calls it finished');
+          var sp = MF.cubeSplit(made);
+          chk('cubes');
+          if(!sp){ errs.push('cubes: ' + MF.oreText(made) + ' did not come apart'); return; }
+          /* the two pieces multiply back to the lump */
+          chk('cubes');
+          if(!MF.oreEq(MF.rebuild([sp.left, sp.right]), made))
+            errs.push('cubes: the pieces of ' + MF.oreText(made) + ' do not rebuild it');
+          /* AND THE SECOND ONE IS ALWAYS AN ELEMENT — the claim the whole
+             layer turns on, over every p and q rather than on one example. */
+          chk('cubes');
+          if(!MF.isNative(sp.right))
+            errs.push('cubes: ' + MF.oreText(sp.right) + ' came off ' + MF.oreText(made) +
+                      ' and the engine thinks it comes apart further');
+          chk('cubes');
+          if(!MF.isNative(sp.left))
+            errs.push('cubes: the bracket ' + MF.oreText(sp.left) + ' is not finished');
+        });
+      }
+    }
+
+    /* ---- `2x³ − 16` IS NOT AN ELEMENT, AND IS NOT A CUBE SEAM EITHER ----
+       The two questions come apart the moment a common metal is in the lump,
+       and this is the case that proves `isNative` asks the right one. */
+    var trap = MF.cubeOre(2, -16);
+    chk('cubes');
+    if(MF.isNative(trap))
+      errs.push('cubes: 2x³ − 16 is on the rack as native metal, and x = 2 is a root of it');
+    chk('cubes');
+    if(MF.cubeSplit(trap))
+      errs.push('cubes: 2x³ − 16 was read as a cube seam, and 2 is not a whole cube');
+    chk('cubes');
+    if(MF.breakOff(trap, {m:1, k:-2}).ok)
+      errs.push('cubes: the mine let a lump come apart by a move it never teaches');
+
+    /* ---- AND FOR COPRIME LUMPS THE TWO QUESTIONS ARE THE SAME ONE ----
+       a·p³ = −d·q³ with gcd(p,q)=1 forces q³|a and p³|d, and gcd(a,d)=1 then
+       forces a = ±q³ and d = ∓p³. That is the reasoning; this is the proof. */
+    for(var ta = 1; ta <= 30; ta++){
+      for(var td = -30; td <= 30; td++){
+        if(!td || gcd(ta, Math.abs(td)) !== 1) continue;
+        var lump = MF.cubeOre(ta, td);
+        var byIdentity = !!MF.cubeSplit(lump);
+        var byRoot = !!MF.cubeRational(lump);
+        chk('cubes');
+        if(byIdentity !== byRoot)
+          errs.push('cubes: ' + MF.oreText(lump) + ' is ' + (byIdentity ? '' : 'not ') +
+                    'a cube seam and ' + (byRoot ? 'does' : 'does not') + ' have a rational root');
+      }
+    }
+
+    /* ---- THE HAMMER TAKES THE IDENTITY'S BRACKET AND NOTHING ELSE ---- */
+    var ct = MF.cubeOre(8, -27);                 /* (2x − 3)(4x² + 6x + 9) */
+    var cgot = MF.breakOff(ct, {m:2, k:-3});
+    chk('cubes');
+    if(!cgot.ok || MF.oreText(cgot.left) !== '2x − 3' || MF.oreText(cgot.right) !== '4x² + 6x + 9')
+      errs.push('cubes: swinging 2x − 3 at 8x³ − 27 gave ' +
+                (cgot.ok ? MF.oreText(cgot.left) + ' and ' + MF.oreText(cgot.right) : cgot.reason));
+    chk('cubes');
+    if(MF.breakOff(ct, {m:2, k:3}).ok)
+      errs.push('cubes: 2x + 3 came out of 8x³ − 27, and the sign is the whole difference');
+    chk('cubes');
+    if(MF.breakOff(ct, {m:1, k:-3}).ok)
+      errs.push('cubes: x − 3 came out of 8x³ − 27');
+
+    /* ---- THE GENERATOR ---- */
+    var cSeam = 0, cNat = 0, cSeen = 0, cSigns = {};
+    for(var ci = 0; ci < 300; ci++){
+      var co = MF.digOre(9, cRng);
+      if(!co) continue;
+      cSeen++;
+      chk('cubes');
+      if(!MF.isCube(co)){ errs.push('cubes: layer 9 handed out ' + MF.oreText(co)); continue; }
+      chk('cubes');
+      if(gcd(Math.abs(co.a), Math.abs(co.d)) !== 1)
+        errs.push('cubes: ' + MF.oreText(co) + ' carries a common metal, so the cube test and the ' +
+                  'root test stop agreeing and the Drill would have to lie about it');
+      var ck = MF.assayOf(co);
+      chk('cubes');
+      if(ck !== 'cubes' && ck !== 'pure') errs.push('cubes: ' + MF.oreText(co) + ' assays as "' + ck + '"');
+      if(MF.isNative(co)){ cNat++; continue; }
+      cSeam++;
+      cSigns[co.d < 0 ? 'minus' : 'plus'] = 1;
+      var one = MF.simplestFactor(co);
+      chk('cubes');
+      if(!one){ errs.push('cubes: ' + MF.oreText(co) + ' comes apart and the engine names nothing in it'); continue; }
+      var cbr = MF.breakOff(co, one);
+      chk('cubes');
+      if(!cbr.ok){ errs.push('cubes: the engine\'s own bracket would not come out of ' + MF.oreText(co)); continue; }
+      chk('cubes');
+      if(!MF.oreEq(MF.rebuild([cbr.left, cbr.right]), co))
+        errs.push('cubes: the pieces of ' + MF.oreText(co) + ' do not multiply back to it');
+      chk('cubes');
+      if(!MF.isNative(cbr.left) || !MF.isNative(cbr.right))
+        errs.push('cubes: ' + MF.oreText(co) + ' broke into something that is not finished');
+    }
+    chk('cubes');
+    if(cSeen < 150) errs.push('cubes: layer 9 only produced ' + cSeen + ' lumps out of 300 tries');
+    /* BOTH IDENTITIES TURN UP. A shaft that only ever handed out the
+       difference would leave half the lesson unmet. */
+    chk('cubes');
+    if(Object.keys(cSigns).length < 2)
+      errs.push('cubes: layer 9 only produced the ' + Object.keys(cSigns)[0] + ' identity');
+    chk('cubes');
+    if(cNat < cSeen * 0.05 || cNat > cSeen * 0.45)
+      errs.push('cubes: ' + cNat + ' of ' + cSeen + ' lumps are finished — ' +
+                'the layer is either a ritual or a wall');
+
+    /* ---- AND THE MAP HAS NOTHING LEFT ON IT THAT IS NOT REAL ---- */
+    chk('cubes');
+    if(MF.SHUT_SHAFTS.length)
+      errs.push('cubes: ' + MF.SHUT_SHAFTS.length + ' shaft(s) are still drawn as unopened, ' +
+                'and every family the spec named is now cut');
+    chk('cubes');
+    if(MF.LAYERS.length !== 9)
+      errs.push('cubes: the mine has ' + MF.LAYERS.length + ' layers and the map expects nine');
   })();
 
   /* ======================================================================

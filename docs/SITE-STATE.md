@@ -22,7 +22,7 @@
 | **Screens** | **eight** — surface, the Stamp Mill, the Casting Shed and its three workshops, the mine, the forge |
 | **Layers** | **five**, all reachable from the first screen, none gated on anything |
 | **Instruments** | **seven**, all made at the forge, none granted |
-| **Validation** | `MF.validate()` → **21,841 checks / 46 groups / 0 errors**, two controls that must fail, and do — **run it at the width you ship from**, because `layout`, `reach`, `hollow` and `cartdraw` measure the live viewport and report it (`VERIFICATION.md` §61, §63, §65). Verified at **380×780, 560×760, 994×700 and 1250×900** |
+| **Validation** | `MF.validate()` → **25,117 checks / 47 groups / 0 errors**, two controls that must fail, and do — **run it at the width you ship from**, because `layout`, `reach`, `hollow` and `cartdraw` measure the live viewport and report it (`VERIFICATION.md` §61, §63, §65). Verified at **380×780, 560×760, 994×700 and 1250×900** |
 
 > **A check is only as wide as the space it sweeps.** The `truthy` group reported 0 errors across 642 checks while **1,970 Decimal Dial states printed a falsehood**, because it tested each lump's original integer coefficients and never nudged `c` — the one thing the dial exists to do. It now sweeps every slider position the control can reach (3,287 checks). Ask of any green result: *what did it not look at?*
 | **Runtime** | Zero dependencies, no build step, no network requests, no storage, runs from `file://` |
@@ -184,7 +184,7 @@ The face is **2280px of rock**, several screens wide, scanned by dragging, scrol
 
 ## The breaking floor: one anvil, the belt over it, and the ore on top
 
-**Measured 2026-09-07, all four widths, 0 errors over 21,841 checks in 46 groups, both controls failing.**
+**Measured 2026-09-07, all four widths, 0 errors over 25,117 checks in 47 groups, both controls failing.**
 
 **There is one box, and the anvil in it is the work.** The `workpair` is gone. It was two boxes: one held a row of chips and the belt, the other held a drawing of an anvil, two number boxes and the swing button — so **the anvil a student was looking at was not the thing their ore was on**, and the drawing was decoration beside the work. What is here now is the gallery you are standing in: the belt overhead, the anvil, the stone on its face, and whatever has come off it lying on the ground. **A first lump has nothing on the ground at all.**
 
@@ -948,3 +948,52 @@ The Crosscut's lesson walks the two-letter lump in five slides: the same X, the 
 **what is new is where they land**, then `x² + 5x + 6` was doing this all along with a y of 1,
 and finally — unchanged — no whole pair still means no seam. The `taught` group rejected it
 once at 1380 characters against the 1150 budget.
+
+## Layer 9 — Cubes, and the map has nothing left on it
+
+**Two identities, read off the shape:**
+
+```
+p³x³ − q³  =  (px − q)(p²x² + pqx + q²)
+p³x³ + q³  =  (px + q)(p²x² − pqx + q²)
+```
+
+`MINE-SPEC.md` §7 writes it `a³ ± b³`. It is the same identity with x in the first slot — the
+form school teaches, and far more usefully, **the form whose pieces the mine already holds.**
+`x − 2` is an ordinary linear and `x² + 2x + 4` an ordinary quadratic, so nothing new goes to
+the yard, nothing new goes to the forge, and **the hammer needs no new head at all.**
+
+### Two things make this layer unlike every other
+
+**1. The second piece never comes apart.** Its discriminant is −3p²q², negative for every p and
+q there are — so `x² + 2x + 4` is an element for exactly the reason `x² + 4` is. A student who
+has spent eight layers learning to keep going until nothing breaks meets a lump here that
+**stops after one swing and is genuinely finished.** The `cubes` group asserts that over every
+p in 1..5 and q in 1..6 rather than on one example.
+
+**2. "Finished" is one question, not two.** A cubic factors over ℤ **iff** it has a linear
+factor — there is no way to write a degree 3 as two quadratics — so `MF.isNative` searches for a
+rational root rather than pattern-matching the identity. That distinction is load-bearing:
+
+> **`2x³ − 16` has a root at x = 2 and is not a difference of cubes.** A mine that tested only
+> for the identity would put it on the rack as native metal. The generator keeps such lumps out
+> by enforcing `gcd(a, d) = 1` — which makes "both ends are whole cubes" and "something linear
+> comes out" **the same question**, proved by brute force over every coprime a ≤ 30, |d| ≤ 30.
+
+**The Drill owns it**, and that is the right home: its whole character is recognising rather
+than searching, and a cube seam is that exactly. Its lesson is renamed **"Two ends, read on
+sight"** — squares and cubes are two instances of one habit. The other six decline and name it.
+
+**New group `cubes` — 3,155 checks.** Both identities, the always-native second piece, the
+`2x³ − 16` trap, the coprime equivalence, the hammer taking the identity's bracket and nothing
+else, both signs turning up in the generator — and **that the map has no unopened shafts left
+drawn on it.**
+
+### `MF.SHUT_SHAFTS` is empty, and stays empty
+
+Four shafts were drawn from the first build so the mine would read as *continuing* rather than
+as stopping. All four are cut and timbered now. **A fifth invented to keep the list from being
+empty would be a promise nobody has decided to keep**, so the array is empty and a check fails
+the build if anything is added to it without a layer behind it.
+
+**All nine layers play through end to end**: `playthrough(1..9)` all whole.
