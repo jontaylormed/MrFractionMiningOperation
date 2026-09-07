@@ -1125,6 +1125,11 @@ input::placeholder, textarea::placeholder{color:#6B5B48; opacity:1}
   box-shadow:inset 0 3px 0 rgba(255,255,255,.5), inset 0 -4px 0 rgba(0,0,0,.22), 0 3px 0 rgba(0,0,0,.34)}
 .hbox input{width:62px; text-align:center; font-family:var(--display); font-size:19px;
   padding:6px 5px; min-height:44px}
+/* THE POWER BOX SITS WHERE AN EXPONENT SITS — small, raised, and narrow, so
+   the bar still reads as `( 2x³ + 5 )` rather than as three equal fields in a
+   row. It keeps the 44px touch target vertically; only the width shrinks. */
+.hbox .powbox{width:40px; font-size:15px; align-self:flex-start; margin-left:-3px;
+  padding:3px 4px; min-height:34px}
 .hbox .paren{font-family:var(--display); font-size:22px; color:#2A3138; padding:0 2px}
 /* WHICH LETTER, on a four-term lump. Two dies cut for the hammer head rather
    than a dropdown: the choice is between two things, both are worth seeing at
@@ -3468,6 +3473,21 @@ MF.breakOff = function(ore, factor){
   if(factor.m===0 && Math.abs(factor.k)===1)
     return no('nothing','Everything divides by one. Taking it out would leave the lump exactly as it is.');
 
+  /* ---- HOW HIGH THE x IS CUT, AND WHETHER THIS LUMP HAS ONE THAT HIGH ----
+     Every branch below is written for a bracket in x¹ except the quartic's,
+     which is x². A power the lump has no room for glances like any other
+     wrong shape, and says which one it does have room for — that is the whole
+     of what the student is deciding now the head no longer decides it. */
+  var pow = (factor.p === undefined || factor.p === null) ? 1 : factor.p;
+  if(!isInt(pow) || pow < 1)
+    return no('malformed','An x is cut to a whole power, and at least the first.');
+  var wantPow = (ore && ore.kind === 'quart') ? 2 : 1;
+  if(pow !== wantPow)
+    return no('glance', wantPow === 2
+      ? 'The hammer glanced off. This lump is built out of x&sup2; halves, and the head is cut to x' +
+        (pow === 1 ? '' : '<sup>' + num(pow) + '</sup>') + '.'
+      : 'The hammer glanced off. There is no x<sup>' + num(pow) + '</sup> anywhere in this one for that to bite on.');
+
   var yes = function(left, right){
     /* MULTIPLY BACK BEFORE HANDING IT OVER. The algebra below solves for the
        quotient; this proves it. A division that solves and does not
@@ -4497,7 +4517,7 @@ MF.SCHEMA = {
        three of the walk above, drawn one gear up. */
     practice: {ore:MF.quartOre(-5,4),
                ask:'x&#8308; &minus; 5x&sup2; + 4 &mdash; read the x&sup2; as the unit and the pair multiplies to 4, adds to &minus;5. Name one half.',
-               answer:{m:1,k:-1}}
+               answer:{m:1,k:-1,p:2}}
   },
 
   /* rank 6. THE TWIN SEAM, AND ONLY THAT.
@@ -4996,7 +5016,7 @@ MF.simplestFactor = function(ore){
   /* the simpler half, which quartSplit already puts on the left */
   if(ore.kind==='quart'){
     var qq = MF.quartSplit(ore);
-    return qq ? {m:1, k:qq.left.c} : null;
+    return qq ? {m:1, k:qq.left.c, p:2} : null;
   }
   if(ore.kind==='number'){
     var pf = primeFactors(ore.n);
@@ -5093,7 +5113,7 @@ MF.paintSchema = function(host, key, ore){
    B.rawFor !== the id of the piece under the pick, so setting raw without
    rawFor would be thrown away on the very next paint and the bar would open
    empty with nothing on screen saying why. */
-MF.cutHammerTo = function(pieceId, m, k, v){
+MF.cutHammerTo = function(pieceId, m, k, v, p){
   var B = MF.state.anvil;
   if(!B) return false;
   var at = -1;
@@ -5101,7 +5121,7 @@ MF.cutHammerTo = function(pieceId, m, k, v){
   if(at < 0) return false;
   if(MF.isNative(B.floor[at].ore)) return false;
   B.at = at;
-  B.raw = {m:String(m), k:String(k), v:(v === 'y' ? 'y' : 'x')};
+  B.raw = {m:String(m), k:String(k), p:(p ? String(p) : ''), v:(v === 'y' ? 'y' : 'x')};
   B.rawFor = B.floor[at].id;
   B.last = null;
   MF.closeTool();
@@ -5188,7 +5208,7 @@ MF.paintNameSide = function(host, ore, pieceId){
     }
     /* NOT A VERDICT. It cuts the bar and sends them to the anvil; whether the
        seam runs is the swing's to say and nothing else's. */
-    if(!MF.cutHammerTo(pieceId, m, k, nsv))
+    if(!MF.cutHammerTo(pieceId, m, k, nsv, isQrt ? 2 : 1))
       clear(say).appendChild(H('div','hint','That piece is not on the floor any more.'));
   });
   row.appendChild(go);
@@ -9678,7 +9698,7 @@ MF.lessonPractice = function(host, key){
       out.appendChild(H('div','note','That is not a whole number, so there is nothing to try yet.'));
       return;
     }
-    var got = MF.breakOff(p.ore, {m:m, k:k, v:pv});
+    var got = MF.breakOff(p.ore, {m:m, k:k, v:pv, p:(isQrt ? 2 : 1)});
     if(got.ok){
       out.appendChild(H('div','note good','<b>The seam runs.</b> <b>' + MF.oreLabel(got.left) +
         '</b> came out of it, and <b>' + MF.oreLabel(got.right) + '</b> is what was left behind. ' +
@@ -14152,15 +14172,28 @@ MF.echoHammer = function(B){
   }
   var m = (isNum || isGrp || isTwo) ? ((isGrp || isTwo) ? 1 : 0) : MF.readPickM(B.raw.m),
       k = MF.readInt(B.raw.k);
+  var pw = (isNum || isGrp || isTwo) ? 1 : MF.readPow(B.raw.p);
   if(!isFinite(m) || !isFinite(k)){
     echo.innerHTML = '<span class="bad">that is not a whole number</span>';
     return;
   }
+  if(!isFinite(pw)){
+    echo.innerHTML = '<span class="bad">an x is cut to a whole power, and at least the first</span>';
+    return;
+  }
+  /* THE BAR READS BACK WHAT WAS TYPED, INCLUDING THE POWER. It has to: the
+     head no longer chooses it, so this line is the only place a student can
+     see that they asked for x² and not x before the hammer comes down. */
+  var xp = function(){
+    if(m === 0) return num(k);
+    var head = (m===1 ? '' : (m===-1 ? '−' : num(m))) + 'x' +
+               (pw === 1 ? '' : '<sup>' + num(pw) + '</sup>');
+    return '(' + head + (k === 0 ? '' : signed(k)) + ')';
+  };
   echo.innerHTML = 'the hammer is cut to <b>' +
     (isGrp ? '(' + linearV(1, k, (B.raw.v === 'y' ? 'y' : 'x')) + ')'
      : isTwo ? '(' + biText(k, false) + ')'
-     : isQrt ? '(' + quad(m, 0, k) + ')'
-     : (m===0 ? num(k) : '(' + ingotHtml({m:m,k:k}) + ')')) + '</b>';
+     : xp()) + '</b>';
 };
 
 /* =========================================================================
@@ -14383,7 +14416,7 @@ MF.anvilScene = function(ore, opts){
 /* THE HEAD STARTS EMPTY, with the boxes showing what they would mean if left
    that way. Pre-filling them with 1 and 0 made the resting hammer read "cut to
    (x)" - a shape nobody had chosen, sitting there looking like a suggestion. */
-MF.pickDefault = function(ore){ return {m:'', k:'', v:'x'}; };
+MF.pickDefault = function(ore){ return {m:'', k:'', p:'', v:'x'}; };
 
 /* =========================================================================
    THE BREAKING FLOOR: ONE ANVIL, THE BELT OVER IT, AND THE ORE ON TOP.
@@ -14687,14 +14720,31 @@ MF.openHammer = function(B, opener){
         box.appendChild(H('span','paren','('));
         var mi = document.createElement('input'); mi.type='text'; mi.inputMode='numeric';
         mi.value = B.raw.m; mi.placeholder = '1';
-        mi.setAttribute('aria-label', isQrt ? 'how many x squared — leave it empty for a single x squared' : 'how many x — leave it empty for a single x, or put 0 for a plain number');
+        mi.setAttribute('aria-label','how many x — leave it empty for a single x, or put 0 for a plain number');
         on(mi,'input',function(){ B.raw.m = mi.value; MF.echoHammer(B); });
         on(mi,'keydown',fire);
         box.appendChild(mi);
-        /* ONE GEAR UP, AND THE HEAD HAS TO SAY SO. A lump on Higher Ground
-           comes apart into x&sup2; halves, so a head labelled "x +" would be
-           telling a student they had typed a shape that is not in there. */
-        box.appendChild(H('span','paren', isQrt ? 'x&sup2; +' : 'x +'));
+        /* ---- THE POWER IS THE STUDENT'S, NOT THE HEAD'S ----
+
+           USER, 2026-09-07: "The hammer also needs to factor in variables with
+           powers higher than 1."
+
+           THE HEAD USED TO PRE-CUT IT. On Higher Ground the bar arrived
+           reading `( [ ]x² + [ ] )` — which hands over the one thing that layer
+           exists to make a student notice, that the halves come out in x²
+           rather than x. Every instrument here shows part and never all, and
+           the hammer was giving away the shape of the answer before a swing.
+
+           Empty is 1, because `x` on its own is x¹ and nobody writes the 1. */
+        box.appendChild(H('span','paren','x'));
+        var pi = document.createElement('input');
+        pi.type='text'; pi.inputMode='numeric'; pi.className='powbox';
+        pi.value = B.raw.p || ''; pi.placeholder = '1';
+        pi.setAttribute('aria-label','what power the x is raised to — leave it empty for a single x');
+        on(pi,'input',function(){ B.raw.p = pi.value; MF.echoHammer(B); });
+        on(pi,'keydown',fire);
+        box.appendChild(pi);
+        box.appendChild(H('span','paren','+'));
       }
       var ki = document.createElement('input'); ki.type='text'; ki.inputMode='numeric';
       ki.value = B.raw.k; ki.placeholder = '0';
@@ -14756,6 +14806,13 @@ MF.swing = function(B){
   var m = isNum ? 0
         : ((MF.isGroup(t.ore) || MF.isTwo(t.ore)) ? 1 : MF.readPickM(B.raw.m));
   var k = MF.readInt(B.raw.k);
+  /* the power is the student's now, not the head's — see MF.readPow */
+  var pw = (isNum || MF.isGroup(t.ore) || MF.isTwo(t.ore)) ? 1 : MF.readPow(B.raw.p);
+  if(!isFinite(pw)){
+    B.last = {ok:false, why:'An x is cut to a whole power, and at least the first.'};
+    B.anim = 'glance'; MF.clank(MF.stuckOre()); MF.audio.hammer('glance');
+    MF.repaint(['work']); return;
+  }
   B.swings++;
   if(!isFinite(m) || !isFinite(k)){
     B.last = {ok:false, why:'A hammer is cut to a whole shape. Those boxes only take whole numbers.'};
@@ -14767,7 +14824,7 @@ MF.swing = function(B){
      student who names `y + 3` when they meant `x + 3` has made a real mistake
      that the rock must be allowed to tell them about. Defaults to x, so
      nothing that came before layer 6 changes shape. */
-  var r = MF.breakOff(t.ore, {m:m, k:k, v:(B.raw.v === 'y' ? 'y' : 'x')});
+  var r = MF.breakOff(t.ore, {m:m, k:k, p:pw, v:(B.raw.v === 'y' ? 'y' : 'x')});
   if(!r.ok){
     /* WHAT WAS ACTUALLY SWUNG, on every refusal. A student who meant one shape
        and cut another has to be able to see the difference; being told "6 does
@@ -14902,6 +14959,25 @@ MF.cartToYard = function(id){
 
    'x' and '-x' are read too, because a student who types what they mean has
    not made a mistake. */
+/* ---- HOW HIGH THE x IS CUT (user, 2026-09-07) ----
+   "The hammer also needs to factor in variables with powers higher than 1."
+
+   THE HEAD USED TO DECIDE THIS AND IT SHOULD NEVER HAVE. On Higher Ground the
+   bar was pre-cut to `( [ ]x² + [ ] )` — which hands the student the one thing
+   the layer exists to make them notice, that the halves come out in x² rather
+   than x. Every instrument on this site is careful to show part and never all,
+   and the hammer was quietly giving away the shape of the answer before a
+   single swing.
+
+   Empty and 1 are the same thing, because `x` on its own is `x¹` and nobody
+   writes the 1. Anything below 1 is not a shape a hammer can be cut to. */
+MF.readPow = function(raw){
+  var s = String(raw==null?'':raw).trim().replace(/[−–—]/g,'-').replace(/[\^xX]/g,'');
+  if(s === '') return 1;
+  var n = MF.readInt(s);
+  if(!isFinite(n) || n < 1) return NaN;
+  return n;
+};
 MF.readPickM = function(raw){
   var s = String(raw==null?'':raw).trim().replace(/[−–—]/g,'-').replace(/[xX]/g,'');
   if(s==='' || s==='+') return 1;
@@ -15742,7 +15818,7 @@ MF.validate = function(){
       while(!B.floor.every(function(p){ return MF.isNative(p.ore); }) && guard++ < 40){
         var pc = B.floor[B.at], f = MF.simplestFactor(pc.ore);
         if(!f) break;
-        B.raw = {m:String(f.m), k:String(f.k)}; B.rawFor = pc.id;
+        B.raw = {m:String(f.m), k:String(f.k), p:(f.p ? String(f.p) : '')}; B.rawFor = pc.id;
         MF.swing(B);
       }
       B.floor.forEach(function(p){ MF.stow(p.ore); });
@@ -15789,7 +15865,7 @@ MF.validate = function(){
         while(!B.floor.every(function(p){ return MF.isNative(p.ore); }) && g++ < 40){
           var pc = B.floor[B.at], f = MF.simplestFactor(pc.ore);
           if(!f) break;
-          B.raw = {m:String(f.m), k:String(f.k)}; B.rawFor = pc.id;
+          B.raw = {m:String(f.m), k:String(f.k), p:(f.p ? String(f.p) : '')}; B.rawFor = pc.id;
           MF.swing(B);
         }
         B.floor.forEach(function(p){ MF.stow(p.ore); });
@@ -22552,18 +22628,67 @@ MF.validate = function(){
     /* ---- THE HAMMER TAKES x² HALVES AND NOTHING ELSE ---- */
     var qt = MF.quartOre(-5, 4);                 /* (x² − 1)(x² − 4) */
     [[-1,'x² − 1','x² − 4'], [-4,'x² − 4','x² − 1']].forEach(function(p){
-      var got = MF.breakOff(qt, {m:1, k:p[0]});
+      var got = MF.breakOff(qt, {m:1, k:p[0], p:2});
       chk('quartic');
       if(!got.ok || MF.oreText(got.left) !== p[1] || MF.oreText(got.right) !== p[2])
         errs.push('quartic: swinging ' + p[1] + ' at x⁴ − 5x² + 4 gave ' +
                   (got.ok ? MF.oreText(got.left) + ' and ' + MF.oreText(got.right) : got.reason));
     });
     chk('quartic');
-    if(MF.breakOff(qt, {m:1, k:-2}).ok)
+    if(MF.breakOff(qt, {m:1, k:-2, p:2}).ok)
       errs.push('quartic: x² − 2 came out of x⁴ − 5x² + 4, and it is not in there');
     chk('quartic');
-    if(MF.breakOff(qt, {m:2, k:-1}).ok)
+    if(MF.breakOff(qt, {m:2, k:-1, p:2}).ok)
       errs.push('quartic: 2x² − 1 came out of a lump whose halves carry a single x²');
+
+    /* ---- THE POWER IS THE STUDENT'S, AND THE ROCK JUDGES IT ----
+
+       USER, 2026-09-07: "The hammer also needs to factor in variables with
+       powers higher than 1."
+
+       THE HEAD USED TO PRE-CUT IT — on this layer the bar arrived reading
+       `( [ ]x² + [ ] )`, which hands over the one thing the layer exists to
+       make a student notice. Every instrument here shows part and never all,
+       and the hammer was giving away the shape of the answer before a swing.
+
+       So the power is typed now, and a wrong one glances like any other wrong
+       shape rather than being quietly corrected — which is the only version of
+       this that teaches anything. */
+    chk('quartic');
+    if(MF.breakOff(qt, {m:1, k:-1, p:1}).ok)
+      errs.push('quartic: x − 1 came out of x⁴ − 5x² + 4 — the head no longer cuts the power, ' +
+                'so a bracket in the wrong one must glance');
+    chk('quartic');
+    if(MF.breakOff(qt, {m:1, k:-1, p:3}).ok)
+      errs.push('quartic: x³ − 1 came out of x⁴ − 5x² + 4');
+    chk('quartic');
+    if(!MF.breakOff(qt, {m:1, k:-1, p:2}).ok)
+      errs.push('quartic: x² − 1 did not come out of x⁴ − 5x² + 4 with the power named');
+    /* AND ON EVERY OTHER SHAPE, A RAISED POWER IS A MISS. */
+    chk('quartic');
+    if(MF.breakOff({kind:'poly',a:1,b:-5,c:6}, {m:1, k:-2, p:2}).ok)
+      errs.push('quartic: x² − 2 came out of x² − 5x + 6, which has no x⁴ in it');
+    chk('quartic');
+    if(MF.breakOff({kind:'poly',a:1,b:-5,c:6}, {m:1, k:-2, p:1}).ok !== true)
+      errs.push('quartic: an ordinary lump stopped taking an ordinary bracket');
+    /* EMPTY IS ONE, because x on its own is x¹ and nobody writes the 1 — and
+       zero or a negative is not a shape a hammer can be cut to. */
+    [['', 1], ['1', 1], ['2', 2], ['x3', 3]].forEach(function(p){
+      chk('quartic');
+      if(MF.readPow(p[0]) !== p[1])
+        errs.push('quartic: a power box holding "' + p[0] + '" reads as ' + MF.readPow(p[0]));
+    });
+    ['0', '-2', 'half'].forEach(function(bad){
+      chk('quartic');
+      if(isFinite(MF.readPow(bad)))
+        errs.push('quartic: a power box holding "' + bad + '" was accepted as ' + MF.readPow(bad));
+    });
+    /* AND THE ENGINE'S OWN FACTOR CARRIES ITS POWER, or every sweep that
+       follows the engine would be swinging x where it means x². */
+    chk('quartic');
+    var qsf = MF.simplestFactor(qt);
+    if(!qsf || qsf.p !== 2)
+      errs.push('quartic: the engine names a bracket of x⁴ − 5x² + 4 without saying it is in x²');
 
     /* ---- THE GENERATOR ---- */
     var qStack = 0, qNat = 0, qSeen = 0, qDeep = 0;
@@ -23598,7 +23723,8 @@ MF.playthrough = function(layer){
     }
     if(!one){ log.push('nothing named for ' + MF.oreText(pc)); break; }
     B.at = at;
-    B.raw = {m:String(one.m), k:String(one.k), v:(one.v || 'x')};
+    B.raw = {m:String(one.m), k:String(one.k),
+             p:(one.p ? String(one.p) : ''), v:(one.v || 'x')};
     B.rawFor = B.floor[at].id;
     var before = B.floor.length;
     MF.swing(B);

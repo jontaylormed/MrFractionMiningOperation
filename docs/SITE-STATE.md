@@ -22,7 +22,7 @@
 | **Screens** | **eight** — surface, the Stamp Mill, the Casting Shed and its three workshops, the mine, the forge |
 | **Layers** | **five**, all reachable from the first screen, none gated on anything |
 | **Instruments** | **seven**, all made at the forge, none granted |
-| **Validation** | `MF.validate()` → **25,972 checks / 47 groups / 0 errors**, two controls that must fail, and do — **run it at the width you ship from**, because `layout`, `reach`, `hollow` and `cartdraw` measure the live viewport and report it (`VERIFICATION.md` §61, §63, §65). Verified at **380×780, 560×760, 994×700 and 1250×900** |
+| **Validation** | `MF.validate()` → **25,984 checks / 47 groups / 0 errors**, two controls that must fail, and do — **run it at the width you ship from**, because `layout`, `reach`, `hollow` and `cartdraw` measure the live viewport and report it (`VERIFICATION.md` §61, §63, §65). Verified at **380×780, 560×760, 994×700 and 1250×900** |
 
 > **A check is only as wide as the space it sweeps.** The `truthy` group reported 0 errors across 642 checks while **1,970 Decimal Dial states printed a falsehood**, because it tested each lump's original integer coefficients and never nudged `c` — the one thing the dial exists to do. It now sweeps every slider position the control can reach (3,287 checks). Ask of any green result: *what did it not look at?*
 | **Runtime** | Zero dependencies, no build step, no network requests, no storage, runs from `file://` |
@@ -184,7 +184,7 @@ The face is **2280px of rock**, several screens wide, scanned by dragging, scrol
 
 ## The breaking floor: one anvil, the belt over it, and the ore on top
 
-**Measured 2026-09-07, all four widths, 0 errors over 25,972 checks in 47 groups, both controls failing.**
+**Measured 2026-09-07, all four widths, 0 errors over 25,984 checks in 47 groups, both controls failing.**
 
 **There is one box, and the anvil in it is the work.** The `workpair` is gone. It was two boxes: one held a row of chips and the belt, the other held a drawing of an anvil, two number boxes and the swing button — so **the anvil a student was looking at was not the thing their ore was on**, and the drawing was decoration beside the work. What is here now is the gallery you are standing in: the belt overhead, the anvil, the stone on its face, and whatever has come off it lying on the ground. **A first lump has nothing on the ground at all.**
 
@@ -1072,3 +1072,30 @@ to learn.
 **`reading` is 1,580 checks now.** Every tool on every bench lump must change the ore; a
 no-bite mark must not draw a hole or write words; and **the tool it points at must actually
 bite** — a dead end that points at another dead end is worse than one that says nothing.
+
+## The hammer takes a power now
+
+**USER, 2026-09-07:** *"The hammer also needs to factor in variables with powers higher than 1."*
+
+**The head used to pre-cut it.** On Higher Ground the bar arrived reading `( [ ]x² + [ ] )` —
+which hands the student the one thing that layer exists to make them notice: that the halves
+come out in **x²** rather than x. Every instrument on this site is careful to show part and
+never all, and the hammer was quietly giving away the shape of the answer before a single swing.
+
+The bar is now **`( [m] x [p] + [k] )`** on every lump that takes a bracket — one shape, and the
+power is typed. **Empty is 1**, because `x` on its own is x¹ and nobody writes the 1; zero and
+negatives are not shapes a hammer can be cut to.
+
+| typed | on `x⁴ − 5x² + 4` |
+|---|---|
+| `x − 1` | *"This lump is built out of x² halves, and the head is cut to x."* |
+| `x² − 1` | the seam runs → `x² − 1 · x² − 4` |
+| `x² − 2` on `x² − 5x + 6` | *"There is no x² anywhere in this one for that to bite on."* |
+
+**A wrong power glances like any other wrong shape** rather than being quietly corrected —
+which is the only version of this that teaches anything. `MF.simplestFactor` carries `p` so
+every sweep that follows the engine swings the bracket the engine actually meant.
+
+> The grouping and two-element heads keep their own shapes. Those lumps are monic and
+> single-power **by construction**, so a power box there could only ever be filled one way —
+> and a box that can only be filled one way is a box that should not be there.
