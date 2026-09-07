@@ -3916,8 +3916,50 @@ MF.SCHEMA = {
      seam has to satisfy and stops there. */
   auger: {
     name: 'Factoring by grouping',
-    why: 'Split the middle into two pieces that multiply to a&middot;c, and three terms become four. Four fall into two pairs, and the same bracket comes out of both &mdash; a seam through the whole lump.',
+    why: 'Four terms fall into two pairs, and if the same bracket comes out of both, it runs through the whole lump. Three terms have to be <b>made</b> into four first &mdash; that is what the X is for.',
     steps: function(ore){
+      /* ---- THE FOUR-TERM LUMP, WHICH IS THE PURE CASE ----
+
+         The trinomial lesson below teaches this move with a manufacturing step
+         bolted on the front: split the middle, THEN group. A layer-6 lump
+         arrives with its four terms already there, so the method is visible on
+         its own — and once a student has seen it here, the X stops looking
+         like a rule and starts looking like a way of GETTING here.
+
+         That is why the lesson leads with this shape now and ends by pointing
+         back at the trinomial, rather than the other way round. */
+      if(MF.isGroup(ore)){
+        var gh = MF.groupHalves(ore);
+        var t1 = 'xy', t2 = (ore.b<0?'− ':'+ ') + (Math.abs(ore.b)===1?'x':num(Math.abs(ore.b))+'x');
+        var t3 = (ore.c<0?'− ':'+ ') + (Math.abs(ore.c)===1?'y':num(Math.abs(ore.c))+'y');
+        var t4 = (ore.d<0?'− ':'+ ') + num(Math.abs(ore.d));
+        return [
+          {act:'Four terms already. Nothing to split.',
+           draw:function(li){ MF.workLine(li, 'count them', [t1,'   ',t2,'   ',t3,'   ',t4], 'wbig'); }},
+          {act:'Take them two at a time.',
+           draw:function(li){ MF.workLine(li, null, [gh.first, '        ', gh.second], 'wbig'); }},
+          {act:'Pull the common piece off each half.', open:true,
+           draw:function(li){
+             MF.workLine(li, null, ['x ( y' + signed(ore.b) + ' )', '        ',
+                                    num(ore.c) + ' ( y', '  ', null, ' )'], 'wbig');
+           }},
+          {act:'Did the <b>same</b> bracket come out of both?', open:true,
+           draw:function(li){
+             MF.splitDiagram(li, {whole:MF.oreLabel(ore), left:null, right:null,
+               key:'One that comes out <b>twice</b> runs through the lump. What stood in front of each half is the other side.'});
+           }},
+          {act:'So the end tells you before you start.', open:true,
+           draw:function(li){
+             MF.workLine(li, num(ore.b) + '  ×  ' + num(ore.c) + '  is', [null], 'wbig');
+             li.appendChild(H('div','swhy','Here it is <b>' + num(ore.d) + '</b>. One multiplication is the whole test.'));
+           }},
+          {act:'A trinomial is this, one step later.',
+           draw:function(li){
+             MF.termLine(li, null, [sqTerm(6), null, null, num(-3)], 'wbig');
+             li.appendChild(H('div','swhy','6x&sup2; + 7x &minus; 3 has three, so the X splits the middle and <b>makes</b> four.'));
+           }}
+        ];
+      }
       if(ore.kind==='number') return [
         {act:'Whatever comes out of a plain number has to divide it exactly. That is the only rule here.', shows:num(ore.n),
          draw:function(li){ MF.splitDiagram(li, {whole:num(ore.n), left:null, right:null,
@@ -3957,7 +3999,16 @@ MF.SCHEMA = {
            key:'A bracket that comes out <b>twice</b> runs through the whole lump.'}); }}
       ];
     },
-    practice: {ore:{kind:'poly',a:6,b:7,c:-3}, ask:'6x&sup2; + 7x &minus; 3 &mdash; a&middot;c is &minus;18, and &minus;2 and 9 multiply to &minus;18 and add to 7. Group it, and name one side.', answer:{m:2,k:3}}
+    /* THE PRACTICE LUMP IS NOW THE FOUR-TERM ONE, and the walkthrough above is
+       written from it. `MF.drawLesson` runs `steps(practice.ore)`, so this line
+       chooses which case the whole lesson teaches — and the pure case is the
+       one worth teaching first, with the trinomial arriving at the end as the
+       same move needing one extra step. The loaded trinomial is still what the
+       AUGER IS FORGED FROM and still what it reads in the mine; nothing about
+       layers 1-5 changed. */
+    practice: {ore:MF.groupOre(3,2,6),
+               ask:'3 &times; 2 is 6, so it groups. Pick a letter and name that bracket.',
+               answer:{m:1,k:2,v:'x'}}
   }
 };
 
@@ -4342,7 +4393,7 @@ MF.paintSchema = function(host, key, ore){
    B.rawFor !== the id of the piece under the pick, so setting raw without
    rawFor would be thrown away on the very next paint and the bar would open
    empty with nothing on screen saying why. */
-MF.cutHammerTo = function(pieceId, m, k){
+MF.cutHammerTo = function(pieceId, m, k, v){
   var B = MF.state.anvil;
   if(!B) return false;
   var at = -1;
@@ -4350,7 +4401,7 @@ MF.cutHammerTo = function(pieceId, m, k){
   if(at < 0) return false;
   if(MF.isNative(B.floor[at].ore)) return false;
   B.at = at;
-  B.raw = {m:String(m), k:String(k)};
+  B.raw = {m:String(m), k:String(k), v:(v === 'y' ? 'y' : 'x')};
   B.rawFor = B.floor[at].id;
   B.last = null;
   MF.closeTool();
@@ -4363,6 +4414,32 @@ MF.cutHammerTo = function(pieceId, m, k){
    cut, and a button that cannot do its one job is worse than no button.
 
    It reports nothing about the answer. That is the whole point of it. */
+/* ---- THE x / y DIES, IN ONE PLACE ----
+   Three heads on this site take a bracket: the anvil's hammer, the practice at
+   the end of a lesson, and "the other side" under a tool reading. A four-term
+   lump has two letters, so all three have to ask which — and three separate
+   copies of a toggle is three chances for them to drift into disagreeing about
+   what a bracket looks like. `set` is called with the letter. */
+MF.letterPick = function(host, cur, set){
+  var vb = E('div','vpick');
+  ['x','y'].forEach(function(v){
+    var t = E('button','vopt' + (cur===v ? ' on' : ''), v);
+    t.type = 'button';
+    t.setAttribute('aria-pressed', String(cur===v));
+    t.setAttribute('aria-label','the bracket with ' + v + ' in it');
+    on(t,'click',function(){
+      Array.prototype.forEach.call(vb.children, function(o){
+        o.classList.toggle('on', o === t);
+        o.setAttribute('aria-pressed', String(o === t));
+      });
+      set(v);
+    });
+    vb.appendChild(t);
+  });
+  host.appendChild(vb);
+  return vb;
+};
+
 MF.paintNameSide = function(host, ore, pieceId){
   var B = MF.state.anvil;
   if(pieceId == null || !B) return null;
@@ -4371,13 +4448,18 @@ MF.paintNameSide = function(host, ore, pieceId){
   if(!here || MF.isNative(here.ore)) return null;
 
   var isNum = (ore.kind==='number');
+  var isGrp = MF.isGroup(ore), nsv = 'x';
   var wrap = E('div','nameside');
   wrap.appendChild(H('div','nslab','THE OTHER SIDE'));
   wrap.appendChild(H('div','nshint','Write what you think it is, then take it to the anvil. The hammer is the only thing here that confirms anything.'));
   var row = E('div','nsrow');
   var box = E('div','hbox');
   var mi = null;
-  if(!isNum){
+  if(isGrp){
+    box.appendChild(H('span','paren','('));
+    MF.letterPick(box, 'x', function(v){ nsv = v; });
+    box.appendChild(H('span','paren','+'));
+  } else if(!isNum){
     box.appendChild(H('span','paren','('));
     mi = document.createElement('input'); mi.type='text'; mi.inputMode='numeric'; mi.placeholder='1';
     mi.setAttribute('aria-label','how many x — leave it empty for a single x, or put 0 for a plain number');
@@ -4393,7 +4475,7 @@ MF.paintNameSide = function(host, ore, pieceId){
   var say = E('div','nssay');
   var go = E('button','btn primary','Cut the hammer to it'); go.type='button';
   on(go,'click',function(){
-    var m = isNum ? 0 : MF.readPickM(mi.value);
+    var m = isGrp ? 1 : (isNum ? 0 : MF.readPickM(mi.value));
     var k = MF.readInt(ki.value);
     if(!isFinite(m) || !isFinite(k) || isNaN(m) || isNaN(k)){
       clear(say).appendChild(H('div','hint','That is not a whole number, so there is nothing to cut the head to yet.'));
@@ -4401,7 +4483,7 @@ MF.paintNameSide = function(host, ore, pieceId){
     }
     /* NOT A VERDICT. It cuts the bar and sends them to the anvil; whether the
        seam runs is the swing's to say and nothing else's. */
-    if(!MF.cutHammerTo(pieceId, m, k))
+    if(!MF.cutHammerTo(pieceId, m, k, nsv))
       clear(say).appendChild(H('div','hint','That piece is not on the floor any more.'));
   });
   row.appendChild(go);
@@ -8313,10 +8395,19 @@ MF.lessonPractice = function(host, key){
   pr.appendChild(H('div','prask', p.ask));
 
   var isNum = (p.ore.kind === 'number');
+  var isGrp = MF.isGroup(p.ore);
   var row = E('div','nsrow');
   var bx = E('div','hbox');
-  var mi = null;
-  if(!isNum){
+  var mi = null, pv = 'x';
+  if(isGrp){
+    /* THE SAME HEAD THE ANVIL USES. A practice that took `( [ ]x + [ ] )` on a
+       four-term lump would be asking for a shape the hammer cannot be cut to,
+       and the student would be learning the wrong control before they ever
+       reached the bench. */
+    bx.appendChild(H('span','paren','('));
+    MF.letterPick(bx, 'x', function(v){ pv = v; });
+    bx.appendChild(H('span','paren','+'));
+  } else if(!isNum){
     bx.appendChild(H('span','paren','('));
     mi = document.createElement('input'); mi.type='text'; mi.inputMode='numeric'; mi.placeholder='1';
     mi.setAttribute('aria-label','how many x — leave it empty for a single x, or put 0 for a plain number');
@@ -8332,14 +8423,14 @@ MF.lessonPractice = function(host, key){
   var out = E('div','prout');
   var go = E('button','btn primary','Try it'); go.type='button';
   on(go,'click',function(){
-    var m = isNum ? 0 : MF.readPickM(mi.value);
+    var m = isGrp ? 1 : (isNum ? 0 : MF.readPickM(mi.value));
     var k = MF.readInt(ki.value);
     clear(out);
     if(!isFinite(m) || !isFinite(k) || isNaN(m) || isNaN(k)){
       out.appendChild(H('div','note','That is not a whole number, so there is nothing to try yet.'));
       return;
     }
-    var got = MF.breakOff(p.ore, {m:m, k:k});
+    var got = MF.breakOff(p.ore, {m:m, k:k, v:pv});
     if(got.ok){
       out.appendChild(H('div','note good','<b>The seam runs.</b> <b>' + MF.oreLabel(got.left) +
         '</b> came out of it, and <b>' + MF.oreLabel(got.right) + '</b> is what was left behind. ' +
@@ -18759,7 +18850,8 @@ MF.validate = function(){
   /* CONTROL 2: a practice whose answer is nudged by one must be caught */
   chk('schema');
   if(MF.breakOff(MF.SCHEMA.auger.practice.ore,
-                 {m:MF.SCHEMA.auger.practice.answer.m, k:MF.SCHEMA.auger.practice.answer.k + 1}).ok)
+                 {m:MF.SCHEMA.auger.practice.answer.m, k:MF.SCHEMA.auger.practice.answer.k + 1,
+                  v:MF.SCHEMA.auger.practice.answer.v}).ok)
     errs.push('CONTROL: a practice answer nudged by one still comes out of the lump — the engine is not judging it');
 
   /* 5k. THE TRANSLATION TABLE. Every row claims that a mining word and a

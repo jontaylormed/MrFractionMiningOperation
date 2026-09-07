@@ -22,7 +22,7 @@
 | **Screens** | **eight** — surface, the Stamp Mill, the Casting Shed and its three workshops, the mine, the forge |
 | **Layers** | **five**, all reachable from the first screen, none gated on anything |
 | **Instruments** | **seven**, all made at the forge, none granted |
-| **Validation** | `MF.validate()` → **15,925 checks / 44 groups / 0 errors**, two controls that must fail, and do — **run it at the width you ship from**, because `layout`, `reach`, `hollow` and `cartdraw` measure the live viewport and report it (`VERIFICATION.md` §61, §63, §65). Verified at **380×780, 560×760, 994×700 and 1250×900** |
+| **Validation** | `MF.validate()` → **15,928 checks / 44 groups / 0 errors**, two controls that must fail, and do — **run it at the width you ship from**, because `layout`, `reach`, `hollow` and `cartdraw` measure the live viewport and report it (`VERIFICATION.md` §61, §63, §65). Verified at **380×780, 560×760, 994×700 and 1250×900** |
 
 > **A check is only as wide as the space it sweeps.** The `truthy` group reported 0 errors across 642 checks while **1,970 Decimal Dial states printed a falsehood**, because it tested each lump's original integer coefficients and never nudged `c` — the one thing the dial exists to do. It now sweeps every slider position the control can reach (3,287 checks). Ask of any green result: *what did it not look at?*
 | **Runtime** | Zero dependencies, no build step, no network requests, no storage, runs from `file://` |
@@ -184,7 +184,7 @@ The face is **2280px of rock**, several screens wide, scanned by dragging, scrol
 
 ## The breaking floor: one anvil, the belt over it, and the ore on top
 
-**Measured 2026-09-07, all four widths, 0 errors over 15,925 checks in 44 groups, both controls failing.**
+**Measured 2026-09-07, all four widths, 0 errors over 15,928 checks in 44 groups, both controls failing.**
 
 **There is one box, and the anvil in it is the work.** The `workpair` is gone. It was two boxes: one held a row of chips and the belt, the other held a drawing of an anvil, two number boxes and the swing button — so **the anvil a student was looking at was not the thing their ore was on**, and the drawing was decoration beside the work. What is here now is the gallery you are standing in: the belt overhead, the anvil, the stone on its face, and whatever has come off it lying on the ground. **A first lump has nothing on the ground at all.**
 
@@ -768,3 +768,35 @@ been better than saying that, because it was confident.
 broken and rebuilt; the native share held in band; the yard keeping the letter. Driven through
 the real UI as well as the API — dig, cart, bench, `y + 2` glances, `y + 3` runs, floor is
 `y + 3 · x + 2`, both on the rack.
+
+### The Casting Shed lesson for it
+
+**The Auger's lesson now teaches the four-term lump, and ends by pointing back at the
+trinomial** — not the other way round.
+
+`MF.drawLesson` runs `steps(practice.ore)`, so the practice lump chooses which case the whole
+lesson walks. It is `xy + 3x + 2y + 6` now, in six slides:
+
+| | |
+|---|---|
+| 1 | four terms already, nothing to split — and they are **counted** on screen |
+| 2 | take them two at a time |
+| 3 | pull the common piece off each half — the second bracket is the hole |
+| 4 | did the **same** bracket come out of both? |
+| 5 | so the end tells you before you start: `b × c` |
+| 6 | a trinomial is this, one step later — the X **makes** the four terms |
+
+**That ordering is the pedagogy.** The trinomial lesson taught this move with a manufacturing
+step bolted on the front; a four-term lump arrives with its four terms already there, so the
+method is visible on its own — and once a student has seen it here, the X stops looking like a
+rule and starts looking like a way of *getting* here.
+
+The practice takes the same x/y head the anvil uses. **`MF.letterPick` is one builder shared by
+all three places that ask for a bracket** — the hammer, the practice, and "the other side"
+under a tool reading — because three copies of a toggle is three chances for them to drift into
+disagreeing about what a bracket looks like.
+
+> **The `taught` group caught this lesson three times while it was being written:** a slide
+> that was told and not shown, and 1617 then 1232 characters of prose against a budget of
+> 1150. It is 1153 now. The budget is why the slides read as short as they do, and nothing was
+> relaxed to fit.
