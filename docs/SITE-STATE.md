@@ -22,7 +22,7 @@
 | **Screens** | **eight** — surface, the Stamp Mill, the Casting Shed and its three workshops, the mine, the forge |
 | **Layers** | **five**, all reachable from the first screen, none gated on anything |
 | **Instruments** | **seven**, all made at the forge, none granted |
-| **Validation** | `MF.validate()` → **25,918 checks / 47 groups / 0 errors**, two controls that must fail, and do — **run it at the width you ship from**, because `layout`, `reach`, `hollow` and `cartdraw` measure the live viewport and report it (`VERIFICATION.md` §61, §63, §65). Verified at **380×780, 560×760, 994×700 and 1250×900** |
+| **Validation** | `MF.validate()` → **26,335 checks / 48 groups / 0 errors**, two controls that must fail, and do — **run it at the width you ship from**, because `layout`, `reach`, `hollow` and `cartdraw` measure the live viewport and report it (`VERIFICATION.md` §61, §63, §65). Verified at **380×780, 560×760, 994×700 and 1250×900** |
 
 > **A check is only as wide as the space it sweeps.** The `truthy` group reported 0 errors across 642 checks while **1,970 Decimal Dial states printed a falsehood**, because it tested each lump's original integer coefficients and never nudged `c` — the one thing the dial exists to do. It now sweeps every slider position the control can reach (3,287 checks). Ask of any green result: *what did it not look at?*
 | **Runtime** | Zero dependencies, no build step, no network requests, no storage, runs from `file://` |
@@ -184,7 +184,7 @@ The face is **2280px of rock**, several screens wide, scanned by dragging, scrol
 
 ## The breaking floor: one anvil, the belt over it, and the ore on top
 
-**Measured 2026-09-07, all four widths, 0 errors over 25,918 checks in 47 groups, both controls failing.**
+**Measured 2026-09-07, all four widths, 0 errors over 26,335 checks in 48 groups, both controls failing.**
 
 > **The count moves with the sound files, and that is why two numbers were in circulation.**
 > `MF.validate()` run the instant after Enter reports about **90 fewer checks** than the same
@@ -1141,3 +1141,81 @@ label / line, and the numeral matching the mine. It reads `textContent`, not nod
 (`VERIFICATION.md` §94). Proved by putting each fault in the file: a blanked box fires *"box 3 has
 no label"* and *"box 3 has no say"*, a deleted box fires *"the surface closes on 2 boxes, not
 three"*, and a hardcoded numeral fires *"the front page claims 9000 shapes and the mine cuts 9."*
+
+## Deep Castings: four orders, and not one of them is an instrument
+
+**USER, 2026-09-07:** *"Add orders for the deep shaft metals."*
+
+Layers 6–9 produce metal the order board could not spend — a `y`-bracket, `x + 2y`, `x² + 4`,
+`x² + 2x + 4`. Every one of the seven orders is a **one-letter quadratic**, so four layers' ore
+piled up on the rack with nothing to do and nothing saying why.
+
+### What was nearly built instead, and the evidence that stopped it
+
+The first answer was **two new instruments** — one for grouping, one for the gear change — and
+both already exist:
+
+| | |
+|---|---|
+| `MF.SCHEMA.auger` | named **"Factoring by grouping"**, leads with `if(MF.isGroup(ore))`, practises on `xy + 3x + 2y + 6` |
+| `MF.SCHEMA.shifter` | opens the quartic with *"read the x² as the unit"*, practises on `x⁴ − 5x² + 4` |
+| `MF.SCHEMA.dial` | practises on `x² + 5xy + 6y²` |
+| `MF.SCHEMA.drill` | practises on `x³ − 8` |
+
+**All four deep-reading tools already teach their deep case, and all four already practise on the
+deep shape.** `MF.OWNS` maps `grouped`→Auger and `stacked`→Shifter because those instruments
+genuinely own those methods, not because they were stretched to cover them. A rank-8 "Pairing
+Bar" would have shipped a second grouping lesson beside the Auger's.
+
+**So the instrument economy is saturated, and a part is not a tool.** No lens, no schema, no belt
+slot, and nothing in the mine reads differently for one — because inventing an effect for it
+would be the "tool with no effect" `MINE-SPEC` §25b calls useless.
+
+### What a part is: one exact deep object, and a multiplication nothing else asks for
+
+| | order | cast | from |
+|---|---|---|---|
+| ⛶ | The Winding Frame | `xy + 2x + 3y + 6` | `(x + 3)(y + 2)` — four products, **none merge** |
+| ◫ | The Fourth Stamp | `x⁴ + 5x² + 4` | `(x² + 1)(x² + 4)` — the gear change, forwards |
+| 🚆 | The Second Rail | `x² + 3xy + 2y²` | `(x + y)(x + 2y)` — two letters, and the middles **do** merge |
+| ⬢ | The Cube Counterweight | `x³ − 8` | `(x − 2)(x² + 2x + 4)` — six products, **four cancel** |
+
+Those four multiplications appear nowhere else in the build. §12b holds hardest here: a student
+will not believe a cube's companion bracket until they have watched the middles go, and the mold
+now draws exactly that — `2x² − 2x² + 4x − 4x` → `0`, over `= x³ − 8`.
+
+**`x⁴ − 5x² + 4` was the first target and it is unfillable.** Its halves are `(x² − 1)(x² − 4)`
+and neither is native, so nothing would ever reach the rack — the unreachable order §12c exists
+to catch. `x⁴ + 5x² + 4` splits into two irreducibles instead. The `parts` group now fails the
+build over it, proved by putting it back.
+
+### What had to change underneath
+
+- **A target is an ORE, not `{a,b,c}`.** `castOre` on the order; `MF.castText`, `MF.castPlain`,
+  `MF.castableFrom` and `MF.forgeJudge` all take both. The judge tests the deep target **first** —
+  every deep object "overflows" the mold's two numbers by definition, and the overflow branch
+  would otherwise have called the ordered part scrap for being the ordered part.
+- **`MF.oreTerms` / `MF.termProducts`** — ore as `{c, x, y}` terms, so a pour with two letters or
+  six products can be drawn at all. Plain characters, never markup: `MF.moldScene` sets
+  `textContent`, and `x<sup>4</sup>` reaches the screen as itself (the `areaModel` defect).
+- **The rack has a third shelf.** Deep ingots carry `m = 0` — that is what stops the forge
+  multiplying a labelled ingot as `m·x + k` — so `y + 2` and `x² + 4` were filing themselves under
+  **plain metal**, on a shelf whose heading says they are numbers. Harmless while they were
+  unspendable; a plain falsehood the moment an order wanted one.
+- **The shelf**, under the craft floor: what the deep metal became. Objects and empty places,
+  never a tally.
+
+### The `parts` group — 147 checks
+
+Everything `forge` asserts about an order, against an ore target: reachable, sound when right,
+**not** sound when one metal is nudged by one, and the rejection says what it cast instead. Plus
+the mold's picture read back from the drawn text — independently of the code that wrote it
+(§94) — and the one thing only a part can get wrong: **quietly becoming a tool.** If one ever
+grows a `SCHEMA`, a `LENS` or a `TOOL_READ` entry, this decision has been reversed by accident and
+the build fails.
+
+Proved by putting four faults in the file: a target whose halves are not native (*"wants x² − 1,
+which is not native — the rack would never hold it"*), a lens on a part (*"has a reading, so it is
+an instrument and not a part"*), markup in a term (*"draws the term 4x&lt;sup&gt;2&lt;/sup&gt; as
+markup, and the mold sets textContent"*, plus the products no longer adding up), and a shared
+glyph (*"The Fourth Stamp and The Drill cut the same cavity"*).

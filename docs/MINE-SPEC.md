@@ -1777,3 +1777,55 @@ and lets go. Nothing counts anything.
 > **The rule is checked as a spread, not as a cap.** A cap of three on the Words room would
 > pass just as happily if the Molds room dropped to one, and what the user stated is about the
 > balance between them.
+
+---
+
+## 46. Amendment, 2026-09-07 — the deep shafts have a sink, and it is not an eighth tool
+
+> **The user's words:** *"Add orders for the deep shaft metals."*
+
+§10a made gear **forged, not granted**, and §12a made every order name **one exact object**. Both
+still hold. What neither anticipated is that the ladder would fill up: seven instruments, and
+between them every method the mine contains. Layers 6–9 then arrived with metal — `y`-brackets,
+`x + 2y`, irreducible quadratics, cube companions — that no order on the board could spend.
+
+### 46a. The ladder is closed. A part is not on it.
+
+`rank` means *how much this instrument does for you when you are getting metal out of rock*. A
+part does none of that, so it is not rank 8. **Deep Castings is a second board**, and what it
+makes has no lens, no schema and no belt slot.
+
+This is not a smaller version of a tool. It is a different kind of thing, and the reason it can
+exist without breaking §25b ("a tool with no effect on the ore is a useless tool") is that **it
+does not claim to be a tool.** Nothing in the mine reads differently for one.
+
+### 46b. What justifies it is the multiplication
+
+§12b said the mine teaches factoring forwards and the forge teaches it backwards against a
+target. The four deep objects are the only place on this site that asks a student to distribute
+
+```
+( x + 3 )( y + 2 )          ( x² + 1 )( x² + 4 )
+( x + y )( x + 2y )         ( x − 2 )( x² + 2x + 4 )
+```
+
+and the last of those is the argument for the whole amendment: **six products, four of which
+cancel.** A student who has watched `2x² − 2x² + 4x − 4x` come to nothing has a reason to believe
+the companion bracket never breaks. Nowhere else in the build shows them that.
+
+### 46c. A target may be an ore
+
+`castOre` sits beside `cast`. Everything that reads a target takes both, and the deep target is
+tested **before** the mold's overflow branch — an object that does not fit in `{a, b, c}` is what
+a deep casting is *for*, and the old order of tests would have called the ordered part scrap.
+
+**A target's factors must be native.** `x⁴ − 5x² + 4` was the first one drafted and it is
+unfillable: `(x² − 1)(x² − 4)` both come apart, so no rack could hold them. That is §12c's
+unreachable order, and the `parts` group now fails the build over it.
+
+### 46d. Still out
+
+Parts do nothing to the surface, the cart or the shaft. They are not spent on anything further,
+there is no second tier of them, and **nothing is gated behind owning one** — §10a's rule that a
+tool assists and never gates applies to a part with more force, not less, since a part does not
+even assist.

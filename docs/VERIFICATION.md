@@ -2229,3 +2229,33 @@ not one:
 > neither is it automatically right. The first move is to reproduce the document's number, which
 > here took one wait and settled it. **Comparing a fresh measurement against a remembered one is
 > not a comparison.**
+
+## §101. Before adding an instrument, find out whether the method is already taught
+
+Asked to give the deep shafts' metal something to buy, the answer drafted twice was **new
+instruments**: rank 8 for grouping, rank 9 for the gear change. Both were wrong, and the evidence
+was four `grep`s away.
+
+`MF.SCHEMA.auger` is *named* **"Factoring by grouping"**. Its `steps()` opens
+`if(MF.isGroup(ore))`, and its practice lump is `xy + 3x + 2y + 6`. `MF.SCHEMA.shifter` opens the
+quartic with *"read the x² as the unit"* and practises on `x⁴ − 5x² + 4` — **the exact lump
+proposed as the new instrument's target.** All four deep-reading tools already teach their deep
+case and already practise on the deep shape.
+
+Had it shipped, the Casting Shed would have carried **two grouping lessons**, in the one room on
+the site that exists to say what a method is.
+
+**The tell was in the file the whole time and it read like a limitation.** `MF.OWNS` maps
+`grouped`→Auger and `stacked`→Shifter. That was read as *those instruments are stretched to cover
+deep ore* when it meant *those instruments own those methods*. A mapping is a claim about
+ownership; reading it as a gap is how a duplicate gets built.
+
+> **The question is not "what could I add here" but "what does this file already do".** A registry
+> with seven entries and a lookup table naming which entry owns which case is a design that has
+> already answered the question — and the practice lump is the answer written down. Read the
+> `practice` before proposing the lesson.
+
+**And the same discipline caught the target.** `x⁴ − 5x² + 4` was drafted as the new order's
+object; its halves are `(x² − 1)(x² − 4)` and neither is native, so no rack could ever hold them
+and the order would have been unfillable — §12c's unreachable target, shipped. `MF.isNative` on
+each half is one line, and the `parts` group runs it on every deep order now.

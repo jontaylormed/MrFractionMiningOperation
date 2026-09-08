@@ -296,6 +296,19 @@ input::placeholder, textarea::placeholder{color:#6B5B48; opacity:1}
   border:3px solid #1B1511; border-radius:14px; padding:13px 11px 14px;
   box-shadow:inset 0 8px 22px rgba(0,0,0,.5)}
 @media (max-width:980px){ .orderboard{position:static} }
+/* ---- THE SECOND BOARD ----
+   It must not read as more of the first. The ladder above is ranked by how much
+   an instrument does for you; a deep casting is not on that ladder at all, so
+   the board it hangs on is a separate frame, unsticky (the sticky one is the
+   order you are filling, and there is only ever one of those), and cooler in
+   colour — the lower workings rather than the furnace. */
+.deepboard{position:static; margin-top:14px;
+  background:linear-gradient(180deg,#2B3138,#1B2026); border-color:#141A1F}
+.deepboard h3{color:#9FD6E8}
+.deepboard .order{border-color:#4C6072; background:linear-gradient(180deg,#333F4A,#2B3138)}
+.deepboard .order:hover{border-color:#9FD6E8; background:linear-gradient(180deg,#3D4C59,#333F4A)}
+.deepboard .order:focus-visible{outline-color:#9FD6E8}
+.deepboard .order[aria-current=true]{border-color:#9FD6E8; box-shadow:0 0 0 2px rgba(159,214,232,.5)}
 .orderboard h3{font-size:14px; letter-spacing:.09em; text-transform:uppercase; color:var(--lamp); margin-bottom:4px}
 .orderboard > .hint{color:#D9C39C; margin-bottom:9px}
 /* an order is a card hung on the board, not a row in a table */
@@ -319,6 +332,17 @@ input::placeholder, textarea::placeholder{color:#6B5B48; opacity:1}
 .order.made:after{content:"\2713"; position:absolute; right:11px; top:50%; transform:translateY(-50%);
   color:#8FE0C0; font-size:17px}
 .order[aria-current=true]{border-color:var(--lamp); box-shadow:0 0 0 2px rgba(232,163,61,.5)}
+/* ---- THE SHELF ----
+   Objects, and empty places where there are no objects. Never a tally: an
+   empty place is drawn as one because "3 of 4" is an X-out-of-Y (§2.5a). */
+.shelfparts{display:grid; gap:9px; grid-template-columns:repeat(auto-fit,minmax(148px,1fr)); margin:2px 0 9px}
+.madepart{display:flex; flex-direction:column; align-items:center; text-align:center; gap:2px;
+  border:2px solid var(--rule); border-radius:11px; padding:10px 8px; background:var(--sheet-2)}
+.madepart.hollow{border-style:dashed; opacity:.72}
+.madepart .mpic{font-size:22px; line-height:1.1}
+.madepart .mpnm{font-family:var(--display); font-size:13px; color:var(--ink)}
+.madepart .mpca{font-size:12.5px; color:var(--ink-soft)}
+.madepart.hollow .mpnm{color:var(--ink-soft)}
 
 /* metal on the rack, as something you pick up */
 .metalbtn{position:relative; display:inline-flex; align-items:center; gap:7px; cursor:pointer;
@@ -3459,6 +3483,88 @@ MF.rebuild = function(pieces){
   return MF.groupOre(Y.c, X.c, Y.c * X.c);
 };
 
+/* =========================================================================
+   ORE AS A LIST OF TERMS, AND WHY THE POUR NEEDED ONE.
+
+   The mold's picture is built by `MF.moldMaths`, and its arithmetic is a pair
+   of `m·x + k` ingots multiplied out by hand — four corners, two of which are
+   middles that merge. That is the whole of what a quadratic pour is, and it
+   cannot say anything at all about `( x + 3 )( y + 2 )` or
+   `( x − 2 )( x² + 2x + 4 )`: one has two letters and the other has six
+   products, and neither fits in four corners.
+
+   A term is `{c, x, y}` — a coefficient and a power of each letter — which is
+   general enough for every shape this mine cuts and small enough to multiply
+   in one line. The deep pours are the only place it is used; the quadratic
+   path is untouched, because a working picture is not worth re-deriving.
+   ========================================================================= */
+MF.oreTerms = function(o){
+  if(!o) return null;
+  var T = function(c, x, y){ return {c:c, x:x||0, y:y||0}; };
+  var drop = function(list){ return list.filter(function(t){ return t.c !== 0; }); };
+  switch(o.kind){
+    case 'number': return [T(o.n,0,0)];
+    case 'bi':     return [T(1,1,0), T(o.p,0,1)];              /* x + p·y */
+    case 'two':    return drop([T(1,2,0), T(o.b,1,1), T(o.c,0,2)]);
+    case 'group':  return drop([T(1,1,1), T(o.b,1,0), T(o.c,0,1), T(o.d,0,0)]);
+    case 'quart':  return drop([T(1,4,0), T(o.b,2,0), T(o.c,0,0)]);
+    case 'cube':   return drop([T(o.a,3,0), T(o.d,0,0)]);
+    case 'poly':
+      /* A `poly` CARRIES ITS OWN LETTER and `y + 2` is one of them. Reading it
+         as an x-bracket is the same confusion `oreToIngot` zeroes m and k to
+         prevent — it would print `x + 2` for a piece of layer-6 metal. */
+      if(oreVar(o) === 'y') return drop([T(o.a,0,2), T(o.b,0,1), T(o.c,0,0)]);
+      return drop([T(o.a,2,0), T(o.b,1,0), T(o.c,0,0)]);
+  }
+  return null;
+};
+/* one term, unsigned, as it is printed on the sand.
+
+   PLAIN CHARACTERS, NOT MARKUP, and this is not a style choice. `MF.moldScene`
+   draws every one of these as an SVG <text> and sets textContent, so `<sup>4`
+   reaches the screen as the literal string `x<sup>4</sup>` — which is exactly
+   what `MF.areaModel`'s cells did once already (§the quartic lesson). The
+   existing quadratic path has always written `x²` as the character, and this
+   joins it rather than inventing a second convention beside it. */
+var SUPCH = {2:'²', 3:'³', 4:'⁴'};
+MF.termText = function(t){
+  var body = (t.x ? ('x' + (SUPCH[t.x] || '')) : '') +
+             (t.y ? ('y' + (SUPCH[t.y] || '')) : '');
+  var n = Math.abs(t.c);
+  if(!body) return num(n);
+  return (n === 1 ? '' : num(n)) + body;
+};
+/* WITH its sign, for the row that has to add up */
+MF.termSigned = function(t){ return (t.c < 0 ? '−' : '') + MF.termText(t); };
+/* A ROW OF TERMS, SIGN-AWARE. `+ −2x²` is the defect `MF.termLine` was written
+   after — the joiner owns the sign, and a minus is a minus rather than a plus
+   in front of one. */
+MF.termRow = function(list){
+  return list.map(function(t, i){
+    if(!i) return MF.termSigned(t);
+    return (t.c < 0 ? '− ' : '+ ') + MF.termText(t);
+  }).join(' ');
+};
+/* EVERY PART OF ONE METAL MEETS EVERY PART OF THE OTHER — the general case of
+   the four corners, and the reason a deep pour can be drawn at all. Terms that
+   land on the same powers are the middles, and they merge. */
+MF.termProducts = function(a, b){
+  var A = MF.oreTerms(a), B = MF.oreTerms(b);
+  if(!A || !B) return null;
+  var out = [];
+  A.forEach(function(p){
+    B.forEach(function(q){
+      /* THE PIECES KEEP THEIR SIGNS. `−2 × x²` is the multiplication that
+         happened; `2 × x²` over a term reading `−2x²` is the picture
+         disagreeing with itself, and a minus sign is exactly the thing a
+         student loses track of in a six-product pour. */
+      out.push({c:p.c*q.c, x:p.x+q.x, y:p.y+q.y,
+                from:MF.termSigned(p) + ' × ' + MF.termSigned(q)});
+    });
+  });
+  return out;
+};
+
 /* the ingot a piece becomes once it is set aside in the yard. An irreducible
    POLYNOMIAL carries its label, matching what the yard has always stored
    (ingotKey). NEVER use the result for arithmetic - see MF.oreMul. */
@@ -4071,6 +4177,7 @@ MF.state = {
   selected:null,
   anvil:null,         /* the lump under the pick, and the floor around it */
   tools:{},           /* forged instruments - never granted, always made */
+  parts:{},           /* deep castings - objects, not instruments; see MF.PARTS */
   forge:{slots:[], picked:null},
   broken:0,
   /* ---- READING & ACCESS, and it is held exactly like everything else ----
@@ -4231,7 +4338,94 @@ MF.TOOLS = {
 MF.toolOrder = function(){
   return Object.keys(MF.TOOLS).sort(function(a,b){ return MF.TOOLS[a].rank - MF.TOOLS[b].rank; });
 };
-MF.castText = function(t){ return quad(t.cast.a, t.cast.b, t.cast.c); };
+/* =========================================================================
+   THE DEEP CASTINGS — four parts, and not one of them is an instrument.
+
+   USER, 2026-09-07: "Add orders for the deep shaft metals."
+
+   THE PROBLEM WAS REAL AND THE OBVIOUS FIX WAS WRONG. Layers 6–9 produce metal
+   the board could not spend: a y-bracket, `x + 2y`, `x² + 4`, `x² + 2x + 4`.
+   Every one of the seven orders is a one-letter quadratic, so four layers' ore
+   piled up on the rack with nothing to do. The first answer drafted was two new
+   instruments — one for grouping, one for the gear change — and **both already
+   exist**: `MF.SCHEMA.auger` is named *Factoring by grouping* and leads with
+   `if(MF.isGroup(ore))`, and `MF.SCHEMA.shifter` opens the quartic with *"read
+   the x² as the unit"*. All four deep-reading tools already teach their deep
+   case, and all four already PRACTISE on the deep shape. There is no deeper
+   grade left to give an instrument, and a new one would have shipped a second
+   grouping lesson next to the Auger's.
+
+   SO A PART IS NOT A TOOL. It has no lens, no schema and no belt slot, and it
+   changes nothing about how anything reads a lump — because the instruments are
+   finished, and pretending otherwise would be the "tool with no effect" that
+   `MINE-SPEC` §25b names as useless. What a part is: **one exact deep object,
+   and the only place on this site that asks you to distribute one.**
+
+     ( x + 3 )( y + 2 )          two letters, four products, none of them merge
+     ( x² + 1 )( x² + 4 )        the gear change run forwards
+     ( x + y )( x + 2y )         two letters, and the middles DO merge
+     ( x − 2 )( x² + 2x + 4 )    six products, and four of them cancel
+
+   Those four multiplications appear nowhere else in the build. §12b holds — the
+   mine teaches it forwards, the forge teaches it backwards against a target —
+   and it holds hardest here, because a cube's companion bracket is the one
+   object a student will not believe until they have watched the middle vanish.
+
+   `castOre` rather than `cast`: the target is an ORE, not `{a,b,c}`, which is
+   the whole reason these could not be ordered before. Everything that reads a
+   target — castText, castableFrom, forgeJudge, the mold — takes both now.
+   ========================================================================= */
+MF.PARTS = {
+  frame: {
+    rank:1, ic:'&#9974;', nm:'The Winding Frame', order:'a cross-frame for the winding house',
+    ds:'Two brackets in two different letters. Nothing in it can be collected with anything else, so all four products stay.',
+    castOre: MF.groupOre(2,3,6), slots:2,
+    forge:'Cast <b>xy + 2x + 3y + 6</b> out of <b>x + 3</b> and <b>y + 2</b>. Four products and not one pair of them is the same kind of term — which is why a four-term lump is where grouping starts.',
+    does:'four terms, and none of them merge',
+    fits:'the winding house'
+  },
+  stamp4: {
+    /* NOT THE BALANCE SCALE it was first given. A pair of scales is an image of
+       WEIGHING ONE THING AGAINST ANOTHER, on a site whose whole argument is
+       that nothing here is judged or compared — and the mold cuts its cavity to
+       this glyph, so it would have been stamped into the sand as well. */
+    rank:2, ic:'&#9707;', nm:'The Fourth Stamp', order:'a fourth stamp for the mill battery',
+    ds:'Two irreducible quadratics multiplied. The gear change run forwards: x² times x² is where the fourth power comes from.',
+    castOre: MF.quartOre(5,4), slots:2,
+    forge:'Cast <b>x<sup>4</sup> + 5x<sup>2</sup> + 4</b> out of <b>x<sup>2</sup> + 1</b> and <b>x<sup>2</sup> + 4</b>. Both metals are elements — neither will break — and the object they make is a whole gear up.',
+    does:'x² × x² is where an x⁴ comes from',
+    fits:'the stamp mill'
+  },
+  rail2: {
+    rank:3, ic:'&#128646;', nm:'The Second Rail', order:'a second rail for the cart track',
+    ds:'Two brackets carrying both letters. Here the middles ARE the same kind of term, so they collect — the opposite of the frame, on purpose.',
+    castOre: MF.twoOre(3,2), slots:2,
+    forge:'Cast <b>x<sup>2</sup> + 3xy + 2y<sup>2</sup></b> out of <b>x + y</b> and <b>x + 2y</b>. Four products again, and this time two of them are both xy and run together.',
+    does:'two letters, and the middles collect',
+    fits:'the cart track'
+  },
+  counter: {
+    rank:4, ic:'&#11042;', nm:'The Cube Counterweight', order:'a counterweight for the headframe',
+    ds:'A bracket and its companion. Six products go in and four of them cancel each other out, which is why only the two ends survive.',
+    castOre: MF.cubeOre(1,-8), slots:2,
+    forge:'Cast <b>x<sup>3</sup> &minus; 8</b> out of <b>x &minus; 2</b> and <b>x<sup>2</sup> + 2x + 4</b>. Watch the middle terms go: that cancellation is the whole reason the companion never breaks.',
+    does:'six products, four of them cancel',
+    fits:'the headframe'
+  }
+};
+MF.partOrder = function(){
+  return Object.keys(MF.PARTS).sort(function(a,b){ return MF.PARTS[a].rank - MF.PARTS[b].rank; });
+};
+/* ONE LOOKUP FOR BOTH BOARDS. The forge's pour, mold and slots all reach for
+   `MF.TOOLS[st.picked]`, and a part has to arrive at those the same way an
+   order does — so the key space is shared and this is the only place that
+   knows which registry a key came out of. */
+MF.orderOf = function(k){ return MF.TOOLS[k] || MF.PARTS[k] || null; };
+MF.isPart  = function(k){ return !!MF.PARTS[k]; };
+MF.hasPart = function(k){ return !!MF.state.parts[k]; };
+MF.castText = function(t){ return t.castOre ? MF.oreLabel(t.castOre) : quad(t.cast.a, t.cast.b, t.cast.c); };
+/* the same target with no markup in it, for an aria-label */
+MF.castPlain = function(t){ return t.castOre ? MF.oreText(t.castOre) : quadText(t.cast.a, t.cast.b, t.cast.c); };
 MF.hasTool = function(k){ return !!MF.state.tools[k]; };
 
 /* =========================================================================
@@ -11264,7 +11458,7 @@ MF.SCREENS['workshop-ore'] = function(host){
 
    An irreducible polynomial in the yard is stored with m:0,k:0 and a label -
    it multiplies to nothing - so it is not a candidate for any mold. */
-MF.castableFrom = function(target, slots, have){
+MF.castableFrom = function(target, slots, have, wantOre){
   /* THE FILTER WAS THE OTHER HALF OF WHY THE DEEP METALS WERE UNSPENDABLE.
      `m===0 && k===0` is exactly what a LABELLED ingot looks like — an
      irreducible quadratic, a y-bracket, a four-term element — so every one of
@@ -11281,6 +11475,14 @@ MF.castableFrom = function(target, slots, have){
     if(found) return;
     if(chosen.length === slots){
       var p = ingotProduct(chosen.map(function(e){ return e.ingot; }));
+      /* A DEEP TARGET IS AN ORE, AND IT ARRIVES FLAGGED AS AN OVERFLOW. That
+         flag means "the mold's two numbers cannot hold this", which is true of
+         every object a deep casting is FOR — so the overflow is read past to
+         the casting itself rather than treated as a failure. */
+      if(wantOre){
+        if(p.ore && MF.oreEq(p.ore, wantOre)) found = chosen.slice();
+        return;
+      }
       if(!p.overflow && p.a===target.a && p.b===target.b && p.c===target.c) found = chosen.slice();
       return;
     }
@@ -11295,8 +11497,8 @@ MF.castableFrom = function(target, slots, have){
   return found;
 };
 MF.toolReady = function(key){
-  var t = MF.TOOLS[key];
-  return !!MF.castableFrom(t.cast, t.slots, MF.yardList());
+  var t = MF.orderOf(key);
+  return !!MF.castableFrom(t.cast, t.slots, MF.yardList(), t.castOre);
 };
 
 /* =========================================================================
@@ -11355,6 +11557,7 @@ MF.paintForge = function(){
      above this, with the heap between it and the mold; the rack now lives
      inside the craft floor and only the unspendable rock is left below. */
   MF.paintCraft(r, st);
+  MF.paintShelf(r, st);
   MF.paintHeap(r, st);
 };
 
@@ -11364,8 +11567,14 @@ MF.paintOrders = function(host, st){
   box.appendChild(H('h3',null,'The Order Board'));
   box.appendChild(H('div','hint','Each order is cut for <b>one exact object</b>. Find the metals that multiply to it and the part comes out sound. They get harder down the board, and so do the tools.'));
 
-  MF.toolOrder().forEach(function(key){
-    var t = MF.TOOLS[key], made = MF.hasTool(key), ready = MF.toolReady(key);
+  /* ONE CARD BUILDER FOR BOTH BOARDS. A deep casting is chosen, filled, poured
+     and judged exactly as an instrument is — the only differences are what it
+     says when you already have it and what it opens when you click it — so it
+     is drawn by the same function rather than by a copy of it that would drift. */
+  var card = function(key){
+    var part = MF.isPart(key);
+    var t = MF.orderOf(key), made = part ? MF.hasPart(key) : MF.hasTool(key),
+        ready = MF.toolReady(key);
     var b = E('button','order' + (made?' made':(ready?' ready':' short')));
     b.type = 'button';
     b.setAttribute('data-order', key);
@@ -11394,22 +11603,40 @@ MF.paintOrders = function(host, st){
     /* THE TARGET IS ON THE CARD. An order that only names a tool tells a
        student nothing about what they are being asked to make. */
     txt.appendChild(H('span','ocast', 'cast <b>' + MF.castText(t) + '</b>'));
-    txt.appendChild(H('span','ost', made ? 'in your hands' : (ready ? 'you have the metal' : 'not on the rack yet')));
+    txt.appendChild(H('span','ost', made ? (part ? 'fitted to ' + t.fits : 'in your hands')
+                                         : (ready ? 'you have the metal' : 'not on the rack yet')));
     b.appendChild(txt);
-    b.setAttribute('aria-label', t.nm + ' — ' + t.does + '. Cast from ' +
-      quadText(t.cast.a,t.cast.b,t.cast.c) + '. ' + (made ? 'Already made and on your belt.' :
+    b.setAttribute('aria-label', t.nm + ' — ' + t.does + '. Cast ' +
+      MF.castPlain(t) + '. ' + (made ? (part ? 'Already cast and fitted to ' + t.fits + '.'
+                                             : 'Already made and on your belt.') :
       (ready ? 'You have the metal for this. Open the mold.' : 'You do not have the metal for this yet. Open the mold to see what it wants.')));
     /* EVERY ORDER OPENS. A disabled button is a dead control that explains
        nothing; an open mold can say what it is waiting for, which is the
        thing that sends you back down the shaft knowing what to look for. */
     on(b,'click',function(){
-      if(made){ MF.explainTool(key, b); return; }
+      if(made){ (part ? MF.explainPart : MF.explainTool)(key, b); return; }
       st.picked = key; st.slots = []; st.result = null; st.justFilled = false;
       MF.paintForge();
     });
-    box.appendChild(b);
-  });
+    return b;
+  };
+  MF.toolOrder().forEach(function(key){ box.appendChild(card(key)); });
   host.appendChild(box);
+
+  /* ---- THE DEEP CASTINGS, ON A BOARD OF THEIR OWN ----
+
+     They are not eighth through eleventh orders and must not read as a
+     continuation of the ladder: `rank` on the instruments means *how much this
+     does for you when you are getting metal out of rock*, and a part does none
+     of that. It is a second board, under its own heading, for the four layers
+     whose metal the first board cannot spend. */
+  var deep = E('div','orderboard deepboard');
+  deep.appendChild(H('h3',null,'Deep Castings'));
+  deep.appendChild(H('div','hint','Metal from the lower shafts &mdash; <b>y</b>-brackets, two-letter brackets, elements that will not break &mdash; ' +
+    'fits none of the orders above. These are cut for it. <b>Not one of them is an instrument</b>: they are parts for the operation, ' +
+    'and the reason to pour one is the multiplication it makes you do.'));
+  MF.partOrder().forEach(function(key){ deep.appendChild(card(key)); });
+  host.appendChild(deep);
 };
 
 /* ---------- THE RACK, and it is drawn INSIDE the craft floor ----------
@@ -11427,7 +11654,7 @@ MF.paintOrders = function(host, st){
    and clicking one with no order open SAYS SO rather than doing nothing. */
 MF.paintRack = function(host, st){
   var open = !!st.picked && !st.result;
-  var want = open ? MF.slotsWanted(MF.TOOLS[st.picked]) : 0;
+  var want = open ? MF.slotsWanted(MF.orderOf(st.picked)) : 0;
 
   var rk = E('div','shelfrow');
   rk.appendChild(H('div','ylab','THE RACK &mdash; native metal, and the forge spends this'));
@@ -11438,8 +11665,18 @@ MF.paintRack = function(host, st){
     return rk;
   }
   var rack = E('div','rack');
-  [['plain metal', function(g){ return g.m===0; }],
-   ['metal with an x in it', function(g){ return g.m!==0; }]].forEach(function(grp){
+  /* ---- THREE SHELVES, BECAUSE THERE ARE THREE KINDS ----
+
+     It was two, split on `m===0`, and deep metal has m ZEROED — that is what
+     stops the forge multiplying a labelled ingot as if it were `m·x + k`. So
+     `y + 2`, `x + 2y`, `x² + 4` and `x² + 2x + 4` all filed themselves under
+     **plain metal**, on a shelf whose heading says they are numbers. Harmless
+     while they were unspendable and a plain falsehood the moment an order
+     wanted one. A labelled ingot is exactly the deep case, and `label` is the
+     test — the same field `ingotKey` and `ingotProduct` already read. */
+  [['plain metal', function(g){ return g.m===0 && !g.label; }],
+   ['metal with an x in it', function(g){ return g.m!==0; }],
+   ['metal from the deep shafts', function(g){ return g.m===0 && !!g.label; }]].forEach(function(grp){
     var these = have.filter(function(e){ return grp[1](e.ingot); });
     if(!these.length) return;
     var shelf = E('div','shelf');
@@ -11516,6 +11753,40 @@ MF.paintHeap = function(host, st){
   host.appendChild(box);
 };
 
+/* ---------- THE SHELF: what the deep metal turned into ----------
+
+   The rack is what you have, the heap is what you cannot spend, and this is
+   what you made. Without it a deep casting would leave nothing behind but a
+   card on the board changing its status line, and the four objects a student
+   worked hardest for would be the only things in the forge with no place in it.
+
+   IT DRAWS THE OBJECTS, NEVER A COUNT. Three made out of four is an X-out-of-Y
+   and philosophy §2.5a forbids it — the empty places are drawn as empty places,
+   the same rule the mold's slots follow. */
+MF.paintShelf = function(host, st){
+  var box = E('div','panel'); box.style.marginTop='16px';
+  box.appendChild(H('div','panel-tag','THE SHELF &mdash; WHAT THE DEEP METAL BECAME'));
+  var row = E('div','shelfparts');
+  var any = false;
+  MF.partOrder().forEach(function(k){
+    var p = MF.PARTS[k], made = MF.hasPart(k);
+    if(made) any = true;
+    var cell = E('div','madepart' + (made ? ' made' : ' hollow'));
+    cell.appendChild(H('span','mpic', made ? p.ic : '&#183;'));
+    cell.appendChild(H('span','mpnm', made ? p.nm : 'an empty place'));
+    cell.appendChild(H('span','mpca', made ? MF.castText(p) : ''));
+    cell.setAttribute('aria-label', made
+      ? p.nm + ', cast ' + MF.castPlain(p) + ', fitted to ' + p.fits
+      : 'An empty place on the shelf.');
+    row.appendChild(cell);
+  });
+  box.appendChild(row);
+  box.appendChild(H('div','yhint', any
+    ? '<b>None of these is an instrument.</b> A part is the object itself &mdash; nothing on your belt changed when it was cast.'
+    : 'Nothing cast yet. The four orders under <b>Deep Castings</b> are the only ones the lower shafts&rsquo; metal will fill.'));
+  host.appendChild(box);
+};
+
 /* how many slots an order's mold has. This used to special-case matchedPair to
    2 - which its own `count` already says, and every other order's does too. */
 MF.slotsWanted = function(t){ return t.slots; };
@@ -11538,7 +11809,7 @@ MF.paintCraft = function(host, st){
     return;
   }
 
-  var t = MF.TOOLS[st.picked];
+  var t = MF.orderOf(st.picked);
   box.appendChild(H('div','crafthead','<span class="ci">' + t.ic + '</span><b>' + t.nm + '</b>'));
 
   /* once poured, the casting IS the panel - the slots are gone and what the
@@ -11682,7 +11953,63 @@ MF.moldMaths = function(ingots, prod){
   };
   /* AND WHEN IT RAN OVER, SAY WHAT IT MADE. `over` on its own is the mold
      telling a student their metal came to nothing, which is not true. */
-  if(prod.overflow){ out.single = prod.ore ? MF.oreText(prod.ore) : 'over'; return out; }
+  if(prod.overflow){
+    out.single = prod.ore ? MF.oreText(prod.ore) : 'over';
+    /* ---- AND FOR A DEEP POUR, SHOW THE PRODUCTS ----
+       This used to return here with an empty terms list, so `( x − 2 )` and
+       `( x² + 2x + 4 )` went into the mold and `x³ − 8` came out with the six
+       multiplications between them drawn nowhere. Those six ARE the lesson of a
+       deep casting — four of them cancel, and a student who has not watched
+       that happen has no reason to believe the companion bracket. */
+    if(prod.ore && ingots.length === 2 && ingots[0].ore && ingots[1].ore){
+      var pr = MF.termProducts(ingots[0].ore, ingots[1].ore);
+      if(pr){
+        /* like powers are the middles, and they collect */
+        var bins = [], seen = {};
+        pr.forEach(function(t){
+          var k = t.x + ':' + t.y;
+          if(!seen[k]){ seen[k] = {x:t.x, y:t.y, list:[]}; bins.push(seen[k]); }
+          seen[k].list.push(t);
+        });
+        /* highest power first, which is the order the object is written in */
+        bins.sort(function(A,B){ return (B.x*4+B.y) - (A.x*4+A.y); });
+        var coll = bins.filter(function(b){ return b.list.length > 1; });
+        var sumOf = function(b){ return b.list.reduce(function(n,t){ return n + t.c; }, 0); };
+        /* ---- WHICH TERMS ARE ALLOWED TO BE DRAWN AS MIDDLES ----
+
+           THE MOLD DRAWS EXACTLY ONE MERGE, and the `mold` group fails the
+           build over a term marked as merging that does not merge. A cube pour
+           has SIX products and TWO pairs that collect, so marking all four as
+           middles and then drawing one merge would have been the picture
+           contradicting itself in the one place it is meant to explain.
+
+           One collecting group merges as itself. Several merge JOINTLY, but
+           only when every one of them comes to nothing — which is the cube, and
+           is the true statement about it: all the middles together are zero,
+           and that is why only the two ends survive. Anything else draws no
+           merge at all rather than a merge that is partly true. */
+        var joint = coll.length > 1 && coll.every(function(b){ return sumOf(b) === 0; });
+        var mergeSet = coll.length === 1 ? coll : (joint ? coll : []);
+        var isMid = function(t){
+          return mergeSet.some(function(b){ return b.list.indexOf(t) >= 0; });
+        };
+        bins.forEach(function(bin){
+          bin.list.forEach(function(t){
+            out.terms.push({t:MF.termSigned(t), from:t.from, mid:isMid(t)});
+          });
+        });
+        if(mergeSet.length){
+          var all = [];
+          mergeSet.forEach(function(b){ all = all.concat(b.list); });
+          var sum = all.reduce(function(n,t){ return n + t.c; }, 0);
+          out.merge = sum === 0 ? '0' : MF.termSigned({c:sum, x:mergeSet[0].x, y:mergeSet[0].y});
+          out.mergeFrom = MF.termRow(all);
+        }
+      }
+    }
+    if(!out.terms.length) out.terms = [{t:out.single, from:'', mid:false}];
+    return out;
+  }
   out.single = quadText(prod.a, prod.b, prod.c);
 
   /* THERE IS NO "ALL PLAIN METAL" SHORTCUT, AND THE ONE THAT WAS HERE LIED.
@@ -11833,7 +12160,7 @@ MF.pourChain = function(host, ingots){
    underneath at four times the size, and printing it twice says it is two
    different things. */
 MF.moldScene = function(key, pour, shape){
-  var t = MF.TOOLS[key] || {nm: shape || 'a casting', ic:''};
+  var t = MF.orderOf(key) || {nm: shape || 'a casting', ic:''};
   var wrap = E('div','moldwrap');
   if(pour) wrap.setAttribute('data-pour', pour.ok ? 'sound' : 'scrap');
   var W=470, VH=300, uid='md'+(key || 'sh')+(MF._moldSeq = (MF._moldSeq||0)+1);
@@ -12217,7 +12544,7 @@ MF.iconChar = function(ent){
 
 MF.forgePour = function(st){
   MF.audio.play('pour');
-  var t = MF.TOOLS[st.picked];
+  var t = MF.orderOf(st.picked);
   var ingots = st.slots.map(function(s){ return s.ingot; });
   var prod = ingotProduct(ingots);
   var sound = MF.forgeJudge(t, ingots, prod);
@@ -12233,7 +12560,22 @@ MF.forgePour = function(st){
   box.appendChild(H('p',null, sound.why));
   st.result = box;
 
-  if(sound.ok){
+  if(sound.ok && MF.isPart(st.picked)){
+    /* ---- A PART IS KEPT, NOT HUNG ON A BELT ----
+       No instrument, so no belt slot and no Casting Shed lesson to send anyone
+       to. What it gets instead is the one thing it is actually for: the
+       multiplication, named, and the sentence saying where the part went. */
+    MF.spendFromYard(st.slots.map(function(s){ return s.key; }));
+    MF.state.parts[st.picked] = {cast:true};
+    var pkeep = E('button','btn primary','Send it to ' + t.fits); pkeep.type='button';
+    on(pkeep,'click',function(){ st.picked=null; st.slots=[]; st.result=null; MF.paintForge(); });
+    box.appendChild(pkeep);
+    var pfoot = E('div','castfoot');
+    pfoot.appendChild(H('div','note','<b>' + t.does.charAt(0).toUpperCase() + t.does.slice(1) + '.</b> ' +
+      'That is the whole of what a deep casting teaches, and it is on the shelf below. ' +
+      '<b>It is not an instrument</b> &mdash; nothing on your belt changed, and nothing in the mine reads differently for it.'));
+    box.appendChild(pfoot);
+  } else if(sound.ok){
     MF.spendFromYard(st.slots.map(function(s){ return s.key; }));
     MF.state.tools[st.picked] = {forged:true};
     /* ---- THE OBJECT FIRST, THE SCHOOL AFTER IT ----
@@ -12306,6 +12648,23 @@ MF.forgePour = function(st){
    glanced off: which part came out wrong and what the order wanted there. */
 MF.forgeJudge = function(t, ingots, prod){
   var want = t.cast;
+  /* ---- A DEEP CASTING IS JUDGED AGAINST AN ORE, AND FIRST ----
+
+     The overflow branch below used to run before anything else, and every deep
+     object overflows by definition — `x³ − 8` does not fit in `{a,b,c}`. Left
+     in that order it would have called the ordered part scrap for being the
+     ordered part, which is the exact shape of the bug the branch was written to
+     fix (a real object described only as "bigger than that"). */
+  if(t.castOre){
+    if(prod.ore && MF.oreEq(prod.ore, t.castOre))
+      return {ok:true, why:'The metals that multiply to it were the metals in it.'};
+    return {ok:false, why: (prod.ore || !prod.overflow
+        ? 'That casts <b>' + (prod.ore ? MF.oreLabel(prod.ore) : quad(prod.a,prod.b,prod.c)) +
+          '</b>, which is a sound object &mdash; just not this one. The order is for <b>' +
+          MF.castText(t) + '</b>.'
+        : 'That is more metal than the mold holds — it has run over the sides. ' +
+          'The order is for <b>' + MF.castText(t) + '</b>.')};
+  }
   if(prod.overflow)
     /* AND IT SAYS WHAT CAME OUT, when it can (user, 2026-09-07). A pour of
        deep-shaft metal makes a real object — `x + 2` and `x² + 2x + 4` cast
@@ -15417,6 +15776,42 @@ MF.explainTool = function(key, opener){
   MF.go(MF.toolRoom(key));
 };
 
+/* A PART HAS NO ROOM TO SEND ANYONE TO, and that is the point of it rather than
+   a gap in it. `MF.explainTool` navigates to the instrument's workshop on the
+   Casting Shed's floor; there is no workshop for the Winding Frame, because it
+   teaches no method. What it can do is show its own multiplication again, which
+   is the only thing it ever had to say. */
+MF.explainPart = function(key, opener){
+  var p = MF.PARTS[key];
+  if(!p) return;
+  MF._openSheet({
+    label: p.nm + ', already cast',
+    icon: p.ic, title: p.nm, sub: 'cast <b>' + MF.castText(p) + '</b>, fitted to ' + p.fits,
+    closeText: 'Close', opener: opener, key: key,
+    foot: 'A part is not an instrument. Nothing on your belt changed when this was cast, and nothing in the mine reads differently for it.',
+    fill: function(body){
+      body.appendChild(H('div','note', p.ds));
+      var made = MF.partMetals(key);
+      if(made) MF.pourChain(body, made.map(MF.oreToIngot));
+      body.appendChild(H('div','swhy','<b>' + p.does.charAt(0).toUpperCase() + p.does.slice(1) + '.</b> ' +
+        'The mine runs this backwards &mdash; that is all factoring is.'));
+    }
+  });
+};
+/* THE TWO METALS THAT MAKE IT, off the engine rather than typed beside the
+   order. A pair written out by hand in a second place is a pair that can
+   disagree with the target it is supposed to multiply to. */
+MF.partMetals = function(key){
+  var p = MF.PARTS[key];
+  if(!p) return null;
+  var o = p.castOre, s = null;
+  if(MF.isGroup(o)) s = MF.groupSplit(o);
+  else if(MF.isQuart(o)) s = MF.quartSplit(o);
+  else if(MF.isTwo(o)) s = MF.twoSplit(o);
+  else if(MF.isCube(o)) s = MF.cubeSplit(o);
+  return s ? [s.left, s.right] : null;
+};
+
 /* dragging a tool off the belt. Same shape as the heap drag, and the drop
    targets are the pieces on the floor. */
 MF.dragTool = function(node, key){
@@ -16209,6 +16604,194 @@ MF.validate = function(){
     if(!/miss|over the sides/i.test(bad2.why))
       errs.push('forge: "' + t.nm + '" rejected a near miss without saying where it missed');
   });
+
+  /* 5p. THE DEEP CASTINGS.
+         Four orders cut for metal the seven above cannot spend, and not one of
+         them is an instrument. Everything the `forge` group asserts about an
+         order is asserted here against an ORE target instead of `{a,b,c}` —
+         plus the one thing only a part can get wrong, which is quietly becoming
+         a tool. */
+  var partYard = MF.state.yard;
+  MF.state.yard = {};
+  MF.partOrder().forEach(function(k){
+    MF.partMetals(k) && MF.partMetals(k).forEach(function(o){ MF.addToYard(MF.oreToIngot(o), 'checks'); });
+  });
+
+  /* the drawn term strings, read back as {c,x,y} — INDEPENDENTLY of the code
+     that wrote them. Comparing MF.moldMaths against MF.termProducts would be a
+     check written in terms of the thing it checks (§94); this reads the text
+     that reaches the screen and compares it to the ORDER. */
+  var readTerm = function(s){
+    var m = String(s).replace(/[−–]/g, '-').match(/^(-?\d*)(x(?:²|³|⁴)?)?(y(?:²|³|⁴)?)?$/);
+    if(!m) return null;
+    var pw = function(t){ return !t ? 0 : (t.length === 1 ? 1 : {'²':2,'³':3,'⁴':4}[t.slice(1)] || 0); };
+    var c = m[1] === '' ? 1 : (m[1] === '-' ? -1 : parseInt(m[1], 10));
+    if(!m[2] && !m[3] && m[1] === '') return null;   /* no digits and no letters is not a term */
+    return {c:c, x:pw(m[2]), y:pw(m[3])};
+  };
+
+  MF.partOrder().forEach(function(key){
+    var p = MF.PARTS[key], mets = MF.partMetals(key);
+    chk('parts');
+    if(!mets){ errs.push('parts: "' + p.nm + '" has no two metals — nothing in the mine makes it'); return; }
+    /* THE YARD ONLY EVER HOLDS NATIVE METAL. A part whose factors break again
+       is an order no rack can fill, which is the unreachable target §12c was
+       written after — and the first draft of this had exactly that: a target of
+       x⁴ − 5x² + 4, whose halves are (x² − 1)(x² − 4) and both come apart. */
+    mets.forEach(function(o){
+      chk('parts');
+      if(!MF.isNative(o))
+        errs.push('parts: "' + p.nm + '" wants ' + MF.oreText(o) + ', which is not native — the rack would never hold it');
+    });
+    chk('parts');
+    var built = MF.rebuild(mets);
+    if(!built || !MF.oreEq(built, p.castOre))
+      errs.push('parts: ' + mets.map(MF.oreText).join(' × ') + ' makes ' +
+                (built ? MF.oreText(built) : 'nothing') + ', and "' + p.nm + '" is ordered as ' + MF.castPlain(p));
+    chk('parts');
+    var set = MF.castableFrom(p.cast, p.slots, MF.yardList(), p.castOre);
+    if(!set){ errs.push('parts: nothing on a rack holding its own metals casts ' + MF.castPlain(p)); return; }
+    var ings = set.map(function(e){ return e.ingot; });
+    chk('parts');
+    var ok = MF.forgeJudge(p, ings, ingotProduct(ings));
+    if(!ok.ok) errs.push('parts: the metals that DO cast ' + MF.castPlain(p) + ' were judged unsound');
+    /* one metal off by one, which is the miss a student really makes */
+    var near = ings.slice();
+    var nudged = mets[0].kind === 'poly' ? {kind:'poly', a:mets[0].a, b:mets[0].b, c:mets[0].c + 1, v:mets[0].v} : null;
+    if(nudged){
+      near[0] = MF.oreToIngot(nudged);
+      chk('parts');
+      var miss = MF.forgeJudge(p, near, ingotProduct(near));
+      if(miss.ok) errs.push('parts: "' + p.nm + '" accepted a casting that is not ' + MF.castPlain(p));
+      chk('parts');
+      if(!/just not this one|over the sides/i.test(miss.why))
+        errs.push('parts: "' + p.nm + '" rejected a near miss without saying what it cast instead');
+    }
+
+    /* ---- THE MOLD'S PICTURE, AND IT IS THE WHOLE REASON TO POUR ONE ---- */
+    var mm = MF.moldMaths(ings, ingotProduct(ings));
+    chk('parts');
+    if(mm.single !== MF.castPlain(p))
+      errs.push('parts: pouring "' + p.nm + '" shows it coming to ' + mm.single + ', and the order is ' + MF.castPlain(p));
+    chk('parts');
+    if(!mm.terms.length)
+      errs.push('parts: pouring "' + p.nm + '" draws no products at all — the multiplication is the only thing it teaches');
+    var sums = {};
+    mm.terms.forEach(function(tm){
+      chk('parts');
+      if(tm.t === '0' || tm.t === ''){
+        errs.push('parts: pouring "' + p.nm + '" shows a term that is nothing at all'); return;
+      }
+      chk('parts');
+      /* MARKUP IN AN SVG <text> REACHES THE SCREEN AS ITSELF (the areaModel
+         defect). A term carrying a tag is a term that will be read literally. */
+      if(/[<>&]/.test(tm.t) || /[<>&]/.test(tm.from || ''))
+        errs.push('parts: "' + p.nm + '" draws the term "' + tm.t + '" as markup, and the mold sets textContent');
+      var rt = readTerm(tm.t);
+      chk('parts');
+      if(!rt){ errs.push('parts: "' + p.nm + '" draws a term "' + tm.t + '" that cannot be read as one'); return; }
+      var kk = rt.x + ':' + rt.y;
+      sums[kk] = (sums[kk] || 0) + rt.c;
+    });
+    /* the products drawn must come to the object ordered */
+    var wantT = {};
+    (MF.oreTerms(p.castOre) || []).forEach(function(t){ wantT[t.x + ':' + t.y] = t.c; });
+    Object.keys(sums).forEach(function(kk){ if(sums[kk] === 0) delete sums[kk]; });
+    chk('parts');
+    var same = Object.keys(wantT).length === Object.keys(sums).length &&
+               Object.keys(wantT).every(function(kk){ return sums[kk] === wantT[kk]; });
+    if(!same)
+      errs.push('parts: the products drawn for "' + p.nm + '" do not come to ' + MF.castPlain(p) +
+                ' — they come to {' + Object.keys(sums).map(function(kk){ return kk + '→' + sums[kk]; }).join(', ') + '}');
+    /* a merge is terms becoming one, or it is not a merge */
+    var mids = mm.terms.filter(function(tm){ return tm.mid; }).length;
+    chk('parts');
+    if(mm.merge !== null && mids < 2)
+      errs.push('parts: "' + p.nm + '" runs ' + mids + ' term(s) together, and a merge takes at least two');
+    chk('parts');
+    if(mm.merge === null && mids)
+      errs.push('parts: "' + p.nm + '" marks ' + mids + ' term(s) as running together and then never runs them');
+
+    /* ---- AND IT IS NOT AN INSTRUMENT ----
+       The whole reason these are parts rather than ranks 8–11 is that the seven
+       instruments already teach every method in the mine. If one of these ever
+       grows a lens or a schema, that decision has been reversed by accident. */
+    chk('parts');
+    if(MF.SCHEMA[key]) errs.push('parts: "' + p.nm + '" has a Casting Shed lesson, so it is an instrument and not a part');
+    chk('parts');
+    if(MF.LENS[key] || MF.TOOL_READ[key]) errs.push('parts: "' + p.nm + '" has a reading, so it is an instrument and not a part');
+    chk('parts');
+    if(MF.TOOLS[key]) errs.push('parts: "' + p.nm + '" is on both boards');
+  });
+
+  /* NO TWO ORDERS ANYWHERE MAY NAME THE SAME OBJECT — across both boards, or
+     one of them can never be told from the other at the mold. */
+  var castSigs = {};
+  MF.toolOrder().concat(MF.partOrder()).forEach(function(k){
+    var t = MF.orderOf(k);
+    chk('parts');
+    var sig = MF.castPlain(t);
+    if(castSigs[sig]) errs.push('parts: "' + t.nm + '" and "' + castSigs[sig] + '" are both ordered as ' + sig);
+    castSigs[sig] = t.nm;
+  });
+  /* AND NO TWO MAY BE CUT TO THE SAME GLYPH. The mold cavity is stamped from
+     `ic`, and the `mold` group only ever asks whether a cavity matches ITS OWN
+     order's icon — which two orders sharing a glyph both pass, while the sand
+     tells a student nothing about which one they are filling. The Fourth Stamp
+     was drafted on the balance scale and then on the factory, and the factory
+     is the Molds room's. */
+  var icons = {};
+  MF.toolOrder().concat(MF.partOrder()).forEach(function(k){
+    var t = MF.orderOf(k);
+    chk('parts');
+    if(icons[t.ic]) errs.push('parts: "' + t.nm + '" and "' + icons[t.ic] + '" cut the same cavity');
+    icons[t.ic] = t.nm;
+  });
+
+  /* THE SHELF DRAWS OBJECTS AND EMPTY PLACES, NEVER A TALLY (§2.5a). */
+  var shSaved = MF.state.parts;
+  MF.state.parts = {};
+  var shHost = document.createElement('div');
+  MF.paintShelf(shHost, MF.state.forge);
+  chk('parts');
+  if(shHost.querySelectorAll('.madepart').length !== MF.partOrder().length)
+    errs.push('parts: the shelf draws ' + shHost.querySelectorAll('.madepart').length +
+              ' places for ' + MF.partOrder().length + ' parts');
+  chk('parts');
+  if(shHost.querySelectorAll('.madepart.made').length)
+    errs.push('parts: the shelf shows a part as cast on a shelf where nothing has been cast');
+  MF.state.parts = {frame:{cast:true}};
+  var shHost2 = document.createElement('div');
+  MF.paintShelf(shHost2, MF.state.forge);
+  chk('parts');
+  if(shHost2.querySelectorAll('.madepart.made').length !== 1)
+    errs.push('parts: one part is cast and the shelf shows ' + shHost2.querySelectorAll('.madepart.made').length);
+  chk('parts');
+  if(/\b\d+\s*(?:of|\/)\s*\d+\b/i.test(shHost2.textContent))
+    errs.push('parts: the shelf counts what you have made, which is an X-out-of-Y');
+  MF.state.parts = shSaved;
+
+  /* CONTROLS — every one of these must fail, or the group above is scenery */
+  chk('parts');
+  var ctlPart = {nm:'control', cast:MF.PARTS.frame.cast, slots:2, castOre:MF.groupOre(2,3,6)};
+  var ctlIngs = [MF.oreToIngot({kind:'poly',a:0,b:1,c:4}), MF.oreToIngot({kind:'poly',a:0,b:1,c:2,v:'y'})];
+  if(MF.forgeJudge(ctlPart, ctlIngs, ingotProduct(ctlIngs)).ok)
+    errs.push('CONTROL: the deep judge calls xy + 2x + 4y + 8 the same object as xy + 2x + 3y + 6');
+  chk('parts');
+  if(readTerm('2x²') === null || readTerm('2x²').c !== 2 || readTerm('2x²').x !== 2)
+    errs.push('CONTROL: the term reader cannot read 2x²');
+  chk('parts');
+  if(readTerm('−4xy') === null || readTerm('−4xy').c !== -4 || readTerm('−4xy').y !== 1)
+    errs.push('CONTROL: the term reader cannot read a signed two-letter term');
+  chk('parts');
+  if(readTerm('x<sup>2</sup>') !== null)
+    errs.push('CONTROL: the term reader accepts markup, so the markup check can never fire');
+  chk('parts');
+  if(MF.rebuild([{kind:'poly',a:1,b:0,c:-1},{kind:'poly',a:1,b:0,c:-4}]) &&
+     MF.oreEq(MF.rebuild([{kind:'poly',a:1,b:0,c:-1},{kind:'poly',a:1,b:0,c:-4}]), MF.quartOre(5,4)))
+    errs.push('CONTROL: (x² − 1)(x² − 4) is being read as x⁴ + 5x² + 4');
+
+  MF.state.yard = partYard;
 
   /* 5o. THE MOLD TEACHES, SO THE MOLD MUST BE TRUE.
          The pour shows the maths over the metal: what went in, the products it
