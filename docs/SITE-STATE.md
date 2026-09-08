@@ -22,7 +22,7 @@
 | **Screens** | **eight** — surface, the Stamp Mill, the Casting Shed and its three workshops, the mine, the forge |
 | **Layers** | **five**, all reachable from the first screen, none gated on anything |
 | **Instruments** | **seven**, all made at the forge, none granted |
-| **Validation** | `MF.validate()` → **25,991 checks / 47 groups / 0 errors**, two controls that must fail, and do — **run it at the width you ship from**, because `layout`, `reach`, `hollow` and `cartdraw` measure the live viewport and report it (`VERIFICATION.md` §61, §63, §65). Verified at **380×780, 560×760, 994×700 and 1250×900** |
+| **Validation** | `MF.validate()` → **25,918 checks / 47 groups / 0 errors**, two controls that must fail, and do — **run it at the width you ship from**, because `layout`, `reach`, `hollow` and `cartdraw` measure the live viewport and report it (`VERIFICATION.md` §61, §63, §65). Verified at **380×780, 560×760, 994×700 and 1250×900** |
 
 > **A check is only as wide as the space it sweeps.** The `truthy` group reported 0 errors across 642 checks while **1,970 Decimal Dial states printed a falsehood**, because it tested each lump's original integer coefficients and never nudged `c` — the one thing the dial exists to do. It now sweeps every slider position the control can reach (3,287 checks). Ask of any green result: *what did it not look at?*
 | **Runtime** | Zero dependencies, no build step, no network requests, no storage, runs from `file://` |
@@ -184,7 +184,14 @@ The face is **2280px of rock**, several screens wide, scanned by dragging, scrol
 
 ## The breaking floor: one anvil, the belt over it, and the ore on top
 
-**Measured 2026-09-07, all four widths, 0 errors over 25,991 checks in 47 groups, both controls failing.**
+**Measured 2026-09-07, all four widths, 0 errors over 25,918 checks in 47 groups, both controls failing.**
+
+> **The count moves with the sound files, and that is why two numbers were in circulation.**
+> `MF.validate()` run the instant after Enter reports about **90 fewer checks** than the same
+> build run once `sfx/` has finished decoding, because the `sound` group and everything
+> downstream of a loaded buffer have nothing to sweep yet. Every count in this file is taken
+> **after the beds are up**, at 1250×900, on a freshly loaded page that has not been driven —
+> a page that has been through `playthrough(1..9)` reports different denominators again.
 
 **There is one box, and the anvil in it is the work.** The `workpair` is gone. It was two boxes: one held a row of chips and the belt, the other held a drawing of an anvil, two number boxes and the swing button — so **the anvil a student was looking at was not the thing their ore was on**, and the drawing was decoration beside the work. What is here now is the gallery you are standing in: the belt overhead, the anvil, the stone on its face, and whatever has come off it lying on the ground. **A first lump has nothing on the ground at all.**
 
@@ -1099,3 +1106,38 @@ every sweep that follows the engine swings the bracket the engine actually meant
 > The grouping and two-element heads keep their own shapes. Those lumps are monic and
 > single-power **by construction**, so a power box there could only ever be filled one way —
 > and a box that can only be filled one way is a box that should not be there.
+
+## The surface closes on three claims, and all three are about factoring
+
+The bottom of the home screen is a `.stats-strip` — the sister site's closing move, a numeral
+over a label over one line — replacing a **SHAFTS NOT YET OPEN** panel that had become an empty
+frame the moment layers 6–9 were cut. A panel promising more over a blank row says the opposite
+of what it means.
+
+| | | |
+|---|---|---|
+| **9** | shapes | Plain numbers down to cubes. **Naming the shape** is most of the work. |
+| **2** | directions | The mine breaks; the forge pours. **Factoring is distributing, run backwards.** |
+| **1** | idea | A prime and an irreducible polynomial are **the same object**. |
+
+**The first version spent a box on there being no marks, and the user threw it out** — *"you are
+focusing too much on nothing marked. focus on other concepts of factorization."* That box was
+true and it was a claim about the **place** rather than about the mathematics. A stranger reading
+these three now learns what factoring is here: what the nine layers are for, that breaking and
+pouring are one move run in opposite directions, and the thesis the site rests on. Nothing is
+marked anywhere on this site and it does not need a third of the front page to say so.
+
+**The 9 is read off `MF.LAYERS.length`, not typed.** A front page claiming nine when a tenth
+shaft opens is a lie nobody would think to go and correct, and a number that cannot be wrong is
+stronger than a check that catches it.
+
+### The `sell` group — 12 checks
+
+These three boxes are the only place on the site that makes a **claim to a stranger** rather than
+describing what is in front of them, and the panel they replaced went stale for a whole session
+with nothing saying so. So the group asserts three boxes, each carrying all three of value /
+label / line, and the numeral matching the mine. It reads `textContent`, not node presence —
+**an empty span is still a span**, which is exactly how two lesson-reveal checks passed for a day
+(`VERIFICATION.md` §94). Proved by putting each fault in the file: a blanked box fires *"box 3 has
+no label"* and *"box 3 has no say"*, a deleted box fires *"the surface closes on 2 boxes, not
+three"*, and a hardcoded numeral fires *"the front page claims 9000 shapes and the mine cuts 9."*

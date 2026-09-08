@@ -9057,19 +9057,30 @@ MF.SCREENS.home = function(host){
      also why it is safe here, where nothing may be counted about a STUDENT
      (philosophy §2.5a). These three count the mine, not the miner.
 
-     They are this site's three, not the sister's three reworded:
-       9 — every layer open, nothing between them locked
-       0 — the rock judges, and there are no marks anywhere
-       1 — the one idea the whole thing is built on */
+     ALL THREE ARE ABOUT FACTORING (user, 2026-09-07: "you are focusing too
+     much on nothing marked. focus on other concepts of factorization"). The
+     first version spent a whole box on there being no marks — which is true,
+     and is a promise about the PLACE rather than a claim about the
+     mathematics. A stranger reading these three should learn what factoring is
+     here, not what the grading policy is. Nothing is marked anywhere on this
+     site and it does not need a third of the front page to say so.
+
+       9 — the shapes, and that naming one is most of the work
+       2 — breaking and pouring are one move seen from both ends
+       1 — the thesis the whole thing rests on
+
+     AND THEY ARE SHORT. One line each; the numeral carries the weight. */
   var sell = E('div','panel light sellpanel');
   var strip = E('ul','stats-strip');
   [
-    {v:'9', l:'layers', s:'Plain numbers to cubes. Dig straight to the bottom &mdash; <b>nothing is locked</b>.'},
-    /* NOT "no score, no percentage, no ranks" — the `nogrades` sweep is a word
-       search and does not read negations, which is exactly right: the surest
-       way for that vocabulary never to appear is for it never to be typed. */
-    {v:'0', l:'marks',  s:'Nothing here is counted and nothing is compared. The seam runs or the pick glances off, and <b>the rock is the only judge</b>.'},
-    {v:'1', l:'idea',   s:'A prime and an irreducible polynomial are <b>the same object</b>. Everything here follows from that.'}
+    /* THE NUMERAL IS READ OFF THE MINE, NOT TYPED. A front page that claims
+       nine when a tenth shaft opens is a lie nobody would think to go and
+       correct, and a check that catches it is weaker than a number that
+       cannot be wrong. */
+    {v:String(MF.LAYERS.length), l:'shapes',
+                            s:'Plain numbers down to cubes. <b>Naming the shape</b> is most of the work.'},
+    {v:'2', l:'directions', s:'The mine breaks; the forge pours. <b>Factoring is distributing, run backwards.</b>'},
+    {v:'1', l:'idea',       s:'A prime and an irreducible polynomial are <b>the same object</b>.'}
   ].forEach(function(it){
     var li = E('li','stat-item');
     li.appendChild(H('span','stat-value', it.v));
@@ -16780,6 +16791,40 @@ MF.validate = function(){
     errs.push('doors: the ore workshop is behind "' + doors['workshop-ore'] + '", which does not read as a place ore is broken up');
   chk('doors');
   if(!/Cast|Mold/i.test(doors['workshop-mold']||'')) errs.push('doors: the mold workshop is behind "' + doors['workshop-mold'] + '", which does not read as casting');
+
+  /* 5f. THE THREE BOXES THAT CLOSE THE SURFACE.
+         They are the only place on the site that makes a CLAIM to a stranger
+         rather than describing what is in front of them, and the panel they
+         replaced went stale without anything saying so — it drew a heading
+         over an empty row for a whole session. So: three boxes, every one of
+         them carrying all three parts, and the numeral read off the mine. */
+  var sellProbe = document.createElement('div');
+  MF.SCREENS.home(sellProbe);
+  var sellItems = sellProbe.querySelectorAll('.stat-item');
+  chk('sell');
+  if(sellItems.length !== 3)
+    errs.push('sell: the surface closes on ' + sellItems.length + ' boxes, not three');
+  Array.prototype.forEach.call(sellItems, function(li, i){
+    ['stat-value','stat-label','stat-say'].forEach(function(part){
+      chk('sell');
+      var n = li.querySelector('.' + part);
+      /* AN EMPTY SPAN IS STILL A SPAN — the lesson-reveal checks passed for a
+         day on exactly that mistake. Read the text, not the node. */
+      if(!n || !(n.textContent||'').trim())
+        errs.push('sell: box ' + (i+1) + ' has no ' + part.replace('stat-',''));
+    });
+  });
+  chk('sell');
+  var sellNum = sellItems[0] && (sellItems[0].querySelector('.stat-value').textContent||'').trim();
+  if(sellNum !== String(MF.LAYERS.length))
+    errs.push('sell: the front page claims ' + sellNum + ' shapes and the mine cuts ' + MF.LAYERS.length);
+  /* CONTROL: an empty box must be caught */
+  chk('sell');
+  var sellCtl = document.createElement('li'); sellCtl.className = 'stat-item';
+  var sellCtlSay = document.createElement('span'); sellCtlSay.className = 'stat-say';
+  sellCtl.appendChild(sellCtlSay);
+  if((sellCtlSay.textContent||'').trim())
+    errs.push('CONTROL: the sell check reads a blank line as filled');
 
   /* 5d. THE SEAM. Ore must be spread along its whole length, not bunched at
          one end where a student who scans would find nothing. */

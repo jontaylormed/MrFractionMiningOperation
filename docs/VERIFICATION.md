@@ -2201,3 +2201,31 @@ the one panel that happens to show a corrupted character.
 > `sed -i` on single lines has been safe here throughout; it is the whole-file slurp that does
 > it. And the tell is the diff stat: **an edit that touches four lines and reports 997
 > deletions has not done what you asked.** Check the stat before the commit, not after.
+
+## §100. A denominator that moves with a network fetch is not a baseline
+
+`MF.validate()` was run immediately after clicking Enter, on the change and on `HEAD`, and the
+change came back **94 checks short of the number written in the README**. Ninety minutes of a
+perfectly good afternoon then went into looking for the group that had gone missing.
+
+Nothing had gone missing. **The `sfx/` files had not finished decoding yet.** The `sound` group
+sweeps decoded buffers, so before they land it runs 169 checks instead of 178 — and several
+groups downstream of a loaded buffer sweep nothing at all. The README's number had been taken on
+a page whose beds were up; mine was taken on a page whose beds were not.
+
+**Every count must name the state it was taken in**, and for this site that is three conditions,
+not one:
+
+| | |
+|---|---|
+| **width** | `layout`, `reach`, `hollow`, `cartdraw` and `contrast` measure the live viewport (§61, §63, §65) |
+| **the beds** | `sound` and its dependants need `sfx/` decoded — wait for `MF.audio.beds`, do not race it |
+| **untouched** | a page that has been through `playthrough(1..9)` has a cart, a rack and a layer, and reports different denominators again |
+
+**The canonical number for this project is: 1250×900, beds up, freshly loaded, not driven.**
+
+> And the shape of the mistake is the familiar one. A number that disagrees with a document is
+> evidence about **one of the two**, and the document is not automatically the wrong one — but
+> neither is it automatically right. The first move is to reproduce the document's number, which
+> here took one wait and settled it. **Comparing a fresh measurement against a remembered one is
+> not a comparison.**
