@@ -302,7 +302,9 @@ input::placeholder, textarea::placeholder{color:#6B5B48; opacity:1}
    the board it hangs on is a separate frame, unsticky (the sticky one is the
    order you are filling, and there is only ever one of those), and cooler in
    colour — the lower workings rather than the furnace. */
-.deepboard{position:static; margin-top:14px;
+/* NOT STICKY, AND IT IS IN THE OTHER COLUMN. Two sticky boards in one column
+   is what put the Winding Frame across the Crosscut; see MF.paintDeep. */
+.deepboard{position:static; margin-top:16px;
   background:linear-gradient(180deg,#2B3138,#1B2026); border-color:#141A1F}
 .deepboard h3{color:#9FD6E8}
 .deepboard .order{border-color:#4C6072; background:linear-gradient(180deg,#333F4A,#2B3138)}
@@ -11557,6 +11559,7 @@ MF.paintForge = function(){
      above this, with the heap between it and the mold; the rack now lives
      inside the craft floor and only the unspendable rock is left below. */
   MF.paintCraft(r, st);
+  MF.paintDeep(r, st);
   MF.paintShelf(r, st);
   MF.paintHeap(r, st);
 };
@@ -11567,11 +11570,20 @@ MF.paintOrders = function(host, st){
   box.appendChild(H('h3',null,'The Order Board'));
   box.appendChild(H('div','hint','Each order is cut for <b>one exact object</b>. Find the metals that multiply to it and the part comes out sound. They get harder down the board, and so do the tools.'));
 
-  /* ONE CARD BUILDER FOR BOTH BOARDS. A deep casting is chosen, filled, poured
-     and judged exactly as an instrument is — the only differences are what it
-     says when you already have it and what it opens when you click it — so it
-     is drawn by the same function rather than by a copy of it that would drift. */
-  var card = function(key){
+  MF.toolOrder().forEach(function(key){ box.appendChild(MF.orderCard(key, st)); });
+  host.appendChild(box);
+};
+
+/* ONE CARD BUILDER FOR BOTH BOARDS. A deep casting is chosen, filled, poured
+   and judged exactly as an instrument is — the only differences are what it
+   says when you already have it and what it opens when you click it — so it is
+   drawn by the same function rather than by a copy of it that would drift.
+
+   IT IS MODULE-LEVEL BECAUSE THE TWO BOARDS ARE NO LONGER SIBLINGS. It began
+   as a closure inside paintOrders, which was fine while both boards hung in the
+   same column and is not fine now that the deep board lives on the other side
+   of the forge. */
+MF.orderCard = function(key, st){
     var part = MF.isPart(key);
     var t = MF.orderOf(key), made = part ? MF.hasPart(key) : MF.hasTool(key),
         ready = MF.toolReady(key);
@@ -11619,23 +11631,34 @@ MF.paintOrders = function(host, st){
       MF.paintForge();
     });
     return b;
-  };
-  MF.toolOrder().forEach(function(key){ box.appendChild(card(key)); });
-  host.appendChild(box);
+};
 
-  /* ---- THE DEEP CASTINGS, ON A BOARD OF THEIR OWN ----
+/* ---------- THE DEEP CASTINGS, AND THEY ARE NOT ON THE LEFT ----------
 
-     They are not eighth through eleventh orders and must not read as a
-     continuation of the ladder: `rank` on the instruments means *how much this
-     does for you when you are getting metal out of rock*, and a part does none
-     of that. It is a second board, under its own heading, for the four layers
-     whose metal the first board cannot spend. */
+   USER, 2026-09-07, with a screenshot: *"The new items are being rolled over
+   the old tools. They should be elsewhere in the forge."*
+
+   THEY WERE APPENDED UNDER THE ORDER BOARD AND THE TWO BOARDS COLLIDED.
+   `.orderboard` is `position:sticky; top:12px` — it pins itself as the column
+   scrolls — so a second board below it in the same column scrolled straight
+   over the pinned one, and the Winding Frame was drawn across the Crosscut.
+   Making the new board `position:static` was not enough and could not have
+   been: the fault is one sticky element with a sibling under it, not the
+   sibling's own positioning.
+
+   SO IT MOVED SIDES, which is also where it belongs. The right column already
+   runs the deep economy end to end — the craft floor you fill, then the shelf
+   holding what the deep metal became — and the deep orders now sit between
+   them: pick one, pour it, and the thing you made is drawn directly beneath.
+   The left column goes back to being one sticky board, which is the one thing
+   sticky was ever for: the order you are filling does not scroll away. */
+MF.paintDeep = function(host, st){
   var deep = E('div','orderboard deepboard');
   deep.appendChild(H('h3',null,'Deep Castings'));
   deep.appendChild(H('div','hint','Metal from the lower shafts &mdash; <b>y</b>-brackets, two-letter brackets, elements that will not break &mdash; ' +
-    'fits none of the orders above. These are cut for it. <b>Not one of them is an instrument</b>: they are parts for the operation, ' +
-    'and the reason to pour one is the multiplication it makes you do.'));
-  MF.partOrder().forEach(function(key){ deep.appendChild(card(key)); });
+    'fits none of the orders on the board to the left. These are cut for it. <b>Not one of them is an instrument</b>: ' +
+    'they are parts for the operation, and the reason to pour one is the multiplication it makes you do.'));
+  MF.partOrder().forEach(function(key){ deep.appendChild(MF.orderCard(key, st)); });
   host.appendChild(deep);
 };
 
@@ -16747,6 +16770,76 @@ MF.validate = function(){
     if(icons[t.ic]) errs.push('parts: "' + t.nm + '" and "' + icons[t.ic] + '" cut the same cavity');
     icons[t.ic] = t.nm;
   });
+
+  /* ---- NO ORDER MAY BE DRAWN ON TOP OF ANOTHER ORDER ----
+
+     USER, 2026-09-07, with a screenshot: the deep board was appended under the
+     order board, `.orderboard` is `position:sticky`, and the new cards scrolled
+     straight over the pinned ones — the Winding Frame drawn across the
+     Crosscut. Every group was green while that was on screen, because not one
+     of them asks whether two things occupy the same pixels.
+
+     THIS MOUNTS THE FORGE FOR REAL AND MEASURES IT. A detached probe has no
+     layout at all: `getBoundingClientRect` is 0×0 on everything, every pair
+     "does not overlap", and the check would pass on precisely the build that
+     failed. Same lesson as §97 — an instrument that cannot see the defect it
+     is named after is scenery. */
+  var ovStage = E('div');
+  ovStage.style.cssText = 'position:absolute; left:-10000px; top:0; width:1180px';
+  document.body.appendChild(ovStage);
+  var ovSaved = MF._forge;
+  try {
+    MF.SCREENS.forge(ovStage);
+    var cards = ovStage.querySelectorAll('.order');
+    chk('parts');
+    if(cards.length !== MF.toolOrder().length + MF.partOrder().length)
+      errs.push('parts: the forge draws ' + cards.length + ' order cards for ' +
+                (MF.toolOrder().length + MF.partOrder().length) + ' orders');
+    chk('parts');
+    if(!ovStage.querySelector('.deepboard'))
+      errs.push('parts: there is no Deep Castings board on the forge at all');
+    /* ---- NOTHING MAY FOLLOW A STICKY BOARD IN ITS OWN COLUMN ----
+
+       THIS IS THE CHECK THAT WOULD HAVE CAUGHT IT, and the geometric one below
+       would not have. Two block siblings never overlap in a static mount; they
+       overlapped on the user's screen because one of them PINS ITSELF and the
+       page scrolled. A probe that does not scroll cannot see that, so asserting
+       pixels here would have been an instrument aimed at the wrong thing (§97).
+
+       The mechanism is the thing to forbid: a `position:sticky` element with
+       anything after it inside the same scrolling parent. That is true of the
+       broken build and false of this one, without needing to scroll anything. */
+    chk('parts');
+    var sticky = ovStage.querySelectorAll('.orderboard');
+    Array.prototype.forEach.call(sticky, function(bd){
+      if(getComputedStyle(bd).position !== 'sticky') return;
+      var after = [];
+      for(var sib = bd.nextElementSibling; sib; sib = sib.nextElementSibling) after.push(sib);
+      if(after.length)
+        errs.push('parts: the sticky order board has ' + after.length + ' element(s) below it in its own column — ' +
+                  'a pinned board and a scrolling sibling are drawn on top of each other');
+    });
+    var boxes = Array.prototype.map.call(cards, function(c){
+      return {r:c.getBoundingClientRect(), nm:(c.querySelector('.onm')||{}).textContent};
+    }).filter(function(b){ return b.r.width > 0 && b.r.height > 0; });
+    chk('parts');
+    if(boxes.length !== cards.length)
+      errs.push('parts: ' + (cards.length - boxes.length) + ' order card(s) have no box at all, ' +
+                'so an overlap check over them would prove nothing');
+    for(var oi=0; oi<boxes.length; oi++) for(var oj=oi+1; oj<boxes.length; oj++){
+      chk('parts');
+      var A = boxes[oi].r, B = boxes[oj].r;
+      var over = Math.min(A.right,B.right) - Math.max(A.left,B.left) > 1 &&
+                 Math.min(A.bottom,B.bottom) - Math.max(A.top,B.top) > 1;
+      if(over)
+        errs.push('parts: "' + boxes[oi].nm + '" is drawn on top of "' + boxes[oj].nm + '"');
+    }
+  } catch(ovE){
+    chk('parts');
+    errs.push('parts: mounting the forge to measure the boards threw: ' + ovE.message);
+  }
+  document.body.removeChild(ovStage);
+  MF._forge = ovSaved;
 
   /* THE SHELF DRAWS OBJECTS AND EMPTY PLACES, NEVER A TALLY (§2.5a). */
   var shSaved = MF.state.parts;

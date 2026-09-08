@@ -2259,3 +2259,36 @@ ownership; reading it as a gap is how a duplicate gets built.
 object; its halves are `(x² − 1)(x² − 4)` and neither is native, so no rack could ever hold them
 and the order would have been unfillable — §12c's unreachable target, shipped. `MF.isNative` on
 each half is one line, and the `parts` group runs it on every deep order now.
+
+## §102. A layout check that never scrolls cannot see a sticky collision
+
+The user sent a screenshot of the forge with **the Winding Frame drawn across the Crosscut**.
+Two order cards, in the same column, occupying the same pixels. Every group was green.
+
+The cause was one line of CSS that had been correct for months: `.orderboard{position:sticky}`.
+A second board appended below it in the same column scrolls **over** the pinned one. Neither
+board is wrong on its own, and neither is the new board's `position:static`.
+
+**The first check written for it was a geometric overlap sweep, and it was scenery.** Two block
+siblings do not overlap in a static mount — they overlap only once the page has scrolled far
+enough for the sticky one to pin. Mounting the forge and comparing every pair of card rectangles
+therefore passes on the broken build. Worse, the first draft mounted into a **detached** node,
+where `getBoundingClientRect` is 0×0 on everything, so every pair trivially "did not overlap":
+a check that could not fail, over a defect visible in a screenshot.
+
+**Assert the mechanism, not the symptom.** The rule that is true of the broken build and false of
+the fixed one, without scrolling anything:
+
+> nothing may follow a `position:sticky` element inside its own scrolling parent.
+
+That is one `getComputedStyle` and one walk of `nextElementSibling`, it needs no scroll position,
+and it fired immediately when the original placement was put back.
+
+| | |
+|---|---|
+| symptom | two boxes share pixels — only visible after scrolling, at some widths |
+| mechanism | a pinned element with a sibling below it — visible always, at every width |
+
+> Keep the geometric sweep as well, for the overlaps it *can* see — but mount into the document,
+> not into a detached div. **A layout assertion over elements with no layout is the purest form of
+> the check that cannot fail** (§94), and it took writing one to notice.

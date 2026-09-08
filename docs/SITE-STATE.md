@@ -22,7 +22,7 @@
 | **Screens** | **eight** — surface, the Stamp Mill, the Casting Shed and its three workshops, the mine, the forge |
 | **Layers** | **five**, all reachable from the first screen, none gated on anything |
 | **Instruments** | **seven**, all made at the forge, none granted |
-| **Validation** | `MF.validate()` → **26,335 checks / 48 groups / 0 errors**, two controls that must fail, and do — **run it at the width you ship from**, because `layout`, `reach`, `hollow` and `cartdraw` measure the live viewport and report it (`VERIFICATION.md` §61, §63, §65). Verified at **380×780, 560×760, 994×700 and 1250×900** |
+| **Validation** | `MF.validate()` → **26,394 checks / 48 groups / 0 errors**, two controls that must fail, and do — **run it at the width you ship from**, because `layout`, `reach`, `hollow` and `cartdraw` measure the live viewport and report it (`VERIFICATION.md` §61, §63, §65). Verified at **380×780, 560×760, 994×700 and 1250×900** |
 
 > **A check is only as wide as the space it sweeps.** The `truthy` group reported 0 errors across 642 checks while **1,970 Decimal Dial states printed a falsehood**, because it tested each lump's original integer coefficients and never nudged `c` — the one thing the dial exists to do. It now sweeps every slider position the control can reach (3,287 checks). Ask of any green result: *what did it not look at?*
 | **Runtime** | Zero dependencies, no build step, no network requests, no storage, runs from `file://` |
@@ -184,7 +184,7 @@ The face is **2280px of rock**, several screens wide, scanned by dragging, scrol
 
 ## The breaking floor: one anvil, the belt over it, and the ore on top
 
-**Measured 2026-09-07, all four widths, 0 errors over 26,335 checks in 48 groups, both controls failing.**
+**Measured 2026-09-07, all four widths, 0 errors over 26,394 checks in 48 groups, both controls failing.**
 
 > **The count moves with the sound files, and that is why two numbers were in circulation.**
 > `MF.validate()` run the instant after Enter reports about **90 fewer checks** than the same
@@ -1205,7 +1205,7 @@ build over it, proved by putting it back.
 - **The shelf**, under the craft floor: what the deep metal became. Objects and empty places,
   never a tally.
 
-### The `parts` group — 147 checks
+### The `parts` group — 206 checks
 
 Everything `forge` asserts about an order, against an ore target: reachable, sound when right,
 **not** sound when one metal is nudged by one, and the rejection says what it cast instead. Plus
@@ -1219,3 +1219,38 @@ which is not native — the rack would never hold it"*), a lens on a part (*"has
 an instrument and not a part"*), markup in a term (*"draws the term 4x&lt;sup&gt;2&lt;/sup&gt; as
 markup, and the mold sets textContent"*, plus the products no longer adding up), and a shared
 glyph (*"The Fourth Stamp and The Drill cut the same cavity"*).
+
+### Where the Deep Castings board is, and why it is not on the left
+
+**USER, 2026-09-07, with a screenshot:** *"The new items are being rolled over the old tools.
+They should be elsewhere in the forge."*
+
+The board was appended under the order board in the **left** column. `.orderboard` is
+`position:sticky; top:12px` — it pins itself as the column scrolls — so a second board below it
+scrolled straight over the pinned one and **the Winding Frame was drawn across the Crosscut**.
+Setting the new board `position:static` did not help and could not have: the fault is one sticky
+element with a sibling under it, not the sibling's own positioning.
+
+It is in the **right** column now, and that is where it belonged anyway — the right column already
+runs the deep economy end to end:
+
+```
+the craft floor   the target, the mold, the slots, the rack, the pour
+DEEP CASTINGS     the four deep orders
+the shelf         what the deep metal became
+the heap          rock that cannot be spent at all
+```
+
+Pick a deep order, pour it, and the thing you made is drawn directly beneath it. The left column
+goes back to being one sticky board, which is the only thing sticky was ever for: **the order you
+are filling does not scroll away.**
+
+> **The overlap check that was written first would not have caught it.** Two block siblings never
+> overlap in a static mount; they overlapped on screen because one of them pins itself and the
+> page scrolled, and a probe that does not scroll cannot see that (§97, again). What the group
+> asserts is the *mechanism* — **nothing may follow a `position:sticky` board inside its own
+> column** — which is true of the broken build and false of this one without scrolling anything.
+> Proved by putting the original placement back: *"the sticky order board has 1 element(s) below
+> it in its own column."* The geometric overlap sweep is kept beside it for what it can see, and
+> the forge is mounted into the document to measure, because a detached probe is 0×0 on every
+> element and would have passed on exactly the build that failed.
