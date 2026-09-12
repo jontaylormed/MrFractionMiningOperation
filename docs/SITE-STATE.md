@@ -22,7 +22,7 @@
 | **Screens** | **eight** — surface, the Stamp Mill, the Casting Shed and its three workshops, the mine, the forge |
 | **Layers** | **five**, all reachable from the first screen, none gated on anything |
 | **Instruments** | **seven**, all made at the forge, none granted |
-| **Validation** | `MF.validate()` → **26,609 checks / 48 groups / 0 errors**, two controls that must fail, and do — **run it at the width you ship from**, because `layout`, `reach`, `hollow` and `cartdraw` measure the live viewport and report it (`VERIFICATION.md` §61, §63, §65). Verified at **380×780, 560×760, 994×700 and 1250×900** |
+| **Validation** | `MF.validate()` → **26,598 checks / 48 groups / 0 errors**, two controls that must fail, and do — **run it at the width you ship from**, because `layout`, `reach`, `hollow` and `cartdraw` measure the live viewport and report it (`VERIFICATION.md` §61, §63, §65). Verified at **380×780, 560×760, 994×700 and 1250×900** |
 
 > **A check is only as wide as the space it sweeps.** The `truthy` group reported 0 errors across 642 checks while **1,970 Decimal Dial states printed a falsehood**, because it tested each lump's original integer coefficients and never nudged `c` — the one thing the dial exists to do. It now sweeps every slider position the control can reach (3,287 checks). Ask of any green result: *what did it not look at?*
 | **Runtime** | Zero dependencies, no build step, no network requests, no storage, runs from `file://` |
@@ -184,7 +184,7 @@ The face is **2280px of rock**, several screens wide, scanned by dragging, scrol
 
 ## The breaking floor: one anvil, the belt over it, and the ore on top
 
-**Measured 2026-09-07, all four widths, 0 errors over 26,609 checks in 48 groups, both controls failing.**
+**Measured 2026-09-07, all four widths, 0 errors over 26,598 checks in 48 groups, both controls failing.**
 
 > **The count moves with the sound files, and that is why two numbers were in circulation.**
 > `MF.validate()` run the instant after Enter reports about **90 fewer checks** than the same
@@ -1605,3 +1605,62 @@ something, and the fix for that is that reaching past him works, not that he cov
 
 > He scales with the viewport the way she does — a phone gets a figure it has room for, a desk gets
 > one you can see — rather than being one fixed size that is wrong at both ends.
+
+## Mr Factor is drawn by a person now
+
+**USER, 2026-09-12:** *"Update Mr Fraction with these illustrations and animations."* Four poses
+supplied as 571×669 PNGs — front, back, left, right.
+
+**There was no animated GIF.** `Miner_Mr_Fraction_GIF.png` is a PNG (magic bytes `89 50 4E 47`,
+checked) and is the same front pose as the other front file at higher quality. So the *animation*
+is the one four drawings can honestly carry: **he turns.**
+
+### Why they are embedded rather than shipped beside the file
+
+This page opens from `file://` with nothing fetched, and that property is worth more than the
+bytes: `<img src="art/front.png">` makes the guide a thing that can 404, on a site whose one hard
+promise is that opening the file works. So they were cut down until embedding was affordable:
+
+| | |
+|---|---|
+| as supplied | **1,051 KB** — four PNGs at 571×669 |
+| cropped to content, 256px, WebP | **~60 KB** |
+| as base64 in `index.html` | **~90 KB**, about 6% on top of the file |
+
+**One crop box for all four, deliberately** — the union of their content bounds (538×490 at 18,70).
+Cropping each pose tight would have filled the frame better and made him **change size every time
+he turned**. The artist drew him a consistent height across the four (488/490/474/468); a shared
+box is what keeps that.
+
+### What changed in the code, and what did not
+
+`MF.art(size, opts)` **still returns an `<svg>`**. It is called from eight places and four
+stylesheets size him with `svg` selectors; handing back an `<img>` would have meant touching every
+one and finding out later which was missed. The illustration goes *inside* as an `<image>`, the
+viewBox carries the sizing maths, every caller is unchanged. `MF.artVector` is the miner this site
+has always drawn, kept whole as the fallback.
+
+| where | pose | motion |
+|---|---|---|
+| the splash | all four | **620ms a frame** — a place where you are only waiting, so movement is the point |
+| the surface figure | all four | **3.4s a frame** — a man looking round his own yard |
+| dock, hero, masthead, lessons | front | none — every one of these is him mid-sentence |
+
+> **The helmet lamp still answers the day clock, and the check caught it the moment it did not.**
+> The lamp glass used to be a vector circle carrying `sc-lit`, which the `surface` group looks for
+> by name alongside the `sc-glow` halo. The illustration's lamp is *painted* — equally bright at
+> noon and midnight, which is the exact fault that check exists to catch. Both now sit over the
+> painted lamp at its measured position, (0.496, 0.265) of the crop box.
+
+### The dock lost its circle, because that is what a PNG is for
+
+**USER:** *"The bottom dialogue Mr Fraction should have no circle around it. That it is why it is a
+png file."* The disc was right for a flat vector icon and wrong for an illustration with a real
+alpha channel — boxing it throws away the silhouette the transparency exists to give. `drop-shadow()`
+reads the alpha, so what lifts him off the page traces the pick and the helmet instead of drawing a
+ring around them; the **lit-lamp state** is now a warm glow on *him* rather than a coloured border.
+The touch target is unchanged at 76/112px — only the paint went.
+
+> A check asserts all four poses are `data:` URIs, that `MF.art` renders one, and that the drawn
+> fallback still exists. Proved by pointing a pose at `art/front.webp`: *"the 'front' pose is not
+> embedded … which this page cannot fetch from file://"*.
