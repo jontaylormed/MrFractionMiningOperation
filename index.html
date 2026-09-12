@@ -7924,6 +7924,62 @@ MF.loading = function(){
   return !!ls && !ls.classList.contains('gone');
 };
 
+/* =========================================================================
+   HE YIELDS TO THE ROOM, AND THAT IS WHY HE IS STILL NOT A GATE.
+
+   THE STUDENT-TESTER RAN THE SITE AND COULD NOT CLICK THE MINE. Measured at
+   380×780 on arrival, scrollY 0, no animations running: his bubble is 330px
+   wide in a 380px viewport — 87% of the screen, a fixed 190px band — and it
+   was lying across **LAYER 1, LAYER 2 and LAYER 3**. The bubble takes pointer
+   events, so the clicks were eaten rather than passed through. The buttons
+   simply did not respond and nothing on screen looked like the reason. The
+   same band ate the forge's whole rack, and at 1250×900 it covered 72% of
+   "Enter the mine" — the card he had just told the student to use.
+
+   A SCRIM WAS THE OBVIOUS FIX AND IS FORBIDDEN, by the rule written on the
+   dock's own CSS: he is never modal, because a guide you must dismiss before
+   you can work is a gate with a friendly face on it. That rule is right and it
+   stays.
+
+   SO HE GETS OUT OF THE WAY INSTEAD. A pointerdown anywhere outside the dock
+   closes him, and Escape closes him. The click that used to vanish now visibly
+   puts him away, and the second one works — one wasted click WITH feedback,
+   rather than a dead control with none. Escape was the reflex the tester tried
+   first (four ways, all inert) and it is what every other overlay on this site
+   already answers to.
+
+   THIS IS NOT MODALITY. Nothing is blocked, nothing must be dismissed, and the
+   room behind him stays live — he is simply the thing that moves when a student
+   reaches past him. */
+MF.guideYield = function(e){
+  var G = MF.guideState;
+  if(!G.open) return;
+  /* ---- HIS BUTTONS ARE EXEMPT; HIS PARAGRAPH IS NOT ----
+     The first version exempted the whole dock, and that reproduced the bug it
+     was written for: the thing lying over LAYER 2 is `p.gtext`, so a click
+     aimed at the button landed on his prose, counted as "his own control", and
+     was eaten exactly as before. Only what a student can actually press —
+     close, back, next, the portrait tab — may swallow a pointerdown. Reaching
+     through his words IS reaching past him. */
+  if(e && e.target && e.target.closest && e.target.closest('#guide button')) return;
+  /* A DIALOG IS NOT "THE ROOM BEHIND HIM". The tool sheet and the hammer panel
+     carry their own copy of him now; a pointerdown inside one of those must not
+     reach back and shut the dock as well. */
+  if(e && e.target && e.target.closest && e.target.closest('.scrim')) return;
+  G.open = false;
+  MF.paintGuide();
+};
+MF.guideKeys = function(e){
+  if(e.key !== 'Escape' && e.key !== 'Esc') return;
+  if(!MF.guideState.open) return;
+  if(MF._sheet) return;                    /* the dialog owns Escape while it is up */
+  MF.guideYield({});
+  var t = q('#guide') && q('#guide').querySelector('.gtab');
+  if(t && t.focus) t.focus({preventScroll:true});
+};
+document.addEventListener('pointerdown', MF.guideYield, true);
+document.addEventListener('keydown', MF.guideKeys, true);
+
 /* the portrait, the bubble, and nothing else on the page has to know */
 MF.paintGuide = function(){
   var host = q('#guide');
@@ -7948,6 +8004,12 @@ MF.paintGuide = function(){
 
   if(G.open){
     var bub = E('div','gbubble');
+    /* ---- HE IS SPOKEN, SO SAY SO ----
+       The bubble opens BY ITSELF on first arrival and had no role, no label and
+       no live region — a screen reader was told nothing at all had happened. */
+    bub.setAttribute('role','status');
+    bub.setAttribute('aria-live','polite');
+    bub.setAttribute('aria-label','Mr Factor, about ' + String(where).toLowerCase());
     var shut = E('button','gshut'); shut.type='button';
     shut.innerHTML = '&times;';
     shut.setAttribute('aria-label','Close what Mr Factor is saying');
@@ -14882,7 +14944,12 @@ MF.thudBurst = function(anim){
 
 /* WHAT THE HAMMER IS CUT TO, echoed under it. The line whose absence let a
    cleared box swing 6 at a lump the student meant to hit with (x + 6). */
+/* THE ECHO AND THE BUTTON ARE ONE EVENT. Every place that refreshes the line
+   also has to re-arm the swing, and there are four of them — so rather than
+   four call sites that can each be forgotten, the echo does it. That is the
+   same "one formatter" reasoning the sign-joiner was consolidated under. */
 MF.echoHammer = function(B){
+  MF.armSwing(B);
   var echo = B && B._echo;
   /* NO isConnected GUARD. paintBreak builds the bar detached and appends it at
      the end, so the first call - the one that fills the line at rest - runs
@@ -15507,9 +15574,17 @@ MF.openHammer = function(B, opener){
 
       var swr = E('div','row swingrow'); swr.style.marginTop='10px';
       var sw = E('button','btn primary big swingbtn','Bring the hammer down'); sw.type='button';
-      on(sw,'click',function(){ MF.closeTool(); MF.swing(B); });
+      on(sw,'click',function(){ if(sw.disabled) return; MF.closeTool(); MF.swing(B); });
       swr.appendChild(sw);
       cut.appendChild(swr);
+      /* ---- AND IT IS DEAD WHILE THE HEAD IS EMPTY, LIKE THE POUR ----
+         The forge disables "Pour the mold" and says "The mold is not full yet."
+         underneath; this button had no equivalent, so the laziest possible
+         input — press it having typed nothing — ran a full swing and came back
+         a miss. `MF.armSwing` re-reads on every keystroke, which is the same
+         moment the echo line already updates. */
+      B._swingBtn = sw;
+      MF.armSwing(B);
 
       /* THE PAIR SCANNER IS NOT FREE. It is the Core Drill's reading, held to
          the piece you chose - a list of every pair sitting permanently under
@@ -15529,9 +15604,52 @@ MF.openHammer = function(B, opener){
 
 /* THE SWING. The only thing in the mine that decides anything, and all it
    decides is whether the rock came apart. */
+/* ---- NOTHING TYPED IS NOT A WRONG ANSWER ----
+
+   THE STUDENT-TESTER CLEARED ALL THREE BOXES AND PRESSED THE BUTTON. The panel
+   said, in its own echo line, *"the head is empty — type what you are taking
+   out"*. The button was not disabled. It swung the full three seconds, gave
+   CLANG!, and the floor reported: *"The hammer glanced off. Nothing of that
+   shape runs through this one. The hammer was cut to (x)."*
+
+   Two contradictory statements about one action, and the second one is a lie:
+   `(x)` is what an EMPTY box parses to (`readInt('')` is 0, and the x-part
+   defaults to 1), not anything the student chose. Read as a student, that is
+   *you got it wrong* about a question they never answered — and it counted a
+   clank, so it moved them up the ladder toward Mr Factor handing over a factor.
+
+   The echo has had this exact test since it was written; the swing never got a
+   copy of it. One function now, read by both, so they cannot disagree again.
+   The forge is the model: *"Pour the mold"* is disabled with *"The mold is not
+   full yet."* underneath — the laziest input refused, with the reason on
+   screen. */
+/* the button follows the boxes, and says why while it is dead */
+MF.armSwing = function(B){
+  var sw = B && B._swingBtn;
+  if(!sw || !sw.isConnected) return;
+  var empty = MF.headEmpty(B);
+  sw.disabled = empty;
+  sw.setAttribute('aria-label', empty
+    ? 'Bring the hammer down — not yet, the head is empty'
+    : 'Bring the hammer down');
+};
+MF.headEmpty = function(B){
+  if(!B || !B.raw) return true;
+  var isGrp = B._pieceIsGroup;
+  return String(B.raw.k).trim() === '' &&
+         (isGrp || String(B.raw.m).trim() === '');
+};
 MF.swing = function(B){
   var t = B.floor[B.at];
   if(!t || MF.isNative(t.ore)) return;
+  /* NO SWING, NO GLANCE, NO CLANK. It is not a miss, so nothing about it may
+     look like one or count like one. */
+  if(MF.headEmpty(B)){
+    B.last = {ok:false, empty:true,
+      why:'The head is empty. Type what you are taking out, and the hammer has something to cut.'};
+    MF.repaint(['work']);
+    return;
+  }
   var isNum = t.ore.kind==='number';
   /* THE HEADS WITH NO x-COUNT BOX ARE MONIC BY CONSTRUCTION. A grouping lump
      and a two-element lump both have a single x at the front of every bracket,
@@ -17168,6 +17286,48 @@ MF.validate = function(){
     chk('parts');
     if(!/no questions?/i.test('PLAY, NO QUESTIONS'))
       errs.push('CONTROL: the card-tag check cannot recognise a no-questions promise');
+
+    /* ---- A CONTROL UNDER MR FACTOR MUST STILL BE REACHABLE ----
+
+       The student-tester could not click LAYER 2 or LAYER 3 in the mine at
+       380x780, on arrival, without scrolling: his bubble is 330px wide in a
+       380px viewport and was lying across them. The bubble takes pointer
+       events, so the clicks were eaten and nothing on screen looked like the
+       reason. The `overlay` group exists for this fault class and did not see
+       it, because it asks whether the DOCK swallows clicks — and the dock does
+       not; `pointer-events` is off on it and on only for its children.
+
+       THE RULE IS NOT "NOTHING MAY BE COVERED". He is a fixed corner overlay on
+       a phone: something will always be under him, and forbidding that would
+       mean a scrim, which the dock's own design rule refuses. The rule is that
+       reaching past him WORKS — a pointerdown on his prose puts him away, so
+       the control underneath is live on the next click. That is the difference
+       between one wasted click with feedback and a dead button with none. */
+    var gyOpen = MF.guideState.open, gyRoom = MF.guideState.room, gyAt = MF.guideState.at;
+    MF.guideState.open = true; MF.paintGuide();
+    var gbub = document.querySelector('#guide .gtext');
+    chk('parts');
+    if(!gbub){
+      errs.push('parts: the guide bubble will not open, so whether it can be reached past is untestable');
+    } else {
+      var before = MF.guideState.open;
+      gbub.dispatchEvent(new PointerEvent('pointerdown',{bubbles:true}));
+      chk('parts');
+      if(!(before && !MF.guideState.open))
+        errs.push('parts: a click on Mr Factor’s own prose does not put him away, so a control under ' +
+                  'the bubble is dead with nothing on screen to say why');
+      /* and his BUTTONS must not be swallowed by the same handler */
+      MF.guideState.open = true; MF.paintGuide();
+      var gnext = document.querySelector('#guide .grow button:last-child');
+      chk('parts');
+      if(gnext){
+        gnext.dispatchEvent(new PointerEvent('pointerdown',{bubbles:true}));
+        if(!MF.guideState.open)
+          errs.push('parts: pressing one of Mr Factor’s own buttons closes him, so he cannot be read');
+      }
+    }
+    MF.guideState.open = gyOpen; MF.guideState.room = gyRoom; MF.guideState.at = gyAt;
+    MF.paintGuide();
     /* ---- NOTHING MAY FOLLOW A STICKY BOARD IN ITS OWN COLUMN ----
 
        THIS IS THE CHECK THAT WOULD HAVE CAUGHT IT, and the geometric one below
@@ -20692,10 +20852,27 @@ MF.validate = function(){
       kHit(ao);
       var sheet = document.querySelector('.scrim .toolsheet');
       if(!sheet) return null;
-      var ins = sheet.querySelectorAll('.hbox input');
+      /* ---- BY ROLE, NOT BY INDEX, AND THAT WAS A LIVE DEFECT ----
+
+         This read `ins[0]` and `ins[1]` off `.hbox input`. The panel has THREE
+         inputs on an ordinary poly — how many x, **what power**, and the number
+         on the end — so `ins[1]` has been the POWER box ever since the power
+         box was added, and the end box has never been filled by this bench at
+         all. The row called "the finishing blow" was therefore typing `x⁶` and
+         measuring a glance, while its `finished`-only assertions sat there
+         never firing. It went green for weeks.
+
+         Nothing here caught it, because every hard assertion in the loop —
+         scrim gone, stage present, animation running, burst at the anvil — is
+         equally true of a miss. It only surfaced when the swing learned to
+         refuse an empty head, which turned a silent wrong-box into two errors.
+         The power box carries a class; the other two do not. */
+      var ins = [].slice.call(sheet.querySelectorAll('.hbox input'))
+                  .filter(function(n){ return !n.classList.contains('powbox'); });
       if(!ins.length){ MF.closeTool(); return null; }
       ins[0].value = xs; ins[0].dispatchEvent(new Event('input',{bubbles:true}));
-      if(ins[1]){ ins[1].value = ks; ins[1].dispatchEvent(new Event('input',{bubbles:true})); }
+      var kBox = ins[ins.length - 1];
+      if(kBox !== ins[0]){ kBox.value = ks; kBox.dispatchEvent(new Event('input',{bubbles:true})); }
       var btn = sheet.querySelector('.swingbtn');
       if(btn) kHit(btn); else MF.closeTool();
       return MF._mine.work;

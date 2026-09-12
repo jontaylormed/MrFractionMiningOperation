@@ -22,7 +22,7 @@
 | **Screens** | **eight** — surface, the Stamp Mill, the Casting Shed and its three workshops, the mine, the forge |
 | **Layers** | **five**, all reachable from the first screen, none gated on anything |
 | **Instruments** | **seven**, all made at the forge, none granted |
-| **Validation** | `MF.validate()` → **26,588 checks / 48 groups / 0 errors**, two controls that must fail, and do — **run it at the width you ship from**, because `layout`, `reach`, `hollow` and `cartdraw` measure the live viewport and report it (`VERIFICATION.md` §61, §63, §65). Verified at **380×780, 560×760, 994×700 and 1250×900** |
+| **Validation** | `MF.validate()` → **26,591 checks / 48 groups / 0 errors**, two controls that must fail, and do — **run it at the width you ship from**, because `layout`, `reach`, `hollow` and `cartdraw` measure the live viewport and report it (`VERIFICATION.md` §61, §63, §65). Verified at **380×780, 560×760, 994×700 and 1250×900** |
 
 > **A check is only as wide as the space it sweeps.** The `truthy` group reported 0 errors across 642 checks while **1,970 Decimal Dial states printed a falsehood**, because it tested each lump's original integer coefficients and never nudged `c` — the one thing the dial exists to do. It now sweeps every slider position the control can reach (3,287 checks). Ask of any green result: *what did it not look at?*
 | **Runtime** | Zero dependencies, no build step, no network requests, no storage, runs from `file://` |
@@ -184,7 +184,7 @@ The face is **2280px of rock**, several screens wide, scanned by dragging, scrol
 
 ## The breaking floor: one anvil, the belt over it, and the ore on top
 
-**Measured 2026-09-07, all four widths, 0 errors over 26,588 checks in 48 groups, both controls failing.**
+**Measured 2026-09-07, all four widths, 0 errors over 26,591 checks in 48 groups, both controls failing.**
 
 > **The count moves with the sound files, and that is why two numbers were in circulation.**
 > `MF.validate()` run the instant after Enter reports about **90 fewer checks** than the same
@@ -1419,3 +1419,69 @@ and its content measured 615 — *four pixels* of headroom before the swing butt
 
 > Verified at all four widths, and the `give` rung — the loud one, which hands over a factor — is
 > the one that takes the most room and was the one measured.
+
+## What the student-tester could not click, and the empty swing that lied
+
+Driven as a student, at real widths, 2026-09-11.
+
+### 1. His bubble was lying on the mine, and the clicks vanished
+
+Measured at **380×780, on arrival, scrollY 0, no animations running**: the bubble is **330px wide
+in a 380px viewport** — 87% of the screen, a fixed 190px band — and it covered **LAYER 1, LAYER 2
+and LAYER 3**. It takes pointer events, so the clicks were *eaten*, not passed through. The
+buttons simply did not respond and nothing on screen looked like the reason. The same band ate the
+forge's whole rack, and at **1250×900** it covered 72% of **"Enter the mine"** — the card he had
+just told the student to use.
+
+**A scrim was the obvious fix and is forbidden**, by the rule written on the dock's own CSS: he is
+never modal, because *a guide you must dismiss before you can work is a gate with a friendly face
+on it*. That rule is right and it stays.
+
+**So he yields instead.** A pointerdown anywhere outside his own buttons closes him, and Escape
+closes him. The click that used to vanish now visibly puts him away and the second one works — one
+wasted click **with feedback**, rather than a dead control with none. Escape was the reflex the
+tester tried first, four different ways, all inert; it is what every other overlay here already
+answers to.
+
+> **The first version of the handler reproduced the bug it was written for.** It exempted the whole
+> dock, and the thing lying over LAYER 2 is `p.gtext` — so a click aimed at the button landed on
+> his *prose*, counted as "his own control", and was eaten exactly as before. Only what a student
+> can press may swallow a pointerdown. **Reaching through his words is reaching past him.**
+
+The `overlay` group never saw any of this: it asks whether the **dock** swallows clicks, and the
+dock does not — `pointer-events` is off on it and on only for its children. The new check asserts
+the behaviour instead of the geometry, because something will always be under a corner overlay on
+a phone: **a click on his prose must put him away.** Proved by removing the handler.
+
+### 2. The swing reported a miss on a question nobody answered
+
+The tester cleared all three boxes and pressed **"Bring the hammer down"**. The panel's own echo
+line said *"the head is empty — type what you are taking out"*. The button was **not disabled**. It
+swung the full three seconds, gave **CLANG!**, and the floor reported: *"The hammer glanced off…
+The hammer was cut to (x)."*
+
+`(x)` is what an **empty** box parses to — `readInt('')` is 0 and the x-part defaults to 1 — not
+anything the student chose. Read as a student that is *you got it wrong* about a question they
+never answered, and **it counted a clank**, moving them up the ladder toward Mr Factor handing over
+a factor.
+
+The echo has had this exact test since it was written; the swing never got a copy of it. There is
+**one `MF.headEmpty`** now, read by both, and the button is disabled while the head is empty —
+which is what the forge has always done one room away (*"Pour the mold"*, disabled, *"The mold is
+not full yet."* underneath).
+
+### 3. And that uncovered a bench row that had not been testing what it is named
+
+The `swing` group's three rows type into `.hbox input` **by index**. An ordinary poly panel has
+*three* inputs — how many x, **what power**, the number on the end — so `ins[1]` has been the
+**power box** ever since the power box was added, and the end box has never been filled. The row
+called **"the finishing blow"** was typing `x⁶`, measuring a glance, and its `finished`-only
+assertions sat there never firing. Green for weeks.
+
+Nothing caught it because every hard assertion in that loop — scrim gone, stage present, animation
+running, burst at the anvil — **is equally true of a miss**. It surfaced only when the swing
+learned to refuse an empty head, which turned a silent wrong-box into two errors. The bench selects
+by role now.
+
+> **Also fixed from the same run:** the bubble had no `role`, no `aria-live` and no `aria-label`,
+> so a screen reader was told nothing when it opened by itself on arrival.
