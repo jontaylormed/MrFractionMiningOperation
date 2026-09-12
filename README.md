@@ -3,7 +3,7 @@
 [![Built with Claude](https://img.shields.io/badge/built%20with-Claude%20AI-D97757?style=flat-square&logo=anthropic&logoColor=white)](https://claude.com/claude-code)
 [![Audio: Epidemic Sound](https://img.shields.io/badge/audio-Epidemic%20Sound-1D1D1D?style=flat-square)](https://www.epidemicsound.com)
 [![One file](https://img.shields.io/badge/one%20file-no%20build%20step-2E7D64?style=flat-square)](index.html)
-[![Checks](https://img.shields.io/badge/MF.validate()-26%2C598%20checks-4A6FA5?style=flat-square)](docs/VERIFICATION.md)
+[![Checks](https://img.shields.io/badge/MF.validate()-26%2C604%20checks-4A6FA5?style=flat-square)](docs/VERIFICATION.md)
 
 > **Built with [Claude AI](https://claude.com/claude-code)** (Anthropic) in collaboration with the
 > author. Every commit in this repository is co-authored by Claude, and the trailer is on each
@@ -18,7 +18,7 @@ A single-file, zero-dependency site for learning to factor — built on one idea
 
 ## Run it
 
-Open `index.html`. That is the whole instruction — no build step, no server, no dependencies, no storage. **≈1.44 MB, one file, and it runs from `file://`.**
+Open `index.html`. That is the whole instruction — no build step, no server, no dependencies, no storage. **≈1.51 MB, one file, and it runs from `file://`.**
 
 The only thing it ever fetches is **sound**, out of `sfx/` beside it — and every one of those fetches is allowed to fail. Without the folder the cues fall back to synthesised oscillators, the music bed stays silent, and the site behaves exactly as it did before there was any audio at all. **Adding sound files can never take sound away, and removing them can never break the page.**
 
@@ -73,7 +73,7 @@ The line between a score and a grade is drawn in `docs/MR-FRACTION-PHILOSOPHY.md
 MF.validate()
 ```
 
-**26,598 checks across 48 groups, 0 errors, and two controls that must fail — and do.** It sweeps the factor engine, seam classification, **hundreds of generated lumps across the nine layers** (the ore is generated, not authored, so nobody has ever seen most of it), the printer, the pour, the forge, the Casting Shed's three workshops, every tool's reading and lesson, colour contrast on every rendered surface, the reading-and-access panel, the sound layer, the seam's whole length, the doors on the surface, the three claims the front page makes to a stranger, the four deep castings and the multiplications they draw, the no-gate rule, and the no-grades rule.
+**26,604 checks across 48 groups, 0 errors, and two controls that must fail — and do.** It sweeps the factor engine, seam classification, **hundreds of generated lumps across the nine layers** (the ore is generated, not authored, so nobody has ever seen most of it), the printer, the pour, the forge, the Casting Shed's three workshops, every tool's reading and lesson, colour contrast on every rendered surface, the reading-and-access panel, the sound layer, the seam's whole length, the doors on the surface, the three claims the front page makes to a stranger, the four deep castings and the multiplications they draw, the no-gate rule, and the no-grades rule.
 
 **Every check carries a control that must fail**, and a new one is proved by reintroducing the fault it exists to catch — not by watching it pass. `docs/VERIFICATION.md` is 102 rules, each written after a real failure.
 

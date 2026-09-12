@@ -22,7 +22,7 @@
 | **Screens** | **eight** — surface, the Stamp Mill, the Casting Shed and its three workshops, the mine, the forge |
 | **Layers** | **five**, all reachable from the first screen, none gated on anything |
 | **Instruments** | **seven**, all made at the forge, none granted |
-| **Validation** | `MF.validate()` → **26,598 checks / 48 groups / 0 errors**, two controls that must fail, and do — **run it at the width you ship from**, because `layout`, `reach`, `hollow` and `cartdraw` measure the live viewport and report it (`VERIFICATION.md` §61, §63, §65). Verified at **380×780, 560×760, 994×700 and 1250×900** |
+| **Validation** | `MF.validate()` → **26,604 checks / 48 groups / 0 errors**, two controls that must fail, and do — **run it at the width you ship from**, because `layout`, `reach`, `hollow` and `cartdraw` measure the live viewport and report it (`VERIFICATION.md` §61, §63, §65). Verified at **380×780, 560×760, 994×700 and 1250×900** |
 
 > **A check is only as wide as the space it sweeps.** The `truthy` group reported 0 errors across 642 checks while **1,970 Decimal Dial states printed a falsehood**, because it tested each lump's original integer coefficients and never nudged `c` — the one thing the dial exists to do. It now sweeps every slider position the control can reach (3,287 checks). Ask of any green result: *what did it not look at?*
 | **Runtime** | Zero dependencies, no build step, no network requests, no storage, runs from `file://` |
@@ -184,7 +184,7 @@ The face is **2280px of rock**, several screens wide, scanned by dragging, scrol
 
 ## The breaking floor: one anvil, the belt over it, and the ore on top
 
-**Measured 2026-09-07, all four widths, 0 errors over 26,598 checks in 48 groups, both controls failing.**
+**Measured 2026-09-07, all four widths, 0 errors over 26,604 checks in 48 groups, both controls failing.**
 
 > **The count moves with the sound files, and that is why two numbers were in circulation.**
 > `MF.validate()` run the instant after Enter reports about **90 fewer checks** than the same
@@ -1664,3 +1664,43 @@ The touch target is unchanged at 76/112px — only the paint went.
 > A check asserts all four poses are `data:` URIs, that `MF.art` renders one, and that the drawn
 > fallback still exists. Proved by pointing a pose at `art/front.webp`: *"the 'front' pose is not
 > embedded … which this page cannot fetch from file://"*.
+
+## The GIF is real, the turn is gone, and the surface stopped being crowded
+
+**USER, 2026-09-12:** *"Here is the correct gif file."* And it is — **GIF87a, 571×669, seven
+frames over 0.78s**, a front-on idle. The earlier note that no animated GIF had been supplied was
+true of the file that existed then (`Miner_Mr_Fraction_GIF.png`, a PNG still) and is not true of
+this one.
+
+**It is one animated WebP, not seven stills.** Consecutive frames of an idle are nearly identical,
+so inter-frame compression earns its keep: **108 KB as six separate images against 50 KB as one
+animation**. The browser plays it — no timer, no frame bookkeeping. 176px wide, which is twice the
+88px the splash draws him at, because the splash is its only home.
+
+> **Under `prefers-reduced-motion` it is not loaded at all.** An animated image has no CSS pause,
+> so the only honest way to respect the setting is to hand back the static pose instead — which
+> also means somebody who asked for stillness never downloads 50 KB of movement. The check tests
+> exactly that: `MF.artIdle` must stop returning the animation, not merely toggle a class.
+
+### The four-pose turn was built, shipped, and thrown out the same day
+
+**USER:** *"flipping between poses does not look good on the surface."* Correct, and the reason is
+worth keeping so it is not built again: **four drawings have no in-between.** At 74px the cycle is
+a hard cut from one silhouette to a different one every few seconds — a glitch, not a man looking
+round. The supplied GIF has real intermediate frames, which is precisely why it reads as movement
+and the turn did not. `MF.artTurn` and `MF.ART_TURN` are gone; `MF.artIdle` is the only animation.
+
+### Four of him on one screen was three too many
+
+**USER:** *"On the homepage, Mr Fraction is appearing too much."* The surface carried him in the
+masthead, standing in the scene, as a 104px portrait beside the lede, **and** in the dock — two of
+those within 200px of each other. **The hero portrait went**: it was the largest and the most
+redundant, sitting between a scene that already has him standing in his own yard and a dock that
+has him talking a few hundred pixels below. Three remain and each does a different job — a mark, a
+figure in the world, and the guide.
+
+> **Open question, and it is a 57 KB one.** With the turn gone, only the `front` pose is ever
+> rendered: `back`, `left` and `right` are embedded and displayed nowhere. They are kept rather
+> than deleted because they are supplied artwork and where they belong is a design decision, not a
+> defect — but they are dead weight until they are placed, and `§92` is clear about what happens to
+> data nobody reads.
