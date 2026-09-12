@@ -1520,6 +1520,10 @@ input::placeholder, textarea::placeholder{color:#6B5B48; opacity:1}
   border:3px solid var(--rock-3); border-radius:15px; box-shadow:0 18px 44px rgba(0,0,0,.5);
   animation:sheetrise 220ms cubic-bezier(.2,.8,.3,1) 1}
 .toolsheet:focus{outline:none}
+/* THE WAY OUT NEVER SCROLLS AWAY. The head carries the only close button, and
+   the sheet grows — Mr Factor's rung is the newest thing in it. Sticky costs
+   nothing and means the exit cannot be pushed off the top by content. */
+.tshead{position:sticky; top:0; z-index:2; background:var(--paper)}
 /* ---- MR FACTOR, INSIDE THE DIALOG ----
    He reads as an aside rather than as part of the instrument: a rule above him,
    his own paper, and the portrait small. He is only ever here when the clank
@@ -2627,8 +2631,12 @@ table.scan tr.hit td{background:#F1F8F5; color:var(--vein); font-weight:700}
 .gtext b{font-family:var(--display); font-weight:400; color:var(--ore-t)}
 .grow{display:flex; align-items:center; gap:8px}
 .gdots{display:flex; gap:5px; flex:1 1 auto}
+/* THREE STATES, NOT TWO: where you are, where you have been, where you have
+   not. A cumulative fill made the last beat read as "finished". */
 .gdot{width:8px; height:8px; border-radius:50%; background:var(--tan)}
-.gdot[data-on]{background:var(--ore-t)}
+.gdot[data-seen]{background:var(--ore-t); opacity:.42}
+.gdot[data-on]{background:var(--ore-t); opacity:1;
+  box-shadow:0 0 0 3px rgba(176,106,32,.22)}
 .gbtn{font:inherit; font-size:14px; padding:6px 11px; border-radius:9px;
   border:2px solid var(--tan); background:var(--paper); color:var(--ink); cursor:pointer}
 .gbtn.gnext{background:var(--ore-t); border-color:var(--ore-t); color:#FFF7EA}
@@ -7997,9 +8005,23 @@ MF.paintGuide = function(){
      introduction: a student on their fourth clank does not need to be told
      again what the mine is for. `MF.clankAdvice` returns null while he should
      be quiet, which is every visit that is going well. */
+  /* ---- THE HINTS DO NOT SWALLOW THE ROOM ----
+
+     The advice used to REPLACE the mine's four beats: the heading changed from
+     THE MINE to a generic "MR FACTOR", the dot row collapsed to a single
+     permanently-lit dot, and there was no way back to the room's own
+     orientation short of reloading the page. Every other room replays its
+     script on every visit; the mine, once there were pieces on the floor,
+     stopped being a room with a guide in it and became an anonymous hint.
+
+     The rung goes FIRST and the room's beats follow it, as one script. The
+     student on their fourth clank still gets the hint the moment he opens —
+     that is the whole point of the ladder — and pressing next still walks them
+     back through what the mine is for. The heading names where they are again,
+     because it always could. */
   var advice = (room === 'mine') ? MF.clankAdvice(MF.stuckOre()) : null;
-  var beats = advice ? advice.beats : g.beats;
-  var where = advice ? 'MR FACTOR' : g.where;
+  var beats = advice ? advice.beats.concat(g.beats) : g.beats;
+  var where = g.where;
   if(G.at >= beats.length) G.at = beats.length - 1;
 
   if(G.open){
@@ -8022,8 +8044,15 @@ MF.paintGuide = function(){
        meaning and the voice is on top of them, never instead. The id is the
        one MF.voiceLines prints, so what is recorded and what is asked for
        cannot be two different lists. */
-    MF.audio.say(advice ? ('clank-' + advice.rung + (advice.rung === 'shed' ? '-' + (G.at+1) : ''))
-                        : ('room-' + room + '-' + (G.at+1)));
+    /* THE ID FOLLOWS THE INDEX, and the index now spans two scripts: the rung
+       first, then the room's own beats after it. Reading `room-mine-1` over the
+       hint, or the hint's id over beat one of the mine, would be the recording
+       and the screen saying two different things — which is the fault the id
+       was centralised to prevent. */
+    var nAdv = advice ? advice.beats.length : 0;
+    MF.audio.say(G.at < nAdv
+      ? ('clank-' + advice.rung + (advice.rung === 'shed' ? '-' + (G.at+1) : ''))
+      : ('room-' + room + '-' + (G.at - nAdv + 1)));
 
     var row = E('div','grow');
     var back = E('button','gbtn'); back.type='button';
@@ -8033,10 +8062,37 @@ MF.paintGuide = function(){
     on(back,'click',function(){ G.at--; MF.paintGuide(); });
     row.appendChild(back);
 
+    /* ---- WHERE YOU ARE, NOT HOW FAR YOU HAVE COME ----
+
+       It filled CUMULATIVELY — `i <= G.at` — so the last beat of three was
+       three dark dots, which reads as *finished* rather than *you are here*,
+       and the first beat of four looked like one-of-one. It is a position
+       indicator, so exactly one dot is current and the rest are the row.
+
+       AND IT SAID NOTHING TO A SCREEN READER. Eight-pixel `<i>` elements with
+       no role and no label, inside a bubble that opens by itself — the count
+       was on screen and nowhere else. The row carries the sentence now; the
+       dots are decoration and marked as such. Never "2 of 3" in visible text
+       (§2.5a is about a student, not about a paragraph, but the site does not
+       print counts and this row is not going to be the first). */
+    /* AND THE ROW IS HIDDEN FROM A SCREEN READER RATHER THAN LABELLED.
+       The first attempt labelled it "Part 1 of 4 of what he has to say" — and
+       the `guide` group failed the build over it, correctly: that is an
+       X-out-of-Y, an aria-label is read ALOUD, and the rule does not care which
+       channel it is on. I wrote "never 2 of 3 in visible text" in the comment
+       directly above and then put it somewhere a blind student would hear it.
+
+       The information is already carried, twice, without a tally: the bubble is
+       a live region and reads the new beat when it changes, and the next button
+       says "The next thing he has to say" until the last one, where it becomes
+       "got it". The dots are decoration for the sighted and nothing else. */
     var dots = E('div','gdots');
+    dots.setAttribute('aria-hidden','true');
     beats.forEach(function(_, i){
       var d = E('i','gdot');
-      if(i <= G.at) d.setAttribute('data-on','yes');
+      d.setAttribute('aria-hidden','true');
+      if(i === G.at) d.setAttribute('data-on','yes');
+      else if(i < G.at) d.setAttribute('data-seen','yes');
       dots.appendChild(d);
     });
     row.appendChild(dots);
@@ -12713,6 +12769,21 @@ MF.moldScene = function(key, pour, shape){
      fails to cover is the wall the light is on. The offsets are in the same
      direction as the scene's own light, which comes off the ladle and the glow
      in the top-left corner. */
+  /* ---- DECLARED HERE BECAUSE THE PIT USES THEM, AND IT IS FIRST ----
+
+     These two were declared 33 lines BELOW this point, next to the clip path
+     that also wants them. `var` hoists the declaration and not the assignment,
+     so the pit's wall rect was built with `x="undefined"` and
+     `width="undefined"` — **the lit wall inside every cavity has never been
+     drawn**, on every mold on the site.
+
+     It announced itself the whole time, and nobody was listening: hundreds of
+     `<rect> attribute x: Expected length, "undefined"` on every single load,
+     which `MF.validate()` reported 0 errors over. The student-tester counted
+     **492 of them in the buffer before clicking anything** and made the point
+     that matters — you cannot tell a silent exception from missing feedback
+     when the channel is already full of noise. */
+  var cavL = cav.cx - cav.w/2 - 12, cavW = cav.w + 24;
   var pit = S('g',{class:'mdpit', mask:'url(#'+uid+'tool)'});
   grad(uid+'wall', [['0%','#6B5C49'],['55%','#8A7862'],['100%','#B2A188']]);
   pit.appendChild(S('rect',{x:cavL, y:96, width:cavW, height:186, fill:'url(#'+uid+'wall)'}));
@@ -12748,7 +12819,6 @@ MF.moldScene = function(key, pour, shape){
      stopped at 390 while a long expression reached 388 and the molten rects
      stopped at 362, so the ends of a wide casting were never filled. They come
      off `cav` now, with a margin, exactly as the metal does. */
-  var cavL = cav.cx - cav.w/2 - 12, cavW = cav.w + 24;
   var rc = S('clipPath',{id:uid+'rev'});
   rc.appendChild(S('rect',{class:'mdrevrect', x:cavL, y:261, width:cavW, height:0}));
   defs.appendChild(rc);

@@ -22,7 +22,7 @@
 | **Screens** | **eight** — surface, the Stamp Mill, the Casting Shed and its three workshops, the mine, the forge |
 | **Layers** | **five**, all reachable from the first screen, none gated on anything |
 | **Instruments** | **seven**, all made at the forge, none granted |
-| **Validation** | `MF.validate()` → **26,591 checks / 48 groups / 0 errors**, two controls that must fail, and do — **run it at the width you ship from**, because `layout`, `reach`, `hollow` and `cartdraw` measure the live viewport and report it (`VERIFICATION.md` §61, §63, §65). Verified at **380×780, 560×760, 994×700 and 1250×900** |
+| **Validation** | `MF.validate()` → **26,589 checks / 48 groups / 0 errors**, two controls that must fail, and do — **run it at the width you ship from**, because `layout`, `reach`, `hollow` and `cartdraw` measure the live viewport and report it (`VERIFICATION.md` §61, §63, §65). Verified at **380×780, 560×760, 994×700 and 1250×900** |
 
 > **A check is only as wide as the space it sweeps.** The `truthy` group reported 0 errors across 642 checks while **1,970 Decimal Dial states printed a falsehood**, because it tested each lump's original integer coefficients and never nudged `c` — the one thing the dial exists to do. It now sweeps every slider position the control can reach (3,287 checks). Ask of any green result: *what did it not look at?*
 | **Runtime** | Zero dependencies, no build step, no network requests, no storage, runs from `file://` |
@@ -184,7 +184,7 @@ The face is **2280px of rock**, several screens wide, scanned by dragging, scrol
 
 ## The breaking floor: one anvil, the belt over it, and the ore on top
 
-**Measured 2026-09-07, all four widths, 0 errors over 26,591 checks in 48 groups, both controls failing.**
+**Measured 2026-09-07, all four widths, 0 errors over 26,589 checks in 48 groups, both controls failing.**
 
 > **The count moves with the sound files, and that is why two numbers were in circulation.**
 > `MF.validate()` run the instant after Enter reports about **90 fewer checks** than the same
@@ -1485,3 +1485,51 @@ by role now.
 
 > **Also fixed from the same run:** the bubble had no `role`, no `aria-live` and no `aria-label`,
 > so a screen reader was told nothing when it opened by itself on arrival.
+
+## Four more from the same run, and one of them was drawing nothing
+
+### The cavity's lit wall has never been drawn, on any mold
+
+`MF.moldScene` builds the pit's wall rect with `cavL` and `cavW` — **declared 33 lines below the
+use**. `var` hoists the declaration and not the assignment, so the rect went out with
+`x="undefined"` and `width="undefined"` every time.
+
+It announced itself the whole time and nobody was listening: the student-tester counted **492
+`<rect> attribute x: Expected length, "undefined"` on a fresh load before clicking anything**, over
+which `MF.validate()` reported 0 errors. Their point is the one worth keeping — *you cannot tell a
+silent exception from missing feedback when the channel is already full of noise.* Fixed by moving
+the declaration above its first use; a fresh boot now emits **nothing**, confirmed by bracketing a
+reload between two console markers (the tab's buffer survives navigation, so the first two attempts
+at measuring this were reading the previous load).
+
+### The dot row said "finished" when it meant "you are here"
+
+It filled cumulatively (`i <= G.at`), so the last of three beats was three dark dots. Three states
+now — current, seen, not yet — and the current one is ringed.
+
+> **And the first fix for its accessibility failed the build, correctly.** The row had no role and
+> no label, so a screen reader was told nothing; I gave it `aria-label="Part 1 of 4 of what he has
+> to say"` and the `guide` group threw it out — *"the dock is counting something"*. That is an
+> X-out-of-Y, an aria-label is **read aloud**, and the rule does not care which channel it is on. I
+> had written *"never 2 of 3 in visible text"* in the comment directly above and then put it
+> somewhere a blind student would hear it. The row is `aria-hidden` now: the bubble is a live region
+> that reads each new beat, and the next button says *"The next thing he has to say"* until the last
+> one, where it becomes *"got it"*. The information was already there twice, without a tally.
+
+### The mine's hints swallowed the room
+
+Once there were pieces on the floor, the clank rung **replaced** the mine's four beats: the heading
+changed from THE MINE to a generic "MR FACTOR", the dot row collapsed to one permanently-lit dot,
+and there was no way back to the room's orientation short of reloading. Every other room replays.
+The rung goes **first** now and the room's script follows it as one sequence — the stuck student
+still gets the hint the moment he opens, and pressing next still walks back through what the mine
+is for. `MF.audio.say` indexes across both scripts, so the recording and the screen cannot say two
+different things.
+
+### And one reported finding was wrong
+
+*"The hammer panel has no way out except swinging."* It has a labelled **"Put it down"** button in
+the head, the head does not scroll away (measured at 380 and at 994×700, where the sheet scrolls by
+17px), and the foot already reads *"**Esc** puts the hammer down."* Reported, checked, not true.
+The head is `position:sticky` now anyway — cheap insurance, since the sheet grows and Mr Factor's
+rung is the newest thing in it.
