@@ -2661,7 +2661,6 @@ table.scan tr.hit td{background:#F1F8F5; color:var(--vein); font-weight:700}
   color:var(--vein)}
 .stat-label{font-family:var(--display); font-size:11px; letter-spacing:.14em;
   text-transform:uppercase; color:var(--ore-t); margin-top:5px}
-.stat-say{font-size:14px; line-height:1.45; color:var(--ink); margin-top:9px; max-width:32ch}
 @media(max-width:720px){ .stats-strip{grid-template-columns:1fr} }
 .acrow{margin:0 0 13px}
 .aclab{font-family:var(--display); font-size:15px; color:var(--ink)}
@@ -5259,6 +5258,42 @@ MF.simplestFactor = function(ore){
   return cand[0];
 };
 
+/* ---- THE SAME FACTOR, AS THE SITE'S OWN PRINTER WRITES IT ----
+
+   `MF.simplestFactor` returns an INGOT, because that is what the hammer is cut
+   to and what `MF.breakOff` swings with. `ingotHtml` renders `m·x + k` and
+   nothing else — so on the deep shapes it printed a sentence that was flatly
+   false while the swing itself was perfectly correct:
+
+     x⁴ + 5x² + 4   ingot {m:1,k:1,p:2}   ingotHtml drops p  -> "x + 1"   WRONG
+     x² + 3xy + 2y² ingot {m:1,k:1}       no y to drop       -> "x + 1"   WRONG
+
+   `x + 1` is not a factor of `x⁴ + 5x² + 4` — at x = −1 the lump is 10 — and
+   the hammer would have REFUSED it, so Mr Factor was telling a stuck student to
+   swing at something the rock then called wrong. The two-letter one is worse in
+   a quieter way: the swing lands (breakOff reads `k` as the y-coefficient), so
+   nothing on screen contradicts the false sentence and the student learns that
+   `x + 1` is a factor of `x² + 3xy + 2y²`.
+
+   The engine already holds the right ore on every one of these — the splits'
+   `left` is exactly the piece being named — and `MF.oreLabel` already prints it
+   as `x² + 1` and `x + y`. So this returns that ore and the sentence goes
+   through the site's ONE printer rather than a second one that knows less. */
+MF.simplestFactorOre = function(ore){
+  if(!ore || MF.isNative(ore)) return null;
+  var s = null;
+  if(ore.kind === 'group') s = MF.groupSplit(ore);
+  else if(ore.kind === 'two')   s = MF.twoSplit(ore);
+  else if(ore.kind === 'cube')  s = MF.cubeSplit(ore);
+  else if(ore.kind === 'quart') s = MF.quartSplit(ore);
+  if(s) return s.left;
+  /* numbers and ordinary polys: the ingot IS `m·x + k`, which oreLabel prints
+     correctly once it is an ore, so there is nothing special to do */
+  var g = MF.simplestFactor(ore);
+  if(!g) return null;
+  return (g.m === 0) ? {kind:'number', n:g.k} : {kind:'poly', a:0, b:g.m, c:g.k, v:g.v};
+};
+
 /* THE METHOD, CREDITED IN ONE LINE, WITH THE ESSAY A CLICK AWAY.
 
    The tool panels used to carry the whole schema: name, a paragraph of
@@ -6846,7 +6881,14 @@ MF.go = function(name){
 MF.GUIDE = {
   home: {where:'THE SURFACE', beats:[
     'Everything here is a building you can walk into, and the bar at the top goes to all of them.',
-    'Start in <b>the mine</b> if you want to break something, or the <b>Casting Shed</b> if you would rather read first. Neither is required and neither locks.',
+    /* THE MILL WAS MISSING FROM THE ONE LINE THAT ANSWERS "where do I start".
+       It offered two doors out of four, and left out the cheapest rung on the
+       whole thesis: the Mill is plain numbers, it has no questions in it, and
+       what will not come apart there is a PRIME — which is the same object as
+       native metal, which is the idea the site exists to carry. Leaving it out
+       was not a gate (nothing locks, and the bar reaches it) but it was a
+       recommendation that skipped the easiest way in. */
+    'Start in <b>the mine</b> if you want to break something, the <b>Stamp Mill</b> if you would rather start on plain numbers, or the <b>Casting Shed</b> if you would rather read first. None of them is required and none of them locks.',
     /* WAS "...where your metal ends up. You have not put anything in it yet."
        The portrait replays from the top at any time — by design, because the
        student who needs him most is the one who came back (MINE-SPEC §42) — so
@@ -6862,7 +6904,10 @@ MF.GUIDE = {
     'Nothing here is timed. A swing that misses costs you the swing.'
   ]},
   forge: {where:'THE FORGE', beats:[
-    'This is the one place on the site that <b>multiplies</b> instead of breaking. Metal goes into a mold and one object comes out.',
+    /* NOT "the one place on the site that multiplies" — the Molds room
+       multiplies too, and his own shed-mold beat says so. What is true is that
+       this is the only place you multiply TO ORDER, against a named object. */
+    'This is where you <b>multiply</b> instead of breaking, and the only place you do it <b>to order</b>. Metal goes into a mold and one object comes out.',
     'Take an order off a board and I will open the mold. You spend metal out of the yard to fill it.',
     /* WAS "you keep the tool. A tool never gates anything - it reads a lump for
        you and that is all." True of the seven, and false of four of the eleven
@@ -6877,15 +6922,33 @@ MF.GUIDE = {
   ]},
   'shed-mold': {where:'THE MOLDS', beats:[
     'Move the sliders and watch the pour. Whatever you put in decides what comes out — you never choose the shape.',
-    'The working underneath is the same multiplication written a line at a time. The mine runs it <b>backwards</b>.'
+    /* "The mine runs it backwards" moved OUT of here and stayed in the room,
+       where `MF.SAYS['mold-after-pour']` says it under a pour the student has
+       just watched. Said here it is a promise about a room they have not worked
+       yet; said there it is a description of what they are looking at. */
+    'The working underneath is the same multiplication written a line at a time &mdash; every part of one metal meeting every part of the other.'
   ]},
   'shed-words': {where:'THE WORDS', beats:[
     'Every mining name here is a real mathematical thing with a real name. The table has both columns.',
     'Then put them together yourself in the matching activity. A pair that does not go together tells you what each word means and lets go.'
   ]},
+  /* THESE TWO HAVE TO BE TRUE OF AN EMPTY ROOM, because the empty room is the
+     likeliest FIRST view of it: the dock fires on first arrival, and `home`
+     beat 2 invites reading the shed before digging anything. They used to
+     describe a walkthrough, a hook and three lumps, none of which exist until
+     an instrument has been cast — so a first-time visitor read a description of
+     a room they could not be looking at.
+
+     NOT BRANCHED ON `hasTool`, DELIBERATELY. `beats` is read in six places —
+     the dock, the recording script, the guide group, the contrast probe — and
+     a shape only one of them understands is five chances to get it wrong. The
+     room already handles its own empty state ("Nothing on your belt yet");
+     what the dock owed it was copy that does not contradict it. Saying the
+     room FILLS UP is true on both sides of that line and explains the empty
+     case without a second code path. */
   'shed-methods': {where:'THE TOOLS', beats:[
-    'One lesson per instrument you have cast. Each one walks its method a slide at a time, and every slide has the picture on it.',
-    'Under the walkthrough is a bench with three lumps on it. <b>Take the instrument off the hook and hold it to one</b> — that is the part that is not reading.'
+    'One lesson per instrument you have cast, so this room fills up as you forge. Each lesson walks its method a slide at a time, and every slide has the picture on it.',
+    'Under each walkthrough is a bench with three lumps on it. <b>Take the instrument off the hook and hold it to one</b> — that is the part that is not reading.'
   ]},
   'workshop-ore': {where:'THE STAMP MILL', beats:[
     'Plain numbers, and the factors of everything up to a hundred.',
@@ -7565,27 +7628,83 @@ MF.AMBIENCE_SRC = 'sfx/bed.m4a';
    or, if a voice is wanted there, a lead-in can be recorded and the numbers
    left on screen where they are legible anyway.
    ========================================================================= */
+/* STRIP THE TAGS AND DECODE THE ENTITIES. A recording script is read ALOUD by
+   a person, and `&mdash;` on the page is a person saying "ampersand m dash".
+   The tag strip has been here since this function existed; the entity decode
+   had not, and the moment a beat was written with `&mdash;` rather than a
+   literal — the script started carrying markup to the studio. */
+function voiceText(s){
+  var d = document.createElement('div');
+  d.innerHTML = String(s);
+  return (d.textContent || '').replace(/\s+/g, ' ').trim();
+}
+MF.voiceText = voiceText;
 MF.voiceLines = function(){
   var out = [];
   Object.keys(MF.GUIDE).forEach(function(room){
     var g = MF.GUIDE[room];
     (g.beats || []).forEach(function(b, i){
       out.push({id:'room-' + room + '-' + (i+1), where:g.where, dyn:false,
-                text:String(b).replace(/<[^>]+>/g,'')});
+                text:voiceText(b)});
     });
   });
   /* the clank ladder. The shed rung is fixed words; the hint and the handover
      carry the lump's own numbers and cannot be a recording. */
   MF.CLANK_SHED.forEach(function(b, i){
     out.push({id:'clank-shed-' + (i+1), where:'THE BREAKING FLOOR', dyn:false,
-              text:String(b).replace(/<[^>]+>/g,'')});
+              text:voiceText(b)});
   });
   out.push({id:'clank-hint', where:'THE BREAKING FLOOR', dyn:true,
             text:'(varies with the lump) Put the X on it: the pair has to multiply to … and add to ….'});
   out.push({id:'clank-give', where:'THE BREAKING FLOOR', dyn:true,
             text:'(varies with the lump) That one is fighting you, so I will just say it: … runs through it.'});
+  /* AND THE FOUR HE SAYS FROM INSIDE A ROOM. This file's header calls itself
+     what he ACTUALLY says; it was four lines short of that, and a recording
+     session would have gone to the studio without them. */
+  var SAYS_WHERE = {'mold-after-pour':'THE MOLDS', 'mill-done':'THE STAMP MILL',
+                    'mill-going':'THE STAMP MILL', 'forge-cold':'THE FORGE'};
+  Object.keys(MF.SAYS).forEach(function(k){
+    out.push({id:'says-' + k, where:SAYS_WHERE[k] || 'IN THE ROOM', dyn:false,
+              text:voiceText(MF.SAYS[k])});
+  });
   return out;
 };
+
+/* =========================================================================
+   THE LINES HE SAYS FROM INSIDE A ROOM, RATHER THAN FROM THE DOCK.
+
+   Four `MF.says` bubbles sit in the rooms themselves, and until now they were
+   written inline at their call sites. Two problems, both real and both found by
+   review rather than by a check:
+
+   1. TWO OF THEM SAID THE SAME THING AS A DOCK BEAT, AND THE COPIES HAD
+      ALREADY DRIFTED — "Take an order off the board" against "Pick an order off
+      the board", and the dock's "The mine runs it backwards" against the Molds'
+      longer version of the same sentence. That is `CLAUDE.md`'s second-copy
+      failure, in prose. The fix is not to sync them: it is to say each thing
+      ONCE, in the place where it lands better. The dock keeps the instruction,
+      because it fires as you walk in; the Molds keeps "run it backwards",
+      because in-room it arrives after a pour the student has watched, which is
+      the moment that sentence means anything.
+
+   2. ALL FOUR WERE OUTSIDE `MF.voiceLines()`, so `docs/VOICE.md` — which says
+      in its own header that it is what he ACTUALLY says — was four lines short,
+      and a recording session would have missed them. They are in it now.
+   ========================================================================= */
+MF.SAYS = {
+  'mold-after-pour':
+    'Remember this shape. In the mine you will run it <b>backwards</b> — you will have the casting and be hunting for the metals that made it.',
+  'mill-done':
+    'That row is the whole of it. Two miners who cut in a different order still end up with those same ingots — which is why a number has one set of metals in it.',
+  'mill-going':
+    'Keep stamping until every piece is an ingot. That is all this is, and it is exactly what you will do to a trinomial down the mine.',
+  /* NO LONGER REPEATS THE DOCK'S "pick an order and I will open the mold" —
+     that is `room-forge-2`, and it has just been said. What is left is the part
+     only a cold mold can tell you: the metal is spent. */
+  'forge-cold':
+    'Whatever you drop in gets used up — so if you spend your only (x + 3), you will be going back down for another.'
+};
+MF.saysLine = function(k){ return '<b>Mr Factor:</b> ' + MF.SAYS[k]; };
 
 MF.guideState = {seen:{}, open:false, at:0, room:null, clanks:0, helped:0};
 
@@ -7629,9 +7748,22 @@ MF.CLANK_GIVE  = 12;     /* and hands over a factor at this */
 /* THE ONE RUNG THAT IS FIXED WORDS, held out here so `MF.voiceLines` reads the
    same sentence a student hears rather than a copy of it. The other two rungs
    carry the lump's own numbers and cannot be recorded at all. */
+/* ---- AND IT NAMES A ROOM THAT IS FULL FOR THE STUDENT IT FIRES AT ----
+
+   IT USED TO POINT AT THE TOOLS, which is the one room that is EMPTY for
+   exactly this student. This rung fires only for someone who has never opened
+   the shed — a beginner, three clanks into their first lump, with nothing on
+   the rack and nothing on the belt. The Tools is one lesson per instrument
+   CAST, so `MF.paintToolSchool` greets them with "Nothing on your belt yet, so
+   there is nothing to teach here" and sends them to the forge, which wants
+   metal they have not got. Mine → shed → forge → mine, and nothing learned.
+
+   The Words and The Molds are both full for that student, and The Molds is the
+   one that answers being stuck: it is the pour, written out, which is the move
+   they are failing to run backwards. */
 MF.CLANK_SHED = [
   'A few clanks in a row usually means the method rather than the arithmetic.',
-  'You have not been in <b>the Casting Shed</b> yet. Three short workshops, and The Tools is one lesson per instrument — it is the fastest way out of a run like this.'
+  'You have not been in <b>the Casting Shed</b> yet. Start at <b>The Molds</b> — it writes a pour out a line at a time, and breaking is that run backwards.'
 ];
 
 /* Has this student been in the Casting Shed at all? Any of its four screens
@@ -7651,27 +7783,74 @@ MF.clankAdvice = function(ore){
   if(n >= MF.CLANK_GIVE){
     var one = null;
     try { one = ore ? MF.simplestFactor(ore) : null; } catch(e){ one = null; }
+    var oneOre = null;
+    try { oneOre = ore ? MF.simplestFactorOre(ore) : null; } catch(e){ oneOre = null; }
     if(one) return {rung:'give', beats:[
-      'That one is fighting you, so I will just say it: <b>' + ingotHtml(one) +
+      'That one is fighting you, so I will just say it: <b>' +
+        (oneOre ? MF.oreLabel(oneOre) : ingotHtml(one)) +
         '</b> runs through it. Cut the hammer to that and swing.',
       'What is left when it comes out is the other side, and that part is still yours to name.'
     ]};
+    /* "Nothing runs through that one AT ALL" was blurring the ring, on lumps
+       the mine really hands out. `x² − 2` is native here and factors over the
+       reals — the engine even records its roots, and the Decimal Dial exists to
+       show exactly that. `MF.ASSAY.pure` has always named the ring ("no
+       whole-number seam"); this line was the one place that dropped it. */
     return {rung:'give', beats:[
-      'Nothing runs through that one at all. It is <b>native metal</b> — already an element, and it was never going to come apart.',
+      'No <b>whole-number</b> seam runs through that one. It is <b>native metal</b> — already an element, and it was never going to come apart under a whole hammer.',
       'That is not you missing it. Rack it and take the next piece.'
     ]};
   }
   if(!MF.seenShed()) return {rung:'shed', beats:MF.CLANK_SHED};
   var hints = [];
-  if(ore && ore.kind === 'number'){
-    hints.push('On a plain number, whatever you swing has to <b>divide it exactly</b>. Work up the small primes — 2, then 3, then 5.');
+  /* ---- THE DEEP SHAPES GET THEIR OWN METHOD, AND THEY HAD NONE ----
+
+     Everything below used to fall through to the X, because the only tests were
+     `kind === 'number'` and `ore.a === 0`. A `group`, `quart`, `two`, `cube` or
+     `bi` ore has NO `a` at all, so `ore.a === 0` was false, `a·c` came out
+     `NaN`, and `num(NaN)` prints `?`. What a stuck student on layer 6 was told,
+     verbatim: *"the pair has to multiply to ? and add to 2"* — a question mark
+     where the number goes, and the wrong method besides. It fired on every
+     non-quadratic piece in the mine.
+
+     The X is right for exactly two of these, and even then the target is `c`
+     rather than a·c. The other three are not pair hunts at all. */
+  if(ore && ore.kind === 'group'){
+    hints.push('Four terms, so this is not a pair hunt. Take them <b>two at a time</b> and pull the common piece off each half — if the same bracket comes out of both, it runs through the whole lump.');
+    hints.push('The end tells you before you start: <b>' + num(ore.b) + ' × ' + num(ore.c) +
+      '</b> has to be the number on the end, and here it is <b>' + num(ore.d) + '</b>.');
+  } else if(ore && ore.kind === 'cube'){
+    hints.push('Two ends and no middle. Ask whether <b>both ends are whole cubes</b> — if they are, one bracket comes off on sight and the piece behind it never breaks.');
+  } else if(ore && MF.isBi && MF.isBi(ore)){
+    hints.push('That one is a single bracket in two letters. There is nothing to hunt in it — it is <b>native metal</b>, and it is finished.');
+  } else if(ore && ore.kind === 'quart'){
+    hints.push('Read the <b>x&sup2; as the unit</b> — x&sup2; times itself is where the x&#8308; came from — and it is a trinomial again.');
+    hints.push('Then the <b>X</b>, on that: the pair has to multiply to <b>' + num(ore.c) +
+      '</b> and add to <b>' + num(ore.b) + '</b>. And the hammer is cut to <b>x&sup2;</b>, not x.');
+  } else if(ore && ore.kind === 'two'){
+    hints.push('The same <b>X</b> as ever, and the second letter rides along: the pair has to multiply to <b>' +
+      num(ore.c) + '</b> and add to <b>' + num(ore.b) + '</b>.');
+    hints.push('Each bracket comes out as <b>x + ?y</b> — the number you find is what the y is carrying.');
+  } else if(ore && ore.kind === 'number'){
+    /* WAS "2, then 3, then 5", which stops below the smallest factor of a lump
+       the mine really hands out: break 98 and 49 lands on the floor. */
+    hints.push('On a plain number, whatever you swing has to <b>divide it exactly</b>. Work up the small primes — 2, then 3, then 5, then 7.');
   } else if(ore && ore.a === 0){
-    hints.push('No x&sup2; in this one, so look for what <b>every term is carrying</b> and stand that out in front of a bracket.');
+    /* 95% of the linear pieces on the floor have gcd 1 and are native, so
+       "look for what every term is carrying" sent almost everyone hunting
+       inside an element without naming the other outcome. */
+    hints.push('No x&sup2; in this one. Look for what <b>every term is carrying</b> and stand it in front of a bracket &mdash; and if they carry nothing in common, that is an answer too: it is already an element.');
   } else if(ore){
     var ac = (ore.a === 1) ? ore.c : ore.a * ore.c;
     hints.push('Put the <b>X</b> on it: the pair has to multiply to <b>' + num(ac) +
       '</b> and add to <b>' + num(ore.b) + '</b>. Both at once, or it is not the pair.');
-    hints.push('And a hammer is cut to a whole shape. If no whole pair does both, there is nothing in there to find.');
+    /* WAS "If no whole pair does both, there is nothing in there to find."
+       False for any lump carrying a numeric common factor over an irreducible
+       core: 2x² + 2 has no pair making 4 and adding to 0, and 2 runs straight
+       through it. The generator does not currently hand one out — 0 in 5,676
+       swept pieces — but a student carries the sentence out of the mine, and
+       his own give rung on that lump would say "2 runs through it". */
+    hints.push('And a hammer is cut to a whole shape. If no whole pair does both, there is no pair of brackets in there &mdash; once you have taken out anything <b>every term is carrying</b>.');
   }
   if(!hints.length) hints.push('Take the pieces one at a time, and name what you think runs through the one under the pick.');
   return {rung:'hint', beats:hints};
@@ -9291,15 +9470,17 @@ MF.SCREENS.home = function(host){
        nine when a tenth shaft opens is a lie nobody would think to go and
        correct, and a check that catches it is weaker than a number that
        cannot be wrong. */
-    {v:String(MF.LAYERS.length), l:'shapes',
-                            s:'Plain numbers down to cubes. <b>Naming the shape</b> is most of the work.'},
-    {v:'2', l:'directions', s:'The mine breaks; the forge pours. <b>Factoring is distributing, run backwards.</b>'},
-    {v:'1', l:'idea',       s:'A prime and an irreducible polynomial are <b>the same object</b>.'}
+    /* NO EXPLANATIONS (user, 2026-09-11: *"without the explanations"*). The
+       numeral and the noun, and nothing under them. Three sentences of gloss
+       were the third draft of a panel that has been getting shorter every time
+       it is looked at, which is the direction it wanted to go all along. */
+    {v:String(MF.LAYERS.length), l:'shapes'},
+    {v:'2', l:'directions'},
+    {v:'1', l:'idea'}
   ].forEach(function(it){
     var li = E('li','stat-item');
     li.appendChild(H('span','stat-value', it.v));
     li.appendChild(H('span','stat-label', it.l));
-    li.appendChild(H('span','stat-say', it.s));
     strip.appendChild(li);
   });
   sell.appendChild(strip);
@@ -10843,8 +11024,7 @@ MF.SCREENS['shed-mold'] = function(host){
   var stageHost = E('div'); panel.appendChild(stageHost);
   var chainHost = E('div'); panel.appendChild(chainHost);
   var eq = E('div','eq'); panel.appendChild(eq);
-  panel.appendChild(MF.says('<b>Mr Factor:</b> Remember this shape. In the mine you will run it backwards — ' +
-    'you will have the casting and be hunting for the metals that made it.'));
+  panel.appendChild(MF.says(MF.saysLine('mold-after-pour')));
   host.appendChild(panel);
 
   MF.paintQuestions(host, {list:[
@@ -11427,9 +11607,7 @@ MF.drawMill = function(box){
     '. Some of them come apart four times over and some will not move at all.'));
   box.appendChild(pick);
 
-  box.appendChild(MF.says(done
-    ? '<b>Mr Factor:</b> That row is the whole of it. Two miners who cut in a different order still end up with those same ingots — which is why a number has one set of metals in it.'
-    : '<b>Mr Factor:</b> Keep stamping until every piece is an ingot. That is all this is, and it is exactly what you will do to a trinomial down the mine.'));
+  box.appendChild(MF.says(MF.saysLine(done ? 'mill-done' : 'mill-going')));
 
   if(hadFocus){
     var back = box.querySelector('.millin') || box.querySelector('.leverbtn');
@@ -11844,8 +12022,7 @@ MF.paintCraft = function(host, st){
 
   if(!st.picked){
     box.appendChild(H('div','coldmold','The mold is cold.'));
-    box.appendChild(MF.says('<b>Mr Factor:</b> Pick an order off the board and I will open the mold. ' +
-      'Whatever you drop in gets used up — so if you spend your only (x + 3), you will be going back down for another.'));
+    box.appendChild(MF.says(MF.saysLine('forge-cold')));
     host.appendChild(box);
     return;
   }
@@ -17499,7 +17676,10 @@ MF.validate = function(){
   if(sellItems.length !== 3)
     errs.push('sell: the surface closes on ' + sellItems.length + ' boxes, not three');
   Array.prototype.forEach.call(sellItems, function(li, i){
-    ['stat-value','stat-label','stat-say'].forEach(function(part){
+    /* `stat-say` is gone (user, 2026-09-11: "without the explanations"), so the
+       check follows the panel rather than holding it to a shape it no longer
+       has. A numeral and a noun are the whole box now, and both must be there. */
+    ['stat-value','stat-label'].forEach(function(part){
       chk('sell');
       var n = li.querySelector('.' + part);
       /* AN EMPTY SPAN IS STILL A SPAN — the lesson-reveal checks passed for a
@@ -17515,7 +17695,7 @@ MF.validate = function(){
   /* CONTROL: an empty box must be caught */
   chk('sell');
   var sellCtl = document.createElement('li'); sellCtl.className = 'stat-item';
-  var sellCtlSay = document.createElement('span'); sellCtlSay.className = 'stat-say';
+  var sellCtlSay = document.createElement('span'); sellCtlSay.className = 'stat-label';
   sellCtl.appendChild(sellCtlSay);
   if((sellCtlSay.textContent||'').trim())
     errs.push('CONTROL: the sell check reads a blank line as filled');
@@ -24558,6 +24738,168 @@ MF.validate = function(){
   chk('nogrades');
   if(!/\bnothing is counted\b/i.test('Nothing is counted — a pair that does not go together'))
     errs.push('CONTROL: the dialogue sweep does not catch "Nothing is counted"');
+
+  /* ---- AND HE MAY NOT SAY THE SAME THING TWICE ----
+
+     Two dock beats and two in-room bubbles had grown into near-copies of each
+     other — "Take an order off the board" against "Pick an order off the
+     board", and the dock pre-empting the Molds' "run it backwards". Prose under
+     two maintainers drifts exactly the way code under two maintainers does, and
+     nothing was looking.
+
+     SENTENCE-LEVEL, NOT LINE-LEVEL. Whole lines were never equal — that is why
+     this went unnoticed — so the comparison is over normalised sentences, which
+     is the unit that actually got duplicated. */
+  var saidWhere = {};
+  vlines.forEach(function(l){
+    if(l.dyn) return;                       /* the varying rungs are templates */
+    String(l.text).split(/(?:\.|—|—)\s+/).forEach(function(s){
+      var key = s.toLowerCase().replace(/[^a-z0-9 ]+/g,'').replace(/\s+/g,' ').trim();
+      if(key.split(' ').length < 6) return; /* short clauses repeat innocently */
+      (saidWhere[key] = saidWhere[key] || []).push(l.id);
+    });
+  });
+  Object.keys(saidWhere).forEach(function(key){
+    chk('nogrades');
+    var ids = saidWhere[key];
+    if(ids.length > 1)
+      errs.push('nogrades: Mr Factor says the same sentence in ' + ids.join(' and ') +
+                ' — "' + key.slice(0,60) + '…"');
+  });
+  chk('nogrades');
+  if(Object.keys(saidWhere).length < 30)
+    errs.push('nogrades: the duplicate-line sweep only found ' + Object.keys(saidWhere).length +
+              ' sentences to compare, which is too few to be reading the whole script');
+
+  /* AND NO LINE MAY CARRY MARKUP TO THE STUDIO. `docs/VOICE.md` is read aloud
+     by a person; `&mdash;` in a beat is a person saying "ampersand m dash". The
+     tag strip was always here, the entity decode was not, and the script went
+     wrong the moment a beat was written with an entity rather than the
+     character.
+
+     WHAT THIS CAN AND CANNOT SEE, stated because the first version of it was
+     scenery. Planting `&mdash;` in a BEAT does not fire it and never could:
+     every beat passes through `voiceText`, which decodes the entity before this
+     ever reads it — a check written in terms of the thing it checks (§94). The
+     assertion that actually holds the guarantee is the CONTROL below, which
+     fires the moment `voiceText` stops decoding; that one is proved.
+
+     This line-level sweep is still reachable, and not by a beat: `clank-hint`
+     and `clank-give` are pushed into the script as raw literals and never touch
+     `voiceText`. An entity typed into one of those is a real fault, and this is
+     the only thing looking at it. */
+  vlines.forEach(function(l){
+    chk('nogrades');
+    if(/&[a-z]+;|&#\d+;|<[a-z\/]/i.test(String(l.text)))
+      errs.push('nogrades: the recording line ' + l.id + ' still has markup in it: "' +
+                String(l.text).slice(0,70) + '"');
+  });
+  chk('nogrades');
+  if(MF.voiceText('a &mdash; b') !== 'a — b')
+    errs.push('CONTROL: voiceText does not decode entities, so the recording script carries markup');
+
+  /* ---- WHAT HE SAYS OVER A LUMP MUST BE TRUE OF THAT LUMP ----
+
+     The `math-content` review drove the clank ladder over 5,676 floor pieces
+     and found three defects that every group on this page was green over,
+     because **nothing had ever run the two rungs that carry a lump's own
+     numbers**. `voiceLines` records them as "(varies with the lump)" and stops
+     there, which is honest about a recording script and useless as a check.
+
+       give  x⁴ + 5x² + 4    -> "x + 1 runs through it"   (it is x² + 1, and
+                                 x + 1 is NOT a factor — at x = −1 it is 10,
+                                 and the hammer would have refused it)
+       give  x² + 3xy + 2y²  -> "x + 1 runs through it"   (it is x + y)
+       hint  every deep kind -> "multiply to ? and add to ?"  (a·c off ore that
+                                 has no `a`, so NaN, so `num` prints ?)
+
+     Three things are asserted per kind, and the first is the one that matters:
+     **the factor he names must be one the rock actually accepts.** That is not
+     a second opinion about the arithmetic — it hands the ingot to `MF.breakOff`,
+     the same engine the anvil swings through, so a sentence and a swing cannot
+     disagree without this firing. */
+  var kinds = [
+    {nm:'number', ore:{kind:'number', n:72}},
+    {nm:'poly',   ore:{kind:'poly', a:1, b:-5, c:6}},
+    {nm:'shared', ore:{kind:'poly', a:2, b:10, c:12}},
+    {nm:'loaded', ore:{kind:'poly', a:6, b:7, c:-3}},
+    {nm:'group',  ore:MF.groupOre(2,3,6)},
+    {nm:'quart',  ore:MF.quartOre(5,4)},
+    {nm:'two',    ore:MF.twoOre(3,2)},
+    {nm:'cube',   ore:MF.cubeOre(1,-8)},
+    {nm:'bi',     ore:MF.biOre(2)},
+    {nm:'native', ore:{kind:'poly', a:1, b:0, c:4}}
+  ];
+  var gsKeep = MF.guideState;
+  kinds.forEach(function(K){
+    /* THE GIVE RUNG: the named factor must break the lump. */
+    MF.guideState = {seen:{'shed-mold':true}, open:false, at:0, room:'mine', clanks:MF.CLANK_GIVE, helped:0};
+    var give = null;
+    try { give = MF.clankAdvice(K.ore); } catch(e){ give = null; }
+    chk('guide');
+    if(!give || give.rung !== 'give'){
+      errs.push('guide: the give rung does not fire on ' + K.nm);
+    } else if(!MF.isNative(K.ore)){
+      var ing = MF.simplestFactor(K.ore), oreOf = MF.simplestFactorOre(K.ore);
+      var res = null;
+      try { res = MF.breakOff(K.ore, ing); } catch(e){ res = null; }
+      chk('guide');
+      if(!res || !res.left)
+        errs.push('guide: on ' + K.nm + ' he names a factor the rock refuses — "' +
+                  MF.voiceText(give.beats[0]) + '"');
+      /* ---- AND THE TWO HALVES MUST MULTIPLY BACK TO THE LUMP ----
+
+         NOT "does the sentence contain the factor". That was the first version
+         and it was circular: the sentence is BUILT from `simplestFactorOre`, so
+         comparing the two compares a thing with itself and can never fail (§94)
+         — planting a wrong factor made both sides wrong together and the check
+         sailed through. This multiplies what came off by what was left, through
+         `MF.rebuild`, and asks whether the original lump comes back. That is an
+         independent statement about arithmetic, and it is false whenever the
+         named piece is not really a factor. */
+      chk('guide');
+      if(res && res.left && res.right){
+        var back = null;
+        try { back = MF.rebuild([res.left, res.right]); } catch(e){ back = null; }
+        if(!back || !MF.oreEq(back, K.ore))
+          errs.push('guide: on ' + K.nm + ' the factor he names does not multiply back — ' +
+                    MF.oreText(res.left) + ' × ' + MF.oreText(res.right) + ' = ' +
+                    (back ? MF.oreText(back) : 'nothing') + ', not ' + MF.oreText(K.ore));
+      }
+      /* and the printed sentence must name the piece that actually came off */
+      chk('guide');
+      if(res && res.left && give.beats[0].indexOf(MF.oreLabel(res.left)) < 0)
+        errs.push('guide: on ' + K.nm + ' he says "' + MF.voiceText(give.beats[0]) +
+                  '" but what comes off is ' + MF.oreText(res.left));
+    }
+    /* THE HINT RUNG: no question mark may stand where a number belongs. */
+    MF.guideState = {seen:{'shed-mold':true}, open:false, at:0, room:'mine', clanks:MF.CLANK_SPEAK + 1, helped:0};
+    var hint = null;
+    try { hint = MF.clankAdvice(K.ore); } catch(e){ hint = null; }
+    chk('guide');
+    if(!hint || hint.rung !== 'hint'){
+      errs.push('guide: the hint rung does not fire on ' + K.nm);
+    } else {
+      var text = hint.beats.map(MF.voiceText).join(' ');
+      chk('guide');
+      if(/\bmultiply to \?|add to \?|\bNaN\b|undefined/.test(text))
+        errs.push('guide: the hint on ' + K.nm + ' prints a hole where a number belongs — "' + text + '"');
+      /* and the X may only be prescribed where the X is the method */
+      chk('guide');
+      if(/Put the <?b?>?X\b|the <b>X<\/b>|\bX\b on it/.test(hint.beats.join(' ')) &&
+         (K.nm === 'group' || K.nm === 'cube' || K.nm === 'bi'))
+        errs.push('guide: the hint tells a student to put the X on ' + K.nm +
+                  ', which does not come apart by a pair hunt');
+    }
+  });
+  MF.guideState = gsKeep;
+  /* CONTROL: the give-rung check must catch a factor the rock refuses */
+  chk('guide');
+  var badIngot = {m:1, k:1, p:1};
+  var ctlRes = null;
+  try { ctlRes = MF.breakOff(MF.quartOre(5,4), badIngot); } catch(e){ ctlRes = null; }
+  if(ctlRes && ctlRes.left)
+    errs.push('CONTROL: breakOff accepts x + 1 on x⁴ + 5x² + 4, so the give-rung check proves nothing');
 
   chk('nogrades');
   if(!marky.test('Nothing here is marked'))

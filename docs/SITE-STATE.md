@@ -22,7 +22,7 @@
 | **Screens** | **eight** — surface, the Stamp Mill, the Casting Shed and its three workshops, the mine, the forge |
 | **Layers** | **five**, all reachable from the first screen, none gated on anything |
 | **Instruments** | **seven**, all made at the forge, none granted |
-| **Validation** | `MF.validate()` → **26,430 checks / 48 groups / 0 errors**, two controls that must fail, and do — **run it at the width you ship from**, because `layout`, `reach`, `hollow` and `cartdraw` measure the live viewport and report it (`VERIFICATION.md` §61, §63, §65). Verified at **380×780, 560×760, 994×700 and 1250×900** |
+| **Validation** | `MF.validate()` → **26,582 checks / 48 groups / 0 errors**, two controls that must fail, and do — **run it at the width you ship from**, because `layout`, `reach`, `hollow` and `cartdraw` measure the live viewport and report it (`VERIFICATION.md` §61, §63, §65). Verified at **380×780, 560×760, 994×700 and 1250×900** |
 
 > **A check is only as wide as the space it sweeps.** The `truthy` group reported 0 errors across 642 checks while **1,970 Decimal Dial states printed a falsehood**, because it tested each lump's original integer coefficients and never nudged `c` — the one thing the dial exists to do. It now sweeps every slider position the control can reach (3,287 checks). Ask of any green result: *what did it not look at?*
 | **Runtime** | Zero dependencies, no build step, no network requests, no storage, runs from `file://` |
@@ -184,7 +184,7 @@ The face is **2280px of rock**, several screens wide, scanned by dragging, scrol
 
 ## The breaking floor: one anvil, the belt over it, and the ore on top
 
-**Measured 2026-09-07, all four widths, 0 errors over 26,430 checks in 48 groups, both controls failing.**
+**Measured 2026-09-07, all four widths, 0 errors over 26,582 checks in 48 groups, both controls failing.**
 
 > **The count moves with the sound files, and that is why two numbers were in circulation.**
 > `MF.validate()` run the instant after Enter reports about **90 fewer checks** than the same
@@ -1324,3 +1324,54 @@ now, up from 18. Proved by putting the sentence back into the beat: *`nogrades: 
 > **`docs/VOICE.md` moved with all four.** A recording script that says something the site does
 > not is a voice-over waiting to contradict the screen — the same reason it was updated during the
 > marking sweep the day before.
+
+## The clank ladder was saying false things, and nothing had ever run it
+
+The `math-content` agent drove `MF.clankAdvice` over **5,676 floor pieces** on 2026-09-11 and
+found three defects. Every group on the page was green over all of them, for one reason:
+**nothing had ever executed the two rungs that carry a lump's own numbers.** `MF.voiceLines`
+records them as *"(varies with the lump)"* and stops — which is honest about a recording script
+and useless as a check.
+
+| rung | on | said | the truth |
+|---|---|---|---|
+| give | `x⁴ + 5x² + 4` | *"x + 1 runs through it"* | it is `x² + 1`. At `x = −1` the lump is **10**, so `x + 1` is not a factor — and `MF.breakOff` would have **refused it**. He was telling a stuck student to swing at something the rock then called wrong. |
+| give | `x² + 3xy + 2y²` | *"x + 1 runs through it"* | it is `x + y`. Quieter and worse: the swing **lands**, because `breakOff` reads `k` as the y-coefficient, so nothing on screen contradicts the false sentence. |
+| hint | every deep kind | *"multiply to **?** and add to **?**"* | `a·c` off ore that has no `a` → `NaN` → `num(NaN)` prints `?`. And the X is not even the method for `group`, `cube` or `bi`. |
+
+**Both give-rung faults were rendering, not arithmetic.** `MF.simplestFactor` was right every time
+— `{m:1,k:1,p:2}` for the quartic — and `ingotHtml` renders `m·x + k` and silently drops the rest.
+`MF.simplestFactorOre` now returns the split's own `left` ore and the sentence goes through
+`MF.oreLabel`, the site's one printer, which already wrote `x² + 1` and `x + y` correctly
+everywhere else.
+
+**The hint rung now has a branch per shape** — pair the terms for a grouping lump, two cube roots
+for a cube, *"nothing to hunt, it is finished"* for a lone two-letter bracket, the gear change then
+the X for a quartic, the X with the letter riding along for two letters — and where the X **is**
+right, the target is `c`, which the engine was holding all along.
+
+**Three smaller ones, same review:**
+
+- *"Nothing runs through that one at all"* on native metal **blurred the ring**. `x² − 2` is native
+  here and factors over the reals; the engine even records its roots, and the Decimal Dial exists
+  to show exactly that. `MF.ASSAY.pure` has always said *"no whole-number seam"* — this line was
+  the one place that dropped the qualifier. 46 of 288 native quadratic pieces, all reachable.
+- *"If no whole pair does both, there is nothing in there to find"* is **false** for a numeric
+  common factor over an irreducible core: `2x² + 2` has no pair making 4 and adding to 0, and `2`
+  runs straight through it. Not currently reachable from the generator (0 in 5,676) — but it is a
+  sentence a student carries out of the mine, and his own give rung on that lump contradicts it.
+- The plain-number hint stopped at *"2, then 3, then 5"*, and `49` reaches the anvil (break `98`).
+
+### The `guide` group grew a sweep over what he says about a lump
+
+Ten ore kinds, both rungs, and the assertion that matters is: **the factor he names must be one
+the rock accepts.** It hands the ingot to `MF.breakOff` — the same engine the anvil swings through
+— so a sentence and a swing cannot disagree without this firing.
+
+> **The first version of the second assertion was circular and is recorded here because it took a
+> fault plant to notice.** It compared the printed sentence against `simplestFactorOre` — the very
+> thing the sentence is built from — so planting a wrong factor made both sides wrong together and
+> the check sailed through (§94, for the fifth time on this project). What replaced it multiplies
+> the two halves back together through `MF.rebuild` and asks whether the original lump returns,
+> which is an independent statement about arithmetic. Proved by restoring the old `ingotHtml`
+> rendering: *"on quart he says … x + 1 … but what comes off is x² + 1"*, and the same for `two`.
