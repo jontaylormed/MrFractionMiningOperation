@@ -22,7 +22,7 @@
 | **Screens** | **eight** — surface, the Stamp Mill, the Casting Shed and its three workshops, the mine, the forge |
 | **Layers** | **five**, all reachable from the first screen, none gated on anything |
 | **Instruments** | **seven**, all made at the forge, none granted |
-| **Validation** | `MF.validate()` → **26,404 checks / 48 groups / 0 errors**, two controls that must fail, and do — **run it at the width you ship from**, because `layout`, `reach`, `hollow` and `cartdraw` measure the live viewport and report it (`VERIFICATION.md` §61, §63, §65). Verified at **380×780, 560×760, 994×700 and 1250×900** |
+| **Validation** | `MF.validate()` → **26,430 checks / 48 groups / 0 errors**, two controls that must fail, and do — **run it at the width you ship from**, because `layout`, `reach`, `hollow` and `cartdraw` measure the live viewport and report it (`VERIFICATION.md` §61, §63, §65). Verified at **380×780, 560×760, 994×700 and 1250×900** |
 
 > **A check is only as wide as the space it sweeps.** The `truthy` group reported 0 errors across 642 checks while **1,970 Decimal Dial states printed a falsehood**, because it tested each lump's original integer coefficients and never nudged `c` — the one thing the dial exists to do. It now sweeps every slider position the control can reach (3,287 checks). Ask of any green result: *what did it not look at?*
 | **Runtime** | Zero dependencies, no build step, no network requests, no storage, runs from `file://` |
@@ -184,7 +184,7 @@ The face is **2280px of rock**, several screens wide, scanned by dragging, scrol
 
 ## The breaking floor: one anvil, the belt over it, and the ore on top
 
-**Measured 2026-09-07, all four widths, 0 errors over 26,404 checks in 48 groups, both controls failing.**
+**Measured 2026-09-07, all four widths, 0 errors over 26,430 checks in 48 groups, both controls failing.**
 
 > **The count moves with the sound files, and that is why two numbers were in circulation.**
 > `MF.validate()` run the instant after Enter reports about **90 fewer checks** than the same
@@ -1293,3 +1293,34 @@ says something the site does not is a voice recording waiting to contradict the 
 **`README.md` keeps the rule and the reasoning.** It is the repository's own documentation rather
 than anything a student opens, and deleting the *why* from the one place that records it is how a
 line like this gets written again in six months.
+
+### Mr Factor was never swept, and a comment said he was
+
+The `teacher` agent reviewed his dialogue on 2026-09-11 and found the denial of marking still
+standing in his voice — `room-shed-words-2`, *"Nothing is counted"* — **one day after the same
+denial was taken off eleven other surfaces**. The reason is the interesting part.
+
+A comment above `MF.GUIDE` claimed *"`nogrades` sweeps his copy along with everything else."*
+**It did not, and never had.** Both sweeps build `MF.SCREENS` into a detached probe, and the dock
+lives **outside `#screen`** by design. Measured directly: a `SCREENS.home` probe contains not one
+word of `room-home-1`. The `contrast` group states this exact blind spot and builds the dock into
+its own probe to beat it; the two `nogrades` sweeps did not — and the omission was invisible
+because *a sweep reporting a denominator of eighteen looks like a sweep that is working*
+(`CLAUDE.md` rule 5, again).
+
+`MF.voiceLines()` already enumerates every beat in every room, because `docs/VOICE.md` is
+generated from it. Sweeping that is the whole fix and costs one loop. `nogrades` is **44 checks**
+now, up from 18. Proved by putting the sentence back into the beat: *`nogrades: Mr Factor says
+"Nothing is counted" in room-shed-words-2`*.
+
+**Three of his lines were also stale or false, and all three are fixed:**
+
+| room | was | why it was wrong |
+|---|---|---|
+| `room-forge-3` | *"If the casting is sound you keep the tool. A tool never gates anything — it reads a lump for you and that is all."* | True of seven orders and **false of four of the eleven** since the Deep Castings landed. A part carries no lens and reads nothing — a student who had dug layers 6–9 was told the Winding Frame would read a lump for them. |
+| `room-home-3` | *"…where your metal ends up. **You have not put anything in it yet.**"* | The portrait replays from the top at any time (§42), so the second sentence is false for anyone who has racked a metal. It also named the one thing in the scene that is **not** a door, one beat after saying everything out there is a building you can walk into. |
+| `room-forge-2` | *"Take an order off **the** board"* | There are two boards now. |
+
+> **`docs/VOICE.md` moved with all four.** A recording script that says something the site does
+> not is a voice-over waiting to contradict the screen — the same reason it was updated during the
+> marking sweep the day before.

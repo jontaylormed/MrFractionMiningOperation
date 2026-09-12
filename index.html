@@ -6847,7 +6847,13 @@ MF.GUIDE = {
   home: {where:'THE SURFACE', beats:[
     'Everything here is a building you can walk into, and the bar at the top goes to all of them.',
     'Start in <b>the mine</b> if you want to break something, or the <b>Casting Shed</b> if you would rather read first. Neither is required and neither locks.',
-    'The yard in the corner is where your metal ends up. You have not put anything in it yet.'
+    /* WAS "...where your metal ends up. You have not put anything in it yet."
+       The portrait replays from the top at any time — by design, because the
+       student who needs him most is the one who came back (MINE-SPEC §42) — so
+       the second sentence is false for everyone who has racked anything. It
+       also named the one thing in the scene that is NOT a door, one beat after
+       saying everything here is a building you can walk into. */
+    'The yard in the corner is where your metal ends up. It is the one thing out there you do not walk into &mdash; the working yard is a band inside the mine.'
   ]},
   mine: {where:'THE MINE', beats:[
     'Pick a lump out of the wall and it goes in your cart. Dig as deep as you like — nothing has to be worked before you go further.',
@@ -6857,8 +6863,13 @@ MF.GUIDE = {
   ]},
   forge: {where:'THE FORGE', beats:[
     'This is the one place on the site that <b>multiplies</b> instead of breaking. Metal goes into a mold and one object comes out.',
-    'Take an order off the board and I will open the mold. You spend metal out of the yard to fill it.',
-    'If the casting is sound you keep the tool. A tool never gates anything — it reads a lump for you and that is all.'
+    'Take an order off a board and I will open the mold. You spend metal out of the yard to fill it.',
+    /* WAS "you keep the tool. A tool never gates anything - it reads a lump for
+       you and that is all." True of the seven, and false of four of the eleven
+       orders since the Deep Castings landed: a part carries no lens and reads
+       nothing. A student who has dug layers 6-9 was being told the Winding
+       Frame would read a lump for them. */
+    'If the casting is sound you keep what you made. The seven on the left are instruments &mdash; each reads a lump for you, and none of them gates anything. The four deep castings are objects, and read nothing.'
   ]},
   'workshop-mold': {where:'THE CASTING SHED', beats:[
     'Three short workshops. <b>The Words</b> is the vocabulary, <b>The Molds</b> is what a pour actually does, and <b>The Tools</b> is how each instrument works.',
@@ -6870,7 +6881,7 @@ MF.GUIDE = {
   ]},
   'shed-words': {where:'THE WORDS', beats:[
     'Every mining name here is a real mathematical thing with a real name. The table has both columns.',
-    'Then put them together yourself in the matching activity. Nothing is counted — a pair that does not go together tells you what each word means and lets go.'
+    'Then put them together yourself in the matching activity. A pair that does not go together tells you what each word means and lets go.'
   ]},
   'shed-methods': {where:'THE TOOLS', beats:[
     'One lesson per instrument you have cast. Each one walks its method a slide at a time, and every slide has the picture on it.',
@@ -9473,7 +9484,7 @@ MF.paintMatch = function(host, o){
   var box = E('div','matchbox');
   box.appendChild(H('div','mtlab','&#128279; PUT EACH ONE WITH ITS REAL NAME'));
   box.appendChild(H('p','mthint','Click a word on the left, then the name it is for on the right. ' +
-    'Nothing is counted &mdash; a pair that does not go together tells you what each one means and lets go.'));
+    'A pair that does not go together tells you what each one means and lets go.'));
 
   var grid = E('div','mtgrid');
   var left = E('div','mtcol'), right = E('div','mtcol');
@@ -24513,6 +24524,41 @@ MF.validate = function(){
     if(m) errs.push('nogrades: screen "'+name+'" says "'+m[0]+'" — the site does not discuss marking, ' +
                     'including to deny it');
   });
+  /* ---- AND MR FACTOR IS SWEPT NOW, WHICH HE NEVER HAS BEEN ----
+
+     A comment three screens up claimed "`nogrades` sweeps his copy along with
+     everything else." It did not, and had never done: BOTH sweeps build
+     `MF.SCREENS` into a detached probe, and **the dock lives outside
+     `#screen`** by design. Measured: the home probe does not contain one word
+     of `room-home-1`. The `contrast` group states this exact blind spot and
+     builds the dock into its own probe to beat it; these two did not, and the
+     omission was invisible because a screen sweep reporting a denominator of
+     eighteen looks like a sweep that is working.
+
+     What it let through: `room-shed-words-2` still said *"Nothing is counted"*
+     a day after the same denial was taken off eleven other surfaces — the
+     clearest surviving instance on the site, in the one voice a student is
+     most likely to read.
+
+     `MF.voiceLines()` already enumerates every beat in every room, because the
+     recording script is generated from it. Sweeping that is the whole fix, and
+     it costs one loop. */
+  var vlines = MF.voiceLines ? MF.voiceLines() : [];
+  chk('nogrades');
+  if(vlines.length < 20)
+    errs.push('nogrades: only ' + vlines.length + ' guide lines to sweep — the dialogue sweep is ' +
+              'reporting a denominator too small to be the whole script');
+  vlines.forEach(function(l){
+    chk('nogrades');
+    var m = String(l.text || '').match(banned) || String(l.text || '').match(marky) ||
+            String(l.text || '').match(/\bnothing is counted\b/i);
+    if(m) errs.push('nogrades: Mr Factor says "' + m[0] + '" in ' + l.id +
+                    ' — the site does not discuss marking, including to deny it');
+  });
+  chk('nogrades');
+  if(!/\bnothing is counted\b/i.test('Nothing is counted — a pair that does not go together'))
+    errs.push('CONTROL: the dialogue sweep does not catch "Nothing is counted"');
+
   chk('nogrades');
   if(!marky.test('Nothing here is marked'))
     errs.push('CONTROL: the marking sweep does not catch "Nothing here is marked"');

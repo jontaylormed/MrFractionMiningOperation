@@ -117,20 +117,20 @@ happens far more often. Positional ids are the lesser of the two, but this is th
 |---|---|---|
 | `room-home-1` | The surface | Everything here is a building you can walk into, and the bar at the top goes to all of them. |
 | `room-home-2` | The surface | Start in the mine if you want to break something, or the Casting Shed if you would rather read first. Neither is required and neither locks. |
-| `room-home-3` | The surface | The yard in the corner is where your metal ends up. You have not put anything in it yet. |
+| `room-home-3` | The surface | The yard in the corner is where your metal ends up. It is the one thing out there you do not walk into — the working yard is a band inside the mine. |
 | `room-mine-1` | The mine | Pick a lump out of the wall and it goes in your cart. Dig as deep as you like — nothing has to be worked before you go further. |
 | `room-mine-2` | The mine | Put one on the bench and name a factor, then swing. Either the seam runs or the pick glances off, and the rock tells you which. |
 | `room-mine-3` | The mine | What is left goes back under the hammer. Keep going until nothing will come apart — that is native metal, and it is finished. |
 | `room-mine-4` | The mine | Nothing here is timed. A swing that misses costs you the swing. |
 | `room-forge-1` | The forge | This is the one place on the site that multiplies instead of breaking. Metal goes into a mold and one object comes out. |
-| `room-forge-2` | The forge | Take an order off the board and I will open the mold. You spend metal out of the yard to fill it. |
-| `room-forge-3` | The forge | If the casting is sound you keep the tool. A tool never gates anything — it reads a lump for you and that is all. |
+| `room-forge-2` | The forge | Take an order off a board and I will open the mold. You spend metal out of the yard to fill it. |
+| `room-forge-3` | The forge | If the casting is sound you keep what you made. The seven on the left are instruments — each reads a lump for you, and none of them gates anything. The four deep castings are objects, and read nothing. |
 | `room-workshop-mold-1` | The Casting Shed | Three short workshops. The Words is the vocabulary, The Molds is what a pour actually does, and The Tools is how each instrument works. |
 | `room-workshop-mold-2` | The Casting Shed | None of them is required. Come back here when a word in the mine stops making sense. |
 | `room-shed-mold-1` | The Molds | Move the sliders and watch the pour. Whatever you put in decides what comes out — you never choose the shape. |
 | `room-shed-mold-2` | The Molds | The working underneath is the same multiplication written a line at a time. The mine runs it backwards. |
 | `room-shed-words-1` | The Words | Every mining name here is a real mathematical thing with a real name. The table has both columns. |
-| `room-shed-words-2` | The Words | Then put them together yourself in the matching activity. Nothing is counted — a pair that does not go together tells you what each word means and lets go. |
+| `room-shed-words-2` | The Words | Then put them together yourself in the matching activity. A pair that does not go together tells you what each word means and lets go. |
 | `room-shed-methods-1` | The Tools | One lesson per instrument you have cast. Each one walks its method a slide at a time, and every slide has the picture on it. |
 | `room-shed-methods-2` | The Tools | Under the walkthrough is a bench with three lumps on it. Take the instrument off the hook and hold it to one — that is the part that is not reading. |
 | `room-workshop-ore-1` | The Stamp Mill | Plain numbers, and the factors of everything up to a hundred. |
