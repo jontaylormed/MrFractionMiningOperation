@@ -22,7 +22,7 @@
 | **Screens** | **eight** — surface, the Stamp Mill, the Casting Shed and its three workshops, the mine, the forge |
 | **Layers** | **five**, all reachable from the first screen, none gated on anything |
 | **Instruments** | **seven**, all made at the forge, none granted |
-| **Validation** | `MF.validate()` → **26,582 checks / 48 groups / 0 errors**, two controls that must fail, and do — **run it at the width you ship from**, because `layout`, `reach`, `hollow` and `cartdraw` measure the live viewport and report it (`VERIFICATION.md` §61, §63, §65). Verified at **380×780, 560×760, 994×700 and 1250×900** |
+| **Validation** | `MF.validate()` → **26,588 checks / 48 groups / 0 errors**, two controls that must fail, and do — **run it at the width you ship from**, because `layout`, `reach`, `hollow` and `cartdraw` measure the live viewport and report it (`VERIFICATION.md` §61, §63, §65). Verified at **380×780, 560×760, 994×700 and 1250×900** |
 
 > **A check is only as wide as the space it sweeps.** The `truthy` group reported 0 errors across 642 checks while **1,970 Decimal Dial states printed a falsehood**, because it tested each lump's original integer coefficients and never nudged `c` — the one thing the dial exists to do. It now sweeps every slider position the control can reach (3,287 checks). Ask of any green result: *what did it not look at?*
 | **Runtime** | Zero dependencies, no build step, no network requests, no storage, runs from `file://` |
@@ -184,7 +184,7 @@ The face is **2280px of rock**, several screens wide, scanned by dragging, scrol
 
 ## The breaking floor: one anvil, the belt over it, and the ore on top
 
-**Measured 2026-09-07, all four widths, 0 errors over 26,582 checks in 48 groups, both controls failing.**
+**Measured 2026-09-07, all four widths, 0 errors over 26,588 checks in 48 groups, both controls failing.**
 
 > **The count moves with the sound files, and that is why two numbers were in circulation.**
 > `MF.validate()` run the instant after Enter reports about **90 fewer checks** than the same
@@ -1375,3 +1375,47 @@ the rock accepts.** It hands the ingot to `MF.breakOff` — the same engine the 
 > the two halves back together through `MF.rebuild` and asks whether the original lump returns,
 > which is an independent statement about arithmetic. Proved by restoring the old `ingotHtml`
 > rendering: *"on quart he says … x + 1 … but what comes off is x² + 1"*, and the same for `two`.
+
+## Mr Factor comes inside the dialog, because he could not reach it
+
+**USER, 2026-09-11:** *"Mr Fraction should also be around in the Breaking Room and the Cast Shed.
+It's ok to disappear from the surface and stamp mill and forge after the first lesson. But Mr
+Fraction should be around when students have the potential to be struggling with the correct
+inputs and understanding."*
+
+He was already docked in all eight rooms. **The gap was not which rooms — it was `z-index`.** The
+dock is `40` and `.scrim` is `70`, so he sat behind every dialog on the site, and the hammer panel
+*is* a dialog. At the one moment the whole clank ladder exists for — a student looking at the
+boxes, about to type a factor, having already missed three times — the lamp was lit on a tab
+nobody could click.
+
+**Raising the dock over the scrim would have been the wrong fix.** These sheets carry a focus trap
+(`MF._sheetKeys`); a control floating outside the dialog is one a keyboard cannot reach and a
+screen reader is told is not there. He is rendered **inside** the sheet instead, above the foot,
+where the trap already includes him — wired into `MF._openSheet` as an optional `guide`, and
+passed by the two panels a stuck student actually holds open: **the hammer** (`MF.openHammer`) and
+**any instrument held to a lump** (`MF.openTool`, which is the Casting Shed's bench as well as the
+mine's).
+
+**He is still silent by default.** It renders nothing unless `MF.clankAdvice` returns a rung — the
+same ladder as ever: nothing before three clanks, and it resets the moment a seam runs. A panel
+that offered help every time it opened would be the hint button this project has refused since
+§10a.
+
+### He arrives folded, and the `reach` group is the reason
+
+Open, he is 177px of paper. Added to the hammer panel at **380px** that put the dialog at *787px
+of question in a 681px box* — **the swing button below the fold**, which is the exact failure that
+panel has already been trimmed for twice. Caught on the first measurement rather than by a
+student. A guide who buries the button you need is not help.
+
+Folded he is **60px** with a **44px** touch target; one click opens the rung. And the padding is
+`6px`, not the `11px` it was drawn with, because at **994×700** the panel is capped at 88vh = 616px
+and its content measured 615 — *four pixels* of headroom before the swing button needs a scroll.
+
+| | folded | open |
+|---|---|---|
+| height | 60px | 182px |
+
+> Verified at all four widths, and the `give` rung — the loud one, which hands over a factor — is
+> the one that takes the most room and was the one measured.

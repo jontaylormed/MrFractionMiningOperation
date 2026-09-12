@@ -1520,6 +1520,30 @@ input::placeholder, textarea::placeholder{color:#6B5B48; opacity:1}
   border:3px solid var(--rock-3); border-radius:15px; box-shadow:0 18px 44px rgba(0,0,0,.5);
   animation:sheetrise 220ms cubic-bezier(.2,.8,.3,1) 1}
 .toolsheet:focus{outline:none}
+/* ---- MR FACTOR, INSIDE THE DIALOG ----
+   He reads as an aside rather than as part of the instrument: a rule above him,
+   his own paper, and the portrait small. He is only ever here when the clank
+   ladder has earned it, so he must not look like furniture the panel always
+   carries. */
+/* PADDING IS 6px, NOT 11px, AND THAT IS A MEASUREMENT. At 994x700 the hammer
+   panel is capped at 88vh = 616px and its content was 615 — four pixels of
+   headroom before the swing button needs a scroll. The folded row has to be as
+   close to its 44px touch target as it can get. */
+.tsguide{border-top:2px solid var(--rule); background:var(--sheet-2);
+  padding:6px 14px 8px}
+.tsgname{display:flex; align-items:center; gap:8px; width:100%; text-align:left;
+  min-height:44px; padding:2px 0; cursor:pointer;
+  background:none; border:0; font-family:var(--display); color:var(--ore-t)}
+.tsgname svg{display:block; width:28px; height:auto; flex:0 0 auto}
+.tsgwho{font-size:12px; letter-spacing:.08em; text-transform:uppercase}
+.tsgcue{font-family:var(--body); font-size:13px; color:var(--ink-soft); text-transform:none; letter-spacing:0}
+.tsgname:after{content:"\25BE"; margin-left:auto; color:var(--ore-t); font-size:13px}
+.tsgname[aria-expanded=true]:after{content:"\25B4"}
+.tsgname:focus-visible{outline:3px solid var(--ore-t); outline-offset:2px}
+.tsgsay{margin:6px 0 0; font-size:14px; line-height:1.5; color:var(--ink)}
+.tsgsay:first-of-type{margin-top:2px}
+/* the handover rung is the loud one, and it says so */
+.tsguide[data-rung="give"]{background:var(--sheet-3, var(--sheet-2)); border-top-color:var(--ore-t)}
 @media (prefers-reduced-motion:reduce){ .scrim,.toolsheet{animation:none} }
 .tshead{display:flex; gap:11px; align-items:center; padding:13px 15px;
   background:linear-gradient(180deg,var(--rock-2),var(--rock)); border-radius:12px 12px 0 0; color:#FFF3DE}
@@ -9401,9 +9425,32 @@ MF.SCREENS.home = function(host){
   hero.appendChild(MF.art(104));
   var ht = E('div'); ht.style.flex='1 1 320px';
   ht.appendChild(H('h2',null,'Ore looks like rock.'));
+  /* ---- THE LOOP THIS PARAGRAPH DESCRIBES HAD NOT EXISTED FOR WEEKS ----
+
+     It read: "you do three things and only three: ASSAY a lump to see what it
+     is, SMELT it to separate out its pure metals, and POUR those metals into a
+     mold to find out whether you were right." Three things wrong with it, and
+     it was the first paragraph a student reads:
+
+       - THE MINE DOES NOT SMELT (MINE-SPEC §11). The split is the whole thesis:
+         the mine BREAKS and the forge POURS. Smelting moved out of the mine and
+         this sentence kept it there.
+       - THE ASSAY IS NOT A GATE any more (§15a). "You do three things" made the
+         naming step compulsory; it is offered.
+       - THE POUR IS NOT WHERE YOU FIND OUT whether a break was right. The ROCK
+         says that, in the mine, when the seam runs or the pick glances off. The
+         pour judges a casting, which is a different question in a different
+         building.
+
+     Mr Factor's own mine beats have been on the current loop all along, so the
+     front page was the stale copy and the guide was the fresh one. */
   ht.appendChild(H('p','lede','A vein <em>is</em> a factor — it was in the rock before you arrived. ' +
-    'Down here you do three things and only three: <b>assay</b> a lump to see what it is, <b>smelt</b> it to separate out its pure metals, ' +
-    'and <b>pour</b> those metals into a mold to find out whether you were right.'));
+    'In the mine you <b>break</b>: name a factor, swing, and the rock tells you whether the seam ran. ' +
+    'Whatever is left goes back under the hammer until nothing will come apart.'));
+  /* THE INGOT IS THE NEXT PARAGRAPH'S JOB, so this one stops at the forge
+     rather than defining it twice two lines apart. */
+  ht.appendChild(H('p','lede','The <b>forge</b> runs it the other way — metals go into a mold and one object comes out. ' +
+    'That is <b>distributing</b>, and it happens nowhere else.'));
   ht.appendChild(H('p','lede','<b>72</b> and <b>x² − 5x + 6</b> are the same job. A prime and a polynomial nothing separates are the same thing: ' +
     'an <b>ingot</b> — already pure. That is what this whole operation is for.'));
   hero.appendChild(ht);
@@ -9417,8 +9464,25 @@ MF.SCREENS.home = function(host){
 
   var cards = E('div','cards');
 
-  cards.appendChild(MF.card('The Casting Shed', 'PLAY, NO QUESTIONS',
-    'Pour metals into a mold and watch one formed object come out. This is the distributive property, and it is the move you will use to check every single smelt.',
+  /* ---- ONE OF THESE TAGS WAS FALSE AND ONE WAS NOT, AND I CHANGED BOTH ----
+
+     `MF.paintQuestions` is called in exactly three places: `shed-mold`,
+     `shed-words` and `shed-methods` — the three WORKSHOPS. Neither
+     `workshop-mold` (the Casting Shed's own hub) nor `workshop-ore` (the Stamp
+     Mill) draws a single question.
+
+     So the Stamp Mill's "PLAY, NO QUESTIONS" was simply TRUE, and it is back.
+     The claim that it was false came out of a review, was repeated here without
+     being checked against `paintQuestions`, and cost the card its accurate tag
+     for ten minutes. Read the denominator (`CLAUDE.md` 5) applies to a report
+     as much as to a green group.
+
+     The Casting Shed's tag stays changed, for a different and weaker reason:
+     the hub itself has no questions, but it is a door onto three rooms that all
+     do, and "no questions" on the front of that is a promise a student meets
+     one click later. `THREE WORKSHOPS` says what is behind it instead. */
+  cards.appendChild(MF.card('The Casting Shed', 'THREE WORKSHOPS',
+    'Pour metals into a mold and watch one formed object come out. This is the distributive property, and it is the move the mine runs backwards all day.',
     'Open the mold', function(){ MF.go('workshop-mold'); }));
 
   cards.appendChild(MF.card('The Stamp Mill', 'PLAY, NO QUESTIONS',
@@ -9426,7 +9490,7 @@ MF.SCREENS.home = function(host){
     'Into the mill', function(){ MF.go('workshop-ore'); }));
 
   cards.appendChild(MF.card('The Mine', 'THE ORE CART',
-    'Dig as deep as you like and fill your cart — you never have to smelt anything to go deeper. Then work a lump when you feel like it.',
+    'Dig as deep as you like and fill your cart — you never have to break anything to go deeper. Then work a lump when you feel like it.',
     'Enter the mine', function(){ MF.go('mine'); }));
 
   host.appendChild(cards);
@@ -15327,6 +15391,11 @@ MF.openHammer = function(B, opener){
     closeText: 'Put it down',
     opener: opener,
     foot: 'The rock decides, not this panel. <b>Esc</b> puts the hammer down.',
+    /* HE IS IN HERE NOW, on the same ladder as everywhere else: silent for the
+       first three clanks, then the method, then a factor at twelve. This is the
+       panel where a student is choosing what to type, which is where being
+       stuck actually happens — and it is the one place he could not be seen. */
+    guide: function(){ return MF.clankAdvice(ore); },
     fill: function(body){
       var cut = E('div','cutbar hammerask');
       /* NO `cutlab` HERE. The panel's own title asks the question and the row
@@ -15841,6 +15910,66 @@ MF._openSheet = function(o){
   catch(e){ body.appendChild(H('div','note warn','This instrument could not get a reading off that.')); }
   sheet.appendChild(body);
 
+  /* ---- MR FACTOR COMES INTO THE DIALOG, BECAUSE HE CANNOT REACH IT ----
+
+     USER, 2026-09-11: *"Mr Fraction should also be around in the Breaking Room
+     and the Cast Shed… Mr Fraction should be around when students have the
+     potential to be struggling with the correct inputs and understanding."*
+
+     THE DOCK IS z-index 40 AND `.scrim` IS 70. He is behind every dialog on the
+     site — and the hammer panel is a dialog, so he was unreachable at the one
+     moment the whole ladder exists for: a student staring at the boxes, about
+     to type a factor, having already missed. The lamp was lit on a tab nobody
+     could click.
+
+     RAISING THE DOCK OVER THE SCRIM WOULD BE THE WRONG FIX. These sheets carry
+     a focus trap (`MF._sheetKeys`), so a control floating outside the dialog is
+     one a keyboard cannot reach and a screen reader is told is not there. He
+     comes INSIDE the panel instead, above the foot, where the trap already
+     includes him.
+
+     HE IS STILL SILENT BY DEFAULT. This renders nothing unless `o.guide`
+     returns a rung, and the rung is the same `MF.clankAdvice` ladder as ever —
+     nothing before three clanks, and it resets the moment a seam runs. A panel
+     that offered help every time it opened would be the hint button this
+     project has refused from the start. */
+  if(o.guide){
+    var rung = null;
+    try { rung = o.guide(); } catch(e){ rung = null; }
+    if(rung && rung.beats && rung.beats.length){
+      var gin = E('div','tsguide');
+      gin.setAttribute('data-rung', rung.rung);
+      /* ---- HE ARRIVES FOLDED, AND THE `reach` GROUP IS WHY ----
+
+         Open, he is 177px of paper. Added to the hammer panel at 380px that put
+         the whole dialog at 787px of content in a 681px box and the SWING
+         BUTTON BELOW THE FOLD — the exact failure this panel has been trimmed
+         for twice already, caught the first time it was measured rather than
+         found by a student. A guide who buries the button you need is not help.
+
+         Folded he is one row. The student who is not stuck loses nothing; the
+         student who is stuck is one click from the whole rung, and the lamp
+         says there is something to click. */
+      var gb = E('button','tsgname'); gb.type = 'button';
+      gb.setAttribute('aria-expanded','false');
+      gb.appendChild(MF.art(28));
+      gb.appendChild(H('span','tsgwho', 'Mr Factor'));
+      gb.appendChild(H('span','tsgcue', rung.rung === 'give'
+        ? 'will just tell you this one'
+        : 'has a word about this one'));
+      var body2 = E('div','tsgbody');
+      body2.hidden = true;
+      rung.beats.forEach(function(b){ body2.appendChild(H('p','tsgsay', b)); });
+      on(gb,'click',function(){
+        body2.hidden = !body2.hidden;
+        gb.setAttribute('aria-expanded', body2.hidden ? 'false' : 'true');
+      });
+      gin.appendChild(gb);
+      gin.appendChild(body2);
+      sheet.appendChild(gin);
+    }
+  }
+
   var foot = E('div','tsfoot');
   foot.appendChild(H('div','hint', o.foot ||
     'Nothing here swings for you. Press <b>Esc</b> to put it away.'));
@@ -15863,6 +15992,11 @@ MF.openTool = function(key, ore, opener, pieceId){
     label: t.nm + ', held to ' + MF.oreText(ore),
     icon: t.ic, title: t.nm, sub: 'held to <b>' + MF.oreLabel(ore) + '</b>',
     closeText: 'Take it away', opener: opener, key: key,
+    /* AND IN THE INSTRUMENT PANEL TOO — this is the other sheet a student holds
+       open while they are stuck, in the mine and on the Casting Shed's bench
+       alike. Same ladder, same silence: it renders nothing until the clanks
+       have earned it. */
+    guide: function(){ return MF.clankAdvice(ore); },
     fill: function(body){
       var reader = MF.TOOL_READ[key];
       if(reader) reader(body, ore, pieceId);
@@ -16993,6 +17127,47 @@ MF.validate = function(){
     chk('parts');
     if(!ovStage.querySelector('.deepboard'))
       errs.push('parts: there is no Deep Castings board on the forge at all');
+
+    /* ---- A CARD MAY NOT PROMISE SOMETHING THE ROOM BEHIND IT BREAKS ----
+
+       Two front-page cards were tagged "PLAY, NO QUESTIONS" over rooms that
+       both have question cards in them. The tag had been taken off the ROOMS
+       for being false and left on the front page — the worse half to leave it
+       on, because it is what a student reads before deciding to walk in.
+
+       The general rule rather than the instance: a card claiming no questions
+       must sit over a room that draws none. Checked by building the room and
+       looking, so it follows the room rather than a second list of which rooms
+       are quiet — which is the kind of list that goes stale exactly this way. */
+    var cardRooms = {'The Casting Shed':'workshop-mold', 'The Stamp Mill':'workshop-ore', 'The Mine':'mine'};
+    var homeStage = document.createElement('div');
+    MF.SCREENS.home(homeStage);
+    var roomCards = homeStage.querySelectorAll('.card');
+    chk('parts');
+    if(roomCards.length !== 3)
+      errs.push('parts: the surface draws ' + roomCards.length + ' room cards, not three');
+    Array.prototype.forEach.call(roomCards, function(c){
+      chk('parts');
+      var tag = ((c.querySelector('.tagline-pill')||{}).textContent || '');
+      var nm  = ((c.querySelector('h3')||{}).textContent || '').trim();
+      if(!/no questions?/i.test(tag)) return;
+      var scr = cardRooms[nm];
+      if(!scr) return;
+      var rprobe = document.createElement('div');
+      try { MF.SCREENS[scr](rprobe); } catch(e){ return; }
+      /* `.qt` IS THE QUESTION'S OWN TEXT, and it is what `MF.paintQuestions`
+         actually draws. The first version of this line guessed `.qcard, .qbox,
+         .question` — none of which exist anywhere in the file, so it matched
+         nothing on every room and the check could not have failed. Verified by
+         building all four rooms and reading the class names off them. */
+      if(rprobe.querySelector('.qt, .qopts, .qsub'))
+        errs.push('parts: the card for "' + nm + '" promises "' + tag +
+                  '" and that room has questions in it');
+    });
+    /* CONTROL: the promise has to be recognisable when it is made */
+    chk('parts');
+    if(!/no questions?/i.test('PLAY, NO QUESTIONS'))
+      errs.push('CONTROL: the card-tag check cannot recognise a no-questions promise');
     /* ---- NOTHING MAY FOLLOW A STICKY BOARD IN ITS OWN COLUMN ----
 
        THIS IS THE CHECK THAT WOULD HAVE CAUGHT IT, and the geometric one below
