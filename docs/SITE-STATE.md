@@ -1577,3 +1577,31 @@ just over 3:1 on their own rock, hue kept.
 > The `contrast` group had nothing to say about any of this and was right not to: it sweeps
 > rendered **text**. A lump is a polygon and its wall is a polygon, and until now nothing on this
 > site compared two polygons.
+
+## He is the size his brother is
+
+**USER, 2026-09-12:** *"Look at the sister site and see how big Mr Fraction dialogue and animation
+is. I think he is too small now."*
+
+Measured on the Word Problem Express's `.mf-companion`, at both ends, against ours:
+
+| | sister 380 | sister 1440 | ours (before) | ours (now) |
+|---|---|---|---|---|
+| **figure** | 72 × 84 | 104 × 122 | **64 × 64**, and **54 × 54** under 430px | 72 × 72 → 104 × 104 |
+| bubble | 210 wide | 252 wide | **330 wide** | 264 wide |
+| dialogue | 13.12px | 13.76px | 15px | 15px |
+
+**The dialogue was never the problem — ours is the larger of the two and it stays.** It is the
+FIGURE that was under half his brother's, which is why he read as an icon rather than as somebody
+standing there. Worse, a `max-width:430px` rule shrank him to **54px with a 35px drawing**, so the
+narrowest screen got the smallest possible Mr Factor — smaller again than the 64px he was
+everywhere else, and precisely the screen where a student most needs to find him.
+
+**And the bubble was too wide, which is the same finding from the other end.** 330px in a 380px
+viewport is 87% of the screen — that is what put him across LAYER 2 and LAYER 3 in the first place.
+The sister keeps hers at 210–252 at every width. At 264 he covers less of the ladder, and the
+click-to-yield rule handles what is left; a bottom-corner overlay on a phone will always sit on
+something, and the fix for that is that reaching past him works, not that he covers nothing.
+
+> He scales with the viewport the way she does — a phone gets a figure it has room for, a desk gets
+> one you can see — rather than being one fixed size that is wrong at both ends.

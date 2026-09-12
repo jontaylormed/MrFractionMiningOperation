@@ -2614,16 +2614,43 @@ table.scan tr.hit td{background:#F1F8F5; color:var(--vein); font-weight:700}
      `overlay` group exists for) */
   pointer-events:none}
 .guide > *{pointer-events:auto}
+/* ---- HE IS THE SIZE HIS BROTHER IS ----
+
+   USER, 2026-09-12: *"Look at the sister site and see how big Mr Fraction
+   dialogue and animation is. I think he is too small now."*
+
+   Measured on the Word Problem Express, `.mf-companion`, at both ends:
+
+     |            | sister 380 | sister 1440 | ours (before) |
+     | portrait   |  72 × 84   |  104 × 122  |  64 × 64      |
+     | bubble     |  210 wide  |  252 wide   |  330 wide     |
+     | dialogue   |  13.12px   |  13.76px    |  15px         |
+
+   THE DIALOGUE WAS NEVER THE PROBLEM — ours is the larger of the two, and it
+   stays. It is the FIGURE that was under half his brother's, and he reads as an
+   icon rather than as somebody standing there.
+
+   AND THE BUBBLE WAS TOO WIDE, which is the same finding from the other end:
+   330px in a 380px viewport is 87% of the screen, and that is what put him
+   across LAYER 2 and LAYER 3. The sister keeps it at 210–252 at every width.
+   Matching her fixes the size complaint and narrows the band he covers.
+
+   He grows with the viewport the way she does, so a phone gets a figure it has
+   room for and a desk gets one you can see. */
 .gtab{border:3px solid var(--tan); background:var(--paper); border-radius:50%;
-  width:64px; height:64px; padding:0; cursor:pointer; display:grid; place-items:center;
+  width:78px; height:78px; padding:0; cursor:pointer; display:grid; place-items:center;
   box-shadow:0 3px 10px rgba(0,0,0,.22)}
 .gtab:hover{border-color:var(--ore-t)}
-.gtab svg{display:block; width:42px; height:auto}
+.gtab svg{display:block; width:56px; height:auto}
+@media (min-width:721px){
+  .gtab{width:104px; height:104px; border-width:4px}
+  .gtab svg{width:76px}
+}
 /* HE PUTS A HAND UP IN A ROOM YOU HAVE NOT BEEN IN. Not a badge with a number
    on it — nothing on this site counts anything — just a lit lamp. */
 .gtab[data-new]{border-color:var(--ore-t); box-shadow:0 0 0 4px rgba(176,106,32,.20), 0 3px 10px rgba(0,0,0,.22)}
 .gbubble{position:relative; background:#fff; border:3px solid var(--tan); border-radius:14px;
-  padding:13px 15px 11px; width:min(330px, calc(100vw - 34px)); box-shadow:0 5px 18px rgba(0,0,0,.20)}
+  padding:13px 15px 11px; width:min(264px, calc(100vw - 34px)); box-shadow:0 5px 18px rgba(0,0,0,.20)}
 .gbubble:after{content:""; position:absolute; right:22px; bottom:-11px; width:0; height:0;
   border:9px solid transparent; border-top-color:var(--tan)}
 .gwhere{font-family:var(--display); font-size:11px; letter-spacing:.11em; color:var(--ore-t)}
@@ -2644,10 +2671,14 @@ table.scan tr.hit td{background:#F1F8F5; color:var(--vein); font-weight:700}
 .gshut{position:absolute; top:5px; right:8px; border:0; background:none; font-size:19px;
   line-height:1; color:var(--ink-soft); cursor:pointer; padding:2px 4px}
 .gshut:hover{color:var(--ink)}
+/* THE PHONE SIZE IS THE SISTER'S PHONE SIZE. This used to shrink him to 54px
+   with a 35px drawing — smaller again than the 64px he was everywhere else, so
+   the narrowest screen got the smallest possible Mr Factor. The Word Problem
+   Express gives a 380px viewport a 72 × 84 figure, and there is room for it. */
 @media(max-width:430px){
   .guide{right:10px; bottom:10px}
-  .gtab{width:54px; height:54px}
-  .gtab svg{width:35px}
+  .gtab{width:72px; height:72px}
+  .gtab svg{width:52px}
 }
 @media print{ .guide{display:none} }
 
