@@ -13330,9 +13330,9 @@ MF.paintShaft = function(){
    ========================================================================= */
 MF.LAYER_LOOK = [
   {sky:'#8A7458', rock:'#6E5A40', rock2:'#4A3B28', ore:'#C9A24B', glint:'#FFE9A8', strata:'#7E6A4E', grit:'#8C7554'},
-  {sky:'#6E6152', rock:'#5C5140', rock2:'#3C3428', ore:'#C96A1F', glint:'#F6C98A', strata:'#6B5F4C', grit:'#7A6C56'},
+  {sky:'#6E6152', rock:'#5C5140', rock2:'#3C3428', ore:'#D8945E', glint:'#F6C98A', strata:'#6B5F4C', grit:'#7A6C56'},
   {sky:'#4E5A63', rock:'#44525C', rock2:'#2B343B', ore:'#7FB6C9', glint:'#D8F0F7', strata:'#54626C', grit:'#5E6E78'},
-  {sky:'#5A3F3A', rock:'#4E3630', rock2:'#31201C', ore:'#C4543F', glint:'#F7C0A8', strata:'#5C443D', grit:'#6A4A42'},
+  {sky:'#5A3F3A', rock:'#4E3630', rock2:'#31201C', ore:'#CB6956', glint:'#F7C0A8', strata:'#5C443D', grit:'#6A4A42'},
   {sky:'#33302E', rock:'#2E2A28', rock2:'#191716', ore:'#E2600F', glint:'#FFB347', strata:'#3A3532', grit:'#443E3A'},
   /* LAYER 6, THE GROUPING SHAFT. The deepest ground yet, so it goes cooler and
      darker than the Loaded Vein rather than warmer — five layers have been
@@ -13753,7 +13753,39 @@ MF.paintFace = function(){
       var rad = r * faces[k];
       pts.push((x+rad*Math.cos(ang)).toFixed(1)+','+(y+rad*Math.sin(ang)).toFixed(1));
     }
-    body.appendChild(S('polygon',{points:pts.join(' '),fill:look.rock,stroke:look.rock2,'stroke-width':'3'}));
+    /* ---- THE RIM IS WHAT MAKES A LUMP A SHAPE ----
+
+       USER: "Fix the seam contrast."
+
+       IT WAS A DARK STONE OUTLINED IN A DARKER ONE, ON A WALL OF THE SAME
+       FAMILY. Measured across all nine layers: the body ran **1.32–1.53:1**
+       against the wall and the outline **1.57–2.46:1** — not one layer reached
+       the 3:1 a graphical object needs, and it got WORSE with depth, because
+       every palette below layer 3 is a set of near-identical darks. On the
+       deepest ground the only thing telling you where a lump was were the ore
+       streaks drawn on it.
+
+       NEITHER OBVIOUS FIX WORKS, and both were measured before this one:
+         - darkening the outline reaches 3:1 on layers 1–3 and CANNOT below
+           that, because the wall is already dark — the arithmetic runs out at
+           black;
+         - lightening the BODY reaches 3:1 everywhere and destroys the lump,
+           because the veins and the glint are drawn ON it: the ore streak falls
+           to 1.03:1 and the whole mine goes pale.
+
+       SO THE SHAPE IS CARRIED BY A RIM, AND THE BODY STAYS DARK. `look.glint`
+       is the layer's own lamp-catch colour, already in every palette, and it
+       clears 3:1 against the wall on **every layer** — 3.32 at the tightest
+       (layer 2) to 12.39 at the deepest — while sitting 5–16:1 off the body it
+       outlines. The veins keep their dark ground and lose nothing.
+
+       It is also the true picture: a rock in a lit gallery catches the lamp on
+       its edge. The old dark outline stays underneath as the drawn seam between
+       stone and wall, so the lump still reads as cut out of the rock rather
+       than pasted onto it. */
+    body.appendChild(S('polygon',{points:pts.join(' '),fill:look.rock,stroke:look.rock2,'stroke-width':'5'}));
+    body.appendChild(S('polygon',{class:'rim',points:pts.join(' '),fill:'none',
+      stroke:look.glint,'stroke-width':'2','stroke-linejoin':'round',opacity:'.92'}));
     /* ore veins inside: one streak per term, so a rock LOOKS like what it is */
     var terms = (o.kind==='number') ? 1 : [o.a,o.b,o.c].filter(function(v){ return v!==0; }).length;
     for(var t=0;t<terms;t++){
@@ -17356,6 +17388,50 @@ MF.validate = function(){
     chk('parts');
     if(!/no questions?/i.test('PLAY, NO QUESTIONS'))
       errs.push('CONTROL: the card-tag check cannot recognise a no-questions promise');
+
+    /* ---- A LUMP MUST BE TELLABLE FROM THE WALL IT IS IN, ON EVERY LAYER ----
+
+       The `contrast` group sweeps rendered TEXT and had nothing to say about
+       this: a lump is a polygon, its wall is a polygon, and the ratio between
+       them was 1.32–1.53:1 on all nine layers with the outline no better than
+       2.46. A student was asked to "look one over before you swing" at shapes
+       that were barely there, and every group was green.
+
+       WCAG 1.4.11 is the bar for a graphical object: 3:1 against what is
+       adjacent to it. The rim carries it, so the rim is what this measures —
+       and it measures it FROM `MF.LAYER_LOOK` rather than from a list of
+       expected hexes, so the check follows the palette instead of having to be
+       edited alongside it. */
+    var lumLum = function(hex){
+      var c = String(hex).replace('#','');
+      if(c.length === 3) c = c.split('').map(function(x){ return x + x; }).join('');
+      var v = [0,2,4].map(function(i){
+        var s = parseInt(c.substr(i,2),16) / 255;
+        return s <= 0.03928 ? s/12.92 : Math.pow((s+0.055)/1.055, 2.4);
+      });
+      return 0.2126*v[0] + 0.7152*v[1] + 0.0722*v[2];
+    };
+    var lumRatio = function(a,b){
+      var A = lumLum(a), B = lumLum(b);
+      return (Math.max(A,B) + 0.05) / (Math.min(A,B) + 0.05);
+    };
+    MF.LAYER_LOOK.forEach(function(L, li){
+      chk('parts');
+      var rim = lumRatio(L.glint, L.grit);
+      if(rim < 3)
+        errs.push('parts: on layer ' + (li+1) + ' a lump’s rim is ' + rim.toFixed(2) +
+                  ':1 against the wall — under 3:1 the shape is not tellable from the rock it sits in');
+      /* and the veins must still read on the body they are drawn on */
+      chk('parts');
+      var vein = lumRatio(L.ore, L.rock);
+      if(vein < 2.5)
+        errs.push('parts: on layer ' + (li+1) + ' the ore streak is ' + vein.toFixed(2) +
+                  ':1 on the lump it is drawn on');
+    });
+    /* CONTROL: the measurement must reject a pair that really is too close */
+    chk('parts');
+    if(lumRatio('#6E5A40', '#8C7554') >= 3)
+      errs.push('CONTROL: the rim measurement calls 1.5:1 acceptable, so it is not measuring contrast');
 
     /* ---- A CONTROL UNDER MR FACTOR MUST STILL BE REACHABLE ----
 

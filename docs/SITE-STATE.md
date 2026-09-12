@@ -22,7 +22,7 @@
 | **Screens** | **eight** — surface, the Stamp Mill, the Casting Shed and its three workshops, the mine, the forge |
 | **Layers** | **five**, all reachable from the first screen, none gated on anything |
 | **Instruments** | **seven**, all made at the forge, none granted |
-| **Validation** | `MF.validate()` → **26,589 checks / 48 groups / 0 errors**, two controls that must fail, and do — **run it at the width you ship from**, because `layout`, `reach`, `hollow` and `cartdraw` measure the live viewport and report it (`VERIFICATION.md` §61, §63, §65). Verified at **380×780, 560×760, 994×700 and 1250×900** |
+| **Validation** | `MF.validate()` → **26,609 checks / 48 groups / 0 errors**, two controls that must fail, and do — **run it at the width you ship from**, because `layout`, `reach`, `hollow` and `cartdraw` measure the live viewport and report it (`VERIFICATION.md` §61, §63, §65). Verified at **380×780, 560×760, 994×700 and 1250×900** |
 
 > **A check is only as wide as the space it sweeps.** The `truthy` group reported 0 errors across 642 checks while **1,970 Decimal Dial states printed a falsehood**, because it tested each lump's original integer coefficients and never nudged `c` — the one thing the dial exists to do. It now sweeps every slider position the control can reach (3,287 checks). Ask of any green result: *what did it not look at?*
 | **Runtime** | Zero dependencies, no build step, no network requests, no storage, runs from `file://` |
@@ -184,7 +184,7 @@ The face is **2280px of rock**, several screens wide, scanned by dragging, scrol
 
 ## The breaking floor: one anvil, the belt over it, and the ore on top
 
-**Measured 2026-09-07, all four widths, 0 errors over 26,589 checks in 48 groups, both controls failing.**
+**Measured 2026-09-07, all four widths, 0 errors over 26,609 checks in 48 groups, both controls failing.**
 
 > **The count moves with the sound files, and that is why two numbers were in circulation.**
 > `MF.validate()` run the instant after Enter reports about **90 fewer checks** than the same
@@ -1533,3 +1533,47 @@ the head, the head does not scroll away (measured at 380 and at 994×700, where 
 17px), and the foot already reads *"**Esc** puts the hammer down."* Reported, checked, not true.
 The head is `position:sticky` now anyway — cheap insurance, since the sheet grows and Mr Factor's
 rung is the newest thing in it.
+
+## The seam: a lump you can tell from the wall it is in
+
+**USER, 2026-09-12:** *"Fix the seam contrast."*
+
+It was a dark stone outlined in a darker one, on a wall of the same family. Measured across all
+nine layers:
+
+| | body vs wall | outline vs wall |
+|---|---|---|
+| shallowest (layer 1) | **1.50:1** | 2.46:1 |
+| deepest (layer 9) | **1.33:1** | 1.57:1 |
+
+**Not one layer reached the 3:1 that WCAG 1.4.11 asks of a graphical object, and it got worse with
+depth** — every palette below layer 3 is a set of near-identical darks, so on the deepest ground
+the only thing telling a student where a lump was were the ore streaks drawn on it. The face says
+*"Look one over before you swing"* over shapes that were barely there.
+
+**Both obvious fixes were measured and both fail:**
+
+- **Darken the outline.** Reaches 3:1 on layers 1–3 and *cannot* below that — the wall is already
+  dark, so the arithmetic runs out at black. Layer 5's outline tops out at 2.00:1 when it is
+  literally `#000000`.
+- **Lighten the body.** Reaches 3:1 everywhere and destroys the lump: the veins and the glint are
+  drawn **on** it, so the ore streak falls to **1.03:1** and the whole mine goes pale.
+
+**So the shape is carried by a rim and the body stays dark.** `look.glint` is the layer's own
+lamp-catch colour, already in every palette, and it clears 3:1 against the wall on **every layer**
+— 3.32 at the tightest to 12.39 at the deepest — while sitting 5–16:1 off the body it outlines.
+The veins keep their dark ground and lose nothing. It is also the true picture: a rock in a lit
+gallery catches the lamp on its edge. The old dark outline stays underneath as the drawn seam
+between stone and wall, so a lump still reads as cut **out of** the rock rather than pasted on it.
+
+### And the check caught two more the moment it existed
+
+The new sweep measures **from `MF.LAYER_LOOK`**, not from a list of expected hexes, so it follows
+the palette instead of needing to be edited beside it. Its second assertion — the ore streak must
+read on the body it is drawn on — failed immediately on two layers nobody had asked about:
+**layer 2 at 2.06:1** and **layer 4 at 2.47:1**. Those ores are `#D8945E` and `#CB6956` now, both
+just over 3:1 on their own rock, hue kept.
+
+> The `contrast` group had nothing to say about any of this and was right not to: it sweeps
+> rendered **text**. A lump is a polygon and its wall is a polygon, and until now nothing on this
+> site compared two polygons.
