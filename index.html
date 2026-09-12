@@ -306,7 +306,14 @@ input::placeholder, textarea::placeholder{color:#6B5B48; opacity:1}
    is what put the Winding Frame across the Crosscut; see MF.paintDeep. */
 .deepboard{position:static; margin-top:16px;
   background:linear-gradient(180deg,#2B3138,#1B2026); border-color:#141A1F}
-.deepboard h3{color:#9FD6E8}
+/* `.orderboard.deepboard`, NOT `.deepboard`. Both boards carry `.orderboard`,
+   so `.deepboard h3` and `.orderboard h3` have the SAME specificity and the one
+   written later wins — and `.orderboard h3` is written later. The heading came
+   out lamp-orange, identical to the board it is supposed to read as distinct
+   from, and it looked deliberate. Specificity, not source order: a rule that
+   only works because of where it sits in the file is a rule that breaks the
+   next time anything moves. */
+.orderboard.deepboard h3{color:#9FD6E8}
 .deepboard .order{border-color:#4C6072; background:linear-gradient(180deg,#333F4A,#2B3138)}
 .deepboard .order:hover{border-color:#9FD6E8; background:linear-gradient(180deg,#3D4C59,#333F4A)}
 .deepboard .order:focus-visible{outline-color:#9FD6E8}
@@ -6297,7 +6304,7 @@ MF.TOOL_READ = {
       MF.workLine(host, 'every pair that multiplies to', [num(ore.n)], 'wbig');
       MF.workLine(host, null, [num(ore.n) + '  =  ', null, '  ×  ', null], 'wbig');
       MF.scanTable(host, ore.n, null);
-      host.appendChild(H('div','hint','<b>No row is marked, and the drill will not mark one.</b> Any of them can be swung; some leave more still to break.'));
+      host.appendChild(H('div','hint','<b>The drill will not choose a row for you.</b> Any of them can be swung; some leave more still to break.'));
       MF.methodLine(host, "drill");
       MF.paintNameSide(host, ore, pieceId);
       return;
@@ -6846,7 +6853,7 @@ MF.GUIDE = {
     'Pick a lump out of the wall and it goes in your cart. Dig as deep as you like — nothing has to be worked before you go further.',
     'Put one on the bench and <b>name a factor</b>, then swing. Either the seam runs or the pick glances off, and the rock tells you which.',
     'What is left goes back under the hammer. Keep going until nothing will come apart — that is <b>native metal</b>, and it is finished.',
-    'Nothing here is marked and nothing is timed. A swing that misses costs you the swing.'
+    'Nothing here is timed. A swing that misses costs you the swing.'
   ]},
   forge: {where:'THE FORGE', beats:[
     'This is the one place on the site that <b>multiplies</b> instead of breaking. Metal goes into a mold and one object comes out.',
@@ -6855,7 +6862,7 @@ MF.GUIDE = {
   ]},
   'workshop-mold': {where:'THE CASTING SHED', beats:[
     'Three short workshops. <b>The Words</b> is the vocabulary, <b>The Molds</b> is what a pour actually does, and <b>The Tools</b> is how each instrument works.',
-    'None of them is required and none is marked. Come back here when a word in the mine stops making sense.'
+    'None of them is required. Come back here when a word in the mine stops making sense.'
   ]},
   'shed-mold': {where:'THE MOLDS', beats:[
     'Move the sliders and watch the pour. Whatever you put in decides what comes out — you never choose the shape.',
@@ -7975,7 +7982,7 @@ MF.openAccess = function(opener){
     sub:'Change how this reads. <b>Nothing here is saved</b> — it lasts for this visit.',
     closeText:'Done', opener:opener, key:'__access',
     foot:'Press <b>Alt + A</b> any time to open this, and <b>Esc</b> to close it. ' +
-         'Nothing here changes the mathematics, and nothing is marked.',
+         'Nothing here changes the mathematics.',
     fill: function(b){
       pick(b, 'Typeface', 'Pick whichever you find easiest. There is no correct one.',
         [{nm:'Standard', v:'standard'},{nm:'Rounded', v:'rounded'},{nm:'Dyslexia-friendly', v:'dys'}],
@@ -9215,7 +9222,7 @@ MF.SCREENS.home = function(host){
   /* NOT "nothing here is scored" - that trips the no-grades check in
      MF.validate, and the right response to a rule firing on your own copy is
      to change the copy, not to widen the rule (VERIFICATION 30). */
-  host.appendChild(H('p','hint','Nothing here is marked, timed or stored. Nothing is locked behind getting anything right. ' +
+  host.appendChild(H('p','hint','Nothing here is timed or stored, and nothing is locked. ' +
     'You can walk into the mine now, or spend a minute at a workshop first — both doors are open.'));
 
   var cards = E('div','cards');
@@ -9630,7 +9637,7 @@ MF.paintToolSchool = function(host){
 
   box.appendChild(H('p','lede','One lesson for every instrument you have cast. Each is the method that instrument ' +
     'carries, <b>walked a step at a time</b> on a lump chosen for it — and at the end, the same lump to try ' +
-    'yourself. Nothing here is marked, and the thing that answers you is the engine the anvil swings through.'));
+    'yourself. The thing that answers you is the engine the anvil swings through.'));
 
   owned.forEach(function(key, i){
     var t = MF.TOOLS[key], s = MF.SCHEMA[key];
@@ -9972,7 +9979,7 @@ MF.lessonPractice = function(host, key){
   row.appendChild(go);
   pr.appendChild(row);
   pr.appendChild(out);
-  pr.appendChild(H('div','hint','Not kept, not a mark &mdash; the same engine the anvil swings through.'));
+  pr.appendChild(H('div','hint','Not kept &mdash; the same engine the anvil swings through.'));
   host.appendChild(pr);
   return pr;
 };
@@ -10083,7 +10090,7 @@ MF.lessonBench = function(host, key){
     row.appendChild(cell);
   });
   box.appendChild(row);
-  box.appendChild(H('div','hint','Nothing is marked. Try all three &mdash; including the one it can say nothing about.'));
+  box.appendChild(H('div','hint','Try all three &mdash; including the one it can say nothing about.'));
   host.appendChild(box);
   return box;
 };
@@ -10234,7 +10241,7 @@ MF.paintMiscut = function(host, o){
   });
   box.appendChild(opts);
   box.appendChild(out);
-  box.appendChild(H('div','hint','Nothing here is kept and nothing here is marked. Every answer describes the ' +
+  box.appendChild(H('div','hint','Nothing here is kept. Every answer describes the ' +
     'working — including the ones that are not what went wrong.'));
   host.appendChild(box);
   return box;
@@ -10294,7 +10301,7 @@ MF.paintQuestions = function(host, o){
   var box = E('div','asks');
   box.appendChild(H('div','askslab', o.lab || 'BEFORE YOU GO'));
   box.appendChild(H('p','askslede', o.lede ||
-    'Nothing here is kept and nothing here is marked. They are here because answering one is how you find out whether you followed it.'));
+    'Nothing here is kept. They are here because answering one is how you find out whether you followed it.'));
 
   /* ONE AT A TIME, AND IT COMES ROUND AGAIN.
 
@@ -10687,7 +10694,7 @@ MF.SCREENS['workshop-mold'] = function(host){
   });
   host.appendChild(cards);
 
-  host.appendChild(H('p','hint','Nothing in here is marked, timed or stored, and none of it is required. ' +
+  host.appendChild(H('p','hint','Nothing in here is timed or stored, and none of it is required. ' +
     'You can walk into the mine having read none of it — the `nogate` rule holds everywhere.'));
 
   /* ---- NO DOORS AT THE FOOT AT ALL ----
@@ -11098,7 +11105,7 @@ MF.SCREENS['shed-methods'] = function(host){
     'pulling out the GCF. The instrument is a convenience. <b>The method is the part worth having</b>, and it works in a notebook with no tool at all. ' +
     'This is the floor where the ones you have <b>cast</b> get taught.'));
   host.appendChild(H('div','note','<b>A tool shows part of a factorisation and never all of it.</b> ' +
-    'The lantern lights one side and prints a <span class="qm">?</span> for the other; the drill lists every pair and marks none. ' +
+    'The lantern lights one side and prints a <span class="qm">?</span> for the other; the drill lists every pair and chooses none. ' +
     'Whatever you name goes to the hammer, and the rock is what answers.'));
   MF.paintToolSchool(host);
 
@@ -15648,7 +15655,7 @@ MF._openSheet = function(o){
 
   var foot = E('div','tsfoot');
   foot.appendChild(H('div','hint', o.foot ||
-    'Nothing here is a mark, and nothing here swings for you. Press <b>Esc</b> to put it away.'));
+    'Nothing here swings for you. Press <b>Esc</b> to put it away.'));
   sheet.appendChild(foot);
 
   scrim.appendChild(sheet);
@@ -16146,7 +16153,7 @@ MF.paintYard = function(){
   on(toForge,'click',function(){ MF.go('forge'); });
   box.appendChild(toForge);
 
-  box.appendChild(H('div','hint','<br>Nothing here is a mark. It is a record of what you have — and unlike a mark, you can spend it.'));
+  box.appendChild(H('div','hint','<br>A record of what you have — and you can spend it.'));
   host.appendChild(box);
 };
 
@@ -24477,6 +24484,41 @@ MF.validate = function(){
     var m = txt.match(banned);
     if(m) errs.push('nogrades: screen "'+name+'" contains "'+m[0]+'"');
   });
+
+  /* 6b. AND THE SITE NO LONGER TELLS ANYONE IT IS NOT MARKING THEM.
+
+        USER, 2026-09-11: *"Also remove Nothing here is marked - from the
+        website. Any mention or similar is not needed."*
+
+        Eleven surfaces said some version of it — the mine's banner, the shed,
+        the tool sheet's foot, the access panel, the yard, three lesson feet.
+        Every one was true, and saying it is still the wrong move: a room that
+        keeps announcing it is not grading you has raised the subject, and a
+        student who was not thinking about marks now is. The rule holds in the
+        mechanism (`nogrades`, above); it does not need a caption.
+
+        THIS IS A DIFFERENT SWEEP FROM `nogrades` AND NOT A DUPLICATE OF IT.
+        That one catches the vocabulary of GRADING — "7 out of 10", "accuracy",
+        "rank". This one catches the DENIAL of it, which is a phrase that would
+        sail through the other sweep precisely because it is a negation (§the
+        home box, which was reworded rather than exempted). The ruler's tick
+        marks are deliberately not matched: `mark` there is a point on a number
+        line and means nothing about a student. */
+  var marky = /\b(marked|marking|no marks|graded|scored)\b/i;
+  Object.keys(MF.SCREENS).forEach(function(name){
+    chk('nogrades');
+    var probe = document.createElement('div');
+    try { MF.SCREENS[name](probe); } catch(e){ errs.push('nogrades: screen '+name+' threw: '+e.message); return; }
+    var m = (probe.textContent || '').match(marky);
+    if(m) errs.push('nogrades: screen "'+name+'" says "'+m[0]+'" — the site does not discuss marking, ' +
+                    'including to deny it');
+  });
+  chk('nogrades');
+  if(!marky.test('Nothing here is marked'))
+    errs.push('CONTROL: the marking sweep does not catch "Nothing here is marked"');
+  chk('nogrades');
+  if(marky.test('a ruler marked at the whole numbers'.replace('marked','ticked')))
+    errs.push('CONTROL: the marking sweep is matching something it should not');
 
   /* 7. CONTROL - must fail, or none of the above is looking at anything */
   chk('control');

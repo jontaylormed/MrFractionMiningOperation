@@ -22,7 +22,7 @@
 | **Screens** | **eight** — surface, the Stamp Mill, the Casting Shed and its three workshops, the mine, the forge |
 | **Layers** | **five**, all reachable from the first screen, none gated on anything |
 | **Instruments** | **seven**, all made at the forge, none granted |
-| **Validation** | `MF.validate()` → **26,394 checks / 48 groups / 0 errors**, two controls that must fail, and do — **run it at the width you ship from**, because `layout`, `reach`, `hollow` and `cartdraw` measure the live viewport and report it (`VERIFICATION.md` §61, §63, §65). Verified at **380×780, 560×760, 994×700 and 1250×900** |
+| **Validation** | `MF.validate()` → **26,404 checks / 48 groups / 0 errors**, two controls that must fail, and do — **run it at the width you ship from**, because `layout`, `reach`, `hollow` and `cartdraw` measure the live viewport and report it (`VERIFICATION.md` §61, §63, §65). Verified at **380×780, 560×760, 994×700 and 1250×900** |
 
 > **A check is only as wide as the space it sweeps.** The `truthy` group reported 0 errors across 642 checks while **1,970 Decimal Dial states printed a falsehood**, because it tested each lump's original integer coefficients and never nudged `c` — the one thing the dial exists to do. It now sweeps every slider position the control can reach (3,287 checks). Ask of any green result: *what did it not look at?*
 | **Runtime** | Zero dependencies, no build step, no network requests, no storage, runs from `file://` |
@@ -184,7 +184,7 @@ The face is **2280px of rock**, several screens wide, scanned by dragging, scrol
 
 ## The breaking floor: one anvil, the belt over it, and the ore on top
 
-**Measured 2026-09-07, all four widths, 0 errors over 26,394 checks in 48 groups, both controls failing.**
+**Measured 2026-09-07, all four widths, 0 errors over 26,404 checks in 48 groups, both controls failing.**
 
 > **The count moves with the sound files, and that is why two numbers were in circulation.**
 > `MF.validate()` run the instant after Enter reports about **90 fewer checks** than the same
@@ -1254,3 +1254,42 @@ are filling does not scroll away.**
 > it in its own column."* The geometric overlap sweep is kept beside it for what it can see, and
 > the forge is mounted into the document to measure, because a detached probe is 0×0 on every
 > element and would have passed on exactly the build that failed.
+
+## The site stopped telling anyone it is not marking them
+
+**USER, 2026-09-11:** *"Also remove Nothing here is marked - from the website. Any mention or
+similar is not needed."*
+
+Eleven surfaces said some version of it — the mine's banner, the Casting Shed, the tool sheet's
+foot, the Reading & Access panel, the yard, the Words room, three lesson feet, the Tools room, the
+surface lede. Every one of them was true. Saying it is still the wrong move: **a room that keeps
+announcing it is not grading you has raised the subject**, and a student who was not thinking
+about marks now is. The rule lives in the mechanism, not in a caption.
+
+Each line was rewritten to say the positive thing rather than truncated, so nothing became a stub:
+
+| was | is |
+|---|---|
+| Nothing here is marked and nothing is timed. | Nothing here is timed. |
+| No row is marked, and the drill will not mark one. | The drill will not choose a row for you. |
+| Nothing here is a mark, and nothing here swings for you. | Nothing here swings for you. |
+| Nothing here is a mark. It is a record of what you have — and unlike a mark, you can spend it. | A record of what you have — and you can spend it. |
+| the drill lists every pair and marks none | the drill lists every pair and chooses none |
+| Nothing here is kept and nothing here is marked. | Nothing here is kept. |
+
+**`docs/VOICE.md` moved with it** — two recording lines quoted the old copy, and a script that
+says something the site does not is a voice recording waiting to contradict the screen.
+
+> **The `nogrades` group gained a second sweep, and it is not a duplicate of the first.** The
+> original catches the vocabulary of grading — *"7 out of 10"*, *accuracy*, *rank*. This one
+> catches the **denial** of it, which sails straight through the original **because it is a
+> negation** — the same blind spot the home-page box was reworded over rather than exempted from.
+> Proved by putting *"Nothing here is marked."* back into the home screen: *`nogrades: screen
+> "home" says "marked" — the site does not discuss marking, including to deny it`*.
+>
+> **The ruler's tick marks are deliberately not matched.** `mark` on a number line is a point, and
+> means nothing about a student — *"Between two marks is the rock, not you"* stays exactly as it is.
+
+**`README.md` keeps the rule and the reasoning.** It is the repository's own documentation rather
+than anything a student opens, and deleting the *why* from the one place that records it is how a
+line like this gets written again in six months.
