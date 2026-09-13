@@ -9533,9 +9533,14 @@ MF.surfaceScene = function(){
      man looking round. The supplied GIF is a real animation with real
      in-between frames, and that is why it works on the splash and this did not.
 
-     So the surface figure is one pose, standing in his own yard. */
+     So the surface figure is one pose, standing in his own yard.
+
+     IN FRONT OF THE TRACK, NOT ON IT (user, 2026-09-13). At y=290 his boots
+     landed on the rail line (368) and he read as standing between the rails.
+     The sleepers end at 377; 20 units down puts his feet on the ground below
+     them, so the track runs behind him. */
   var mf = MF.art(74, {lit:true});
-  mf.setAttribute('x','322'); mf.setAttribute('y','290');
+  mf.setAttribute('x','322'); mf.setAttribute('y','310');
   mf.removeAttribute('width'); mf.removeAttribute('height');
   mf.setAttribute('width','74'); mf.setAttribute('height','90');
   svg.appendChild(mf);
@@ -9598,8 +9603,8 @@ MF.surfaceScene = function(){
     [424,328,38],[458,328,38],
     /* the two lanterns on the site */
     [750,314,44],[540,296,42],
-    /* Mr Factor's helmet lamp, at the top of a 74x90 figure placed at 322,290 */
-    [359,300,34]
+    /* Mr Factor's helmet lamp, at the top of a 74x90 figure placed at 322,310 */
+    [359,320,34]
   ].forEach(function(p){
     lightLayer.appendChild(S('circle',{cx:String(p[0]),cy:String(p[1]),r:String(p[2]),
       fill:'url(#nightglow)'}));
