@@ -4397,8 +4397,8 @@ MF.artVector = function(size, opts){
   s.appendChild(lamp ? lit(glass) : glass);
   return s;
 };
-/* `pose` is optional and defaults to front. The Stamp Mill asks for 'left'
-   (user, 2026-09-13: change his pose there): in that drawing he is turned
+/* `pose` is optional and defaults to front. The Stamp Mill and The Molds ask
+   for 'left' (user, 2026-09-13: change his pose there): in that drawing he is turned
    with his face and pick to the RIGHT - the file names the side of him you
    see, not where he looks - so he faces his own bubble and the stamps. */
 MF.says = function(html, size, pose){
@@ -11499,7 +11499,7 @@ MF.SCREENS['shed-mold'] = function(host){
   var stageHost = E('div'); panel.appendChild(stageHost);
   var chainHost = E('div'); panel.appendChild(chainHost);
   var eq = E('div','eq'); panel.appendChild(eq);
-  panel.appendChild(MF.says(MF.saysLine('mold-after-pour')));
+  panel.appendChild(MF.says(MF.saysLine('mold-after-pour'), null, 'left'));
   host.appendChild(panel);
 
   MF.paintQuestions(host, {list:[

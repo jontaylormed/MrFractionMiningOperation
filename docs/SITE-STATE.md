@@ -1705,7 +1705,7 @@ figure in the world, and the guide.
 > defect — but they are dead weight until they are placed, and `§92` is clear about what happens to
 > data nobody reads.
 >
-> **`left` is placed (2026-09-13).** The Stamp Mill's Mr Factor, beside his speech bubble, uses it
-> at the user's request — `MF.says(html, size, pose)` takes an optional pose, and only that one call
-> passes one. The file names the side of him you see: in `left` his face and pick point RIGHT,
+> **`left` is placed (2026-09-13).** The Stamp Mill's Mr Factor and the one in The Molds, each beside
+> his speech bubble, use it at the user's request — `MF.says(html, size, pose)` takes an optional
+> pose, and only those two calls pass one. The file names the side of him you see: in `left` his face and pick point RIGHT,
 > toward his bubble and the stamps. `back` and `right` are still displayed nowhere.
