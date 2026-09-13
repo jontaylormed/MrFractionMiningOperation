@@ -9857,7 +9857,7 @@ MF.SCREENS.home = function(host){
   /* NOT "nothing here is scored" - that trips the no-grades check in
      MF.validate, and the right response to a rule firing on your own copy is
      to change the copy, not to widen the rule (VERIFICATION 30). */
-  host.appendChild(H('p','hint doorhint','Nothing here is timed or stored, and nothing is locked. ' +
+  host.appendChild(H('p','hint doorhint','Nothing here is timed or stored, and nothing is locked.<br>' +
     'You can walk into the mine now, or spend a minute at a workshop first — both doors are open.'));
 
   var cards = E('div','cards');
