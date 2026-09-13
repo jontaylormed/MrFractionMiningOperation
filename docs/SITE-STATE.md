@@ -497,7 +497,7 @@ site made no sound at all before this; `THUD!` and `CLANG!` were painted `<div>`
 
 `MF.audio` is one `AudioContext` behind three buses — `fxBus`, `ambBus`, `musicBus` — into a
 `master` that mute pulls to zero. **It never speaks first:** the context is built on the
-"Enter the operation" button and not one moment earlier, and `play`, `say` and every bed
+"Enter the Operation" button and not one moment earlier, and `play`, `say` and every bed
 refuse to construct one on their own. That is enforced on a detached `Object.create(MF.audio)`
 copy rather than by nulling the live one, which is `VERIFICATION.md` §80 exactly.
 

@@ -190,14 +190,17 @@ input::placeholder, textarea::placeholder{color:#6B5B48; opacity:1}
 
 /* ---------- home ---------- */
 .hero{display:flex; gap:22px; align-items:center; flex-wrap:wrap; margin-bottom:8px}
-.cards{display:grid; gap:14px; grid-template-columns:repeat(auto-fit,minmax(260px,1fr)); margin-top:8px}
+/* `min(…,100%)`: a bare 260px floor is wider than the column on a 279px
+   window, and the grid pushed the page sideways rather than go under it. */
+.cards{display:grid; gap:14px; grid-template-columns:repeat(auto-fit,minmax(min(260px,100%),1fr)); margin-top:8px}
 .card{background:var(--sheet-2); border:2px solid var(--rule); border-radius:14px; padding:16px; display:flex; flex-direction:column; gap:8px}
 .card h3{font-size:19px}
 .card .why{font-size:14px; color:var(--ink-soft); flex:1 1 auto}
 /* the "To forge it" line is pushed to the foot of every card, so four cards of
    different description lengths still line their instructions and buttons up */
 .card .hint{margin-top:auto}
-.card .go{align-self:flex-start}
+.card .go{align-self:center}
+.doorhint{text-align:center}
 .card.locked{opacity:.72; background:var(--paper-2)}
 .tagline-pill{display:inline-block; font-size:12px; letter-spacing:.06em; text-transform:uppercase;
   border:2px solid var(--tan); color:var(--ore-t); border-radius:999px; padding:3px 11px}
@@ -344,7 +347,7 @@ input::placeholder, textarea::placeholder{color:#6B5B48; opacity:1}
 /* ---- THE SHELF ----
    Objects, and empty places where there are no objects. Never a tally: an
    empty place is drawn as one because "3 of 4" is an X-out-of-Y (§2.5a). */
-.shelfparts{display:grid; gap:9px; grid-template-columns:repeat(auto-fit,minmax(148px,1fr)); margin:2px 0 9px}
+.shelfparts{display:grid; gap:9px; grid-template-columns:repeat(auto-fit,minmax(min(148px,100%),1fr)); margin:2px 0 9px}
 .madepart{display:flex; flex-direction:column; align-items:center; text-align:center; gap:2px;
   border:2px solid var(--rule); border-radius:11px; padding:10px 8px; background:var(--sheet-2)}
 .madepart.hollow{border-style:dashed; opacity:.72}
@@ -757,7 +760,7 @@ input::placeholder, textarea::placeholder{color:#6B5B48; opacity:1}
    centred; four are a centred row of four. The cap is also what stops a
    single stone stretching to 1140px, which is what a bare `auto-fit` would
    have done instead. */
-.cart{display:grid; grid-template-columns:repeat(auto-fit,minmax(190px,230px));
+.cart{display:grid; grid-template-columns:repeat(auto-fit,minmax(min(190px,100%),230px));
   justify-content:center; gap:14px; align-items:start; max-height:none}
 /* THE LUMP IS THE STONE, not a list row. It was
      .lump{background:#fff; border-radius:11px; min-height:44px}
@@ -2828,11 +2831,11 @@ p,li{font-size:calc(17px * var(--access-scale,1))}
        count had been stale since the ladder grew; and "solve" is the wrong verb
        for this site, which breaks and pours and never solves anything. The line
        ends on the claim it is actually making. -->
-  <div class="sub">Ore looks like rock. <b>x&sup2; &minus; 5x + 6</b> looks like a lump.
+  <div class="sub">Ore looks like rock. <b>x&sup2; &minus; 5x + 6</b> looks like a lump.<br>
     Down here they are the same problem.</div>
   <div class="loadbar"><i id="loadbar-fill"></i></div>
   <div class="loadticker" id="loadticker">opening the shaft</div>
-  <button class="btn primary big" id="enter-btn" style="display:none">Enter the operation</button>
+  <button class="btn primary big" id="enter-btn" style="display:none">Enter the Operation</button>
 </div>
 
 <header class="top">
@@ -7234,7 +7237,7 @@ MF.GUIDE = {
 
    AND IT NEVER SPEAKS FIRST. Browsers refuse to start audio without a gesture,
    which is exactly right here: the context is created and resumed on the
-   "Enter the operation" button and not one moment earlier.
+   "Enter the Operation" button and not one moment earlier.
 
    VOICE IS SEPARATE AND OPTIONAL — see MF.audio.say. Recorded lines are files,
    files need hosting, and hosting is not something a file:// page can assume.
@@ -9800,7 +9803,7 @@ MF.roomScene = function(kind){
 /* ---------- HOME ---------- */
 MF.SCREENS.home = function(host){
   host.appendChild(MF.surfaceScene());
-  host.appendChild(H('p','hint','The buildings are the doors &mdash; click one. Or use the buttons below if you would rather.'));
+  host.appendChild(H('p','hint doorhint','The buildings are the doors &mdash; click one. Or use the buttons below if you would rather.'));
   /* ---- FOUR OF HIM ON ONE SCREEN WAS THREE TOO MANY ----
 
      USER, 2026-09-12: *"On the homepage, Mr Fraction is appearing too much."*
