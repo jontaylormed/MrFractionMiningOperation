@@ -11327,14 +11327,13 @@ MF.QUIZ_CLAIMS = [
    door table, four check groups and every jump on the site - but what a
    student reads on the card is the name they were given. */
 MF.SHED = [
+  /* NO TAGS (user, 2026-09-13), matching the surface cards: the name and
+     the line under it already say what each workshop is. */
   {key:'shed-words',   ic:'&#128220;', nm:'The Words',
-   tag:'MINING &rarr; MATHEMATICS',
    why:'Every word this place uses is a real mathematical thing with a real name. <b>A seam is a factor.</b> Learn one column and you have learned half of it.'},
   {key:'shed-mold',    ic:'&#127981;', nm:'The Molds',
-   tag:'MULTIPLYING, WRITTEN OUT',
    why:'Pour two metals in and <b>one formed object</b> comes out. Every part of one meets every part of the other &mdash; and the mine runs that backwards all day.'},
   {key:'shed-methods', ic:'&#128296;', nm:'The Tools',
-   tag:'ONE LESSON PER INSTRUMENT CAST',
    why:'Why each instrument works and how to use it, walked a slide at a time &mdash; and <b>ore on a bench to hold it to</b>, which is the part that is not reading.'}
 ];
 
@@ -11350,7 +11349,7 @@ MF.SCREENS['workshop-mold'] = function(host){
   var cards = E('div','cards shedcards');
   MF.SHED.forEach(function(w){
     var c = E('div','card shedcard');
-    c.appendChild(H('div','tagline-pill', w.tag));
+    if(w.tag) c.appendChild(H('div','tagline-pill', w.tag));
     c.appendChild(H('div','shedic', w.ic));
     c.appendChild(H('h3',null, w.nm));
     c.appendChild(H('div','why', w.why));
@@ -11362,7 +11361,7 @@ MF.SCREENS['workshop-mold'] = function(host){
   });
   host.appendChild(cards);
 
-  host.appendChild(H('p','hint','Nothing in here is timed or stored, and none of it is required. ' +
+  host.appendChild(H('p','hint doorhint','Nothing in here is timed or stored, and none of it is required. ' +
     'You can walk into the mine having read none of it — the `nogate` rule holds everywhere.'));
 
   /* ---- NO DOORS AT THE FOOT AT ALL ----
