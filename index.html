@@ -4397,8 +4397,12 @@ MF.artVector = function(size, opts){
   s.appendChild(lamp ? lit(glass) : glass);
   return s;
 };
-MF.says = function(html, size){
-  var w = E('div','mf'); w.appendChild(MF.art(size||56)); w.appendChild(H('div','bubble', html)); return w;
+/* `pose` is optional and defaults to front. The Stamp Mill asks for 'left'
+   (user, 2026-09-13: change his pose there): in that drawing he is turned
+   with his face and pick to the RIGHT - the file names the side of him you
+   see, not where he looks - so he faces his own bubble and the stamps. */
+MF.says = function(html, size, pose){
+  var w = E('div','mf'); w.appendChild(MF.art(size||56, pose ? {pose:pose} : undefined)); w.appendChild(H('div','bubble', html)); return w;
 };
 
 /* ONE ANSWER TO "IS ANYTHING MOVING", and both ways of asking it.
@@ -12079,7 +12083,7 @@ MF.drawMill = function(box){
     '. Some of them come apart four times over and some will not move at all.'));
   box.appendChild(pick);
 
-  box.appendChild(MF.says(MF.saysLine(done ? 'mill-done' : 'mill-going')));
+  box.appendChild(MF.says(MF.saysLine(done ? 'mill-done' : 'mill-going'), null, 'left'));
 
   if(hadFocus){
     var back = box.querySelector('.millin') || box.querySelector('.leverbtn');

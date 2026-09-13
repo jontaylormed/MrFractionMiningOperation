@@ -1699,8 +1699,13 @@ redundant, sitting between a scene that already has him standing in his own yard
 has him talking a few hundred pixels below. Three remain and each does a different job — a mark, a
 figure in the world, and the guide.
 
-> **Open question, and it is a 57 KB one.** With the turn gone, only the `front` pose is ever
-> rendered: `back`, `left` and `right` are embedded and displayed nowhere. They are kept rather
+> **Open question, and it is a 57 KB one.** With the turn gone, only the `front` pose was ever
+> rendered: `back`, `left` and `right` were embedded and displayed nowhere. They are kept rather
 > than deleted because they are supplied artwork and where they belong is a design decision, not a
 > defect — but they are dead weight until they are placed, and `§92` is clear about what happens to
 > data nobody reads.
+>
+> **`left` is placed (2026-09-13).** The Stamp Mill's Mr Factor, beside his speech bubble, uses it
+> at the user's request — `MF.says(html, size, pose)` takes an optional pose, and only that one call
+> passes one. The file names the side of him you see: in `left` his face and pick point RIGHT,
+> toward his bubble and the stamps. `back` and `right` are still displayed nowhere.
