@@ -355,7 +355,10 @@ input::placeholder, textarea::placeholder{color:#6B5B48; opacity:1}
 /* ---- THE SHELF ----
    Objects, and empty places where there are no objects. Never a tally: an
    empty place is drawn as one because "3 of 4" is an X-out-of-Y (§2.5a). */
-.shelfparts{display:grid; gap:9px; grid-template-columns:repeat(auto-fit,minmax(min(148px,100%),1fr)); margin:2px 0 9px}
+/* TWO BY TWO, CENTRED (user, 2026-09-13). auto-fit laid the four places in a
+   row across the wide shelf; two capped tracks keep them a square block in
+   the middle, and minmax(0,…) lets them narrow rather than push the page. */
+.shelfparts{display:grid; gap:9px; grid-template-columns:repeat(2,minmax(0,148px)); justify-content:center; margin:2px 0 9px}
 .madepart{display:flex; flex-direction:column; align-items:center; text-align:center; gap:2px;
   border:2px solid var(--rule); border-radius:11px; padding:10px 8px; background:var(--sheet-2)}
 .madepart.hollow{border-style:dashed; opacity:.72}
