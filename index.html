@@ -120,9 +120,12 @@ header.top{position:relative; z-index:2; background:linear-gradient(180deg,var(-
 .wrap{position:relative; z-index:1; max-width:1240px; margin:0 auto; padding:22px 18px 90px}
 /* #screen is focused after every navigation so a screen reader announces the
    new view. That drew the browser's default ring around the ENTIRE page.
-   :focus-visible keeps the ring for real keyboard focus and drops it for the
-   programmatic call - removing it outright would cost keyboard users. */
-#screen:focus:not(:focus-visible){outline:none}
+   :focus-visible was meant to keep it for keyboard users, but Chrome treats
+   a programmatic focus after any key press as focus-visible, so the yellow
+   ring kept framing the whole surface (user, 2026-09-13: remove it). #screen
+   is a landmark, not a control - nothing is operated through it, so no
+   keyboard user loses a ring they need. Every button keeps its own. */
+#screen:focus{outline:none}
 
 /* ---------- generic ---------- */
 .panel{background:var(--paper-2); border:2px solid var(--rule); border-radius:14px; padding:18px; margin:16px 0}
@@ -9854,7 +9857,7 @@ MF.SCREENS.home = function(host){
   /* NOT "nothing here is scored" - that trips the no-grades check in
      MF.validate, and the right response to a rule firing on your own copy is
      to change the copy, not to widen the rule (VERIFICATION 30). */
-  host.appendChild(H('p','hint','Nothing here is timed or stored, and nothing is locked. ' +
+  host.appendChild(H('p','hint doorhint','Nothing here is timed or stored, and nothing is locked. ' +
     'You can walk into the mine now, or spend a minute at a workshop first — both doors are open.'));
 
   var cards = E('div','cards');
@@ -9875,16 +9878,21 @@ MF.SCREENS.home = function(host){
      The Casting Shed's tag stays changed, for a different and weaker reason:
      the hub itself has no questions, but it is a door onto three rooms that all
      do, and "no questions" on the front of that is a promise a student meets
-     one click later. `THREE WORKSHOPS` says what is behind it instead. */
-  cards.appendChild(MF.card('The Casting Shed', 'THREE WORKSHOPS',
+     one click later. `THREE WORKSHOPS` says what is behind it instead.
+
+     ALL THREE TAGS ARE GONE NOW (user, 2026-09-13). The title and the line
+     under it already say what each room is. The tag check in `parts` stays:
+     it returns on a card with no tag, and fires again if one ever promises
+     "no questions" over a room that has them. */
+  cards.appendChild(MF.card('The Casting Shed', null,
     'Pour metals into a mold and watch one formed object come out. This is the distributive property, and it is the move the mine runs backwards all day.',
     'Open the mold', function(){ MF.go('workshop-mold'); }));
 
-  cards.appendChild(MF.card('The Stamp Mill', 'PLAY, NO QUESTIONS',
+  cards.appendChild(MF.card('The Stamp Mill', null,
     'Take any number apart. See why two miners cutting at different places reach the same metals, and what it means for a lump to be already pure.',
     'Into the mill', function(){ MF.go('workshop-ore'); }));
 
-  cards.appendChild(MF.card('The Mine', 'THE ORE CART',
+  cards.appendChild(MF.card('The Mine', null,
     'Dig as deep as you like and fill your cart — you never have to break anything to go deeper. Then work a lump when you feel like it.',
     'Enter the mine', function(){ MF.go('mine'); }));
 
@@ -9947,7 +9955,7 @@ MF.SCREENS.home = function(host){
 };
 MF.card = function(title, tag, why, cta, fn){
   var c = E('div','card');
-  c.appendChild(H('div','tagline-pill', tag));
+  if(tag) c.appendChild(H('div','tagline-pill', tag));
   c.appendChild(H('h3',null,title));
   c.appendChild(H('div','why', why));
   var b = E('button','btn primary go', cta); b.type='button';
