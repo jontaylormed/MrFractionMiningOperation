@@ -1739,3 +1739,34 @@ figure in the world, and the guide.
 > his speech bubble, use it at the user's request — `MF.says(html, size, pose)` takes an optional
 > pose, and only those two calls pass one. The file names the side of him you see: in `left` his face and pick point RIGHT,
 > toward his bubble and the stamps. `back` and `right` are still displayed nowhere.
+
+## The notes in `index.html` are headlines now (2026-09-13)
+
+**USER:** *"Clean the code to make sure the HTML file is efficient. Remove unnecessary notes from
+the user. Do not remove all notes, but let's get the code as clean as possible."*
+
+Comments were **602 KB of a 1.55 MB file — 39%**, most of it the history of each decision: who
+asked, on which date, what broke and how it was measured. Every note is still there; **1,245 of
+the 1,966 were cut to their opening sentence**, with user quotes and `(user, date)` tags taken
+out. Short notes (one line, 160 characters or less, no user quote) and the file header were left
+exactly as they were. **The file is ≈1.09 MB and 18,757 lines**, from 25,968.
+
+**Nothing was lost; it moved into history.** The full reasoning behind every rule is at commit
+`3b90bbd` — `git show 3b90bbd:index.html` — and the rules themselves still live here and in
+`VERIFICATION.md`. A note's headline is its pointer back to that.
+
+**How, and how it was proved.** A tokenizer, not a find-and-replace: the script is full of regex
+literals, template literals and strings containing `/*` and `//`, and a regex over the source
+would have eaten code. It ran in PowerShell/.NET reading and writing UTF-8 — never `perl`, §99. A
+multi-line note sharing a line with code would have been left alone, because shortening it can
+change automatic semicolon insertion; there turned out to be none. Then:
+
+- **the code is identical** once every comment is set aside, in both files — 940,436 characters,
+  compared exactly, with only blank lines and trailing spaces normalised;
+- `MF.validate()` — **0 errors at 380, 560, 994 and 1250**, 48 groups, both controls failing;
+- `MF.playthrough(1…9)` — every layer driven to native metal; no console errors.
+
+**What it did not look at:** whether each headline is the *right* sentence. It is the first one,
+mechanically chosen, and a few are terse (*"310, not 430."*) or end on "…". Where a headline
+misleads, the fix is to rewrite that one note from the full text at `3b90bbd`, not to restore the
+essay.

@@ -18,7 +18,7 @@ A single-file, zero-dependency site for learning to factor — built on one idea
 
 ## Run it
 
-Open `index.html`. That is the whole instruction — no build step, no server, no dependencies, no storage. **≈1.51 MB, one file, and it runs from `file://`.**
+Open `index.html`. That is the whole instruction — no build step, no server, no dependencies, no storage. **≈1.09 MB, one file, and it runs from `file://`.**
 
 The only thing it ever fetches is **sound**, out of `sfx/` beside it — and every one of those fetches is allowed to fail. Without the folder the cues fall back to synthesised oscillators, the music bed stays silent, and the site behaves exactly as it did before there was any audio at all. **Adding sound files can never take sound away, and removing them can never break the page.**
 
