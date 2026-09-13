@@ -298,6 +298,9 @@ input::placeholder, textarea::placeholder{color:#6B5B48; opacity:1}
   .forgegrid > *:nth-child(2){order:-1}
 }
 .forgegrid > *{min-width:0}
+/* the second row's two boards start level: the grid gap is the space above
+   them, so neither keeps the margin it carries when it follows a sibling */
+.forgecell > .deepboard, .forgecell > .panel{margin-top:0 !important}
 /* NOT STICKY ANY MORE (user, 2026-09-13). Deep Castings and the Shelf hang
    under this board, and a sticky element with a sibling under it is what drew
    the Winding Frame across the Crosscut (MF.paintDeep; `parts` checks it). */
@@ -12201,9 +12204,15 @@ MF.SCREENS.forge = function(host){
 
   var grid = E('div','forgegrid');
   var colL = E('div'), colR = E('div');
+  /* THE SECOND ROW (user, 2026-09-13): Deep Castings under the order board
+     and the Shelf beside it on the right. Two cells of the same grid, so
+     their tops line up whatever height the first row comes out; on one
+     column they simply follow in this order. */
+  var cellDeep = E('div','forgecell'), cellShelf = E('div','forgecell');
   grid.appendChild(colL); grid.appendChild(colR);
+  grid.appendChild(cellDeep); grid.appendChild(cellShelf);
   host.appendChild(grid);
-  MF._forge = {left:colL, right:colR};
+  MF._forge = {left:colL, right:colR, deep:cellDeep, shelf:cellShelf};
   MF.paintForge();
 
   /* AND NO DOOR AT THE FOOT OF THE FORGE AT ALL (user, 2026-09-05).
@@ -12226,14 +12235,13 @@ MF.SCREENS.forge = function(host){
 MF.paintForge = function(){
   if(!MF._forge || !MF._forge.right || !MF._forge.right.isConnected) return;
   var st = MF.state.forge;
-  /* THE BOARDS, AND WHAT THE DEEP ONE MAKES, HANG IN ONE COLUMN (user,
-     2026-09-13: "align Deep Casting and the Shelf always below The Order
-     Board"). The order board is no longer sticky for exactly this reason -
-     see the note on `.orderboard` in the CSS. */
-  var l = clear(MF._forge.left);
-  MF.paintOrders(l, st);
-  MF.paintDeep(l, st);
-  MF.paintShelf(l, st);
+  /* DEEP CASTINGS AND THE SHELF ARE THE GRID'S SECOND ROW (user,
+     2026-09-13: both "below The Order Board", then "the Shelf to the right,
+     next to the Deep Castings"). The order board is not sticky - see the
+     note on `.orderboard` in the CSS. */
+  MF.paintOrders(clear(MF._forge.left), st);
+  MF.paintDeep(clear(MF._forge.deep || MF._forge.left), st);
+  MF.paintShelf(clear(MF._forge.shelf || MF._forge.right), st);
   var r = clear(MF._forge.right);
   /* THE WORK FIRST, THE YARD UNDER IT. The rack used to be a panel of its own
      above this, with the heap between it and the mold; the rack now lives
@@ -12493,7 +12501,7 @@ MF.paintShelf = function(host, st){
   box.appendChild(row);
   box.appendChild(H('div','yhint', any
     ? '<b>None of these is an instrument.</b> A part is the object itself &mdash; nothing on your belt changed when it was cast.'
-    : 'Nothing cast yet. Only the orders on <b>Deep Castings</b>, just above, take metal from the lower shafts.'));
+    : 'Nothing cast yet. Only the orders on <b>Deep Castings</b> take metal from the lower shafts.'));
   host.appendChild(box);
 };
 
@@ -17905,19 +17913,37 @@ MF.validate = function(){
     var obYard  = ovStage.querySelector('.yardplace');  obYard  = obYard && obYard.closest('.panel');
     var obCraft = ovStage.querySelector('.panel.craft');
     var hangsUnder = function(top, low){
-      return !!top && !!low && top.parentElement === low.parentElement &&
+      return !!top && !!low &&
         !!(top.compareDocumentPosition(low) & Node.DOCUMENT_POSITION_FOLLOWING) &&
         low.getBoundingClientRect().top >= top.getBoundingClientRect().bottom - 1;
     };
+    /* BESIDE: level tops, and the second starts where the first ends. Only
+       asked when the grid really has two tracks - on one, the Shelf follows
+       Deep Castings down the page instead (user, 2026-09-13: "the Shelf to the
+       right, next to the Deep Castings"). */
+    var beside = function(a, b){
+      if(!a || !b) return false;
+      var A = a.getBoundingClientRect(), B = b.getBoundingClientRect();
+      return Math.abs(A.top - B.top) <= 2 && B.left >= A.right - 1;
+    };
+    var obTwo = getComputedStyle(ovStage.querySelector('.forgegrid')).gridTemplateColumns.trim().split(/\s+/).length > 1;
     chk('parts');
     if(!hangsUnder(obBoard, obDeep))
-      errs.push('parts: Deep Castings does not hang under The Order Board in its column');
+      errs.push('parts: Deep Castings does not hang under The Order Board');
     chk('parts');
-    if(!hangsUnder(obDeep, obShelf))
-      errs.push('parts: the Shelf does not hang under Deep Castings');
+    if(obTwo ? !beside(obDeep, obShelf) : !hangsUnder(obDeep, obShelf))
+      errs.push(obTwo ? 'parts: the Shelf is not beside Deep Castings, on its right'
+                      : 'parts: on one column the Shelf does not follow Deep Castings');
     chk('parts');
     if(!hangsUnder(obCraft, obYard))
       errs.push('parts: the yard does not hang under the craft floor in the work column');
+    chk('parts');
+    if(!hangsUnder(obYard, obDeep))
+      errs.push('parts: the yard is not above Deep Castings');
+    /* CONTROL: beside, handed the pair the wrong way round, must refuse */
+    chk('parts');
+    if(obTwo && beside(obShelf, obDeep))
+      errs.push('CONTROL: the beside check cannot tell the Shelf left of Deep Castings from right of it');
     /* CONTROL: the same predicate, handed the board and Deep Castings the
        wrong way round, must refuse */
     chk('parts');

@@ -1261,23 +1261,27 @@ Board"*. The collision was never the column — it was a sticky board with a sib
 `.orderboard` is `position:static` now and the columns read:
 
 ```
-left                         right (first, when the columns stack)
-THE ORDER BOARD              the craft floor
-DEEP CASTINGS                the yard — what is still rock
-the shelf
+row 1   THE ORDER BOARD      the craft floor, the yard under it   (first when stacked)
+row 2   DEEP CASTINGS        the shelf, level with it
 ```
+
+The same afternoon: *"Align the Shelf to the right, next to the Deep Castings."* So Deep Castings
+and the shelf are the forge grid's **second row** — two cells, so their tops are level whatever
+height the first row comes out. On one column everything stacks: craft floor, yard, order board,
+Deep Castings, shelf.
 
 What this gives up is the pinned target: on a wide screen the order you are filling can scroll
 away while you work the mold. The target is repeated at the head of the craft floor, so nothing
 is lost that the mold does not also show. The sticky-sibling rule still runs, and `parts` now also
-measures, in the mounted forge, that Deep Castings hangs under the order board, the shelf under
-Deep Castings, and the yard under the craft floor — with a control that hands the predicate the
-board and Deep Castings the wrong way round.
+measures, in the mounted forge, that Deep Castings hangs under the order board, the shelf sits
+level beside it on the right (or follows it, on one column), the yard hangs under the craft floor
+and above Deep Castings — with controls that hand "under" and "beside" their pairs the wrong way
+round.
 
 **The wording pass that came with it.** "The board to the left" and "the board on the left" became
 **The Order Board** (it is below, not left, when the columns stack); Mr Factor's forge line says
 *"the seven on The Order Board"*; the rack reads *"native metal, ready to spend"*; the empty shelf
-points at *"Deep Castings, just above"*. And the **mine's** rack had only two shelves, so deep metal
+names *Deep Castings* without saying where it is, because that changes with the width. And the **mine's** rack had only two shelves, so deep metal
 (`m` zeroed) sat under "plain metal" there while the forge filed it correctly — it has the same three
 shelves now.
 
