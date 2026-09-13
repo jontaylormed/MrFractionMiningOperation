@@ -124,7 +124,7 @@ happens far more often. Positional ids are the lesser of the two, but this is th
 | `room-mine-4` | The mine | Nothing here is timed. A swing that misses costs you the swing. |
 | `room-forge-1` | The forge | This is where you multiply instead of breaking, and the only place you do it to order. Metal goes into a mold and one object comes out. |
 | `room-forge-2` | The forge | Take an order off a board and I will open the mold. You spend metal out of the yard to fill it. |
-| `room-forge-3` | The forge | If the casting is sound you keep what you made. The seven on the left are instruments — each reads a lump for you, and none of them gates anything. The four deep castings are objects, and read nothing. |
+| `room-forge-3` | The forge | If the casting is sound you keep what you made. The seven on The Order Board are instruments — each reads a lump for you, and none gates anything. The four deep castings are objects, and read nothing. |
 | `room-workshop-mold-1` | The Casting Shed | Three short workshops. The Words is the vocabulary, The Molds is what a pour actually does, and The Tools is how each instrument works. |
 | `room-workshop-mold-2` | The Casting Shed | None of them is required. Come back here when a word in the mine stops making sense. |
 | `room-shed-mold-1` | The Molds | Move the sliders and watch the pour. Whatever you put in decides what comes out — you never choose the shape. |

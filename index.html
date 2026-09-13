@@ -298,17 +298,19 @@ input::placeholder, textarea::placeholder{color:#6B5B48; opacity:1}
   .forgegrid > *:nth-child(2){order:-1}
 }
 .forgegrid > *{min-width:0}
-.orderboard{position:sticky; top:12px; background:linear-gradient(180deg,#3A3129,#241C15);
+/* NOT STICKY ANY MORE (user, 2026-09-13). Deep Castings and the Shelf hang
+   under this board, and a sticky element with a sibling under it is what drew
+   the Winding Frame across the Crosscut (MF.paintDeep; `parts` checks it). */
+.orderboard{position:static; background:linear-gradient(180deg,#3A3129,#241C15);
   border:3px solid #1B1511; border-radius:14px; padding:13px 11px 14px;
   box-shadow:inset 0 8px 22px rgba(0,0,0,.5)}
-@media (max-width:980px){ .orderboard{position:static} }
 /* ---- THE SECOND BOARD ----
    It must not read as more of the first. The ladder above is ranked by how much
    an instrument does for you; a deep casting is not on that ladder at all, so
    the board it hangs on is a separate frame, unsticky (the sticky one is the
    order you are filling, and there is only ever one of those), and cooler in
    colour — the lower workings rather than the furnace. */
-/* NOT STICKY, AND IT IS IN THE OTHER COLUMN. Two sticky boards in one column
+/* NOT STICKY, AND UNDER THE ORDER BOARD. A sticky board with this below it
    is what put the Winding Frame across the Crosscut; see MF.paintDeep. */
 .deepboard{position:static; margin-top:16px;
   background:linear-gradient(180deg,#2B3138,#1B2026); border-color:#141A1F}
@@ -7182,7 +7184,7 @@ MF.GUIDE = {
        orders since the Deep Castings landed: a part carries no lens and reads
        nothing. A student who has dug layers 6-9 was being told the Winding
        Frame would read a lump for them. */
-    'If the casting is sound you keep what you made. The seven on the left are instruments &mdash; each reads a lump for you, and none of them gates anything. The four deep castings are objects, and read nothing.'
+    'If the casting is sound you keep what you made. The seven on The Order Board are instruments &mdash; each reads a lump for you, and none gates anything. The four deep castings are objects, and read nothing.'
   ]},
   'workshop-mold': {where:'THE CASTING SHED', beats:[
     'Three short workshops. <b>The Words</b> is the vocabulary, <b>The Molds</b> is what a pour actually does, and <b>The Tools</b> is how each instrument works.',
@@ -12224,14 +12226,21 @@ MF.SCREENS.forge = function(host){
 MF.paintForge = function(){
   if(!MF._forge || !MF._forge.right || !MF._forge.right.isConnected) return;
   var st = MF.state.forge;
-  MF.paintOrders(clear(MF._forge.left), st);
+  /* THE BOARDS, AND WHAT THE DEEP ONE MAKES, HANG IN ONE COLUMN (user,
+     2026-09-13: "align Deep Casting and the Shelf always below The Order
+     Board"). The order board is no longer sticky for exactly this reason -
+     see the note on `.orderboard` in the CSS. */
+  var l = clear(MF._forge.left);
+  MF.paintOrders(l, st);
+  MF.paintDeep(l, st);
+  MF.paintShelf(l, st);
   var r = clear(MF._forge.right);
-  /* THE WORK FIRST, THE SINK UNDER IT. The rack used to be a panel of its own
+  /* THE WORK FIRST, THE YARD UNDER IT. The rack used to be a panel of its own
      above this, with the heap between it and the mold; the rack now lives
-     inside the craft floor and only the unspendable rock is left below. */
+     inside the craft floor and only the unspendable rock is left below, and
+     (user, 2026-09-13) the yard now comes before Deep Castings when the two
+     columns stack on a narrow screen. */
   MF.paintCraft(r, st);
-  MF.paintDeep(r, st);
-  MF.paintShelf(r, st);
   MF.paintHeap(r, st);
 };
 
@@ -12304,7 +12313,7 @@ MF.orderCard = function(key, st){
     return b;
 };
 
-/* ---------- THE DEEP CASTINGS, AND THEY ARE NOT ON THE LEFT ----------
+/* ---------- THE DEEP CASTINGS, UNDER THE ORDER BOARD ----------
 
    USER, 2026-09-07, with a screenshot: *"The new items are being rolled over
    the old tools. They should be elsewhere in the forge."*
@@ -12322,12 +12331,19 @@ MF.orderCard = function(key, st){
    holding what the deep metal became — and the deep orders now sit between
    them: pick one, pour it, and the thing you made is drawn directly beneath.
    The left column goes back to being one sticky board, which is the one thing
-   sticky was ever for: the order you are filling does not scroll away. */
+   sticky was ever for: the order you are filling does not scroll away.
+
+   AND THEN IT MOVED BACK, WITH THE STICKY GONE (user, 2026-09-13). The user
+   wants both boards, and the shelf the deep one fills, in one column in that
+   order at every width. The collision was never the column; it was a sticky
+   board with a sibling under it. So the order board is static now and the
+   rule stands - `parts` still refuses any sticky board with something below
+   it, and now also checks that this board and the shelf hang under it. */
 MF.paintDeep = function(host, st){
   var deep = E('div','orderboard deepboard');
   deep.appendChild(H('h3',null,'Deep Castings'));
   deep.appendChild(H('div','hint','Metal from the lower shafts &mdash; <b>y</b>-brackets, two-letter brackets, elements that will not break &mdash; ' +
-    'fits none of the orders on the board to the left. These are cut for it. <b>Not one of them is an instrument</b>: ' +
+    'fits none of the orders on The Order Board. These are cut for it. <b>Not one of them is an instrument</b>: ' +
     'they are parts for the operation, and the reason to pour one is the multiplication it makes you do.'));
   MF.partOrder().forEach(function(key){ deep.appendChild(MF.orderCard(key, st)); });
   host.appendChild(deep);
@@ -12351,7 +12367,7 @@ MF.paintRack = function(host, st){
   var want = open ? MF.slotsWanted(MF.orderOf(st.picked)) : 0;
 
   var rk = E('div','shelfrow');
-  rk.appendChild(H('div','ylab','THE RACK &mdash; native metal, and the forge spends this'));
+  rk.appendChild(H('div','ylab','THE RACK &mdash; native metal, ready to spend'));
   var have = MF.yardList();
   if(!have.length){
     rk.appendChild(H('div','yempty','Bare. Break a lump all the way down in the mine and the metal is racked here.'));
@@ -12389,7 +12405,7 @@ MF.paintRack = function(host, st){
         /* NOT A DEAD CONTROL WHEN NOTHING IS OPEN. It says what is missing
            instead of doing nothing, which is how the old chips behaved. */
         if(used){ st.note = 'That one is already in the mold. Click it in the slot to take it back out.'; MF.paintForge(); return; }
-        if(!open){ st.note = 'Pick an order from the board on the left first, and the mold will open.'; MF.paintForge(); return; }
+        if(!open){ st.note = 'Pick an order from The Order Board first, and the mold will open.'; MF.paintForge(); return; }
         if(st.slots.length >= want){ st.note = 'The mold is full. Take something out of a slot if you want to change it.'; MF.paintForge(); return; }
         st.slots.push({yardIdx:e.idx, key:e.key, ingot:e.ingot});
         st.note = null;
@@ -12477,7 +12493,7 @@ MF.paintShelf = function(host, st){
   box.appendChild(row);
   box.appendChild(H('div','yhint', any
     ? '<b>None of these is an instrument.</b> A part is the object itself &mdash; nothing on your belt changed when it was cast.'
-    : 'Nothing cast yet. The four orders under <b>Deep Castings</b> are the only ones the lower shafts&rsquo; metal will fill.'));
+    : 'Nothing cast yet. Only the orders on <b>Deep Castings</b>, just above, take metal from the lower shafts.'));
   host.appendChild(box);
 };
 
@@ -16917,8 +16933,12 @@ MF.paintYard = function(){
     rk.appendChild(H('div','yempty','Bare. Anything you break down to an element is racked here, with the lump it came out of written under it — and this is what the forge spends.'));
   } else {
     var rack = E('div','rack');
-    [['plain metal', function(g){ return g.m===0; }],
-     ['metal with an x in it', function(g){ return g.m!==0; }]].forEach(function(grp){
+    /* THE SAME THREE SHELVES AS THE FORGE'S RACK. This had two, and deep metal
+       has m zeroed, so `y + 2` and `x² + 4` sat under "plain metal" here while
+       the forge filed them correctly (see MF.paintRack). */
+    [['plain metal', function(g){ return g.m===0 && !g.label; }],
+     ['metal with an x in it', function(g){ return g.m!==0; }],
+     ['metal from the deep shafts', function(g){ return g.m===0 && !!g.label; }]].forEach(function(grp){
       var these = keys.filter(function(k){ return grp[1](MF.state.yard[k].ingot); });
       if(!these.length) return;
       var shelf = E('div','shelf');
@@ -17872,7 +17892,38 @@ MF.validate = function(){
         errs.push('parts: the sticky order board has ' + after.length + ' element(s) below it in its own column — ' +
                   'a pinned board and a scrolling sibling are drawn on top of each other');
     });
-    var boxes = Array.prototype.map.call(cards, function(c){
+    /* ---- DEEP CASTINGS AND THE SHELF HANG UNDER THE ORDER BOARD ----
+
+       USER, 2026-09-13: "align Deep Casting and the Shelf always below The
+       Order Board", and the yard above Deep Castings. One column holds the
+       boards and the shelf in that order; the work column holds the craft
+       floor and the yard. Measured in the mounted forge, not read off source:
+       same parent, later in the document, and drawn below. */
+    var obBoard = ovStage.querySelector('.orderboard:not(.deepboard)');
+    var obDeep  = ovStage.querySelector('.deepboard');
+    var obShelf = ovStage.querySelector('.shelfparts'); obShelf = obShelf && obShelf.closest('.panel');
+    var obYard  = ovStage.querySelector('.yardplace');  obYard  = obYard && obYard.closest('.panel');
+    var obCraft = ovStage.querySelector('.panel.craft');
+    var hangsUnder = function(top, low){
+      return !!top && !!low && top.parentElement === low.parentElement &&
+        !!(top.compareDocumentPosition(low) & Node.DOCUMENT_POSITION_FOLLOWING) &&
+        low.getBoundingClientRect().top >= top.getBoundingClientRect().bottom - 1;
+    };
+    chk('parts');
+    if(!hangsUnder(obBoard, obDeep))
+      errs.push('parts: Deep Castings does not hang under The Order Board in its column');
+    chk('parts');
+    if(!hangsUnder(obDeep, obShelf))
+      errs.push('parts: the Shelf does not hang under Deep Castings');
+    chk('parts');
+    if(!hangsUnder(obCraft, obYard))
+      errs.push('parts: the yard does not hang under the craft floor in the work column');
+    /* CONTROL: the same predicate, handed the board and Deep Castings the
+       wrong way round, must refuse */
+    chk('parts');
+    if(hangsUnder(obDeep, obBoard))
+      errs.push('CONTROL: the under-the-board check cannot tell Deep Castings above the board from below it');
+    var boxes =Array.prototype.map.call(cards, function(c){
       return {r:c.getBoundingClientRect(), nm:(c.querySelector('.onm')||{}).textContent};
     }).filter(function(b){ return b.r.width > 0 && b.r.height > 0; });
     chk('parts');

@@ -414,7 +414,7 @@ The prose that used to re-say all of this in a paragraph is gone. What is left i
 
 **The metal you own is beside the mold you are filling.** It used to be a yard panel above the craft floor, and before that it appeared only *inside* the mold after an order was chosen — so a student picked a tool with no idea what they were holding. It is neither now: the rack is part of the craft floor.
 
-- **Left — the order board.** Seven orders as cards, each showing whether it is in your hands, whether you have the metal, or whether it needs more. **Every one opens**, including the ones you cannot fill: a disabled button explains nothing, and an open mold can say what it is waiting for. Clicking one you have already made explains it instead of remaking it. It stays `position:sticky`, so the target does not scroll away.
+- **Left — the order board.** Seven orders as cards, each showing whether it is in your hands, whether you have the metal, or whether it needs more. **Every one opens**, including the ones you cannot fill: a disabled button explains nothing, and an open mold can say what it is waiting for. Clicking one you have already made explains it instead of remaking it. It is `position:static` since 2026-09-13, because Deep Castings and the Shelf now hang under it in the same column (see *Where the Deep Castings board is*).
 - **Right — the craft floor, in one run:** the target large, the mold seen from above, the slots, **the rack**, the pour. Metal on the rack is clickable and goes straight into a slot; metal already in the mold greys out; clicking a metal with no order open says so rather than doing nothing.
 - **Right, below — the heap**, drawn as the yard it is.
 
@@ -1254,6 +1254,32 @@ are filling does not scroll away.**
 > it in its own column."* The geometric overlap sweep is kept beside it for what it can see, and
 > the forge is mounted into the document to measure, because a detached probe is 0×0 on every
 > element and would have passed on exactly the build that failed.
+
+**2026-09-13: it moved back under the order board, and the sticky went instead.** The user asked
+for *"the yard above the Deep Castings"* and *"Deep Casting and the Shelf always below The Order
+Board"*. The collision was never the column — it was a sticky board with a sibling under it — so
+`.orderboard` is `position:static` now and the columns read:
+
+```
+left                         right (first, when the columns stack)
+THE ORDER BOARD              the craft floor
+DEEP CASTINGS                the yard — what is still rock
+the shelf
+```
+
+What this gives up is the pinned target: on a wide screen the order you are filling can scroll
+away while you work the mold. The target is repeated at the head of the craft floor, so nothing
+is lost that the mold does not also show. The sticky-sibling rule still runs, and `parts` now also
+measures, in the mounted forge, that Deep Castings hangs under the order board, the shelf under
+Deep Castings, and the yard under the craft floor — with a control that hands the predicate the
+board and Deep Castings the wrong way round.
+
+**The wording pass that came with it.** "The board to the left" and "the board on the left" became
+**The Order Board** (it is below, not left, when the columns stack); Mr Factor's forge line says
+*"the seven on The Order Board"*; the rack reads *"native metal, ready to spend"*; the empty shelf
+points at *"Deep Castings, just above"*. And the **mine's** rack had only two shelves, so deep metal
+(`m` zeroed) sat under "plain metal" there while the forge filed it correctly — it has the same three
+shelves now.
 
 ## The site stopped telling anyone it is not marking them
 
