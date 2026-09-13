@@ -1303,7 +1303,7 @@ Each line was rewritten to say the positive thing rather than truncated, so noth
 | Nothing here is marked and nothing is timed. | Nothing here is timed. |
 | No row is marked, and the drill will not mark one. | The drill will not choose a row for you. |
 | Nothing here is a mark, and nothing here swings for you. | Nothing here swings for you. |
-| Nothing here is a mark. It is a record of what you have — and unlike a mark, you can spend it. | A record of what you have — and you can spend it. |
+| Nothing here is a mark. It is a record of what you have — and unlike a mark, you can spend it. | A record of what you have — and you can spend it. **Removed 2026-09-13** at the user's request: the rack and "Haul the metal to the forge" above it already say both. |
 | the drill lists every pair and marks none | the drill lists every pair and chooses none |
 | Nothing here is kept and nothing here is marked. | Nothing here is kept. |
 

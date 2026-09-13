@@ -17019,7 +17019,8 @@ MF.paintYard = function(){
   on(toForge,'click',function(){ MF.go('forge'); });
   box.appendChild(toForge);
 
-  box.appendChild(H('div','hint','<br>A record of what you have — and you can spend it.'));
+  /* "A record of what you have — and you can spend it." came off here (user,
+     2026-09-13). The rack and the forge button above already say both. */
   host.appendChild(box);
 };
 
