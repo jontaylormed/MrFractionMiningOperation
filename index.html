@@ -3289,6 +3289,7 @@ MF.STR.en = {
   'access.close': 'Done',
   'access.foot': 'Press <b>Alt + A</b> any time to open this, and <b>Esc</b> to close it. Nothing here changes the mathematics.',
   'access.lang': 'Language',
+  'access.lang.hint': 'Translations are drafts — corrections welcome.',
   'access.off': 'Off',
   'access.on': 'On',
   'access.type': 'Typeface',
@@ -4277,7 +4278,7 @@ MF.STR.en = {
   'order.aria.ready': 'You have the metal for this. Open the mold.',
   'order.aria.short': 'You do not have the metal for this yet. Open the mold to see what it wants.',
   'deep.h3': 'Deep Castings',
-  'deep.hint': 'Metal from the lower shafts &mdash; <b>y</b>-brackets, two-letter brackets, elements that will not break &mdash; fits none of the orders on The Order Board. These are cut for it. <b>Not one of them is an instrument</b>: they are parts for the operation, and the reason to pour one is the multiplication it makes you do.',
+  'deep.hint': 'Metal from the lower shafts &mdash; <b>y</b>-brackets, two-letter brackets, elements that will not break &mdash; fits none of the orders on The Order Board. These are cut for it. <b>Not one of them is an instrument</b>: they are parts for the operation, and the reason to pour one is the multiplication it makes you do. Each one you cast goes up on the surface, fitted to the building it was cut for.',
   'rack.lab': 'THE RACK &mdash; native metal, ready to spend',
   'rack.empty': 'Bare. Break a lump all the way down in the mine and the metal is racked here.',
   'rack.plain': 'plain metal',
@@ -4301,7 +4302,7 @@ MF.STR.en = {
   'shelf.empty': 'an empty place',
   'shelf.aria.made': '{nm}, cast {cast}, fitted to {fits}',
   'shelf.aria.empty': 'An empty place on the shelf.',
-  'shelf.any': '<b>None of these is an instrument.</b> A part is the object itself &mdash; nothing on your belt changed when it was cast.',
+  'shelf.any': '<b>None of these is an instrument.</b> A part is the object itself &mdash; nothing on your belt changed when it was cast. Each one is up on the surface, on the building it was cut for.',
   'shelf.none': 'Nothing cast yet. Only the orders on <b>Deep Castings</b> take metal from the lower shafts.',
   'craft.tag': 'THE CRAFT FLOOR',
   'craft.cold': 'The mold is cold.',
@@ -4550,7 +4551,16 @@ MF.STR.en = {
   'door.mill': 'The Stamp Mill',
   'door.shed': 'The Casting Shed',
   'door.forge': 'The Forge',
-  'door.mine': 'Into the Mine'
+  'door.mine': 'Into the Mine',
+
+  /* the surface: the deep castings fitted to the buildings, and what is in the yard */
+  'surface.part.title': '{part}, fitted to {fits} — cast from metal you brought up out of the deep shafts.',
+  'surface.aria.parts': 'Fitted to the buildings, each cast from metal out of the deep shafts: {parts}.',
+  'surface.yard.bare': 'The yard: bare ground, until metal comes up out of the mine.',
+  'surface.yard.rack': 'On the rack: {metal}.',
+  'surface.yard.heap': 'On the heap: {rock}.',
+  'list.sep': ', ',
+  'part.sheet.up': 'It is up on the surface now, fitted to {fits} &mdash; made out of metal you brought up from the deep shafts.'
 };
 MF._missing = {};
 MF.lang = function(){
@@ -7317,7 +7327,7 @@ MF.openAccess = function(opener){
       /* LANGUAGE FIRST, and only once there is a second one to choose. A
          change redraws the room the student is standing in. */
       if(Object.keys(MF.LANG).length > 1)
-        pick(b, MF.t('access.lang'), null,
+        pick(b, MF.t('access.lang'), MF.t('access.lang.hint'),
           Object.keys(MF.LANG).map(function(k){ return {nm:MF.LANG[k].nm, v:k}; }),
           MF.lang(), function(v){ a.lang = v; MF.applyAccess(); MF.go(MF.state.screen); });
       pick(b, MF.t('access.type'), MF.t('access.type.hint'),
@@ -7985,15 +7995,26 @@ MF.surfaceScene = function(){
   });
   yd.appendChild(S('rect',{x:'2',y:'11',width:'91',height:'3',fill:'#6B5A47'}));
   yd.appendChild(S('rect',{x:'2',y:'21',width:'91',height:'3',fill:'#6B5A47'}));
-  /* WHAT IS IN THE YARD IS ORE, DRAWN AS ORE */
-  /* THE RACK: native metal, stood on a plank. */
+  /* WHAT IS IN THE YARD IS WHAT IS IN YOUR YARD. Bare ground until the first
+     metal comes up; then up to four bars on the rack and five stones on the heap -
+     a picture of what is there, never a count of it. Hover names the metal. */
+  var ydKeys = Object.keys(MF.state.yard || {}), ydMetal = MF.yardList(), ydRock = MF.state.rockpile || [];
+  var ydSay = [];
+  if(ydKeys.length) ydSay.push(MF.t('surface.yard.rack', {metal: ydKeys.map(function(k){
+    return ingotText(MF.state.yard[k].ingot); }).join(MF.t('list.sep'))}));
+  if(ydRock.length) ydSay.push(MF.t('surface.yard.heap', {rock: ydRock.map(MF.oreText).join(MF.t('list.sep'))}));
+  var ydTitle = S('title',{});
+  ydTitle.textContent = ydSay.length ? ydSay.join(' ') : MF.t('surface.yard.bare');
+  yd.appendChild(ydTitle);
+  /* THE RACK: native metal, stood on a plank. The two on the plank go first, so
+     a third and fourth have something to sit on. */
   yd.appendChild(S('rect',{x:'6',y:'25',width:'34',height:'3',rx:'1',fill:'#5A4230'}));
-  [[6,25,14],[19,25,15],[12,17,12],[28,26,13]].forEach(function(p){
+  [[6,25,14],[19,25,15],[28,26,13],[12,17,12]].slice(0, Math.min(4, ydMetal.length)).forEach(function(p){
     yd.appendChild(MF.oreLump({native:true, x:p[0], y:p[1] - p[2]*(MF.ORE_ART.box[1]/MF.ORE_ART.box[0]),
       w:p[2], stroke:9}));
   });
   /* THE HEAP: rock that still has a seam in it, waiting to be worked. */
-  [[50,27,16],[62,28,15],[74,27,14],[57,20,13],[69,21,12]].forEach(function(p){
+  [[50,27,16],[62,28,15],[74,27,14],[57,20,13],[69,21,12]].slice(0, Math.min(5, ydRock.length)).forEach(function(p){
     yd.appendChild(MF.oreLump({x:p[0], y:p[1] - p[2]*(MF.ORE_ART.box[1]/MF.ORE_ART.box[0]),
       w:p[2], stroke:9}));
   });
@@ -8038,6 +8059,68 @@ MF.surfaceScene = function(){
     g.appendChild(S('path',{d:'M'+b[0]+' '+b[1]+' q6 -6 12 0 q6 -6 12 0',fill:'none',stroke:'#5A4B3C','stroke-width':'2'}));
     svg.appendChild(g);
   });
+
+  /* ---- THE DEEP CASTINGS, FITTED TO THE BUILDINGS THEY WERE CUT FOR ---- */
+  /* Only what has been cast is drawn: no outline for a part not yet made and no
+     count, so the site never reads as a checklist. Each carries the same small
+     gold spark - metal out of the deep shafts - and hover is the only thing that
+     says so. None of them is an instrument, and none of them does anything. */
+  function deepMark(parent, x, y){
+    parent.appendChild(S('circle',{cx:String(x),cy:String(y),r:'6',fill:'#FFD873',opacity:'.28'}));
+    parent.appendChild(S('path',{class:'sc-deepmark',
+      d:'M'+x+' '+(y-4.5)+' l1.3 3.2 l3.2 1.3 l-3.2 1.3 l-1.3 3.2 l-1.3 -3.2 l-3.2 -1.3 l3.2 -1.3 Z',
+      fill:'#F2C14E', stroke:'#8A6A2A', 'stroke-width':'.6'}));
+  }
+  var partsUp = [];
+  function fitted(key, build){
+    if(!MF.hasPart(key)) return;
+    var p = MF.PARTS[key];
+    var g = S('g',{class:'sc-part', 'data-part':key});
+    var tt = S('title',{}); tt.textContent = MF.t('surface.part.title', {part:p.nm, fits:p.fits});
+    g.appendChild(tt);
+    build(g);
+    svg.appendChild(g);
+    partsUp.push(p.nm);
+  }
+  /* a braced cross-frame bolted to the windmill tower, which drives the winding gear */
+  fitted('frame', function(g){
+    var x = 200, y = 282, w = 22, h = 32;
+    g.appendChild(S('rect',{x:String(x),y:String(y),width:String(w),height:String(h),fill:'none',
+      stroke:'#6B4A32','stroke-width':'3.5'}));
+    g.appendChild(S('path',{d:'M'+x+' '+y+' L'+(x+w)+' '+(y+h)+' M'+(x+w)+' '+y+' L'+x+' '+(y+h),
+      stroke:'#7A5B3A','stroke-width':'2.5'}));
+    [[x,y],[x+w,y],[x,y+h],[x+w,y+h]].forEach(function(b){
+      g.appendChild(S('circle',{cx:String(b[0]),cy:String(b[1]),r:'1.6',fill:'#4A3524'}));
+    });
+    deepMark(g, x + w/2, y + h/2);
+  });
+  /* a fourth stamp on a beam off the Stamp Mill's end wall, over its die */
+  fitted('stamp4', function(g){
+    g.appendChild(S('rect',{x:'362',y:'282',width:'22',height:'4',rx:'1',fill:'#4A3524'}));
+    g.appendChild(S('rect',{x:'374',y:'286',width:'3',height:'30',fill:'#7C838A'}));
+    g.appendChild(S('rect',{x:'368',y:'316',width:'15',height:'14',rx:'2',fill:'#5A626A',
+      stroke:'#3A3F44','stroke-width':'1.5'}));
+    g.appendChild(S('rect',{x:'366',y:'342',width:'19',height:'8',rx:'1',fill:'#4A4038'}));
+    deepMark(g, 375.5, 323);
+  });
+  /* a second rail laid beside the first, still bright */
+  fitted('rail2', function(g){
+    g.appendChild(S('rect',{x:'150',y:'378',width:'652',height:'3',fill:'#8C949C'}));
+    g.appendChild(S('rect',{x:'150',y:'378',width:'652',height:'1',fill:'#C9CFD4',opacity:'.8'}));
+    deepMark(g, 166, 379.5);
+  });
+  /* a cube counterweight on a beam run out past the mine portal */
+  fitted('counter', function(g){
+    g.appendChild(S('rect',{x:'828',y:'298',width:'28',height:'5',rx:'1',fill:'#6B4A32'}));
+    g.appendChild(S('line',{x1:'850',y1:'303',x2:'850',y2:'322',stroke:'#3A3129','stroke-width':'1.6'}));
+    g.appendChild(S('path',{d:'M842 326 l8 -4 l8 4 l-8 4 Z',fill:'#7C838A'}));
+    g.appendChild(S('path',{d:'M842 326 l8 4 l0 12 l-8 -4 Z',fill:'#5A626A'}));
+    g.appendChild(S('path',{d:'M850 330 l8 -4 l0 12 l-8 4 Z',fill:'#454C53'}));
+    deepMark(g, 850, 336);
+  });
+  if(partsUp.length)
+    svg.setAttribute('aria-label', MF.t('surface.aria') + ' ' +
+      MF.t('surface.aria.parts', {parts: partsUp.join(MF.t('list.sep'))}));
 
   /* ---- hotspots: the buildings ARE the navigation ---- */
   /* attachY is the y of the building's own top. */
@@ -12856,6 +12939,7 @@ MF.explainPart = function(key, opener){
       var made = MF.partMetals(key);
       if(made) MF.pourChain(body, made.map(MF.oreToIngot));
       body.appendChild(H('div','swhy', MF.t('part.sheet.why', {does: p.does.charAt(0).toUpperCase() + p.does.slice(1)})));
+      if(MF.hasPart(key)) body.appendChild(H('div','hint', MF.t('part.sheet.up', {fits: p.fits})));
     }
   });
 };
@@ -15255,19 +15339,69 @@ MF.validate = function(){
         sAnims.forEach(function(an){ an.play(); });
       }
     }
-    /* THE YARD IS STOCKED WITH THE THING THE MINE PRODUCES */
-    var sYard = [].slice.call(sSvg.querySelectorAll('g')).filter(function(g){
-      return g.getAttribute('transform') === 'translate(20,322)'; })[0];
+    /* THE YARD ON THE SURFACE IS THE STUDENT'S YARD. Bare while they have hauled
+       nothing out; stocked, native metal on the rack and seamed rock on the heap.
+       And a deep casting is fitted to its building only once it has been cast. */
+    var sKeep = {yard: MF.state.yard, rock: MF.state.rockpile, parts: MF.state.parts};
+    var sBuild = function(){
+      var s2 = document.createElement('div');
+      s2.style.cssText = 'position:absolute; left:-12000px; top:0; width:900px';
+      document.body.appendChild(s2);
+      s2.appendChild(MF.surfaceScene());
+      return s2;
+    };
+    var sLumpsIn = function(stage){
+      var y = [].slice.call(stage.querySelectorAll('svg g')).filter(function(g){
+        return g.getAttribute('transform') === 'translate(20,322)'; })[0];
+      return y ? [].slice.call(y.querySelectorAll('g')).filter(function(g){ return g.querySelector('polygon'); }) : null;
+    };
+    MF.state.yard = {}; MF.state.rockpile = []; MF.state.parts = {};
+    var sBare = sBuild(), sBareLumps = sLumpsIn(sBare);
     chk('surface');
-    if(!sYard){ errs.push('surface: the yard is not on the site'); }
-    else {
-      var sLumps = [].slice.call(sYard.querySelectorAll('g')).filter(function(g){
-        return g.querySelector('polygon'); });
+    if(!sBareLumps) errs.push('surface: the yard is not on the site');
+    else if(sBareLumps.length)
+      errs.push('surface: the yard draws ' + sBareLumps.length + ' lumps for a student who has hauled nothing out');
+    chk('surface');
+    if(sBare.querySelector('.sc-part'))
+      errs.push('surface: a deep casting is fitted to a building before anything has been cast');
+    sBare.remove();
+
+    /* every part cast: each one on its building, each with the deep mark and a name on hover */
+    MF.partOrder().forEach(function(k){ MF.state.parts[k] = {cast:true}; });
+    var sCast = sBuild();
+    var sParts = [].slice.call(sCast.querySelectorAll('.sc-part'));
+    chk('surface');
+    if(sParts.length !== MF.partOrder().length)
+      errs.push('surface: ' + sParts.length + ' deep castings are fitted with all ' + MF.partOrder().length + ' cast');
+    sParts.forEach(function(g){
       chk('surface');
-      if(sLumps.length < 4){
-        errs.push('surface: the yard holds ' + sLumps.length +
-          ' lumps — it is meant to be stocked with the ore the mine produces');
-      } else {
+      var tt = g.querySelector('title');
+      if(!g.querySelector('.sc-deepmark') || !tt || !tt.textContent.trim())
+        errs.push('surface: "' + g.getAttribute('data-part') + '" is fitted with no deep mark or no name on it');
+    });
+    chk('surface');
+    var sAria = (sCast.querySelector('svg').getAttribute('aria-label') || '');
+    if(!MF.fromKey(sAria, ['surface.aria.parts']))
+      errs.push('surface: the picture\'s description does not say what is fitted to the buildings');
+    sCast.remove();
+    MF.state.parts = {};
+
+    /* stocked: two metals and one rock, and the picture must hold exactly that */
+    MF.addToYard({m:0,k:2}); MF.addToYard({m:0,k:3});
+    MF.state.rockpile = [{kind:'number', n:12}];
+    var sFull = sBuild(), sLumps = sLumpsIn(sFull) || [];
+    sFull.style.cssText = 'position:absolute; left:-12000px; top:0; width:900px';
+    chk('surface');
+    /* CONTROL for the bare check: a stocked yard has to be seen as stocked */
+    if(!sLumps.length){
+      errs.push('CONTROL: the yard sweep sees no lumps in a stocked yard, so "bare" proved nothing');
+    } else {
+      chk('surface');
+      var sYardTitle = [].slice.call(sFull.querySelectorAll('svg g')).filter(function(g){
+        return g.getAttribute('transform') === 'translate(20,322)'; })[0].querySelector('title');
+      if(!sYardTitle || sYardTitle.textContent.indexOf('12') < 0 || sYardTitle.textContent.indexOf('3') < 0)
+        errs.push('surface: hovering the yard does not name what is in it');
+      {
         var sMetal = 0, sRock = 0, sWrong = 0, sSeamFault = 0;
         sLumps.forEach(function(g){
           var f = g.querySelector('polygon').getAttribute('fill');
@@ -15300,7 +15434,12 @@ MF.validate = function(){
           errs.push('surface: ' + sOut.length + ' lump(s) sit outside the yard fence');
       }
     }
+    sFull.remove();
+    MF.state.yard = sKeep.yard; MF.state.rockpile = sKeep.rock; MF.state.parts = sKeep.parts;
   } catch(e){
+    if(typeof sKeep !== 'undefined' && sKeep){
+      MF.state.yard = sKeep.yard; MF.state.rockpile = sKeep.rock; MF.state.parts = sKeep.parts;
+    }
     chk('surface');
     errs.push('surface: the site threw while being checked: ' + e.message);
   }

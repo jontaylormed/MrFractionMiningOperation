@@ -1824,5 +1824,44 @@ Byte-identical meant keeping three English slips, each flagged in a comment besi
   class (`.swingbtn`) or the table (`MF.plainT`, `MF.fromKey`). Each rewired check was proved by
   putting its fault back: all eight fired. With the stand-in language on, **one** error is left —
   a 211-character beat, because the brackets add two.
-- **The caveat under the picker**, *"Translations are drafts — corrections welcome."*, is
-  student-facing and waits for approval.
+- **The caveat under the picker**, *"Translations are drafts — corrections welcome."* — **approved
+  and in** (`access.lang.hint`). It shows only once a second language exists, because the
+  Language row does.
+
+## The surface shows what the student has: the yard, and the Deep Castings on their buildings (2026-09-13)
+
+**USER:** *"Parts on their buildings, and show the actual metal. And subtly indicate that this was
+made from deeper casting for the student to get a sense of accomplishment."*
+
+**The yard on the surface was set dressing** — four bars and five stones, always, for a student
+who had never swung. It is the student's yard now: **bare ground** until metal comes up, then up
+to four bars on the rack and five stones on the heap, drawn from `MF.state.yard` and
+`MF.state.rockpile`. A picture of what is there, **never a count** — the fifth metal draws nothing
+new. Hovering the yard names what is in it (*"On the rack: 2, 3. On the heap: 12."*).
+
+**A Deep Casting, once cast, is fitted to the building it was cut for** — `part.<key>.fits` already
+said where:
+
+| part | fitted to | drawn as |
+|---|---|---|
+| The Winding Frame | the winding house | a braced cross-frame bolted to the windmill tower |
+| The Fourth Stamp | the stamp mill | a stamp on a beam off the mill's end wall, over its die |
+| The Second Rail | the cart track | a second, still-bright rail beside the first |
+| The Cube Counterweight | the headframe | a cube on a beam run out past the mine portal |
+
+**The accomplishment is quiet, and it is not a checklist.** A part not yet cast draws nothing — no
+outline, no empty bracket, no count. Each fitted part carries **the same small gold spark**, and
+hovering it says *"cast from metal you brought up out of the deep shafts"*. The picture's
+description names what is fitted. In the forge, the Deep Castings hint and the Shelf now say once
+that a cast part goes up on the surface, and a cast part's sheet says it is there. **Nothing calls
+it a reward, and none of it is an instrument** — a fitted part does nothing.
+
+**The `surface` group** builds the surface three times: bare (no lumps, no parts), every part cast
+(all four fitted, each with its mark and a name, and the description says so), and stocked (the
+lumps are metal and rock in the right colours, inside the fence, named on hover). The stocked
+build is the control for the bare one. Each was proved by putting its fault back — a part fitted
+whether or not it was cast, a yard that draws metal for nobody, a part with its mark taken off.
+
+**Also fixed in passing:** a deep metal dropped in the mold showed **"0"** — `ingotHtml` read `m`
+and `k`, which a labelled ingot keeps at zero. The `parts` group now puts each Deep Casting's own
+metals in the mold and reads the chips back.
