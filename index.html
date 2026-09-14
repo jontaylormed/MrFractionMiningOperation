@@ -3123,7 +3123,7 @@ MF.art = function(size, opts){
   var W = MF.ART_W || 256, H = MF.ART_H || 233;
   var s = S('svg',{viewBox:'0 0 ' + W + ' ' + H, width:size,
     height:Math.round(size * (H / W)),
-    role:'img','aria-label':'Mr Factor, a miner with a helmet lamp and a pick'});
+    role:'img','aria-label':MF.t('factor.aria')});
   var im = S('image',{x:'0', y:'0', width:String(W), height:String(H),
                       href:src, preserveAspectRatio:'xMidYMid meet'});
   /* `xlink:href` as well: the attribute was renamed in SVG2 and the old one is
@@ -3153,7 +3153,7 @@ MF.artIdle = function(size){
   var W = MF.ART_IDLE.w, H = MF.ART_IDLE.h;
   var s = S('svg',{viewBox:'0 0 ' + W + ' ' + H, width:size,
     height:Math.round(size * (H / W)),
-    role:'img','aria-label':'Mr Factor, a miner with a helmet lamp and a pick'});
+    role:'img','aria-label':MF.t('factor.aria')});
   var im = S('image',{x:'0', y:'0', width:String(W), height:String(H),
                       href:MF.ART_IDLE.src, preserveAspectRatio:'xMidYMid meet'});
   im.setAttributeNS('http://www.w3.org/1999/xlink','xlink:href', MF.ART_IDLE.src);
@@ -3167,7 +3167,7 @@ MF.artIdle = function(size){
 
 MF.artVector = function(size, opts){
   var s = S('svg',{viewBox:'0 0 100 122', width:size, height:Math.round(size*1.22),
-    role:'img','aria-label':'Mr Factor, a miner with a helmet lamp and a pick'});
+    role:'img','aria-label':MF.t('factor.aria')});
   function p(d,fill){ s.appendChild(S('path',{d:d, fill:fill})); }
   var lamp = (opts && opts.lit);
   /* THE HALO THE HELMET LAMP THROWS. */
@@ -4515,7 +4515,19 @@ MF.STR.en = {
   'break.whole': 'That is the whole lump. It would leave nothing behind it.',
   'break.plain.glance': 'The hammer glanced off. {g} does not run through every term.',
   'break.shape': 'The hammer glanced off. Nothing of that shape runs through this one.',
-  'break.middle': 'The hammer glanced off. The ends match but the middle does not.'
+  'break.middle': 'The hammer glanced off. The ends match but the middle does not.',
+
+  /* pictures: what a screen reader hears for Mr Factor and the surface */
+  'factor.aria': 'Mr Factor, a miner with a helmet lamp and a pick',
+  'surface.aria': 'A mining operation on the surface: a winding house with a turning wheel, the smelting house, the casting shed, the forge with its furnace lit, an ore cart on rails, and the mine entrance.',
+
+  /* the nameplates bolted to the surface buildings - the plate widens to fit */
+  'plate.windmill': 'Windmill',
+  'plate.mill': 'The Stamp Mill',
+  'plate.shed': 'Casting Shed',
+  'plate.forge': 'The Forge',
+  'plate.mine': 'The Mine',
+  'plate.yard': 'The Yard'
 };
 MF._missing = {};
 MF.lang = function(){
@@ -5331,7 +5343,7 @@ MF.letterPick = function(host, cur, set){
     var t = E('button','vopt' + (cur===v ? ' on' : ''), v);
     t.type = 'button';
     t.setAttribute('aria-pressed', String(cur===v));
-    t.setAttribute('aria-label','the bracket with ' + v + ' in it');
+    t.setAttribute('aria-label', MF.t('hammer.v.aria', {v: v}));
     on(t,'click',function(){
       Array.prototype.forEach.call(vb.children, function(o){
         o.classList.toggle('on', o === t);
@@ -7558,7 +7570,7 @@ MF.surfaceScene = function(){
   var wrap = E('div','scene');
   var W=900, VH=420;
   var svg = S('svg',{viewBox:'0 0 '+W+' '+VH, role:'img',
-    'aria-label':'A mining operation on the surface: a winding house with a turning wheel, the smelting house, the casting shed, the forge with its furnace lit, an ore cart on rails, and the mine entrance.'});
+    'aria-label':MF.t('surface.aria')});
 
   function P(d,f,extra){ var n=S('path',{d:d,fill:f}); if(extra) for(var k in extra) n.setAttribute(k,extra[k]); svg.appendChild(n); return n; }
   function R(x,y,w,h,f,extra){ var n=S('rect',{x:x,y:y,width:w,height:h,fill:f}); if(extra) for(var k in extra) n.setAttribute(k,extra[k]); svg.appendChild(n); return n; }
@@ -7696,7 +7708,7 @@ MF.surfaceScene = function(){
 
   /* bolted to the tower, below the sail sweep - a board above the sails would
      be a board in the sky, and the blades would swing straight through it */
-  nameplate(wm, 54, 122, 'Windmill');
+  nameplate(wm, 54, 122, MF.t('plate.windmill'));
   svg.appendChild(wm);
 
   /* THE SMELTING HOUSE -> the ore workshop. */
@@ -7720,7 +7732,7 @@ MF.surfaceScene = function(){
     puff.style.animationDelay = (-(k*1.5))+'s';
     sm.appendChild(puff);
   });
-  nameplate(sm, 66, 54, 'The Stamp Mill');
+  nameplate(sm, 66, 54, MF.t('plate.mill'));
   /* THE STAMP MILL'S WINDOWS - both of them. */
   sm.appendChild(S('rect',{x:'12',y:'90',width:'36',height:'36',rx:'3',fill:'#2A1E14'}));
   sm.appendChild(lit(S('rect',{x:'14',y:'92',width:'32',height:'32',rx:'3',fill:'#E2600F',opacity:'.9',class:'sc-lamp'})));
@@ -7737,7 +7749,7 @@ MF.surfaceScene = function(){
     tile:'#4A5560', tileLit:'#5E6C79', tileDark:'#2E3840', ridge:'#3E4750',
     fascia:'#3E4750', gutter:'#7E8892', gutterDark:'#414A52',
     downX:113, downTo:112});
-  nameplate(cs, 59, 44, 'Casting Shed');
+  nameplate(cs, 59, 44, MF.t('plate.shed'));
   /* BOTH THE SHED'S WINDOWS BURN. The second was slate-coloured and never lit;
      the tall one on the end is the door and stays dark. */
   cs.appendChild(S('rect',{x:'10',y:'78',width:'28',height:'28',rx:'2',fill:'#1E262C'}));
@@ -7784,7 +7796,7 @@ MF.surfaceScene = function(){
     tile:'#6B3F32', tileLit:'#8A5240', tileDark:'#472619', ridge:'#5A3428',
     fascia:'#5A3428', gutter:'#8A8478', gutterDark:'#4A463E',
     downX:2, downTo:114});
-  nameplate(fg, 59, 47, 'The Forge');
+  nameplate(fg, 59, 47, MF.t('plate.forge'));
 
   /* TWO CHIMNEYS: the tall one off the hearth, and a squatter one off the second fire. */
   [{x:6, y:-30, w:26, h:72, capW:34, capX:2, smoke:0},
@@ -7877,7 +7889,7 @@ MF.surfaceScene = function(){
   lantern(en, 8, 100, 0.85, 14);   /* on the timber, clear of the opening */
   /* the nameplate sits DIRECTLY ABOVE THE OPENING, on the timber over the
      portal - that is where a mine actually carries its name */
-  nameplate(en, 46, 56, 'The Mine');
+  nameplate(en, 46, 56, MF.t('plate.mine'));
   svg.appendChild(en);
 
   /* ---- the small stuff that makes a site look worked rather than drawn ---- */
@@ -7936,7 +7948,7 @@ MF.surfaceScene = function(){
     yd.appendChild(MF.oreLump({x:p[0], y:p[1] - p[2]*(MF.ORE_ART.box[1]/MF.ORE_ART.box[0]),
       w:p[2], stroke:9}));
   });
-  nameplate(yd, 46, 32, 'The Yard');
+  nameplate(yd, 46, 32, MF.t('plate.yard'));
   svg.appendChild(yd);
 
   /* a wheelbarrow, sacks, stacked timber and a trough - the clutter of a place
