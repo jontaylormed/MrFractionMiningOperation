@@ -1990,3 +1990,42 @@ Sélecteur, la Foreuse, la Tarière Mécanique*.
 - English: **0 errors**; the text harvest differs by exactly one string, *Français*.
 
 **What it did not look at:** whether the French is good French.
+
+## Languages, phase 1 continued: German (2026-09-14)
+
+**Deutsch is the fifth language, and it is a draft** — all **1,158 keys** in `MF.STR.de`, same
+order, one block. No fluent speaker or teacher has read it. *Du*, and „…“ quotation marks.
+
+**The real mining words wherever they exist:** *gediegenes Metall* (native metal — the actual
+mineralogy term), *das Pochwerk* (the Stamp Mill), *die Halde* (the heap), *der Querschlag* (the
+Crosscut), *Übertage* (the surface), *Sohle* (a mine level). Also *Ader* (seam), *Barren*
+(ingot), *Klammer* (bracket), *ggT* (GCF), *Kubikzahl* (cube number), *die Gießhalle* (the
+Casting Shed), *die Schmiede*.
+
+### What German needed
+
+- **"7 von 10" is ambiguous in German** — it is how a mark is written, and it is also how "slide 1
+  of 5" is written. The no-grades pattern only flags the pair with a grade word behind it
+  (*Punkten*), so the lesson's slide counter stays *Folie 1 von 5*; the shelf and the dock still
+  refuse any pair. The question counter reads *Nr. 1 (3 insgesamt)*.
+- **ä ö ü ß are not word characters to `\b`**, like the French accents, so no German pattern leans
+  on a boundary next to one.
+- **Budgets are a quarter larger:** beat 270, lesson prose 1700, panel prose 790.
+
+### The one thing the checks caught
+
+**The Powered Auger's closing hint offered a swing at finished metal.** The draft said *Beide
+Seiten bleiben deine Sache* — "both sides are still yours", the exact phrase German's swing-invite
+check looks for — under readings of x² + 4 and three other native pieces. English says "Both
+sides *are* yours" there, which is not an invitation. The German now says *gehören dir*, which
+matches the English. 4 errors at both widths, then 0.
+
+### How it was proved
+
+- `MF.validate()` in German: **0 errors at 1250 and 380**, 31,349 checks, both controls failing as
+  required; `MF.playthrough(1…9)` clean; no key fell back to English; no English left on any screen.
+- **At 380, on the surface, forge and mine: nothing scrolls sideways, and no button or heading
+  clips its text** — the long compounds wrap.
+- English: **0 errors**; the text harvest differs by exactly one string, *Deutsch*.
+
+**What it did not look at:** whether the German is good German.
