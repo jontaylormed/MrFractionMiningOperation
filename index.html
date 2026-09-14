@@ -4403,7 +4403,79 @@ MF.STR.en = {
   'echo.notwhole': '<span class="bad">that is not a whole number</span>',
   'echo.power': '<span class="bad">an x is cut to a whole power, and at least the first</span>',
   'echo.cut': 'the hammer is cut to <b>{head}</b>',
-  'anvil.aria': '{ore} — on the anvil. Click it to bring the hammer down on it.'
+  'anvil.aria': '{ore} — on the anvil. Click it to bring the hammer down on it.',
+
+  /* the Mine: the pieces on the floor, and the ways off it */
+  'floor.spent': '<b>Every piece is native metal.</b> Nothing in any of them comes apart further. That is the end of the lump &mdash; not a failure to get further into it.',
+  'floor.cue': '<b>Click the ore.</b> The hammer will ask what you are cutting out of it.',
+  'floor.on': 'On the floor',
+  'floor.native': 'native metal',
+  'floor.rock': 'still rock',
+  'floor.aria.native': '{ore} — native metal. Nothing in it comes apart.',
+  'floor.aria.rock': '{ore} — still rock. Click it to put it on the anvil.',
+  'floor.why.native': 'Nothing left in that one. {ore} does not come apart — it is an element.',
+  'floor.ok': '<b>The seam runs.</b> <b>{left}</b> came out of it, and <b>{right}</b> is what was left behind.',
+  'floor.swung': ' The hammer was cut to <b>{head}</b>.',
+  'floor.lost': ' Nothing is lost &mdash; the rock is exactly as it was, and you can swing again.',
+  'floor.carry': 'Carry the metal to the yard',
+  'floor.carry.flash': 'Native metal on the rack.',
+  'floor.tip': 'Tip what you have in the yard',
+  'floor.tip.flash': 'Tipped in the yard. The rock is still there when you want it.',
+  'floor.tip.hint': 'Metal goes on the rack, rock goes on the heap. The heap can be broken later.',
+  'floor.leave': 'Leave it for now',
+
+  /* the Mine: the hammer */
+  'hammer.label': 'The hammer, over {ore}',
+  'hammer.title': 'Name one thing in it',
+  'hammer.close': 'Put it down',
+  'hammer.foot': 'The rock decides, not this panel. <b>Esc</b> puts the hammer down.',
+  'hammer.cut': 'cut the head to',
+  'hammer.v.aria': 'the bracket with {v} in it',
+  'hammer.pow.aria': 'what power the x is raised to — leave it empty for a single x',
+  'hammer.hint.group': 'Pick the letter, then the number that goes with it. Both brackets in a four-term lump carry a single letter.',
+  'hammer.hint.num': 'A whole number that runs through it.',
+  'hammer.hint.x': 'An empty x-part is a single x. Put 0 there to take out a plain number instead.',
+  'hammer.swing': 'Bring the hammer down',
+  'hammer.swing.empty': 'Bring the hammer down — not yet, the head is empty',
+  'hammer.drill': '<span style="opacity:.8">A core drill would read the pairs out of this one.</span>',
+  'swing.empty': 'The head is empty. Type what you are taking out, and the hammer has something to cut.',
+  'swing.power': 'An x is cut to a whole power, and at least the first.',
+  'swing.whole': 'A hammer is cut to a whole shape. Those boxes only take whole numbers.',
+
+  /* the Mine: what the Auger and the Shifter show after a swing */
+  'trace.tag': '&#128295; THE AUGER &mdash; HOW IT RAN',
+  'trace.h.part': 'this part of the rock',
+  'trace.h.from': 'came from',
+  'trace.h.is': 'which is',
+  'trace.x2': 'the x²',
+  'trace.end': 'the end',
+  'trace.mid': 'the middle',
+  'trace.mid.from': '{a} × {b}  and  {c} × {d}',
+  'trace.mid.is': '{p} and {q}, which run together as {s}',
+  'trace.hint': 'The ends were forced. The middle is the part that had to be checked, and it checked out.',
+  'rail.tag': '&#8646; THE EXPONENT RAIL',
+  'rail.xx': 'x-part × x-part',
+  'rail.xn': 'x-part × number',
+  'rail.nx': 'number × x-part',
+  'rail.nn': 'number × number',
+  'rail.xx.why': 'x · x = x², and this is the only place an x² can come from',
+  'rail.mid.why': 'one x survives, so it lands in the middle',
+  'rail.nn.why': 'no x left at all, so it lands on the end',
+  'rail.h.which': 'which two',
+  'rail.h.mult': 'multiplied',
+  'rail.h.gives': 'gives',
+  'rail.h.why': 'why it lands where it does',
+  'rail.hint': 'The two shaded rows are the same kind of thing, so they run together: <b>{p}</b> and <b>{q}</b> make <b>{s}</b>.',
+
+  /* the Mine: straight to the yard, and choosing an instrument for a slot */
+  'yard.flash.rack': '{ore} is native metal — racked in the yard.',
+  'yard.flash.heap': '{ore} still has a seam in it. On the heap, ready when you are.',
+  'slot.sheet.label': 'Choose an instrument to hold to {ore}',
+  'slot.sheet.title': 'The slot',
+  'slot.sheet.sub': 'on <b>{ore}</b>',
+  'slot.sheet.empty': '<b>Nothing on the belt yet.</b> Instruments are not handed out here — you make them at the forge, out of metal you broke out yourself. Everything in the mine works without them; they only make it easier to see.',
+  'slot.sheet.which': 'Which one do you want to hold to it?',
+  'slot.sheet.aria': 'Hold {tool} to {ore}'
 };
 MF._missing = {};
 MF.lang = function(){
@@ -11978,22 +12050,20 @@ MF.paintBreak = function(host, B){
   fl.appendChild(stage);
 
   if(done){
-    fl.appendChild(H('div','spentnote','<b>Every piece is native metal.</b> ' +
-      'Nothing in any of them comes apart further. That is the end of the lump &mdash; ' +
-      'not a failure to get further into it.'));
+    fl.appendChild(H('div','spentnote', MF.t('floor.spent')));
   } else {
     B._pieceIsNum = (pieces[B.at].ore.kind === 'number');
     B._pieceIsGroup = (pieces[B.at].ore.kind === 'group');
     B._pieceIsQuart = (pieces[B.at].ore.kind === 'quart');
     B._pieceIsTwo = (pieces[B.at].ore.kind === 'two');
-    fl.appendChild(H('div','anvilcue','<b>Click the ore.</b> The hammer will ask what you are cutting out of it.'));
+    fl.appendChild(H('div','anvilcue', MF.t('floor.cue')));
   }
 
   /* WHAT HAS ALREADY COME OFF, LYING ON THE GROUND */
   var rest = [];
   pieces.forEach(function(p, idx){ if(done || idx !== B.at) rest.push({p:p, i:idx}); });
   if(rest.length){
-    fl.appendChild(H('h4',null,'On the floor'));
+    fl.appendChild(H('h4',null, MF.t('floor.on')));
     var rowf = E('div','pieces');
     rest.forEach(function(e){
       var p = e.p, idx = e.i;
@@ -12005,10 +12075,8 @@ MF.paintBreak = function(host, B){
       /* THE INSTRUMENT RE-SPELLS THE PIECE ITSELF, in the chip, where the
          expression already was. */
       b.appendChild(H('span','pv', MF.oreDisplay(p.ore)));
-      b.appendChild(H('span','pt', nat ? 'native metal' : 'still rock'));
-      b.setAttribute('aria-label', MF.oreDisplayText(p.ore) + (nat
-        ? ' — native metal. Nothing in it comes apart.'
-        : ' — still rock. Click it to put it on the anvil.'));
+      b.appendChild(H('span','pt', MF.t(nat ? 'floor.native' : 'floor.rock')));
+      b.setAttribute('aria-label', MF.t(nat ? 'floor.aria.native' : 'floor.aria.rock', {ore: MF.oreDisplayText(p.ore)}));
       if(MF.state.armedTool) b.setAttribute('data-tooldrop','open');
       on(b,'click',function(){
         if(MF.state.armedTool){
@@ -12018,7 +12086,7 @@ MF.paintBreak = function(host, B){
         }
         /* A PIECE ON THE GROUND GOES ON THE ANVIL. */
         if(nat) B.last = {ok:false, native:true,
-          why:'Nothing left in that one. ' + MF.oreText(p.ore) + ' does not come apart — it is an element.'};
+          why:MF.t('floor.why.native', {ore: MF.oreText(p.ore)})};
         else { B.at = idx; B.last = null; }
         /* only the floor moved: nothing in the wall, the cart or the yard
            changed because a different piece went under the hammer */
@@ -12031,8 +12099,8 @@ MF.paintBreak = function(host, B){
         var slot = E('button','toolslot filled'); slot.type='button';
         slot.setAttribute('data-piece', p.id);
         slot.innerHTML = '<span class="si">' + t.ic + '</span><span class="sx">&times;</span>';
-        slot.setAttribute('aria-label', t.nm + ' is on ' + MF.oreText(p.ore) + '. Take it off.');
-        slot.title = 'Take the ' + t.nm + ' off';
+        slot.setAttribute('aria-label', MF.t('slot.aria', {tool: t.nm, ore: MF.oreText(p.ore)}));
+        slot.title = MF.t('slot.title', {tool: t.nm});
         on(slot,'click',function(ev){ ev.stopPropagation(); MF.clearTool(p.ore, p); });
         cell.appendChild(slot);
       }
@@ -12045,8 +12113,7 @@ MF.paintBreak = function(host, B){
   /* ---- what the last swing did. A description of the rock, every time ---- */
   if(B.last){
     if(B.last.ok){
-      host.appendChild(H('div','note good','<b>The seam runs.</b> <b>' + MF.oreLabel(B.last.left) +
-        '</b> came out of it, and <b>' + MF.oreLabel(B.last.right) + '</b> is what was left behind.'));
+      host.appendChild(H('div','note good', MF.t('floor.ok', {left: MF.oreLabel(B.last.left), right: MF.oreLabel(B.last.right)})));
       /* the auger traces the division it just watched run */
       if(MF.hasTool('auger')) MF.augerTrace(host, B.last);
       /* the rail, if it is on the belt: where the x squared in that lump came from */
@@ -12055,25 +12122,25 @@ MF.paintBreak = function(host, B){
         MF.paintShifterRail(host, MF.oreToIngot(l), MF.oreToIngot(r));
     } else {
       host.appendChild(H('div','note','<b>' + B.last.why + '</b>' +
-        (B.last.swung ? ' The hammer was cut to <b>' +
-            (B.last.swung.m===0 ? num(B.last.swung.k) : '(' + ingotHtml(B.last.swung) + ')') + '</b>.' : '') +
-        (B.last.native ? '' : ' Nothing is lost &mdash; the rock is exactly as it was, and you can swing again.')));
+        (B.last.swung ? MF.t('floor.swung', {head:
+            B.last.swung.m===0 ? num(B.last.swung.k) : '(' + ingotHtml(B.last.swung) + ')'}) : '') +
+        (B.last.native ? '' : MF.t('floor.lost'))));
     }
   }
 
   /* ---- the ways off the floor. Always at least one. ---- */
   var exits = E('div','row'); exits.style.marginTop='14px';
   if(done){
-    var carry = E('button','btn primary','Carry the metal to the yard'); carry.type='button';
-    on(carry,'click',function(){ MF.tipFloor(B, 'Native metal on the rack.'); });
+    var carry = E('button','btn primary', MF.t('floor.carry')); carry.type='button';
+    on(carry,'click',function(){ MF.tipFloor(B, MF.t('floor.carry.flash')); });
     exits.appendChild(carry);
   } else {
-    var tip = E('button','btn primary','Tip what you have in the yard'); tip.type='button';
-    on(tip,'click',function(){ MF.tipFloor(B, 'Tipped in the yard. The rock is still there when you want it.'); });
+    var tip = E('button','btn primary', MF.t('floor.tip')); tip.type='button';
+    on(tip,'click',function(){ MF.tipFloor(B, MF.t('floor.tip.flash')); });
     exits.appendChild(tip);
-    exits.appendChild(H('div','hint','Metal goes on the rack, rock goes on the heap. The heap can be broken later.'));
+    exits.appendChild(H('div','hint', MF.t('floor.tip.hint')));
   }
-  var leave = E('button','btn','Leave it for now'); leave.type='button';
+  var leave = E('button','btn', MF.t('floor.leave')); leave.type='button';
   leave.style.background='#241D18'; leave.style.color='#E4D5BB'; leave.style.borderColor='#6B5B48';
   /* the floor is NOT thrown away - the anvil is keyed to this lump, so picking
      it up again puts every piece back exactly where it was left */
@@ -12098,14 +12165,14 @@ MF.openHammer = function(B, opener){
   B._pieceIsTwo = isTwo;
 
   MF._openSheet({
-    label: 'The hammer, over ' + MF.oreDisplayText(ore),
+    label: MF.t('hammer.label', {ore: MF.oreDisplayText(ore)}),
     icon: '🔨',
     /* SHORT, BECAUSE THE HEAD IS 155px OF A 680px BOX AT 380px OTHERWISE. */
-    title: 'Name one thing in it',
+    title: MF.t('hammer.title'),
     sub: '<b>' + MF.oreLabel(ore) + '</b>',
-    closeText: 'Put it down',
+    closeText: MF.t('hammer.close'),
     opener: opener,
-    foot: 'The rock decides, not this panel. <b>Esc</b> puts the hammer down.',
+    foot: MF.t('hammer.foot'),
     /* HE IS IN HERE NOW, on the same ladder as everywhere else: silent for the
        first three clanks, then the method, then a factor at twelve. */
     guide: function(){ return MF.clankAdvice(ore); },
@@ -12120,7 +12187,7 @@ MF.openHammer = function(B, opener){
       cut.appendChild(shown);
 
       var inner = E('div','hrow');
-      inner.appendChild(H('span','hlab','cut the head to'));
+      inner.appendChild(H('span','hlab', MF.t('hammer.cut')));
       var box = E('div','hbox');
       var fire = function(e){ if(e.key==='Enter'){ e.preventDefault(); MF.closeTool(); MF.swing(B); } };
 
@@ -12132,7 +12199,7 @@ MF.openHammer = function(B, opener){
           var t = E('button','vopt' + ((B.raw.v||'x')===v ? ' on' : ''), v);
           t.type = 'button';
           t.setAttribute('aria-pressed', String((B.raw.v||'x')===v));
-          t.setAttribute('aria-label','the bracket with ' + v + ' in it');
+          t.setAttribute('aria-label', MF.t('hammer.v.aria', {v: v}));
           on(t,'click',function(){
             B.raw.v = v;
             Array.prototype.forEach.call(vb.children, function(o){
@@ -12162,7 +12229,7 @@ MF.openHammer = function(B, opener){
         var pi = document.createElement('input');
         pi.type='text'; pi.inputMode='numeric'; pi.className='powbox';
         pi.value = B.raw.p || ''; pi.placeholder = '1';
-        pi.setAttribute('aria-label','what power the x is raised to — leave it empty for a single x');
+        pi.setAttribute('aria-label', MF.t('hammer.pow.aria'));
         on(pi,'input',function(){ B.raw.p = pi.value; MF.echoHammer(B); });
         on(pi,'keydown',fire);
         box.appendChild(pi);
@@ -12170,8 +12237,7 @@ MF.openHammer = function(B, opener){
       }
       var ki = document.createElement('input'); ki.type='text'; ki.inputMode='numeric';
       ki.value = B.raw.k; ki.placeholder = '0';
-      ki.setAttribute('aria-label', isNum ? 'the number you are taking out'
-                      : (isTwo ? 'how many y in this bracket' : 'the number on the end'));
+      ki.setAttribute('aria-label', MF.t(isNum ? 'practice.aria.take' : (isTwo ? 'practice.aria.y' : 'q.aria.k')));
       on(ki,'input',function(){ B.raw.k = ki.value; MF.echoHammer(B); });
       on(ki,'keydown',fire);
       box.appendChild(ki);
@@ -12186,14 +12252,10 @@ MF.openHammer = function(B, opener){
       B._echo = echo;
       MF.echoHammer(B);
 
-      cut.appendChild(H('div','hint', isGrp
-        ? 'Pick the letter, then the number that goes with it. Both brackets in a four-term lump carry a single letter.'
-        : (isNum
-          ? 'A whole number that runs through it.'
-          : 'An empty x-part is a single x. Put 0 there to take out a plain number instead.')));
+      cut.appendChild(H('div','hint', MF.t(isGrp ? 'hammer.hint.group' : (isNum ? 'hammer.hint.num' : 'hammer.hint.x'))));
 
       var swr = E('div','row swingrow'); swr.style.marginTop='10px';
-      var sw = E('button','btn primary big swingbtn','Bring the hammer down'); sw.type='button';
+      var sw = E('button','btn primary big swingbtn', MF.t('hammer.swing')); sw.type='button';
       on(sw,'click',function(){ if(sw.disabled) return; MF.closeTool(); MF.swing(B); });
       swr.appendChild(sw);
       cut.appendChild(swr);
@@ -12203,7 +12265,7 @@ MF.openHammer = function(B, opener){
 
       /* THE PAIR SCANNER IS NOT FREE. */
       if(!MF.hasTool('drill'))
-        cut.appendChild(H('div','hint','<span style="opacity:.8">A core drill would read the pairs out of this one.</span>'));
+        cut.appendChild(H('div','hint', MF.t('hammer.drill')));
 
       body.appendChild(cut);
     }
@@ -12222,9 +12284,7 @@ MF.armSwing = function(B){
   if(!sw || !sw.isConnected) return;
   var empty = MF.headEmpty(B);
   sw.disabled = empty;
-  sw.setAttribute('aria-label', empty
-    ? 'Bring the hammer down — not yet, the head is empty'
-    : 'Bring the hammer down');
+  sw.setAttribute('aria-label', MF.t(empty ? 'hammer.swing.empty' : 'hammer.swing'));
 };
 MF.headEmpty = function(B){
   if(!B || !B.raw) return true;
@@ -12238,7 +12298,7 @@ MF.swing = function(B){
   /* NO SWING, NO GLANCE, NO CLANK. */
   if(MF.headEmpty(B)){
     B.last = {ok:false, empty:true,
-      why:'The head is empty. Type what you are taking out, and the hammer has something to cut.'};
+      why:MF.t('swing.empty')};
     MF.repaint(['work']);
     return;
   }
@@ -12250,13 +12310,13 @@ MF.swing = function(B){
   /* the power is the student's now, not the head's — see MF.readPow */
   var pw = (isNum || MF.isGroup(t.ore) || MF.isTwo(t.ore)) ? 1 : MF.readPow(B.raw.p);
   if(!isFinite(pw)){
-    B.last = {ok:false, why:'An x is cut to a whole power, and at least the first.'};
+    B.last = {ok:false, why:MF.t('swing.power')};
     B.anim = 'glance'; MF.clank(MF.stuckOre()); MF.audio.hammer('glance');
     MF.repaint(['work']); return;
   }
   B.swings++;
   if(!isFinite(m) || !isFinite(k)){
-    B.last = {ok:false, why:'A hammer is cut to a whole shape. Those boxes only take whole numbers.'};
+    B.last = {ok:false, why:MF.t('swing.whole')};
     B.anim = 'glance'; MF.clank(MF.stuckOre()); MF.audio.hammer('glance');
     MF.repaint(['work']); return;
   }
@@ -12295,14 +12355,14 @@ MF.augerTrace = function(host, last){
   var rm = r.a===0 ? r.b : 0, rk = r.a===0 ? r.c : 0;
   if(!lm || !rm) return;
   var box = E('div','panel'); box.style.background='#fff'; box.style.margin='10px 0 0';
-  box.appendChild(H('div','panel-tag','&#128295; THE AUGER &mdash; HOW IT RAN'));
+  box.appendChild(H('div','panel-tag', MF.t('trace.tag')));
   var t = E('table','scan');
-  var hr = E('tr'); ['this part of the rock','came from','which is'].forEach(function(h){ hr.appendChild(E('th',null,h)); });
+  var hr = E('tr'); ['trace.h.part','trace.h.from','trace.h.is'].forEach(function(h){ hr.appendChild(E('th',null, MF.t(h))); });
   t.appendChild(hr);
-  [['the x²', xt2(lm)+' × '+xt2(rm), (lm*rm===1?'x²':num(lm*rm)+'x²')],
-   ['the end', num(lk)+' × '+num(rk), num(lk*rk)],
-   ['the middle', xt2(lm)+' × '+num(rk)+'  and  '+num(lk)+' × '+xt2(rm),
-    xt2(lm*rk)+' and '+xt2(lk*rm)+', which run together as '+xt2(lm*rk+lk*rm)]
+  [[MF.t('trace.x2'), xt2(lm)+' × '+xt2(rm), (lm*rm===1?'x²':num(lm*rm)+'x²')],
+   [MF.t('trace.end'), num(lk)+' × '+num(rk), num(lk*rk)],
+   [MF.t('trace.mid'), MF.t('trace.mid.from', {a: xt2(lm), b: num(rk), c: num(lk), d: xt2(rm)}),
+    MF.t('trace.mid.is', {p: xt2(lm*rk), q: xt2(lk*rm), s: xt2(lm*rk+lk*rm)})]
   ].forEach(function(row){
     var tr = E('tr');
     tr.appendChild(H('td',null,'<b>'+row[0]+'</b>'));
@@ -12311,7 +12371,7 @@ MF.augerTrace = function(host, last){
     t.appendChild(tr);
   });
   box.appendChild(t);
-  box.appendChild(H('div','hint','The ends were forced. The middle is the part that had to be checked, and it checked out.'));
+  box.appendChild(H('div','hint', MF.t('trace.hint')));
   host.appendChild(box);
 };
 
@@ -12353,9 +12413,7 @@ MF.cartToYard = function(id){
   if(MF.state.selected && MF.state.selected.id===id){ MF.state.selected = null; MF.state.anvil = null; }
   /* rack or heap, and it left the cart - the wall did not move */
   MF.repaint(['cart','yard','work']);
-  MF.flash(where==='rack'
-    ? MF.oreText(ore) + ' is native metal — racked in the yard.'
-    : MF.oreText(ore) + ' still has a seam in it. On the heap, ready when you are.');
+  MF.flash(MF.t(where==='rack' ? 'yard.flash.rack' : 'yard.flash.heap', {ore: MF.oreText(ore)}));
   return true;
 };
 /* THE X-PART BOX IS NOT THE NUMBER BOX, AND EMPTY DOES NOT MEAN ZERO IN IT. */
@@ -12388,16 +12446,16 @@ MF.paintShifterRail = function(host, s1, s2){
   if(!isFinite(s1.m)||!isFinite(s1.k)||!isFinite(s2.m)||!isFinite(s2.k)) return;
 
   var rail = E('div','panel'); rail.style.background='#fff'; rail.style.margin='12px 0 0';
-  rail.appendChild(H('div','panel-tag','&#8646; THE EXPONENT RAIL'));
+  rail.appendChild(H('div','panel-tag', MF.t('rail.tag')));
   var parts = [
-    ['x-part × x-part', xt2(s1.m)+' × '+xt2(s2.m), (s1.m*s2.m===0?'0':(s1.m*s2.m===1?'x²':num(s1.m*s2.m)+'x²')),
-     'x · x = x², and this is the only place an x² can come from'],
-    ['x-part × number',  xt2(s1.m)+' × '+num(s2.k), xt2(s1.m*s2.k), 'one x survives, so it lands in the middle'],
-    ['number × x-part',  num(s1.k)+' × '+xt2(s2.m), xt2(s1.k*s2.m), 'one x survives, so it lands in the middle'],
-    ['number × number',  num(s1.k)+' × '+num(s2.k), num(s1.k*s2.k), 'no x left at all, so it lands on the end']
+    [MF.t('rail.xx'), xt2(s1.m)+' × '+xt2(s2.m), (s1.m*s2.m===0?'0':(s1.m*s2.m===1?'x²':num(s1.m*s2.m)+'x²')),
+     MF.t('rail.xx.why')],
+    [MF.t('rail.xn'),  xt2(s1.m)+' × '+num(s2.k), xt2(s1.m*s2.k), MF.t('rail.mid.why')],
+    [MF.t('rail.nx'),  num(s1.k)+' × '+xt2(s2.m), xt2(s1.k*s2.m), MF.t('rail.mid.why')],
+    [MF.t('rail.nn'),  num(s1.k)+' × '+num(s2.k), num(s1.k*s2.k), MF.t('rail.nn.why')]
   ];
   var tbl = E('table','scan');
-  var hr = E('tr'); ['which two','multiplied','gives','why it lands where it does'].forEach(function(h){ hr.appendChild(E('th',null,h)); });
+  var hr = E('tr'); ['rail.h.which','rail.h.mult','rail.h.gives','rail.h.why'].forEach(function(h){ hr.appendChild(E('th',null, MF.t(h))); });
   tbl.appendChild(hr);
   parts.forEach(function(p,i){
     var tr = E('tr');
@@ -12408,8 +12466,7 @@ MF.paintShifterRail = function(host, s1, s2){
   rail.appendChild(tbl);
   var mid = s1.m*s2.k + s1.k*s2.m;
   /* "−x + −8x" reads as nonsense; the two terms are named, not added in prose */
-  rail.appendChild(H('div','hint','The two shaded rows are the same kind of thing, so they run together: ' +
-    '<b>' + xt2(s1.m*s2.k) + '</b> and <b>' + xt2(s1.k*s2.m) + '</b> make <b>' + xt2(mid) + '</b>.'));
+  rail.appendChild(H('div','hint', MF.t('rail.hint', {p: xt2(s1.m*s2.k), q: xt2(s1.k*s2.m), s: xt2(mid)})));
   host.appendChild(rail);
 };
 
@@ -12825,23 +12882,22 @@ MF.openSlot = function(pieceId, opener){
   if(!p) return;
   var owned = MF.toolOrder().filter(MF.hasTool);
   MF._openSheet({
-    label: 'Choose an instrument to hold to ' + MF.oreText(p.ore),
-    icon: '&#128269;', title: 'The slot', sub: 'on <b>' + MF.oreLabel(p.ore) + '</b>',
-    closeText: 'Close', opener: opener,
+    label: MF.t('slot.sheet.label', {ore: MF.oreText(p.ore)}),
+    icon: '&#128269;', title: MF.t('slot.sheet.title'), sub: MF.t('slot.sheet.sub', {ore: MF.oreLabel(p.ore)}),
+    closeText: MF.t('sheet.close'), opener: opener,
     fill: function(body){
       if(!owned.length){
-        body.appendChild(H('div','note','<b>Nothing on the belt yet.</b> Instruments are not handed out here — you make them at the forge, out of metal you broke out yourself. ' +
-          'Everything in the mine works without them; they only make it easier to see.'));
+        body.appendChild(H('div','note', MF.t('slot.sheet.empty')));
         return;
       }
-      body.appendChild(H('p','hint','Which one do you want to hold to it?'));
+      body.appendChild(H('p','hint', MF.t('slot.sheet.which')));
       var row = E('div','pickrow');
       owned.forEach(function(k){
         var t = MF.TOOLS[k];
         var b = E('button','pickbtn'); b.type='button';
         b.appendChild(H('span','ic', t.ic));
         b.appendChild(H('span','nm', t.nm));
-        b.setAttribute('aria-label','Hold ' + t.nm + ' to ' + MF.oreText(p.ore));
+        b.setAttribute('aria-label', MF.t('slot.sheet.aria', {tool: t.nm, ore: MF.oreText(p.ore)}));
         on(b,'click',function(){ MF.applyTool(k, pieceId, opener); });
         row.appendChild(b);
       });
