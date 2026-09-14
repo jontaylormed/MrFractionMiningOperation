@@ -2754,28 +2754,27 @@ MF.oreToIngot = function(ore){
 MF.breakOff = function(ore, factor){
   var no = function(reason, why){ return {ok:false, reason:reason, why:why}; };
   if(!ore || !factor || !isInt(factor.m) || !isInt(factor.k))
-    return no('malformed','That is not a shape a hammer can be cut to.');
+    return no('malformed', MF.t('break.malformed'));
   if(factor.m===0 && factor.k===0)
-    return no('nothing','That is nothing at all — there is no edge on it to bring down.');
+    return no('nothing', MF.t('break.zero'));
   if(factor.m===0 && Math.abs(factor.k)===1)
-    return no('nothing','Everything divides by one. Taking it out would leave the lump exactly as it is.');
+    return no('nothing', MF.t('break.one'));
 
   /* HOW HIGH THE x IS CUT, AND WHETHER THIS LUMP HAS ONE THAT HIGH */
   var pow = (factor.p === undefined || factor.p === null) ? 1 : factor.p;
   if(!isInt(pow) || pow < 1)
-    return no('malformed','An x is cut to a whole power, and at least the first.');
+    return no('malformed', MF.t('swing.power'));
   var wantPow = (ore && ore.kind === 'quart') ? 2 : 1;
   if(pow !== wantPow)
     return no('glance', wantPow === 2
-      ? 'The hammer glanced off. This lump is built out of x&sup2; halves, and the head is cut to x' +
-        (pow === 1 ? '' : '<sup>' + num(pow) + '</sup>') + '.'
-      : 'The hammer glanced off. There is no x<sup>' + num(pow) + '</sup> anywhere in this one for that to bite on.');
+      ? MF.t('break.quart.pow', {pow: pow === 1 ? '' : '<sup>' + num(pow) + '</sup>'})
+      : MF.t('break.nopow', {pow: num(pow)}));
 
   var yes = function(left, right){
     /* MULTIPLY BACK BEFORE HANDING IT OVER. */
     if(!MF.oreSame(MF.oreMul(left, right), ore))
-      return no('unsound','The pieces do not add back up to the rock they came out of.');
-    return {ok:true, left:left, right:right, why:'The seam runs.'};
+      return no('unsound', MF.t('break.unsound'));
+    return {ok:true, left:left, right:right, why:MF.t('break.runs')};
   };
 
   /* A CUBE, AND THE ORDINARY HAMMER TAKES IT */
@@ -2784,51 +2783,49 @@ MF.breakOff = function(ore, factor){
     if(!cs){
       var rat = MF.cubeRational(ore);
       return no('glance', rat
-        ? 'The hammer glanced off. Something does come out of this one, but not by the cubes — this is not a shape the mine teaches.'
-        : 'The hammer glanced off. Neither end is a whole cube, so there is no cube seam in it.');
+        ? MF.t('break.cube.other')
+        : MF.t('break.cube.none'));
     }
     if(factor.m !== cs.left.b || factor.k !== cs.left.c)
-      return no('glance','The hammer glanced off. That is not the bracket a cube seam gives.');
+      return no('glance', MF.t('break.cube.bracket'));
     if(!MF.oreEq(MF.oreMul3(cs.left, cs.right), ore))
-      return no('unsound','The pieces do not add back up to the rock they came out of.');
-    return {ok:true, left:cs.left, right:cs.right, why:'The seam runs.'};
+      return no('unsound', MF.t('break.unsound'));
+    return {ok:true, left:cs.left, right:cs.right, why:MF.t('break.runs')};
   }
 
   /* TWO LETTERS ALL THE WAY THROUGH */
   if(ore.kind==='two'){
     var ts = MF.twoSplit(ore);
     if(factor.m !== 1)
-      return no('glance','The hammer glanced off. Both brackets here have a single x at the front.');
+      return no('glance', MF.t('break.two.front'));
     if(!ts)
-      return no('glance','The hammer glanced off. No two whole numbers multiply to ' + num(ore.c) +
-                         ' and add to ' + num(ore.b) + ', so nothing comes out of this one.');
+      return no('glance', MF.t('break.two.none', {c: num(ore.c), b: num(ore.b)}));
     if(factor.k !== ts.left.p && factor.k !== ts.right.p)
-      return no('glance','The hammer glanced off. That bracket is not in there.');
+      return no('glance', MF.t('break.bracket'));
     var tL = (factor.k === ts.left.p) ? ts.left : ts.right;
     var tR = (factor.k === ts.left.p) ? ts.right : ts.left;
     if(tL.p * tR.p !== ore.c || tL.p + tR.p !== ore.b)
-      return no('unsound','The pieces do not add back up to the rock they came out of.');
-    return {ok:true, left:tL, right:tR, why:'The seam runs.'};
+      return no('unsound', MF.t('break.unsound'));
+    return {ok:true, left:tL, right:tR, why:MF.t('break.runs')};
   }
   /* and a single bracket has nothing left in it */
   if(ore.kind==='bi')
-    return no('whole','That is the whole lump. Nothing but 1 divides ' + MF.oreText(ore) + '.');
+    return no('whole', MF.t('break.bi', {ore: MF.oreText(ore)}));
 
   /* AN x⁴ LUMP: THE SAME ALGEBRA, ONE GEAR UP */
   if(ore.kind==='quart'){
     var qs = MF.quartSplit(ore);
     if(factor.m !== 1)
-      return no('glance','The hammer glanced off. Both halves of a lump like this have a single x&sup2; at the front.');
+      return no('glance', MF.t('break.quart.front'));
     if(!qs)
-      return no('glance','The hammer glanced off. No two whole numbers multiply to ' + num(ore.c) +
-                         ' and add to ' + num(ore.b) + ', so it does not come apart that way.');
+      return no('glance', MF.t('break.quart.none', {c: num(ore.c), b: num(ore.b)}));
     if(factor.k !== qs.left.c && factor.k !== qs.right.c)
-      return no('glance','The hammer glanced off. That half is not in there.');
+      return no('glance', MF.t('break.quart.half'));
     var qL = (factor.k === qs.left.c) ? qs.left : qs.right;
     var qR = (factor.k === qs.left.c) ? qs.right : qs.left;
     if(qL.c * qR.c !== ore.c || qL.c + qR.c !== ore.b)
-      return no('unsound','The pieces do not add back up to the rock they came out of.');
-    return {ok:true, left:qL, right:qR, why:'The seam runs.'};
+      return no('unsound', MF.t('break.unsound'));
+    return {ok:true, left:qL, right:qR, why:MF.t('break.runs')};
   }
 
   /* A FOUR-TERM LUMP IN TWO LETTERS */
@@ -2836,18 +2833,14 @@ MF.breakOff = function(ore, factor){
     var gs = MF.groupSplit(ore);
     var fv = (factor.v === 'y') ? 'y' : 'x';
     if(factor.m===0)
-      return no('glance','The hammer glanced off. Nothing but 1 divides all four terms — ' +
-                         'there is no plain metal in this one to pull out in front.');
+      return no('glance', MF.t('break.group.plain'));
     if(factor.m!==1)
-      return no('glance','The hammer glanced off. Both brackets in a lump like this ' +
-                         'have a single ' + fv + ' at the front.');
+      return no('glance', MF.t('break.group.front', {v: fv}));
     if(!gs)
-      return no('glance','The hammer glanced off. ' + num(ore.d) + ' is not ' +
-                         num(ore.b) + ' × ' + num(ore.c) + ', so these four terms do not ' +
-                         'come apart two at a time.');
+      return no('glance', MF.t('break.group.none', {d: num(ore.d), b: num(ore.b), c: num(ore.c)}));
     var want = (fv === 'x') ? ore.c : ore.b;
     if(factor.k !== want)
-      return no('glance','The hammer glanced off. That bracket is not in there.');
+      return no('glance', MF.t('break.bracket'));
     var lft = (fv === 'x') ? gs.left : gs.right;
     var rgt = (fv === 'x') ? gs.right : gs.left;
     /* MULTIPLIED BACK, like every other seam. oreMul is one-variable and would
@@ -2856,20 +2849,20 @@ MF.breakOff = function(ore, factor){
     if(!(rgt.c * lft.c === ore.d &&
          (fv==='x' ? rgt.c : lft.c) === ore.b &&
          (fv==='x' ? lft.c : rgt.c) === ore.c))
-      return no('unsound','The pieces do not add back up to the rock they came out of.');
-    return {ok:true, left:lft, right:rgt, why:'The seam runs.'};
+      return no('unsound', MF.t('break.unsound'));
+    return {ok:true, left:lft, right:rgt, why:MF.t('break.runs')};
   }
 
   /* ---- a number lump ---- */
   if(ore.kind==='number'){
     if(factor.m!==0)
-      return no('shape','There is no x anywhere in this lump for that to bite on.');
+      return no('shape', MF.t('break.num.shape'));
     var d = factor.k, n = ore.n;
     /* DIVISIBILITY FIRST. */
     if(n % d !== 0)
-      return no('glance','The hammer glanced off. ' + num(d) + ' does not run through ' + num(n) + '.');
+      return no('glance', MF.t('break.num.glance', {d: num(d), n: num(n)}));
     if(Math.abs(d) >= Math.abs(n))
-      return no('whole','That is the whole lump. It would leave nothing behind it.');
+      return no('whole', MF.t('break.whole'));
     return yes({kind:'number', n:d}, {kind:'number', n:n/d});
   }
 
@@ -2878,30 +2871,30 @@ MF.breakOff = function(ore, factor){
   if(factor.m===0){
     var g = factor.k;
     if(a%g!==0 || b%g!==0 || c%g!==0)
-      return no('glance','The hammer glanced off. ' + num(g) + ' does not run through every term.');
+      return no('glance', MF.t('break.plain.glance', {g: num(g)}));
     var restPlain = asOre(a/g, b/g, c/g);
     if(restPlain.kind==='number' && Math.abs(restPlain.n)===1)
-      return no('whole','That is the whole lump. It would leave nothing behind it.');
+      return no('whole', MF.t('break.whole'));
     return yes({kind:'number', n:g}, restPlain);
   }
 
   /* ---- an x-carrying bracket: (mx + k)(px + q) ---- */
   var m=factor.m, k=factor.k, p, q;
-  if(a % m !== 0) return no('glance','The hammer glanced off. Nothing of that shape runs through this one.');
+  if(a % m !== 0) return no('glance', MF.t('break.shape'));
   p = a/m;
   if(k !== 0){
-    if(c % k !== 0) return no('glance','The hammer glanced off. Nothing of that shape runs through this one.');
+    if(c % k !== 0) return no('glance', MF.t('break.shape'));
     q = c/k;
   } else {
-    if(c !== 0)   return no('glance','The hammer glanced off. Nothing of that shape runs through this one.');
-    if(b % m !== 0) return no('glance','The hammer glanced off. Nothing of that shape runs through this one.');
+    if(c !== 0)   return no('glance', MF.t('break.shape'));
+    if(b % m !== 0) return no('glance', MF.t('break.shape'));
     q = b/m;
   }
   if(p*k + q*m !== b)
-    return no('glance','The hammer glanced off. The ends match but the middle does not.');
+    return no('glance', MF.t('break.middle'));
   var rest = asOre(0, p, q);
   if(rest.kind==='number' && Math.abs(rest.n)===1)
-    return no('whole','That is the whole lump. It would leave nothing behind it.');
+    return no('whole', MF.t('break.whole'));
   return yes(asOre(0, m, k), rest);
 };
 
@@ -4475,7 +4468,54 @@ MF.STR.en = {
   'slot.sheet.sub': 'on <b>{ore}</b>',
   'slot.sheet.empty': '<b>Nothing on the belt yet.</b> Instruments are not handed out here — you make them at the forge, out of metal you broke out yourself. Everything in the mine works without them; they only make it easier to see.',
   'slot.sheet.which': 'Which one do you want to hold to it?',
-  'slot.sheet.aria': 'Hold {tool} to {ore}'
+  'slot.sheet.aria': 'Hold {tool} to {ore}',
+
+  /* the Mine: the yard, and a screen that failed to build */
+  'yard.h': 'The Yard',
+  'yard.hint': 'Everything you have hauled out. Rock on the heap, metal on the rack.',
+  'yard.rack': 'THE RACK &mdash; native metal',
+  'yard.rack.empty': 'Bare. Anything you break down to an element is racked here, with the lump it came out of written under it — and this is what the forge spends.',
+  'yard.shelf.plain': 'plain metal',
+  'yard.shelf.x': 'metal with an x in it',
+  'yard.shelf.deep': 'metal from the deep shafts',
+  'yard.from': 'out of {ore}',
+  'yard.more': ' <span class="mmore">+{n} more</span>',
+  'yard.face': '<span class="mmore">straight off the face</span>',
+  'yard.heap': 'THE HEAP &mdash; still carrying a seam',
+  'yard.heap.empty': 'Empty. Anything you tip here half-broken lands on the heap, and it is still here when you come back for it.',
+  'yard.heap.aria': '{ore} — still rock. Put it back under the pick.',
+  'yard.heap.title': 'Put it back under the pick',
+  'yard.heap.hint': 'Take one back under the pick — click it, or drag it onto the floor.',
+  'yard.toforge': 'Haul the metal to the forge',
+  'go.failed': '<b>This screen did not build.</b> That is a fault in the mine, not in you. ({err})',
+
+  /* the engine: what the rock says when a hammer comes down on it */
+  'break.malformed': 'That is not a shape a hammer can be cut to.',
+  'break.zero': 'That is nothing at all — there is no edge on it to bring down.',
+  'break.one': 'Everything divides by one. Taking it out would leave the lump exactly as it is.',
+  'break.quart.pow': 'The hammer glanced off. This lump is built out of x&sup2; halves, and the head is cut to x{pow}.',
+  'break.nopow': 'The hammer glanced off. There is no x<sup>{pow}</sup> anywhere in this one for that to bite on.',
+  'break.unsound': 'The pieces do not add back up to the rock they came out of.',
+  'break.runs': 'The seam runs.',
+  'break.cube.other': 'The hammer glanced off. Something does come out of this one, but not by the cubes — this is not a shape the mine teaches.',
+  'break.cube.none': 'The hammer glanced off. Neither end is a whole cube, so there is no cube seam in it.',
+  'break.cube.bracket': 'The hammer glanced off. That is not the bracket a cube seam gives.',
+  'break.two.front': 'The hammer glanced off. Both brackets here have a single x at the front.',
+  'break.two.none': 'The hammer glanced off. No two whole numbers multiply to {c} and add to {b}, so nothing comes out of this one.',
+  'break.bracket': 'The hammer glanced off. That bracket is not in there.',
+  'break.bi': 'That is the whole lump. Nothing but 1 divides {ore}.',
+  'break.quart.front': 'The hammer glanced off. Both halves of a lump like this have a single x&sup2; at the front.',
+  'break.quart.none': 'The hammer glanced off. No two whole numbers multiply to {c} and add to {b}, so it does not come apart that way.',
+  'break.quart.half': 'The hammer glanced off. That half is not in there.',
+  'break.group.plain': 'The hammer glanced off. Nothing but 1 divides all four terms — there is no plain metal in this one to pull out in front.',
+  'break.group.front': 'The hammer glanced off. Both brackets in a lump like this have a single {v} at the front.',
+  'break.group.none': 'The hammer glanced off. {d} is not {b} × {c}, so these four terms do not come apart two at a time.',
+  'break.num.shape': 'There is no x anywhere in this lump for that to bite on.',
+  'break.num.glance': 'The hammer glanced off. {d} does not run through {n}.',
+  'break.whole': 'That is the whole lump. It would leave nothing behind it.',
+  'break.plain.glance': 'The hammer glanced off. {g} does not run through every term.',
+  'break.shape': 'The hammer glanced off. Nothing of that shape runs through this one.',
+  'break.middle': 'The hammer glanced off. The ends match but the middle does not.'
 };
 MF._missing = {};
 MF.lang = function(){
@@ -6320,7 +6360,7 @@ MF.go = function(name){
     MF.SCREENS[name](host);
   } catch(err){
     console.error('[mine] screen "'+name+'" failed:', err);
-    host.appendChild(H('div','note bad','<b>This screen did not build.</b> That is a fault in the mine, not in you. ('+String(err.message||err)+')'));
+    host.appendChild(H('div','note bad', MF.t('go.failed', {err: String(err.message||err)})));
   }
   MF.paintNav();
   MF.guideArrive();
@@ -12949,8 +12989,8 @@ MF.paintYard = function(){
   var host = clear(MF._mine.right);
   var box = E('div','yard');
 
-  box.appendChild(H('h3',null,'The Yard'));
-  box.appendChild(H('div','hint','Everything you have hauled out. Rock on the heap, metal on the rack.'));
+  box.appendChild(H('h3',null, MF.t('yard.h')));
+  box.appendChild(H('div','hint', MF.t('yard.hint')));
 
   var place = E('div','yardplace');
   place.appendChild(MF.yardScene());
@@ -12958,16 +12998,16 @@ MF.paintYard = function(){
 
   /* ---- THE RACK: metal that will not break any further ---- */
   var rk = E('div','shelfrow');
-  rk.appendChild(H('div','ylab','THE RACK &mdash; native metal'));
+  rk.appendChild(H('div','ylab', MF.t('yard.rack')));
   var keys = Object.keys(MF.state.yard);
   if(!keys.length){
-    rk.appendChild(H('div','yempty','Bare. Anything you break down to an element is racked here, with the lump it came out of written under it — and this is what the forge spends.'));
+    rk.appendChild(H('div','yempty', MF.t('yard.rack.empty')));
   } else {
     var rack = E('div','rack');
     /* THE SAME THREE SHELVES AS THE FORGE'S RACK. */
-    [['plain metal', function(g){ return g.m===0 && !g.label; }],
-     ['metal with an x in it', function(g){ return g.m!==0; }],
-     ['metal from the deep shafts', function(g){ return g.m===0 && !!g.label; }]].forEach(function(grp){
+    [[MF.t('yard.shelf.plain'), function(g){ return g.m===0 && !g.label; }],
+     [MF.t('yard.shelf.x'), function(g){ return g.m!==0; }],
+     [MF.t('yard.shelf.deep'), function(g){ return g.m===0 && !!g.label; }]].forEach(function(grp){
       var these = keys.filter(function(k){ return grp[1](MF.state.yard[k].ingot); });
       if(!these.length) return;
       var shelf = E('div','shelf');
@@ -12982,8 +13022,8 @@ MF.paintYard = function(){
           label + (e.count>1 ? ' <span class="ct">×'+e.count+'</span>' : '')));
         var from = e.from || [];
         cell.appendChild(H('div','mfrom', from.length
-          ? 'out of ' + from[0] + (from.length>1 ? ' <span class="mmore">+'+(from.length-1)+' more</span>' : '')
-          : '<span class="mmore">straight off the face</span>'));
+          ? MF.t('yard.from', {ore: from[0]}) + (from.length>1 ? MF.t('yard.more', {n: from.length-1}) : '')
+          : MF.t('yard.face')));
         row.appendChild(cell);
       });
       shelf.appendChild(row);
@@ -12995,9 +13035,9 @@ MF.paintYard = function(){
 
   /* ---- THE HEAP: rock tipped here still carrying a seam ---- */
   var hp = E('div','heaprow');
-  hp.appendChild(H('div','ylab','THE HEAP &mdash; still carrying a seam'));
+  hp.appendChild(H('div','ylab', MF.t('yard.heap')));
   if(!MF.state.rockpile.length){
-    hp.appendChild(H('div','yempty','Empty. Anything you tip here half-broken lands on the heap, and it is still here when you come back for it.'));
+    hp.appendChild(H('div','yempty', MF.t('yard.heap.empty')));
   } else {
     var heap = E('div','heap');
     MF.state.rockpile.forEach(function(o, idx){
@@ -13005,15 +13045,15 @@ MF.paintYard = function(){
       b.setAttribute('data-heap', idx);
       /* THE HEAP DRAWS LUMPS, NOT LABELS. */
       b.appendChild(MF.oreRock(o, {native:false}));
-      b.setAttribute('aria-label', MF.oreDisplayText(o) + ' — still rock. Put it back under the pick.');
-      b.title = 'Put it back under the pick';
+      b.setAttribute('aria-label', MF.t('yard.heap.aria', {ore: MF.oreDisplayText(o)}));
+      b.title = MF.t('yard.heap.title');
       /* ONE CLICK DOES IT, and the drag below does exactly the same thing. */
       on(b,'click',function(){ MF.takeFromHeap(idx); });
       MF.dragFromHeap(b, idx);
       heap.appendChild(b);
     });
     hp.appendChild(heap);
-    hp.appendChild(H('div','yhint','Take one back under the pick — click it, or drag it onto the floor.'));
+    hp.appendChild(H('div','yhint', MF.t('yard.heap.hint')));
   }
   inner.appendChild(hp);
 
@@ -13023,7 +13063,7 @@ MF.paintYard = function(){
   /* THE BELT IS NOT DRAWN TWICE. */
 
   var toForge = E('button','btn primary'); toForge.type='button';
-  toForge.textContent = 'Haul the metal to the forge';
+  toForge.textContent = MF.t('yard.toforge');
   toForge.style.marginTop='12px'; toForge.style.width='100%';
   on(toForge,'click',function(){ MF.go('forge'); });
   box.appendChild(toForge);
