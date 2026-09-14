@@ -4190,7 +4190,66 @@ MF.STR.en = {
   'read.auger.m3': '3 — THE FOUR TERMS GO IN THE BOX',
   'read.auger.m3.cap': 'Pull the common metal off each row and each column. The sides are the factors.',
   'read.auger.m4': '4 — READ THE FACTORS OFF THE EDGES',
-  'read.auger.hint': 'Both sides are yours. The auger reads the rock and will not choose for you.'
+  'read.auger.hint': 'Both sides are yours. The auger reads the rock and will not choose for you.',
+
+  /* the panel an instrument opens in, and the method line under every reading */
+  'sheet.close': 'Close',
+  'sheet.close.aria': '{close} — closes this panel',
+  'sheet.fail': 'This instrument could not get a reading off that.',
+  'sheet.guide.who': 'Mr Factor',
+  'sheet.guide.give': 'will just tell you this one',
+  'sheet.guide.word': 'has a word about this one',
+  'sheet.foot': 'Nothing here swings for you. Press <b>Esc</b> to put it away.',
+  'sheet.method.go': 'read it in the Casting Shed &rarr;',
+  'sheet.method.aria': 'Read the full method for {name} in the Casting Shed',
+  'sheet.schema.why': 'why this works',
+  'sheet.schema.reach': 'This method does not reach that lump.',
+  'sheet.schema.foot': 'The open steps are yours. Nothing here does them, and nothing here says whether you have them right.',
+  'tool.sheet.label': '{tool}, held to {ore}',
+  'tool.sheet.sub': 'held to <b>{ore}</b>',
+  'tool.sheet.close': 'Take it away',
+  'part.sheet.label': '{part}, already cast',
+  'part.sheet.sub': 'cast <b>{cast}</b>, fitted to {fits}',
+  'part.sheet.foot': 'A part is not an instrument. Nothing on your belt changed when this was cast, and nothing in the mine reads differently for it.',
+  'part.sheet.why': '<b>{does}.</b> The mine runs this backwards &mdash; that is all factoring is.',
+  'room.name.mill': 'the Stamp Mill',
+  'room.name.shed': 'the Casting Shed',
+
+  /* naming the other side */
+  'side.lab': 'THE OTHER SIDE',
+  'side.hint': 'Write what you think it is, then take it to the anvil. The hammer is the only thing here that confirms anything.',
+  'side.aria.num': 'the number you think runs through it',
+  'side.go': 'Cut the hammer to it',
+  'side.notwhole': 'That is not a whole number, so there is nothing to cut the head to yet.',
+  'side.gone': 'That piece is not on the floor any more.',
+
+  /* the decimal dial and the pair table */
+  'dial.tag': 'DECIMAL DIAL',
+  'dial.hint': 'Nudge the last number off the whole numbers and watch what happens to the seam. The rock never changes — the <em>search</em> does.',
+  'dial.aria': 'Nudge the last term',
+  'dial.clean': '<b>A whole-number seam runs through this one.</b> Whole ingots will land on it — though the dial is not going to tell you which.',
+  'dial.none': '<b>No whole-number seam.</b> ',
+  'dial.two': 'The seam is real — near {p} and {q} — but those are not whole numbers, and whole ingots will never land on them.',
+  'dial.one': 'The seam is real — it runs at {r} — but that is not a whole number, and whole ingots will never land on it.',
+  'dial.nodec': 'And none on decimals either.',
+  'scan.pair': 'pair',
+  'scan.mul': 'multiply to',
+  'scan.add': 'add to',
+  'scan.cell': '{a}  and  {b}',
+
+  /* the belt */
+  'belt.lab': 'ON YOUR BELT',
+  'belt.h3': 'On your belt',
+  'belt.bare': 'Bare leather. Tools are not handed out — you make them at the forge, out of metal you broke out yourself.',
+  'belt.armed': '<b>{tool} is in your hand.</b> Click a rock to use it.',
+  'belt.idle': 'Click one, then click a rock — or drag it onto one. <b>how?</b> opens the room that teaches it.',
+  'belt.aria.armed': '{tool}. {ds} In your hand — click a rock to use it, or click again to put it back.',
+  'belt.aria.idle': '{tool}. {ds} Click to pick it up, then click a rock. Or drag it onto one.',
+  'belt.how': 'how?',
+  'belt.how.aria': 'How does {tool} work? Go to {room}.',
+  'belt.how.title': 'How it works — {room}',
+
+  'flash.done': 'Done.'
 };
 MF._missing = {};
 MF.lang = function(){
@@ -4927,11 +4986,11 @@ MF.methodLine = function(host, key){
   var s = MF.SCHEMA[key];
   if(!s) return null;
   var row = E('div','methodline');
-  row.appendChild(H('span','mlab','THE METHOD'));
+  row.appendChild(H('span','mlab', MF.t('lesson.lab')));
   row.appendChild(H('span','mnm', s.name));
-  var b = E('button','btn mlgo','read it in the Casting Shed &rarr;'); b.type='button';
-  b.innerHTML = 'read it in the Casting Shed &rarr;';
-  b.setAttribute('aria-label','Read the full method for ' + s.name + ' in the Casting Shed');
+  var b = E('button','btn mlgo', MF.t('sheet.method.go')); b.type='button';
+  b.innerHTML = MF.t('sheet.method.go');
+  b.setAttribute('aria-label', MF.t('sheet.method.aria', {name: s.name}));
   on(b,'click',function(){ MF.closeTool(); MF.go('shed-methods'); });
   row.appendChild(b);
   host.appendChild(row);
@@ -4943,21 +5002,21 @@ MF.paintSchema = function(host, key, ore){
   var s = MF.SCHEMA[key];
   if(!s) return null;
   var box = E('div','schema');
-  box.appendChild(H('div','slab','THE METHOD'));
+  box.appendChild(H('div','slab', MF.t('lesson.lab')));
   box.appendChild(H('div','snm', s.name));
   /* THE REASONING FOLDS AWAY. It is the best paragraph in the panel and it was
      the first thing on screen, which made every tool open on a wall of prose. */
   var whyD = document.createElement('details');
   whyD.className = 'swhyfold';
   var whyS = document.createElement('summary');
-  whyS.textContent = 'why this works';
+  whyS.textContent = MF.t('sheet.schema.why');
   whyD.appendChild(whyS);
   whyD.appendChild(H('div','swhy', s.why));
   box.appendChild(whyD);
   var steps = [];
   try { steps = s.steps(ore) || []; }
   catch(e){
-    box.appendChild(H('div','hint','This method does not reach that lump.'));
+    box.appendChild(H('div','hint', MF.t('sheet.schema.reach')));
     host.appendChild(box); return box;
   }
   var ol = E('ol','ssteps');
@@ -4970,7 +5029,7 @@ MF.paintSchema = function(host, key, ore){
   });
   box.appendChild(ol);
   if(steps.some(function(st){ return st.open; }))
-    box.appendChild(H('div','sfoot','The open steps are yours. Nothing here does them, and nothing here says whether you have them right.'));
+    box.appendChild(H('div','sfoot', MF.t('sheet.schema.foot')));
   host.appendChild(box);
   return box;
 };
@@ -5024,8 +5083,8 @@ MF.paintNameSide = function(host, ore, pieceId){
   var isNum = (ore.kind==='number');
   var isGrp = MF.isGroup(ore), isQrt = MF.isQuart(ore), isTwo = MF.isTwo(ore), nsv = 'x';
   var wrap = E('div','nameside');
-  wrap.appendChild(H('div','nslab','THE OTHER SIDE'));
-  wrap.appendChild(H('div','nshint','Write what you think it is, then take it to the anvil. The hammer is the only thing here that confirms anything.'));
+  wrap.appendChild(H('div','nslab', MF.t('side.lab')));
+  wrap.appendChild(H('div','nshint', MF.t('side.hint')));
   var row = E('div','nsrow');
   var box = E('div','hbox');
   var mi = null;
@@ -5038,32 +5097,30 @@ MF.paintNameSide = function(host, ore, pieceId){
   } else if(!isNum){
     box.appendChild(H('span','paren','('));
     mi = document.createElement('input'); mi.type='text'; mi.inputMode='numeric'; mi.placeholder='1';
-    mi.setAttribute('aria-label', isQrt ? 'how many x squared — leave it empty for a single x squared'
-                                        : 'how many x — leave it empty for a single x, or put 0 for a plain number');
+    mi.setAttribute('aria-label', MF.t(isQrt ? 'practice.aria.m2' : 'q.aria.m'));
     box.appendChild(mi);
     box.appendChild(H('span','paren', isQrt ? 'x&sup2; +' : 'x +'));
   }
   var ki = document.createElement('input'); ki.type='text'; ki.inputMode='numeric'; ki.placeholder='0';
-  ki.setAttribute('aria-label', isNum ? 'the number you think runs through it'
-                  : (isTwo ? 'how many y in this bracket' : 'the number on the end'));
+  ki.setAttribute('aria-label', MF.t(isNum ? 'side.aria.num' : (isTwo ? 'practice.aria.y' : 'q.aria.k')));
   box.appendChild(ki);
   if(isTwo) box.appendChild(H('span','paren','y )'));
   else if(!isNum) box.appendChild(H('span','paren',')'));
   row.appendChild(box);
 
   var say = E('div','nssay');
-  var go = E('button','btn primary','Cut the hammer to it'); go.type='button';
+  var go = E('button','btn primary', MF.t('side.go')); go.type='button';
   on(go,'click',function(){
     var m = (isGrp || isTwo) ? 1 : (isNum ? 0 : MF.readPickM(mi.value));
     var k = MF.readInt(ki.value);
     if(!isFinite(m) || !isFinite(k) || isNaN(m) || isNaN(k)){
-      clear(say).appendChild(H('div','hint','That is not a whole number, so there is nothing to cut the head to yet.'));
+      clear(say).appendChild(H('div','hint', MF.t('side.notwhole')));
       return;
     }
     /* NOT A VERDICT. It cuts the bar and sends them to the anvil; whether the
        seam runs is the swing's to say and nothing else's. */
     if(!MF.cutHammerTo(pieceId, m, k, nsv, isQrt ? 2 : 1))
-      clear(say).appendChild(H('div','hint','That piece is not on the floor any more.'));
+      clear(say).appendChild(H('div','hint', MF.t('side.gone')));
   });
   row.appendChild(go);
   wrap.appendChild(row);
@@ -12228,13 +12285,13 @@ MF.paintShifterRail = function(host, s1, s2){
 MF.paintDial = function(host, B){
   var ore = B.ore;
   var d = E('div','panel'); d.style.background='#fff';
-  d.appendChild(H('div','panel-tag','DECIMAL DIAL'));
-  d.appendChild(H('p','hint','Nudge the last number off the whole numbers and watch what happens to the seam. The rock never changes — the <em>search</em> does.'));
+  d.appendChild(H('div','panel-tag', MF.t('dial.tag')));
+  d.appendChild(H('p','hint', MF.t('dial.hint')));
   var off = 0;
   var readout = E('div'); d.appendChild(readout);
   var r = document.createElement('input');
   r.type='range'; r.min=-2; r.max=2; r.step=0.5; r.value=0;
-  r.setAttribute('aria-label','Nudge the last term');
+  r.setAttribute('aria-label', MF.t('dial.aria'));
   on(r,'input',function(){ off = parseFloat(r.value); paint(); });
   d.appendChild(r);
   host.appendChild(d);
@@ -12247,14 +12304,12 @@ MF.paintDial = function(host, B){
     var m = E('div','note ' + (clean?'good':'warn'));
     /* The dial says WHETHER a whole-number seam exists. */
     m.innerHTML = clean
-      ? '<b>A whole-number seam runs through this one.</b> Whole ingots will land on it — though the dial is not going to tell you which.'
-      : '<b>No whole-number seam.</b> ' + (res.realRoots
+      ? MF.t('dial.clean')
+      : MF.t('dial.none') + (res.realRoots
           ? (res.realRoots.length > 1
-              ? 'The seam is real — near ' + num(Math.round(res.realRoots[0]*100)/100) + ' and ' + num(Math.round(res.realRoots[1]*100)/100) +
-                ' — but those are not whole numbers, and whole ingots will never land on them.'
-              : 'The seam is real — it runs at ' + num(Math.round(res.realRoots[0]*1000)/1000) +
-                ' — but that is not a whole number, and whole ingots will never land on it.')
-          : 'And none on decimals either.');
+              ? MF.t('dial.two', {p: num(Math.round(res.realRoots[0]*100)/100), q: num(Math.round(res.realRoots[1]*100)/100)})
+              : MF.t('dial.one', {r: num(Math.round(res.realRoots[0]*1000)/1000)}))
+          : MF.t('dial.nodec'));
     readout.appendChild(m);
   }
   paint();
@@ -12268,11 +12323,11 @@ MF.scanTable = function(host, target, wanted){
   });
   rows = rows.filter(function(r){ return r[0]*r[1]===target; });
   var tbl = E('table','scan');
-  var hr = E('tr'); ['pair','multiply to','add to'].forEach(function(h){ hr.appendChild(E('th',null,h)); });
+  var hr = E('tr'); ['scan.pair','scan.mul','scan.add'].forEach(function(h){ hr.appendChild(E('th',null, MF.t(h))); });
   tbl.appendChild(hr);
   rows.forEach(function(r){
     var tr = E('tr');
-    tr.appendChild(E('td',null, num(r[0]) + '  and  ' + num(r[1])));
+    tr.appendChild(E('td',null, MF.t('scan.cell', {a: num(r[0]), b: num(r[1])})));
     tr.appendChild(E('td',null, num(r[0]*r[1])));
     tr.appendChild(E('td',null, num(r[0]+r[1])));
     if(wanted!=null && r[0]+r[1]===wanted) tr.className='hit';
@@ -12291,7 +12346,7 @@ MF.finishLump = function(B, why){
   /* the lump is finished: it leaves the cart, its metal reaches the yard, and
      the floor goes with it. */
   MF.repaint(['cart','yard','work']);
-  MF.flash(why || 'Done.');
+  MF.flash(why || MF.t('flash.done'));
 };
 /* Flashes are QUEUED, not written straight into the column. */
 MF.flashQueue = [];
@@ -12331,15 +12386,16 @@ MF._openSheet = function(o){
   ht.appendChild(H('div','tsname', o.title));
   ht.appendChild(H('div','tsore', o.sub));
   head.appendChild(ht);
-  var x = E('button','tsclose', o.closeText || 'Close'); x.type='button';
-  x.setAttribute('aria-label', (o.closeText || 'Close') + ' — closes this panel');
+  var closeText = o.closeText || MF.t('sheet.close');
+  var x = E('button','tsclose', closeText); x.type='button';
+  x.setAttribute('aria-label', MF.t('sheet.close.aria', {close: closeText}));
   on(x,'click',function(){ MF.closeTool(); });
   head.appendChild(x);
   sheet.appendChild(head);
 
   var body = E('div','tsbody');
   try { o.fill(body); }
-  catch(e){ body.appendChild(H('div','note warn','This instrument could not get a reading off that.')); }
+  catch(e){ body.appendChild(H('div','note warn', MF.t('sheet.fail'))); }
   sheet.appendChild(body);
 
   /* MR FACTOR COMES INTO THE DIALOG, BECAUSE HE CANNOT REACH IT */
@@ -12353,10 +12409,8 @@ MF._openSheet = function(o){
       var gb = E('button','tsgname'); gb.type = 'button';
       gb.setAttribute('aria-expanded','false');
       gb.appendChild(MF.art(28));
-      gb.appendChild(H('span','tsgwho', 'Mr Factor'));
-      gb.appendChild(H('span','tsgcue', rung.rung === 'give'
-        ? 'will just tell you this one'
-        : 'has a word about this one'));
+      gb.appendChild(H('span','tsgwho', MF.t('sheet.guide.who')));
+      gb.appendChild(H('span','tsgcue', MF.t(rung.rung === 'give' ? 'sheet.guide.give' : 'sheet.guide.word')));
       var body2 = E('div','tsgbody');
       body2.hidden = true;
       rung.beats.forEach(function(b){ body2.appendChild(H('p','tsgsay', b)); });
@@ -12371,8 +12425,7 @@ MF._openSheet = function(o){
   }
 
   var foot = E('div','tsfoot');
-  foot.appendChild(H('div','hint', o.foot ||
-    'Nothing here swings for you. Press <b>Esc</b> to put it away.'));
+  foot.appendChild(H('div','hint', o.foot || MF.t('sheet.foot')));
   sheet.appendChild(foot);
 
   scrim.appendChild(sheet);
@@ -12389,9 +12442,9 @@ MF.openTool = function(key, ore, opener, pieceId){
   var t = MF.TOOLS[key];
   if(!t || !ore) return;
   MF._openSheet({
-    label: t.nm + ', held to ' + MF.oreText(ore),
-    icon: t.ic, title: t.nm, sub: 'held to <b>' + MF.oreLabel(ore) + '</b>',
-    closeText: 'Take it away', opener: opener, key: key,
+    label: MF.t('tool.sheet.label', {tool: t.nm, ore: MF.oreText(ore)}),
+    icon: t.ic, title: t.nm, sub: MF.t('tool.sheet.sub', {ore: MF.oreLabel(ore)}),
+    closeText: MF.t('tool.sheet.close'), opener: opener, key: key,
     /* AND IN THE INSTRUMENT PANEL TOO — this is the other sheet a student holds
        open while they are stuck, in the mine and on the Casting Shed's bench
        alike. */
@@ -12437,19 +12490,19 @@ MF.closeTool = function(){
 MF.paintBelt = function(host, atWork){
   var owned = MF.toolOrder().filter(MF.hasTool);
   var box = E('div', atWork ? 'gearbox atwork' : 'gearbox');
-  box.appendChild(atWork ? H('div','beltlab','ON YOUR BELT') : H('h3',null,'On your belt'));
+  box.appendChild(atWork ? H('div','beltlab', MF.t('belt.lab')) : H('h3',null, MF.t('belt.h3')));
 
   if(!owned.length){
     var bare = E('div','beltstrap bare');
-    bare.appendChild(H('div','beltempty','Bare leather. Tools are not handed out — you make them at the forge, out of metal you broke out yourself.'));
+    bare.appendChild(H('div','beltempty', MF.t('belt.bare')));
     box.appendChild(bare);
     host.appendChild(box);
     return;
   }
 
   box.appendChild(H('div', atWork ? 'beltnote' : 'hint', MF.state.armedTool
-    ? '<b>' + MF.TOOLS[MF.state.armedTool].nm + ' is in your hand.</b> Click a rock to use it.'
-    : 'Click one, then click a rock — or drag it onto one. <b>how?</b> opens the room that teaches it.'));
+    ? MF.t('belt.armed', {tool: MF.TOOLS[MF.state.armedTool].nm})
+    : MF.t('belt.idle')));
   var strap = E('div','beltstrap');
   owned.forEach(function(k){
     var t = MF.TOOLS[k];
@@ -12463,9 +12516,7 @@ MF.paintBelt = function(host, atWork){
        to use it - the same thing the drag does. */
     if(MF.state.armedTool === k) b.setAttribute('data-armed','yes');
     b.setAttribute('aria-pressed', MF.state.armedTool === k ? 'true' : 'false');
-    b.setAttribute('aria-label', t.nm + '. ' + t.ds +
-      (MF.state.armedTool === k ? ' In your hand — click a rock to use it, or click again to put it back.'
-                                : ' Click to pick it up, then click a rock. Or drag it onto one.'));
+    b.setAttribute('aria-label', MF.t(MF.state.armedTool === k ? 'belt.aria.armed' : 'belt.aria.idle', {tool: t.nm, ds: t.ds}));
     b.title = t.ds;
     on(b,'click',function(){
       MF.state.armedTool = (MF.state.armedTool === k) ? null : k;
@@ -12476,9 +12527,9 @@ MF.paintBelt = function(host, atWork){
     MF.dragTool(b, k);
     loop.appendChild(b);
     /* THE WAY OUT, ON THE TOOL ITSELF. */
-    var why = E('button','beltwhy','how?'); why.type='button';
-    why.setAttribute('aria-label','How does ' + t.nm + ' work? Go to ' + MF.toolRoomName(k) + '.');
-    why.title = 'How it works — ' + MF.toolRoomName(k);
+    var why = E('button','beltwhy', MF.t('belt.how')); why.type='button';
+    why.setAttribute('aria-label', MF.t('belt.how.aria', {tool: t.nm, room: MF.toolRoomName(k)}));
+    why.title = MF.t('belt.how.title', {room: MF.toolRoomName(k)});
     on(why,'click',function(e){ e.stopPropagation(); MF.explainTool(k, b); });
     loop.appendChild(why);
     strap.appendChild(loop);
@@ -12493,7 +12544,7 @@ MF.toolRoom = function(key){
   return (t && t.cast && t.cast.a === 0 && t.cast.b === 0) ? 'workshop-ore' : 'shed-methods';
 };
 MF.toolRoomName = function(key){
-  return MF.toolRoom(key) === 'workshop-ore' ? 'the Stamp Mill' : 'the Casting Shed';
+  return MF.t(MF.toolRoom(key) === 'workshop-ore' ? 'room.name.mill' : 'room.name.shed');
 };
 MF.explainTool = function(key, opener){
   MF.go(MF.toolRoom(key));
@@ -12506,16 +12557,15 @@ MF.explainPart = function(key, opener){
   var p = MF.PARTS[key];
   if(!p) return;
   MF._openSheet({
-    label: p.nm + ', already cast',
-    icon: p.ic, title: p.nm, sub: 'cast <b>' + MF.castText(p) + '</b>, fitted to ' + p.fits,
-    closeText: 'Close', opener: opener, key: key,
-    foot: 'A part is not an instrument. Nothing on your belt changed when this was cast, and nothing in the mine reads differently for it.',
+    label: MF.t('part.sheet.label', {part: p.nm}),
+    icon: p.ic, title: p.nm, sub: MF.t('part.sheet.sub', {cast: MF.castText(p), fits: p.fits}),
+    closeText: MF.t('sheet.close'), opener: opener, key: key,
+    foot: MF.t('part.sheet.foot'),
     fill: function(body){
       body.appendChild(H('div','note', p.ds));
       var made = MF.partMetals(key);
       if(made) MF.pourChain(body, made.map(MF.oreToIngot));
-      body.appendChild(H('div','swhy','<b>' + p.does.charAt(0).toUpperCase() + p.does.slice(1) + '.</b> ' +
-        'The mine runs this backwards &mdash; that is all factoring is.'));
+      body.appendChild(H('div','swhy', MF.t('part.sheet.why', {does: p.does.charAt(0).toUpperCase() + p.does.slice(1)})));
     }
   });
 };
