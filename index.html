@@ -4025,7 +4025,36 @@ MF.STR.en = {
   'pour.out': 'one object comes out',
   'mold.casting': 'a casting',
   'mold.aria.pour': 'Seen from above: metal running down a trough into a mold cut to the shape of {tool}, and the factors resolving into {single}',
-  'mold.aria.wait': 'Seen from above: a mold cut to the shape of {tool}, waiting for metal.'
+  'mold.aria.wait': 'Seen from above: a mold cut to the shape of {tool}, waiting for metal.',
+
+  /* what an instrument writes into the ore, and says about it */
+  'lens.steel.found': 'every term carries {g}',
+  'lens.native': 'nothing moves in there',
+  'lens.shaped': 'one side of it is shaped {shape}',
+  'lens.half.shaped': 'one half of it is shaped {shape}',
+  'lens.side': 'one side of it is {side}',
+  'lens.drill.cubes': 'both ends are whole cubes',
+  'lens.drill.sum': 'the middle is a sum',
+  'lens.shifter.gear': 'a trinomial, one gear down',
+  'lens.shifter.product': 'the end is a product',
+  'lens.auger.halves': 'two halves, and one bracket already out of the first',
+  'lens.auger.four': 'four terms, not three',
+  'lens.dial.pair': 'the pair multiplies to {m} and adds to {a}',
+  'lens.pick.apart': 'it comes apart',
+  'lens.x.aria': 'An X. Top: {top}, what the pair multiplies to. Bottom: {bot}, what it adds to. {sides}',
+  'lens.x.one': 'Left: {left}. Right unknown.',
+  'lens.x.none': 'Both sides unknown.',
+  'lens.none.owner': 'no bite — that is {tool}’s lump',
+  'lens.none': 'no bite on this shape',
+  /* "read by the The Lantern" is a known English slip (nm begins "The"). Kept
+     byte-identical while the extraction is proved; fix it as its own change. */
+  'lens.readby': '{ore}, read by the {tool} as {read}',
+  'lens.notmy.group': '<b>{line}</b> Four terms and two letters is the <b>Powered Auger</b>&rsquo;s lump &mdash; it takes them two at a time.',
+  'lens.notmy.cube': '<b>{line}</b> An x cubed is the <b>Drill</b>&rsquo;s lump &mdash; it reads the two ends and takes one bracket off on sight.',
+  'lens.notmy.pair': '<b>{line}</b> Two letters all the way through is the <b>Crosscut</b>&rsquo;s lump &mdash; the hunt is the same, only the brackets look different.',
+  'lens.notmy.gear': '<b>{line}</b> An x to the fourth is the <b>Shifter</b>&rsquo;s lump &mdash; it drops the whole thing a gear first.',
+  'lens.bracket.big': 'Nothing moves in there.',
+  'lens.bracket.sm': 'A single x, a single y, and nothing dividing both. {ore} is an element &mdash; the same kind of object as a prime.'
 };
 MF._missing = {};
 MF.lang = function(){
@@ -4964,7 +4993,7 @@ MF.LENS.steel = function(ore){
     out += '<span class="lterm">' + lensMark('lshared', num(G)) + lensMark('ldot','·') +
            lensMark('lrest', (unit === 1 && p.suf) ? p.suf : (num(unit) + p.suf)) + '</span>';
   });
-  return {html: out, found: 'every term carries ' + num(G)};
+  return {html: out, found: MF.t('lens.steel.found', {g: num(G)})};
 };
 
 /* THE PIT LANTERN: the lump written as a product, one side lit — and on a
@@ -4974,7 +5003,7 @@ MF.LENS.lantern = function(ore){
   if(MF.isNative(ore)){
     return {
       html: lensMark('lfinal', MF.oreLabel(ore)) + lensMark('lop',' ') + lensMark('lfinal','&#9670;'),
-      found: 'nothing moves in there'
+      found: MF.t('lens.native')
     };
   }
   if(MF.isCube(ore)){
@@ -4983,7 +5012,7 @@ MF.LENS.lantern = function(ore){
     return {
       html: lensMark('ldark','( ' + (Math.abs(cl2.left.b)===1?'':num(cl2.left.b)) + 'x ' + (cl2.left.c<0?'&minus;':'+') + ' ' + lensMark('lqm','?') + ' )') +
             lensMark('ldark','( ' + lensMark('lqm','?') + ' )'),
-      found: 'one side of it is shaped ' + (Math.abs(cl2.left.b)===1?'':num(cl2.left.b)) + 'x ' + (cl2.left.c<0?'&minus;':'+') + ' ?'
+      found: MF.t('lens.shaped', {shape: (Math.abs(cl2.left.b)===1?'':num(cl2.left.b)) + 'x ' + (cl2.left.c<0?'&minus;':'+') + ' ?'})
     };
   }
   /* the shape of one bracket, y included — the digit stays the miner's */
@@ -4994,7 +5023,7 @@ MF.LENS.lantern = function(ore){
     return {
       html: lensMark('ldark','( x ' + (t2l.left.p<0?'&minus;':'+') + ' ' + lensMark('lqm','?') + ' y )') +
             lensMark('ldark','( ' + lensMark('lqm','?') + ' )'),
-      found: 'one side of it is shaped x ' + (t2l.left.p<0?'&minus;':'+') + ' ? y'
+      found: MF.t('lens.shaped', {shape: 'x ' + (t2l.left.p<0?'&minus;':'+') + ' ? y'})
     };
   }
   if(MF.isBi(ore)) return null;
@@ -5004,7 +5033,7 @@ MF.LENS.lantern = function(ore){
     return {
       html: lensMark('ldark','( x<sup>2</sup> ' + (qs2.left.c<0?'&minus;':'+') + ' ' + lensMark('lqm','?') + ' )') +
             lensMark('ldark','( ' + lensMark('lqm','?') + ' )'),
-      found: 'one half of it is shaped x&sup2; ' + (qs2.left.c<0?'&minus;':'+') + ' ?'
+      found: MF.t('lens.half.shaped', {shape: 'x&sup2; ' + (qs2.left.c<0?'&minus;':'+') + ' ?'})
     };
   }
   if(MF.isNative(ore)) return null;      /* nothing to open; the chip is already the answer */
@@ -5013,8 +5042,8 @@ MF.LENS.lantern = function(ore){
   return {
     html: lensMark('llit','( ' + ingotHeld(one) + ' )') + lensMark('ldot','') +
           lensMark('ldark','( ' + lensMark('lqm','?') + ' )'),
-    found: one.m === 0 ? ('one side of it is ' + ingotText(one))
-                       : ('one side of it is shaped ' + ingotHeld(one).replace(/<[^>]+>/g,''))
+    found: one.m === 0 ? MF.t('lens.side', {side: ingotText(one)})
+                       : MF.t('lens.shaped', {shape: ingotHeld(one).replace(/<[^>]+>/g,'')})
   };
 };
 
@@ -5028,7 +5057,7 @@ MF.LENS.drill = function(ore){
     return {
       html: lensMark('ldark','( ' + (Math.abs(cl.left.b)===1?'':num(cl.left.b)) + 'x ' + (cl.left.c<0?'&minus;':'+') + ' ' + lensMark('lqm','?') + ' )') +
             lensMark('ldark','( ' + lensMark('lqm','?') + ' )'),
-      found: 'both ends are whole cubes'
+      found: MF.t('lens.drill.cubes')
     };
   }
   if(MF.isTwo(ore) || MF.isBi(ore)) return null;
@@ -5042,7 +5071,7 @@ MF.LENS.drill = function(ore){
   return {
     html: head + lensMark('lop',' + ') +
           lensMark('lsplit','( ' + num(pr.p) + ' + ' + lensMark('lqm','?') + ' )x') + tail,
-    found: 'the middle is a sum'
+    found: MF.t('lens.drill.sum')
   };
 };
 
@@ -5057,7 +5086,7 @@ MF.LENS.shifter = function(ore){
       html: lensMark('lsplit','( x<sup>2</sup> )<sup>2</sup>') +
             lensMark('lop', signed2(ore.b)) + lensMark('lsplit','( x<sup>2</sup> )') +
             lensMark('lop', signed(ore.c)),
-      found: 'a trinomial, one gear down'
+      found: MF.t('lens.shifter.gear')
     };
   }
   if(ore.kind === 'number' || ore.a === 0 || !ore.c) return null;
@@ -5069,7 +5098,7 @@ MF.LENS.shifter = function(ore){
   return {
     html: head + mid + lensMark('lop',' + ') +
           lensMark('lsplit','( ' + num(pr.p) + ' · ' + lensMark('lqm','?') + ' )'),
-    found: 'the end is a product'
+    found: MF.t('lens.shifter.product')
   };
 };
 
@@ -5086,7 +5115,7 @@ MF.LENS.auger = function(ore){
     return {
       html: lensMark('lsplit','x ( y' + signed(ore.b) + ' )') + lensMark('lop',' + ') +
             lensMark('ldark', num(ore.c) + ' ( y ' + lensMark('lqm','?') + ' )'),
-      found: 'two halves, and one bracket already out of the first'
+      found: MF.t('lens.auger.halves')
     };
   }
   if(ore.kind === 'number' || ore.a === 0) return null;
@@ -5098,7 +5127,7 @@ MF.LENS.auger = function(ore){
     html: sqTerm(ore.a) +
           lensMark('lop', pr.p < 0 ? ' − ' : ' + ') + lensMark('lsplit', xt2(Math.abs(pr.p))) +
           lensMark('lop',' + ') + lensMark('lqm','?') + 'x' + tail,
-    found: 'four terms, not three'
+    found: MF.t('lens.auger.four')
   };
 };
 
@@ -5107,9 +5136,9 @@ MF.LENS.auger = function(ore){
 /* ONE X, DRAWN ONCE. */
 function lensX(top, bot, left){
   var one = (left !== null && left !== undefined);
-  return '<span class="lensx" role="img" aria-label="An X. Top: ' + top +
-      ', what the pair multiplies to. Bottom: ' + bot +
-      ', what it adds to. ' + (one ? 'Left: ' + left + '. Right unknown.' : 'Both sides unknown.') + '">' +
+  return '<span class="lensx" role="img" aria-label="' +
+      MF.t('lens.x.aria', {top: top, bot: bot,
+        sides: one ? MF.t('lens.x.one', {left: left}) : MF.t('lens.x.none')}) + '">' +
       '<svg viewBox="0 0 100 68" aria-hidden="true" focusable="false">' +
         '<path d="M22 12 L78 56"/><path d="M78 12 L22 56"/>' +
       '</svg>' +
@@ -5127,7 +5156,7 @@ MF.LENS.dial = function(ore){
     var tsL = MF.twoSplit(ore);
     return {
       html: MF.oreLabel(ore) + lensX(num(ore.c), num(ore.b), tsL ? num(tsL.left.p) : null),
-      found: 'the pair multiplies to ' + num(ore.c) + ' and adds to ' + num(ore.b)
+      found: MF.t('lens.dial.pair', {m: num(ore.c), a: num(ore.b)})
     };
   }
   if(MF.isBi(ore)) return null;
@@ -5141,7 +5170,7 @@ MF.LENS.dial = function(ore){
   var dprL = MF.xPair(ore);
   return {
     html: MF.oreLabel(ore) + lensX(num(ac), num(ore.b), dprL ? num(dprL.p) : null),
-    found: 'the pair multiplies to ' + num(ac) + ' and adds to ' + num(ore.b)
+    found: MF.t('lens.dial.pair', {m: num(ac), a: num(ore.b)})
   };
 };
 
@@ -5150,13 +5179,13 @@ MF.LENS.pick = function(ore){
   if(MF.isNative(ore)){
     return {
       html: lensMark('lfinal', MF.oreLabel(ore)) + lensMark('lop',' ') + lensMark('lfinal','&#9670;'),
-      found: 'nothing moves in there'
+      found: MF.t('lens.native')
     };
   }
   return {
     html: lensMark('ldark','( ' + lensMark('lqm','?') + ' )') +
           lensMark('ldark','( ' + lensMark('lqm','?') + ' )'),
-    found: 'it comes apart'
+    found: MF.t('lens.pick.apart')
   };
 };
 
@@ -5188,7 +5217,7 @@ MF.lensFor = function(ore, tk){
           lensMark('lnobite', t ? t.ic : '&#8709;'),
     /* the words live here, where a screen reader gets them and the rock does
        not. `nm` already begins "The". */
-    found: t ? 'no bite — that is ' + t.nm + '’s lump' : 'no bite on this shape'
+    found: t ? MF.t('lens.none.owner', {tool: t.nm}) : MF.t('lens.none')
   };
 };
 
@@ -5255,16 +5284,15 @@ MF.oreDisplayText = function(o){
   var tk = o.tool;
   if(tk && MF.hasTool(tk)){
     var read = MF.lensFor(o, tk);
-    if(read) return MF.oreText(o) + ', read by the ' + (MF.TOOLS[tk] ? MF.TOOLS[tk].nm : tk) +
-      ' as ' + String(read.html).replace(/<[^>]+>/g,'').replace(/\s+/g,' ').trim();
+    if(read) return MF.t('lens.readby', {ore: MF.oreText(o), tool: MF.TOOLS[tk] ? MF.TOOLS[tk].nm : tk,
+      read: String(read.html).replace(/<[^>]+>/g,'').replace(/\s+/g,' ').trim()});
   }
   return MF.oreText(o);
 };
 
 /* A LUMP AN INSTRUMENT IS NOT CUT FOR */
 MF.notMyLump = function(host, tool, line){
-  host.appendChild(H('p','hint','<b>' + line + '</b> Four terms and two letters is ' +
-    'the <b>Powered Auger</b>&rsquo;s lump &mdash; it takes them two at a time.'));
+  host.appendChild(H('p','hint', MF.t('lens.notmy.group', {line: line})));
   MF.methodLine(host, tool);
 };
 /* AND THE SAME FOR AN x⁴ LUMP. */
@@ -5272,28 +5300,24 @@ MF.notMyLump = function(host, tool, line){
 /* AND FOR AN x³ LUMP. The Drill is the instrument that reads an identity off
    the shape without hunting anything, which is exactly what a cube seam is. */
 MF.notMyCube = function(host, tool, line){
-  host.appendChild(H('p','hint','<b>' + line + '</b> An x cubed is ' +
-    'the <b>Drill</b>&rsquo;s lump &mdash; it reads the two ends and takes one bracket off on sight.'));
+  host.appendChild(H('p','hint', MF.t('lens.notmy.cube', {line: line})));
   MF.methodLine(host, tool);
 };
 MF.notMyPair = function(host, tool, line){
-  host.appendChild(H('p','hint','<b>' + line + '</b> Two letters all the way through is ' +
-    'the <b>Crosscut</b>&rsquo;s lump &mdash; the hunt is the same, only the brackets look different.'));
+  host.appendChild(H('p','hint', MF.t('lens.notmy.pair', {line: line})));
   MF.methodLine(host, tool);
 };
 /* a single bracket like `x + 2y` is finished, and every instrument should say
    so the same way rather than each inventing a reason */
 MF.readBracket = function(host, tool, ore){
   var lit = E('div','lampread clear');
-  lit.appendChild(H('div','big','Nothing moves in there.'));
-  lit.appendChild(H('div','sm','A single x, a single y, and nothing dividing both. ' +
-    MF.oreLabel(ore) + ' is an element &mdash; the same kind of object as a prime.'));
+  lit.appendChild(H('div','big', MF.t('lens.bracket.big')));
+  lit.appendChild(H('div','sm', MF.t('lens.bracket.sm', {ore: MF.oreLabel(ore)})));
   host.appendChild(lit);
   MF.methodLine(host, tool);
 };
 MF.notMyGear = function(host, tool, line){
-  host.appendChild(H('p','hint','<b>' + line + '</b> An x to the fourth is ' +
-    'the <b>Shifter</b>&rsquo;s lump &mdash; it drops the whole thing a gear first.'));
+  host.appendChild(H('p','hint', MF.t('lens.notmy.gear', {line: line})));
   MF.methodLine(host, tool);
 };
 /* the two halves a grouping lump is read in: xy + bx, then cy + d */
