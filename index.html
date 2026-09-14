@@ -4354,7 +4354,56 @@ MF.STR.en = {
   'insp.swing': 'Swing the pick',
   'insp.swing.aria': 'Cut {ore} out of the seam and into the cart',
   'insp.keep': 'Keep scanning',
-  'insp.keep.aria': 'Leave {ore} in the wall and carry on along the seam'
+  'insp.keep.aria': 'Leave {ore} in the wall and carry on along the seam',
+
+  /* the Mine: the cart */
+  'cart.tag': 'THE CART',
+  'cart.empty': 'Empty. Swing the pick at the face above — dig as much as you like before you work any of it.',
+  'cart.drag': '<b>Drag an instrument onto a rock</b> and the numbers cut into it change.',
+  /* "use the The Lantern" is the same known English slip as read-by: nm
+     begins "The". Kept byte-identical for the proof; fix it as its own change. */
+  'cart.aria.armed': '{ore}, layer {layer}. Click to use the {tool} on it.',
+  'cart.aria.idle': '{ore}, layer {layer}. Drop an instrument on it, or send it on with the two controls below.',
+  'cart.break': 'Break it',
+  'cart.break.aria': 'Put {ore} on the breaking floor and work it',
+  'cart.yard': 'To the yard',
+  'cart.yard.aria': 'Set {ore} aside in the yard without working it',
+  /* an instrument sitting on a rock, and the way back off it */
+  'slot.aria': '{tool} is on {ore}. Take it off.',
+  /* "Take the The Lantern off" - the same slip again, kept for the proof */
+  'slot.title': 'Take the {tool} off',
+
+  /* the Mine: the breaking floor and the assay */
+  'floor.tag': 'THE BREAKING FLOOR',
+  'assay.offer': 'What kind of rock is this?',
+  'assay.offer.aria': 'Name what kind of rock this is. Optional — the hammer works either way.',
+  'assay.offer.hint': 'Optional. The hammer works either way.',
+  'assay.called': '<b>You called it: {name}.</b> ',
+  'assay.ask': '<b>What kind of rock are you holding?</b> Nothing depends on this — you can swing without it. It is here because a call you made is the only thing you can later catch yourself out on.',
+  'assay.lamp': '<b>Assay Lamp:</b> ',
+  'assay.lamp.number': 'It is a plain number, so the only question is whether anything divides it.',
+  'assay.lamp.below': 'Nothing below {n} needs checking past that point.',
+  'assay.lamp.term.one': '<b>{n}</b> term in it.',
+  'assay.lamp.term.many': '<b>{n}</b> terms in it.',
+  'assay.lamp.gcd': 'Every term divides by <b>{g}</b>.',
+  'assay.lamp.nogcd': 'No number above 1 divides every term.',
+  'assay.lamp.noend': 'There is no plain number on the end, so every term still carries an x.',
+  'assay.lamp.front.one': 'Nothing sits in front of the x².',
+  'assay.lamp.front.none': 'There is no x² at all.',
+  'assay.lamp.front.a': '<b>{a}</b> sits in front of the x².',
+  'assay.lamp.twin': 'Two terms with a minus between them — check whether both ends are perfect squares.',
+  'assay.also': 'Also true — this really is two squares with a minus between them. Both readings are right; the shared lump usually comes out first, because once it does the twin seam underneath is easier to see.',
+  'assay.skip': 'Never mind — back to the hammer',
+
+  /* the Mine: the anvil and what the hammer is cut to */
+  'burst.thud': 'THUD!',
+  'burst.clang': 'CLANG!',
+  'echo.empty.group': 'the head is empty — pick a letter and type the number with it',
+  'echo.empty': 'the head is empty — type what you are taking out',
+  'echo.notwhole': '<span class="bad">that is not a whole number</span>',
+  'echo.power': '<span class="bad">an x is cut to a whole power, and at least the first</span>',
+  'echo.cut': 'the hammer is cut to <b>{head}</b>',
+  'anvil.aria': '{ore} — on the anvil. Click it to bring the hammer down on it.'
 };
 MF._missing = {};
 MF.lang = function(){
@@ -4365,7 +4414,13 @@ MF.t = function(key, vars){
   var table = MF.STR[MF.lang()], s = table && table[key];
   if(s == null) s = MF.STR.en[key];
   if(s == null){ MF._missing[key] = 1; s = key; }
-  if(vars) s = String(s).replace(/\{(\w+)\}/g, function(m, k){ return vars[k] != null ? String(vars[k]) : m; });
+  /* A PLACEHOLDER THAT WAS PASSED IS FILLED, WHATEVER IT HOLDS. The strings this
+     replaced were concatenation, and 'LAYER ' + undefined is "LAYER undefined";
+     leaving "{n}" instead changed what a validator-built lump with no layer
+     printed, and the text harvest caught it. Only a name nobody passed stays. */
+  if(vars) s = String(s).replace(/\{(\w+)\}/g, function(m, k){
+    return Object.prototype.hasOwnProperty.call(vars, k) ? String(vars[k]) : m;
+  });
   return s;
 };
 /* `prefix.1` … `prefix.n`, as an array — for the tables whose fields are
@@ -11236,16 +11291,16 @@ MF.paintCart = function(){
   clear(host);
   var cartPanel = E('div','panel cartpanel');
   cartPanel.appendChild(MF.cartTrack());
-  cartPanel.appendChild(H('div','panel-tag','THE CART'));
+  cartPanel.appendChild(H('div','panel-tag', MF.t('cart.tag')));
   if(!MF.state.cart.length){
-    cartPanel.appendChild(H('p','hint','Empty. Swing the pick at the face above — dig as much as you like before you work any of it.'));
+    cartPanel.appendChild(H('p','hint', MF.t('cart.empty')));
     host.appendChild(cartPanel);
     return;
   }
   /* THE BELT IS IN THE CART, which is where a student first has a lump and
      nothing to do with it (§20a). */
   MF.paintBelt(cartPanel, true);
-  cartPanel.appendChild(H('p','hint','<b>Drag an instrument onto a rock</b> and the numbers cut into it change.'));
+  cartPanel.appendChild(H('p','hint', MF.t('cart.drag')));
   var body = E('div','cartbody');
   var cart = E('div','cart');
   MF.state.cart.forEach(function(o){
@@ -11257,12 +11312,11 @@ MF.paintCart = function(){
     b.setAttribute('data-ore', o.id);      /* survives the repaint, so the knock finds it */
     b.setAttribute('tabindex','0');
     b.appendChild(MF.oreRock(o, {native:nat}));
-    b.appendChild(H('span','lay','LAYER ' + o.layer));
+    b.appendChild(H('span','lay', MF.t('shaft.layer', {n: o.layer})));
     if(MF.state.selected && MF.state.selected.id===o.id) b.setAttribute('aria-current','true');
-    b.setAttribute('aria-label', MF.oreDisplayText(o) + ', layer ' + o.layer +
-      (MF.state.armedTool
-        ? '. Click to use the ' + MF.TOOLS[MF.state.armedTool].nm + ' on it.'
-        : '. Drop an instrument on it, or send it on with the two controls below.'));
+    b.setAttribute('aria-label', MF.state.armedTool
+      ? MF.t('cart.aria.armed', {ore: MF.oreDisplayText(o), layer: o.layer, tool: MF.TOOLS[MF.state.armedTool].nm})
+      : MF.t('cart.aria.idle', {ore: MF.oreDisplayText(o), layer: o.layer}));
     if(MF.state.armedTool) b.setAttribute('data-tooldrop','open');
     on(b,'click',function(){
       if(!MF.state.armedTool) return;
@@ -11284,15 +11338,15 @@ MF.paintCart = function(){
       var oslot = E('button','toolslot filled'); oslot.type='button';
       oslot.setAttribute('data-ore-slot', o.id);
       oslot.innerHTML = '<span class="si">' + ot.ic + '</span><span class="sx">&times;</span>';
-      oslot.setAttribute('aria-label', ot.nm + ' is on ' + MF.oreText(o) + '. Take it off.');
-      oslot.title = 'Take the ' + ot.nm + ' off';
+      oslot.setAttribute('aria-label', MF.t('slot.aria', {tool: ot.nm, ore: MF.oreText(o)}));
+      oslot.title = MF.t('slot.title', {tool: ot.nm});
       on(oslot,'click',function(e){ e.stopPropagation(); MF.clearTool(o, null); });
       cell.appendChild(oslot);
     }
     /* ---- WHERE IT GOES, in two controls under the rock ---- */
     var route = E('div','lumproute');
-    var toFloor = E('button','btn primary lumpgo','Break it'); toFloor.type='button';
-    toFloor.setAttribute('aria-label','Put ' + MF.oreText(o) + ' on the breaking floor and work it');
+    var toFloor = E('button','btn primary lumpgo', MF.t('cart.break')); toFloor.type='button';
+    toFloor.setAttribute('aria-label', MF.t('cart.break.aria', {ore: MF.oreText(o)}));
     on(toFloor,'click',function(){
       MF.state.selected = o;
       MF.state.anvil = null;
@@ -11306,8 +11360,8 @@ MF.paintCart = function(){
         w.scrollIntoView({block:'start', behavior:'smooth'});
     });
     route.appendChild(toFloor);
-    var y = E('button','btn lumpgo tuyard','To the yard'); y.type='button';
-    y.setAttribute('aria-label','Set ' + MF.oreText(o) + ' aside in the yard without working it');
+    var y = E('button','btn lumpgo tuyard', MF.t('cart.yard')); y.type='button';
+    y.setAttribute('aria-label', MF.t('cart.yard.aria', {ore: MF.oreText(o)}));
     on(y,'click',function(){ MF.cartToYard(o.id); });
     route.appendChild(y);
     cell.appendChild(route);
@@ -11529,7 +11583,7 @@ MF.paintAnvil = function(host){
   var B = MF.state.anvil;
 
   var bench = E('div','bench');
-  bench.appendChild(H('div','panel-tag','THE BREAKING FLOOR'));
+  bench.appendChild(H('div','panel-tag', MF.t('floor.tag')));
   MF.paintBreak(bench, B);
 
   host.appendChild(bench);
@@ -11540,11 +11594,11 @@ MF.paintAnvil = function(host){
 MF.assayOffer = function(host, B){
   if(B.calledAs || B.step === 'assay') return false;
   var offer = E('div','assayoffer');
-  var ob = E('button','btn assaybtn','What kind of rock is this?'); ob.type='button';
-  ob.setAttribute('aria-label','Name what kind of rock this is. Optional — the hammer works either way.');
+  var ob = E('button','btn assaybtn', MF.t('assay.offer')); ob.type='button';
+  ob.setAttribute('aria-label', MF.t('assay.offer.aria'));
   on(ob,'click',function(){ B.step = 'assay'; MF.paintMine(); });
   offer.appendChild(ob);
-  offer.appendChild(H('span','assayhint','Optional. The hammer works either way.'));
+  offer.appendChild(H('span','assayhint', MF.t('assay.offer.hint')));
   host.appendChild(offer);
   return true;
 };
@@ -11557,7 +11611,7 @@ MF.paintAssay = function(host, B){
   /* THREE STATES, WHERE THERE USED TO BE TWO. */
   if(B.calledAs){
     var settled = E('div','note good');
-    settled.innerHTML = '<b>You called it: ' + MF.ASSAY[B.calledAs].name + '.</b> ' +
+    settled.innerHTML = MF.t('assay.called', {name: MF.ASSAY[B.calledAs].name}) +
       (B.calledWhy || MF.ASSAY[B.calledAs].tell);
     host.appendChild(settled);
     return;
@@ -11565,7 +11619,7 @@ MF.paintAssay = function(host, B){
   /* THE OFFER IS NOT DRAWN HERE ANY MORE. */
   if(B.step !== 'assay') return;
 
-  host.appendChild(H('p','hint','<b>What kind of rock are you holding?</b> Nothing depends on this — you can swing without it. It is here because a call you made is the only thing you can later catch yourself out on.'));
+  host.appendChild(H('p','hint', MF.t('assay.ask')));
 
   /* the Drill reads structure - this is its power, and it is the only thing on
      the assay screen that says anything beyond what is visibly there */
@@ -11573,18 +11627,18 @@ MF.paintAssay = function(host, B){
     var tell = E('div','note');
     var bits = [];
     if(ore.kind==='number'){
-      bits.push('It is a plain number, so the only question is whether anything divides it.');
-      bits.push('Nothing below ' + Math.ceil(Math.sqrt(Math.abs(ore.n))) + ' needs checking past that point.');
+      bits.push(MF.t('assay.lamp.number'));
+      bits.push(MF.t('assay.lamp.below', {n: Math.ceil(Math.sqrt(Math.abs(ore.n)))}));
     } else {
       var terms = [ore.a,ore.b,ore.c].filter(function(v){ return v!==0; }).length;
-      bits.push('<b>' + terms + '</b> term' + (terms===1?'':'s') + ' in it.');
+      bits.push(MF.t(terms===1 ? 'assay.lamp.term.one' : 'assay.lamp.term.many', {n: terms}));
       var gg = gcdAll([ore.a,ore.b,ore.c].filter(function(v){ return v!==0; }));
-      bits.push(gg>1 ? 'Every term divides by <b>'+gg+'</b>.' : 'No number above 1 divides every term.');
-      if(ore.c===0 && ore.a!==0) bits.push('There is no plain number on the end, so every term still carries an x.');
-      bits.push(ore.a===1 ? 'Nothing sits in front of the x².' : (ore.a===0?'There is no x² at all.':'<b>'+num(ore.a)+'</b> sits in front of the x².'));
-      if(terms===2 && ore.b===0 && ore.c<0) bits.push('Two terms with a minus between them — check whether both ends are perfect squares.');
+      bits.push(gg>1 ? MF.t('assay.lamp.gcd', {g: gg}) : MF.t('assay.lamp.nogcd'));
+      if(ore.c===0 && ore.a!==0) bits.push(MF.t('assay.lamp.noend'));
+      bits.push(ore.a===1 ? MF.t('assay.lamp.front.one') : (ore.a===0 ? MF.t('assay.lamp.front.none') : MF.t('assay.lamp.front.a', {a: num(ore.a)})));
+      if(terms===2 && ore.b===0 && ore.c<0) bits.push(MF.t('assay.lamp.twin'));
     }
-    tell.innerHTML = '<b>Assay Lamp:</b> ' + bits.join(' ');
+    tell.innerHTML = MF.t('assay.lamp') + bits.join(' ');
     host.appendChild(tell);
   }
 
@@ -11600,9 +11654,7 @@ MF.paintAssay = function(host, B){
     var why = MF.ASSAY[k].tell;
     /* a second true reading gets its own words, not the generic tell */
     if(accepted.indexOf(k) >= 0 && k !== right){
-      why = 'Also true — this really is two squares with a minus between them. ' +
-            'Both readings are right; the shared lump usually comes out first, because once it does ' +
-            'the twin seam underneath is easier to see.';
+      why = MF.t('assay.also');
     }
     var btn = H('button','choice', MF.ASSAY[k].name + '<span class="why">' + why + '</span>');
     btn.type='button';
@@ -11623,7 +11675,7 @@ MF.paintAssay = function(host, B){
   });
   host.appendChild(wrap);
   /* AND A WAY OUT OF THE QUESTION. */
-  var skip = E('button','btn assayskip','Never mind — back to the hammer'); skip.type='button';
+  var skip = E('button','btn assayskip', MF.t('assay.skip')); skip.type='button';
   on(skip,'click',function(){ B.step = 'break'; MF.paintMine(); });
   host.appendChild(skip);
 };
@@ -11700,7 +11752,7 @@ MF.anvilArt = function(){
 MF.thudBurst = function(anim){
   var thud = E('div','thud');
   thud.appendChild(E('div','tstar'));
-  thud.appendChild(H('div','tword', anim==='glance' ? 'CLANG!' : 'THUD!'));
+  thud.appendChild(H('div','tword', MF.t(anim==='glance' ? 'burst.clang' : 'burst.thud')));
   return thud;
 };
 
@@ -11717,20 +11769,18 @@ MF.echoHammer = function(B){
   /* NOTHING TYPED IS NOT THE SAME AS A SHAPE THAT COMES TO NOTHING. */
   var isGrp = B._pieceIsGroup, isQrt = B._pieceIsQuart, isTwo = B._pieceIsTwo;
   if(String(B.raw.k).trim()==='' && (isGrp || String(B.raw.m).trim()==='')){
-    echo.innerHTML = isGrp
-      ? 'the head is empty — pick a letter and type the number with it'
-      : 'the head is empty — type what you are taking out';
+    echo.innerHTML = MF.t(isGrp ? 'echo.empty.group' : 'echo.empty');
     return;
   }
   var m = (isNum || isGrp || isTwo) ? ((isGrp || isTwo) ? 1 : 0) : MF.readPickM(B.raw.m),
       k = MF.readInt(B.raw.k);
   var pw = (isNum || isGrp || isTwo) ? 1 : MF.readPow(B.raw.p);
   if(!isFinite(m) || !isFinite(k)){
-    echo.innerHTML = '<span class="bad">that is not a whole number</span>';
+    echo.innerHTML = MF.t('echo.notwhole');
     return;
   }
   if(!isFinite(pw)){
-    echo.innerHTML = '<span class="bad">an x is cut to a whole power, and at least the first</span>';
+    echo.innerHTML = MF.t('echo.power');
     return;
   }
   /* THE BAR READS BACK WHAT WAS TYPED, INCLUDING THE POWER. */
@@ -11740,10 +11790,10 @@ MF.echoHammer = function(B){
                (pw === 1 ? '' : '<sup>' + num(pw) + '</sup>');
     return '(' + head + (k === 0 ? '' : signed(k)) + ')';
   };
-  echo.innerHTML = 'the hammer is cut to <b>' +
+  echo.innerHTML = MF.t('echo.cut', {head:
     (isGrp ? '(' + linearV(1, k, (B.raw.v === 'y' ? 'y' : 'x')) + ')'
      : isTwo ? '(' + biText(k, false) + ')'
-     : xp()) + '</b>';
+     : xp())});
 };
 
 /* ===== THE ANVIL AND THE HAMMER. ===== */
@@ -11853,8 +11903,7 @@ MF.anvilScene = function(ore, opts){
   if(pc){
     var hit = E('button','piece anvilore ' + (nat ? 'native' : 'rock')); hit.type='button';
     hit.setAttribute('data-piece', pc.id);
-    hit.setAttribute('aria-label', MF.oreDisplayText(ore) +
-      ' — on the anvil. Click it to bring the hammer down on it.');
+    hit.setAttribute('aria-label', MF.t('anvil.aria', {ore: MF.oreDisplayText(ore)}));
     if(MF.state.armedTool) hit.setAttribute('data-tooldrop','open');
     on(hit,'click',function(){
       /* AN INSTRUMENT IN HAND GOES ON THE ROCK, and does not also swing. */
@@ -11873,8 +11922,8 @@ MF.anvilScene = function(ore, opts){
       var slot = E('button','toolslot filled onanvil'); slot.type='button';
       slot.setAttribute('data-piece', pc.id);
       slot.innerHTML = '<span class="si">' + tl.ic + '</span><span class="sx">&times;</span>';
-      slot.setAttribute('aria-label', tl.nm + ' is on ' + MF.oreText(ore) + '. Take it off.');
-      slot.title = 'Take the ' + tl.nm + ' off';
+      slot.setAttribute('aria-label', MF.t('slot.aria', {tool: tl.nm, ore: MF.oreText(ore)}));
+      slot.title = MF.t('slot.title', {tool: tl.nm});
       on(slot,'click',function(e){ e.stopPropagation(); MF.clearTool(ore, pc); });
       seat.appendChild(slot);
     }
