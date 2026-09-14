@@ -115,7 +115,9 @@ window.MFHarvest = (function(){
            group's control builds and deletes a 'zz', and took this with it. */
         var en = w.MF.STR.en, ps = {};
         Object.keys(en).forEach(function(k){ ps[k] = '⟦' + en[k] + '⟧'; });
-        w.MF.LANG.xps = {nm:'pseudo', dir:'ltr', speech:'en', stop:'. '};
+        /* English's check words: brackets are not a language, and the lang group
+           would otherwise report every one of them missing. */
+        w.MF.LANG.xps = {nm:'pseudo', dir:'ltr', speech:'en', stop:'. ', checks: w.MF.LANG.en.checks};
         w.MF.STR.xps = ps;
         w.MF.state.access.lang = 'xps';
         w.MF.applyAccess();

@@ -3235,7 +3235,18 @@ MF.ACCESS_MUSIC = 0.30;
    shown in English, never as a blank. The maths is not in here - the printers
    draw symbols, and symbols read the same in every language. */
 MF.LANG = {
-  en: {nm:'English', dir:'ltr', speech:'en', stop:'. '}
+  en: {nm:'English', dir:'ltr', speech:'en', stop:'. ',
+    /* WHAT THE CHECKS LOOK FOR IS WORDS TOO. A language that leaves one out is
+       checked with English's, and the lang group says so. */
+    checks: {
+      beat: 210,
+      banned: /(\d+\s*(?:%|percent))|(\b\d+\s*(?:out of|\/)\s*\d+\b)|\b(score|scored|grade|graded|accuracy|rank|ranked|leaderboard|streak|correct answers)\b/i,
+      marky: /\b(marked|marking|no marks|graded|scored)\b/i,
+      outOf: /\b\d+\s*(?:of|\/)\s*\d+\b/i,
+      swingInvite: /name one and swing|can be swung|still yours/i,
+      xPrescribed: /Put the <?b?>?X\b|the <b>X<\/b>|\bX\b on it/,
+      dockCount: /(\d+\s*(?:%|percent))|(\b\d+\s*(?:of|out of|\/)\s*\d+\b)|\b(score|scored|complete[d]?|progress|streak)\b/i
+    }}
 };
 MF.STR = {};
 /* ===== LANGUAGE: en ===== */
@@ -4539,6 +4550,26 @@ MF._missing = {};
 MF.lang = function(){
   var l = MF.state && MF.state.access && MF.state.access.lang;
   return (l && MF.LANG[l]) ? l : 'en';
+};
+/* the current language's check words, English's for any it has not written */
+MF.langChecks = function(){
+  var own = MF.LANG[MF.lang()].checks || {}, en = MF.LANG.en.checks, out = {};
+  Object.keys(en).forEach(function(k){ out[k] = own[k] != null ? own[k] : en[k]; });
+  return out;
+};
+/* A string as a student reads it: tags gone, entities decoded, spaces collapsed.
+   DOMParser, not innerHTML, so reading it writes nothing into the page. */
+MF.plainT = function(key, vars){
+  var doc = new DOMParser().parseFromString('<!doctype html><body>' + MF.t(key, vars), 'text/html');
+  return (doc.body.textContent || '').replace(/\s+/g, ' ').trim();
+};
+/* Whether a built string came out of one of these templates: it holds the
+   words before the template's first {placeholder}. */
+MF.fromKey = function(s, keys){
+  return keys.some(function(k){
+    var head = String(MF.t(k)).split('{')[0];
+    return head.length > 0 && String(s).indexOf(head) >= 0;
+  });
 };
 MF.t = function(key, vars){
   var table = MF.STR[MF.lang()], s = table && table[key];
@@ -13475,7 +13506,7 @@ MF.validate = function(){
     var bad2 = MF.forgeJudge(t, near, ingotProduct(near));
     if(bad2.ok) errs.push('forge: "' + t.nm + '" accepted a casting that is not ' + quadText(t.cast.a,t.cast.b,t.cast.c));
     chk('forge');
-    if(!/miss|over the sides/i.test(bad2.why))
+    if(!MF.fromKey(bad2.why, ['judge.missed','judge.over','judge.over.big']))
       errs.push('forge: "' + t.nm + '" rejected a near miss without saying where it missed');
   });
 
@@ -13527,7 +13558,7 @@ MF.validate = function(){
       var miss = MF.forgeJudge(p, near, ingotProduct(near));
       if(miss.ok) errs.push('parts: "' + p.nm + '" accepted a casting that is not ' + MF.castPlain(p));
       chk('parts');
-      if(!/just not this one|over the sides/i.test(miss.why))
+      if(!MF.fromKey(miss.why, ['judge.other','judge.over','judge.over.big']))
         errs.push('parts: "' + p.nm + '" rejected a near miss without saying what it cast instead');
     }
 
@@ -13860,7 +13891,7 @@ MF.validate = function(){
   if(shHost2.querySelectorAll('.madepart.made').length !== 1)
     errs.push('parts: one part is cast and the shelf shows ' + shHost2.querySelectorAll('.madepart.made').length);
   chk('parts');
-  if(/\b\d+\s*(?:of|\/)\s*\d+\b/i.test(shHost2.textContent))
+  if(MF.langChecks().outOf.test(shHost2.textContent))
     errs.push('parts: the shelf counts what you have made, which is an X-out-of-Y');
   MF.state.parts = shSaved;
 
@@ -14279,7 +14310,7 @@ MF.validate = function(){
     var txt = (probe.textContent||'').trim();
     if(txt.length < 120)
       errs.push('screens: "' + name + '" built only ' + txt.length + ' characters - it is effectively empty');
-    if(/did not build/i.test(txt))
+    if(txt.indexOf(MF.plainT('go.failed', {err:''}).replace(/\(\)\s*$/, '').trim()) >= 0)
       errs.push('screens: "' + name + '" rendered its own failure notice');
   });
   MF._mine = scSavedMine;
@@ -14753,8 +14784,7 @@ MF.validate = function(){
       errs.push('nogate: a freshly dug ' + MF.oreText(ore) + ' lands on a bench with no ore on the anvil to strike');
     } else {
       ngOre.dispatchEvent(new MouseEvent('click',{bubbles:true}));
-      var swing = [].slice.call(document.querySelectorAll('.scrim .toolsheet button')).filter(function(b){
-        return /bring the hammer down/i.test(b.textContent||''); })[0];
+      var swing = document.querySelector('.scrim .toolsheet button.swingbtn');
       if(!swing)
         errs.push('nogate: a freshly dug ' + MF.oreText(ore) + ' lands on a bench with no way to swing — something is gating the hammer');
       MF.closeTool();
@@ -14792,8 +14822,7 @@ MF.validate = function(){
   var ngCtlOre = ngGated.querySelector('.anvilore[data-piece]');
   if(ngCtlOre){
     ngCtlOre.dispatchEvent(new MouseEvent('click',{bubbles:true}));
-    ngSwing = [].slice.call(document.querySelectorAll('.scrim .toolsheet button')).filter(function(b){
-      return /bring the hammer down/i.test(b.textContent||''); }).length;
+    ngSwing = document.querySelectorAll('.scrim .toolsheet button.swingbtn').length;
     MF.closeTool();
   }
   MF.anvilInit = ngReal; MF.paintBreak = ngBreak;
@@ -18007,7 +18036,7 @@ MF.validate = function(){
     (g.beats || []).forEach(function(b, bi){
       chk('guide');
       var plain = String(b).replace(/<[^>]+>/g,'').trim();
-      if(plain.length < 12 || plain.length > 210)
+      if(plain.length < 12 || plain.length > MF.langChecks().beat)
         errs.push('guide: "' + scr + '" beat ' + (bi+1) + ' is ' + plain.length +
                   ' characters — he says one thing at a time');
     });
@@ -18060,9 +18089,10 @@ MF.validate = function(){
     chk('guide');
     var gWords = (dock.textContent || '') + ' ' +
       [].map.call(dock.querySelectorAll('[aria-label]'), function(n){ return n.getAttribute('aria-label'); }).join(' ');
-    if(/(\d+\s*(?:%|percent))|(\b\d+\s*(?:of|out of|\/)\s*\d+\b)|\b(score|scored|complete[d]?|progress|streak)\b/i.test(gWords))
+    var gCount = MF.langChecks().dockCount;
+    if(gCount.test(gWords))
       errs.push('guide: the dock is counting something — "' +
-        (gWords.match(/(\d+\s*(?:%|percent))|(\b\d+\s*(?:of|out of|\/)\s*\d+\b)|\b(score|scored|complete[d]?|progress|streak)\b/i)||[''])[0] +
+        (gWords.match(gCount)||[''])[0] +
         '" is on it, and nothing on this site adds anything up');
     /* the bubble has to fit the narrowest screen the site is checked at */
     chk('guide');
@@ -18151,7 +18181,7 @@ MF.validate = function(){
       errs.push('guide: a student who has never opened the Casting Shed is offered ' +
                 (a1 ? 'a "' + a1.rung + '" hint' : 'nothing') + ' instead of the building full of methods');
     chk('guide');
-    if(a1 && !/casting shed/i.test(a1.text))
+    if(a1 && String(a1.text).toLowerCase().indexOf(MF.plainT('nav.shed').toLowerCase()) < 0)
       errs.push('guide: the first rung does not name the Casting Shed, so it points nowhere');
     reset(true);
     for(var n2=0; n2<MF.CLANK_SPEAK; n2++) MF.clank(MF.stuckOre());
@@ -18212,7 +18242,7 @@ MF.validate = function(){
   /* CONTROL 2: a beat padded back into a wall of text */
   chk('guide');
   var gdWall = new Array(20).join('a sentence of explanation. ');
-  if(gdWall.replace(/<[^>]+>/g,'').trim().length <= 210)
+  if(gdWall.replace(/<[^>]+>/g,'').trim().length <= MF.langChecks().beat)
     errs.push('CONTROL: the guide brevity budget cannot see a beat padded into a paragraph');
   MF.guideState = gdSaved.state; MF.state.screen = gdSaved.screen;
   MF.paintGuide();
@@ -18935,7 +18965,7 @@ MF.validate = function(){
         /* 3. AND IT DOES NOT INVITE A SWING AT FINISHED METAL. */
         if(ore.done){                     /* the literal, never MF.isNative */
           chk('reading');
-          if(/name one and swing|can be swung|still yours/i.test(r.txt))
+          if(MF.langChecks().swingInvite.test(r.txt))
             errs.push('reading: ' + lbl + ' offers a swing at native metal, which is already finished');
         } else { chk('reading'); }
       });
@@ -19139,14 +19169,14 @@ MF.validate = function(){
       errs.push('sound: with no recordings the cues should report that they are synthesised');
     var dark = panelSay();
     chk('sound');
-    if(!/no track to play/i.test(dark))
+    if(dark.indexOf(MF.plainT('access.music.none')) < 0)
       errs.push('sound: the music slider is silent about there being no track, so a student ' +
                 'turning it up gets nothing and no reason');
     chk('sound');
-    if(!/synthesised room tone/i.test(dark))
+    if(dark.indexOf(MF.plainT('access.amb.synth')) < 0)
       errs.push('sound: the ambience slider does not say it is running the synthesised tone');
     chk('sound');
-    if(!/not loading from here/i.test(dark))
+    if(dark.indexOf(MF.plainT('access.fx.synth')) < 0)
       errs.push('sound: the effects slider does not say the recordings are missing');
     /* AND WITH EVERYTHING PRESENT IT MUST NOT CRY WOLF. */
     MF.audio.sfx = panelKeep.sfx;
@@ -19156,14 +19186,15 @@ MF.validate = function(){
     if(realBuf(MF.audio.beds.music.file) && allSfx){
       var lit = panelSay();
       chk('sound');
-      if(/not loading|no track to play|synthesised room tone/i.test(lit))
+      if(['access.fx.synth','access.fx.part','access.amb.synth','access.music.none'].some(function(k){
+           return lit.indexOf(MF.plainT(k)) >= 0; }))
         errs.push('sound: the panel warns about missing audio while every file is loaded');
     } else { chk('sound'); }
     /* THE SILENCE ITSELF IS EXPLAINED. Both beds start at zero on purpose. */
     var qKeep = {m:MF.state.access.music, a:MF.state.access.ambience};
     MF.state.access.music = 0; MF.state.access.ambience = 0;
     chk('sound');
-    if(!/comes up on the surface/i.test(panelSay()))
+    if(panelSay().indexOf(MF.plainT('access.quiet')) < 0)
       errs.push('sound: with both beds at zero the panel does not say the quiet is deliberate');
     MF.state.access.music = qKeep.m; MF.state.access.ambience = qKeep.a;
   }
@@ -19519,7 +19550,7 @@ MF.validate = function(){
   if(MF.audio.ready) MF.audio.apply();
 
   /* 6. NOTHING ON SCREEN MAY HAVE A CEILING, A PERCENTAGE, OR A COMPARISON. */
-  var banned = /(\d+\s*(?:%|percent))|(\b\d+\s*(?:out of|\/)\s*\d+\b)|\b(score|scored|grade|graded|accuracy|rank|ranked|leaderboard|streak|correct answers)\b/i;
+  var banned = MF.langChecks().banned;
   /* ENUMERATED FROM THE REGISTRY, NOT WRITTEN OUT. */
   Object.keys(MF.SCREENS).forEach(function(name){
     chk('nogrades');
@@ -19531,7 +19562,7 @@ MF.validate = function(){
   });
 
   /* 6b. AND THE SITE NO LONGER TELLS ANYONE IT IS NOT MARKING THEM. */
-  var marky = /\b(marked|marking|no marks|graded|scored)\b/i;
+  var marky = MF.langChecks().marky;
   Object.keys(MF.SCREENS).forEach(function(name){
     chk('nogrades');
     var probe = document.createElement('div');
@@ -19647,11 +19678,11 @@ MF.validate = function(){
     } else {
       var text = hint.beats.map(MF.voiceText).join(' ');
       chk('guide');
-      if(/\bmultiply to \?|add to \?|\bNaN\b|undefined/.test(text))
+      if(/(^|\s)\?(?=[\s.,;:]|$)|\bNaN\b|undefined|\{\w+\}/.test(text))
         errs.push('guide: the hint on ' + K.nm + ' prints a hole where a number belongs — "' + text + '"');
       /* and the X may only be prescribed where the X is the method */
       chk('guide');
-      if(/Put the <?b?>?X\b|the <b>X<\/b>|\bX\b on it/.test(hint.beats.join(' ')) &&
+      if(MF.langChecks().xPrescribed.test(hint.beats.join(' ')) &&
          (K.nm === 'group' || K.nm === 'cube' || K.nm === 'bi'))
         errs.push('guide: the hint tells a student to put the X on ' + K.nm +
                   ', which does not come apart by a pair hunt');
@@ -19686,6 +19717,12 @@ MF.validate = function(){
     if(!L.nm || (L.dir !== 'ltr' && L.dir !== 'rtl') || !L.speech || L.stop == null)
       errs.push('lang: "' + l + '" is missing its name, direction, voice or sentence stop');
     if(l === 'en') return;
+    /* the words the checks look for are words too, and English's are not this language's */
+    Object.keys(MF.LANG.en.checks).forEach(function(k){
+      chk('lang');
+      if(!L.checks || L.checks[k] == null)
+        errs.push('lang: ' + l + ' has no "' + k + '" check of its own, so it is being checked with English words');
+    });
     Object.keys(MF.STR[l]).forEach(function(k){
       chk('lang');
       if(MF.STR.en[k] == null){ errs.push('lang: ' + l + ' has "' + k + '", which English does not'); return; }
@@ -19713,8 +19750,10 @@ MF.validate = function(){
   MF.STR.zz = {__ctl_a:'B {n}'};
   MF.STR.en.__ctl_a = 'A {n}'; MF.STR.en.__ctl_b = 'only in English';
   MF.state.access.lang = 'zz';
-  var lgA = MF.t('__ctl_a', {n:7}), lgB = MF.t('__ctl_b');
+  var lgA = MF.t('__ctl_a', {n:7}), lgB = MF.t('__ctl_b'), lgC = MF.langChecks();
   MF.state.access.lang = lgSavedLang;
+  if(lgC.beat !== MF.LANG.en.checks.beat || lgC.banned !== MF.LANG.en.checks.banned)
+    errs.push('lang: a language with no check words of its own did not fall back to English\'s');
   delete MF.LANG.zz; delete MF.STR.zz; delete MF.STR.en.__ctl_a; delete MF.STR.en.__ctl_b;
   if(lgA !== 'B 7') errs.push('lang: a translated string did not come back with its placeholder filled');
   if(lgB !== 'only in English') errs.push('lang: a string the language lacks did not fall back to English');
