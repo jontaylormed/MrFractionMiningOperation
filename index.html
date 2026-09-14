@@ -4249,7 +4249,78 @@ MF.STR.en = {
   'belt.how.aria': 'How does {tool} work? Go to {room}.',
   'belt.how.title': 'How it works — {room}',
 
-  'flash.done': 'Done.'
+  'flash.done': 'Done.',
+
+  /* the Forge */
+  'forge.title': 'The Forge',
+  'forge.lede': '<b>This is where you make things.</b> The mine breaks rock apart; here the furnace runs the other way — native metal goes into a mold and one formed tool comes out. That is <b>distributing</b>, it happens nowhere else in the operation, and the mold forms around what you pour rather than being chosen. The part is sound, or it is scrap.',
+  'board.h3': 'The Order Board',
+  'board.hint': 'Each order is cut for <b>one exact object</b>. Find the metals that multiply to it and the part comes out sound. They get harder down the board, and so do the tools.',
+  'order.cast': 'cast <b>{cast}</b>',
+  'order.fitted': 'fitted to {fits}',
+  'order.hands': 'in your hands',
+  'order.ready': 'you have the metal',
+  'order.short': 'not on the rack yet',
+  'order.aria': '{nm} — {does}. Cast {cast}. {state}',
+  'order.aria.fitted': 'Already cast and fitted to {fits}.',
+  'order.aria.belt': 'Already made and on your belt.',
+  'order.aria.ready': 'You have the metal for this. Open the mold.',
+  'order.aria.short': 'You do not have the metal for this yet. Open the mold to see what it wants.',
+  'deep.h3': 'Deep Castings',
+  'deep.hint': 'Metal from the lower shafts &mdash; <b>y</b>-brackets, two-letter brackets, elements that will not break &mdash; fits none of the orders on The Order Board. These are cut for it. <b>Not one of them is an instrument</b>: they are parts for the operation, and the reason to pour one is the multiplication it makes you do.',
+  'rack.lab': 'THE RACK &mdash; native metal, ready to spend',
+  'rack.empty': 'Bare. Break a lump all the way down in the mine and the metal is racked here.',
+  'rack.plain': 'plain metal',
+  'rack.x': 'metal with an x in it',
+  'rack.deep': 'metal from the deep shafts',
+  'rack.aria.used': '{metal} — already in the mold',
+  'rack.aria.open': '{metal} — drop it in the mold',
+  'rack.aria.first': '{metal} — pick an order first',
+  'rack.title.used': 'Already in the mold',
+  'rack.title.open': 'Drop it in the mold',
+  'rack.title.first': 'Pick an order first',
+  'rack.note.used': 'That one is already in the mold. Click it in the slot to take it back out.',
+  'rack.note.first': 'Pick an order from The Order Board first, and the mold will open.',
+  'rack.note.full': 'The mold is full. Take something out of a slot if you want to change it.',
+  'heap.tag': 'THE YARD &mdash; WHAT IS STILL ROCK',
+  'heap.lab': 'THE HEAP &mdash; still carrying a seam',
+  'heap.empty': 'Nothing tipped here. Anything you leave half-broken in the mine lands on the heap.',
+  'heap.aria': '{ore} — still rock. The forge cannot spend it until it is broken down.',
+  'heap.hint': '<b>The furnace will not take rock.</b> Anything on the heap still has a seam in it — break it down in the mine and the metal comes back here.',
+  'shelf.tag': 'THE SHELF &mdash; WHAT THE DEEP METAL BECAME',
+  'shelf.empty': 'an empty place',
+  'shelf.aria.made': '{nm}, cast {cast}, fitted to {fits}',
+  'shelf.aria.empty': 'An empty place on the shelf.',
+  'shelf.any': '<b>None of these is an instrument.</b> A part is the object itself &mdash; nothing on your belt changed when it was cast.',
+  'shelf.none': 'Nothing cast yet. Only the orders on <b>Deep Castings</b> take metal from the lower shafts.',
+  'craft.tag': 'THE CRAFT FLOOR',
+  'craft.cold': 'The mold is cold.',
+  'craft.for': 'THIS MOLD IS CUT FOR',
+  'craft.in': 'What is going in',
+  'craft.chip.title': 'Take it back out',
+  'craft.chip.aria': '{metal} is in the mold. Take it back out.',
+  'craft.empty': 'empty',
+  'craft.hint.out': 'Click one to take it back out.',
+  'craft.hint.in': 'Click a metal on the rack below to drop it in.',
+  'craft.pour': 'Pour the mold',
+  'craft.notfull': 'The mold is not full yet.',
+  'craft.cannot': '<b>The rack cannot make {cast} yet.</b> No {n} metals on it multiply to that. Nothing is locked — break more ore and what comes out is racked here.',
+  'pour.sound': 'Sound.',
+  'pour.scrap': 'Scrap.',
+  'pour.send': 'Send it to {fits}',
+  'pour.part.foot': '<b>{does}.</b> That is the whole of what a deep casting teaches, and it is on the shelf below. <b>It is not an instrument</b> &mdash; nothing on your belt changed, and nothing in the mine reads differently for it.',
+  'pour.belt': 'Hang it on your belt',
+  'pour.lesson': '<b>The lesson for it has opened on the Casting Shed’s working floor.</b> It walks {name} a step at a time on a lump chosen for it, and there is one to try at the end. Nothing in the mine is waiting on it.',
+  'pour.read': 'Read it in the Casting Shed &rarr;',
+  'pour.rake': 'Rake it out and try again',
+  'judge.ok': 'The metals that multiply to it were the metals in it.',
+  'judge.other': 'That casts <b>{got}</b>, which is a sound object &mdash; just not this one. The order is for <b>{want}</b>.',
+  'judge.over': 'That is more metal than the mold holds — it has run over the sides. The order is for <b>{want}</b>.',
+  'judge.over.big': 'That is more metal than the mold holds — it has run over the sides. The order is for <b>{want}</b>, and what you poured is bigger than that.',
+  'judge.off.a': 'x²&nbsp;<b>{got}</b>, wanted <b>{want}</b>',
+  'judge.off.b': 'middle&nbsp;<b>{got}</b>, wanted <b>{want}</b>',
+  'judge.off.c': 'end&nbsp;<b>{got}</b>, wanted <b>{want}</b>',
+  'judge.missed': 'Missed: {list}.'
 };
 MF._missing = {};
 MF.lang = function(){
@@ -9545,10 +9616,8 @@ MF.toolReady = function(key){
 MF.SCREENS.forge = function(host){
   var st = MF.state.forge;
   host.appendChild(MF.roomScene('forge'));
-  host.appendChild(H('h2',null,'The Forge'));
-  host.appendChild(H('p','lede','<b>This is where you make things.</b> The mine breaks rock apart; here the furnace runs the other way — ' +
-    'native metal goes into a mold and one formed tool comes out. That is <b>distributing</b>, it happens nowhere else in the operation, ' +
-    'and the mold forms around what you pour rather than being chosen. The part is sound, or it is scrap.'));
+  host.appendChild(H('h2',null, MF.t('forge.title')));
+  host.appendChild(H('p','lede', MF.t('forge.lede')));
 
   var grid = E('div','forgegrid');
   var colL = E('div'), colR = E('div');
@@ -9580,8 +9649,8 @@ MF.paintForge = function(){
 /* ---------- the left column: what can be made ---------- */
 MF.paintOrders = function(host, st){
   var box = E('div','orderboard');
-  box.appendChild(H('h3',null,'The Order Board'));
-  box.appendChild(H('div','hint','Each order is cut for <b>one exact object</b>. Find the metals that multiply to it and the part comes out sound. They get harder down the board, and so do the tools.'));
+  box.appendChild(H('h3',null, MF.t('board.h3')));
+  box.appendChild(H('div','hint', MF.t('board.hint')));
 
   MF.toolOrder().forEach(function(key){ box.appendChild(MF.orderCard(key, st)); });
   host.appendChild(box);
@@ -9603,14 +9672,13 @@ MF.orderCard = function(key, st){
     txt.appendChild(H('span','odoes', t.does));
     /* THE TARGET IS ON THE CARD. An order that only names a tool tells a
        student nothing about what they are being asked to make. */
-    txt.appendChild(H('span','ocast', 'cast <b>' + MF.castText(t) + '</b>'));
-    txt.appendChild(H('span','ost', made ? (part ? 'fitted to ' + t.fits : 'in your hands')
-                                         : (ready ? 'you have the metal' : 'not on the rack yet')));
+    txt.appendChild(H('span','ocast', MF.t('order.cast', {cast: MF.castText(t)})));
+    txt.appendChild(H('span','ost', made ? (part ? MF.t('order.fitted', {fits: t.fits}) : MF.t('order.hands'))
+                                         : MF.t(ready ? 'order.ready' : 'order.short')));
     b.appendChild(txt);
-    b.setAttribute('aria-label', t.nm + ' — ' + t.does + '. Cast ' +
-      MF.castPlain(t) + '. ' + (made ? (part ? 'Already cast and fitted to ' + t.fits + '.'
-                                             : 'Already made and on your belt.') :
-      (ready ? 'You have the metal for this. Open the mold.' : 'You do not have the metal for this yet. Open the mold to see what it wants.')));
+    b.setAttribute('aria-label', MF.t('order.aria', {nm: t.nm, does: t.does, cast: MF.castPlain(t),
+      state: made ? (part ? MF.t('order.aria.fitted', {fits: t.fits}) : MF.t('order.aria.belt'))
+                  : MF.t(ready ? 'order.aria.ready' : 'order.aria.short')}));
     /* EVERY ORDER OPENS. */
     on(b,'click',function(){
       if(made){ (part ? MF.explainPart : MF.explainTool)(key, b); return; }
@@ -9623,10 +9691,8 @@ MF.orderCard = function(key, st){
 /* THE DEEP CASTINGS, UNDER THE ORDER BOARD */
 MF.paintDeep = function(host, st){
   var deep = E('div','orderboard deepboard');
-  deep.appendChild(H('h3',null,'Deep Castings'));
-  deep.appendChild(H('div','hint','Metal from the lower shafts &mdash; <b>y</b>-brackets, two-letter brackets, elements that will not break &mdash; ' +
-    'fits none of the orders on The Order Board. These are cut for it. <b>Not one of them is an instrument</b>: ' +
-    'they are parts for the operation, and the reason to pour one is the multiplication it makes you do.'));
+  deep.appendChild(H('h3',null, MF.t('deep.h3')));
+  deep.appendChild(H('div','hint', MF.t('deep.hint')));
   MF.partOrder().forEach(function(key){ deep.appendChild(MF.orderCard(key, st)); });
   host.appendChild(deep);
 };
@@ -9637,22 +9703,22 @@ MF.paintRack = function(host, st){
   var want = open ? MF.slotsWanted(MF.orderOf(st.picked)) : 0;
 
   var rk = E('div','shelfrow');
-  rk.appendChild(H('div','ylab','THE RACK &mdash; native metal, ready to spend'));
+  rk.appendChild(H('div','ylab', MF.t('rack.lab')));
   var have = MF.yardList();
   if(!have.length){
-    rk.appendChild(H('div','yempty','Bare. Break a lump all the way down in the mine and the metal is racked here.'));
+    rk.appendChild(H('div','yempty', MF.t('rack.empty')));
     host.appendChild(rk);
     return rk;
   }
   var rack = E('div','rack');
   /* THREE SHELVES, BECAUSE THERE ARE THREE KINDS */
-  [['plain metal', function(g){ return g.m===0 && !g.label; }],
-   ['metal with an x in it', function(g){ return g.m!==0; }],
-   ['metal from the deep shafts', function(g){ return g.m===0 && !!g.label; }]].forEach(function(grp){
+  [['rack.plain', function(g){ return g.m===0 && !g.label; }],
+   ['rack.x', function(g){ return g.m!==0; }],
+   ['rack.deep', function(g){ return g.m===0 && !!g.label; }]].forEach(function(grp){
     var these = have.filter(function(e){ return grp[1](e.ingot); });
     if(!these.length) return;
     var shelf = E('div','shelf');
-    shelf.appendChild(H('div','sh', grp[0]));
+    shelf.appendChild(H('div','sh', MF.t(grp[0])));
     var row = E('div','metalrow');
     these.forEach(function(e){
       var used = st.slots.some(function(s){ return s.yardIdx===e.idx; });
@@ -9660,14 +9726,14 @@ MF.paintRack = function(host, st){
       b.type='button';
       b.setAttribute('data-metal', e.idx);
       b.appendChild(H('span','ml', e.ingot.label || ingotText(e.ingot)));
-      b.setAttribute('aria-label', (e.ingot.label || ingotText(e.ingot)) +
-        (used ? ' — already in the mold' : (open ? ' — drop it in the mold' : ' — pick an order first')));
-      b.title = used ? 'Already in the mold' : (open ? 'Drop it in the mold' : 'Pick an order first');
+      var why = used ? 'used' : (open ? 'open' : 'first');
+      b.setAttribute('aria-label', MF.t('rack.aria.' + why, {metal: e.ingot.label || ingotText(e.ingot)}));
+      b.title = MF.t('rack.title.' + why);
       on(b,'click',function(){
         /* NOT A DEAD CONTROL WHEN NOTHING IS OPEN. */
-        if(used){ st.note = 'That one is already in the mold. Click it in the slot to take it back out.'; MF.paintForge(); return; }
-        if(!open){ st.note = 'Pick an order from The Order Board first, and the mold will open.'; MF.paintForge(); return; }
-        if(st.slots.length >= want){ st.note = 'The mold is full. Take something out of a slot if you want to change it.'; MF.paintForge(); return; }
+        if(used){ st.note = MF.t('rack.note.used'); MF.paintForge(); return; }
+        if(!open){ st.note = MF.t('rack.note.first'); MF.paintForge(); return; }
+        if(st.slots.length >= want){ st.note = MF.t('rack.note.full'); MF.paintForge(); return; }
         st.slots.push({yardIdx:e.idx, key:e.key, ingot:e.ingot});
         st.note = null;
         /* THE LAST METAL ARMS THE POUR. */
@@ -9687,26 +9753,26 @@ MF.paintRack = function(host, st){
 /* THE HEAP, and the yard drawn as a place */
 MF.paintHeap = function(host, st){
   var box = E('div','panel'); box.style.marginTop='16px';
-  box.appendChild(H('div','panel-tag','THE YARD &mdash; WHAT IS STILL ROCK'));
+  box.appendChild(H('div','panel-tag', MF.t('heap.tag')));
 
   var place = E('div','yardplace');
   place.appendChild(MF.yardScene());
   var inner = E('div','yardin');
 
   var hp = E('div','heaprow');
-  hp.appendChild(H('div','ylab','THE HEAP &mdash; still carrying a seam'));
+  hp.appendChild(H('div','ylab', MF.t('heap.lab')));
   if(!MF.state.rockpile.length){
-    hp.appendChild(H('div','yempty','Nothing tipped here. Anything you leave half-broken in the mine lands on the heap.'));
+    hp.appendChild(H('div','yempty', MF.t('heap.empty')));
   } else {
     var heap = E('div','heap');
     MF.state.rockpile.forEach(function(o){
       var r = E('div','heaprock cold');
       r.appendChild(H('span','hv', MF.oreLabel(o)));
-      r.setAttribute('aria-label', MF.oreText(o) + ' — still rock. The forge cannot spend it until it is broken down.');
+      r.setAttribute('aria-label', MF.t('heap.aria', {ore: MF.oreText(o)}));
       heap.appendChild(r);
     });
     hp.appendChild(heap);
-    hp.appendChild(H('div','yhint','<b>The furnace will not take rock.</b> Anything on the heap still has a seam in it — break it down in the mine and the metal comes back here.'));
+    hp.appendChild(H('div','yhint', MF.t('heap.hint')));
   }
   inner.appendChild(hp);
 
@@ -9718,7 +9784,7 @@ MF.paintHeap = function(host, st){
 /* THE SHELF: what the deep metal turned into */
 MF.paintShelf = function(host, st){
   var box = E('div','panel'); box.style.marginTop='16px';
-  box.appendChild(H('div','panel-tag','THE SHELF &mdash; WHAT THE DEEP METAL BECAME'));
+  box.appendChild(H('div','panel-tag', MF.t('shelf.tag')));
   var row = E('div','shelfparts');
   var any = false;
   MF.partOrder().forEach(function(k){
@@ -9726,17 +9792,15 @@ MF.paintShelf = function(host, st){
     if(made) any = true;
     var cell = E('div','madepart' + (made ? ' made' : ' hollow'));
     cell.appendChild(H('span','mpic', made ? p.ic : '&#183;'));
-    cell.appendChild(H('span','mpnm', made ? p.nm : 'an empty place'));
+    cell.appendChild(H('span','mpnm', made ? p.nm : MF.t('shelf.empty')));
     cell.appendChild(H('span','mpca', made ? MF.castText(p) : ''));
     cell.setAttribute('aria-label', made
-      ? p.nm + ', cast ' + MF.castPlain(p) + ', fitted to ' + p.fits
-      : 'An empty place on the shelf.');
+      ? MF.t('shelf.aria.made', {nm: p.nm, cast: MF.castPlain(p), fits: p.fits})
+      : MF.t('shelf.aria.empty'));
     row.appendChild(cell);
   });
   box.appendChild(row);
-  box.appendChild(H('div','yhint', any
-    ? '<b>None of these is an instrument.</b> A part is the object itself &mdash; nothing on your belt changed when it was cast.'
-    : 'Nothing cast yet. Only the orders on <b>Deep Castings</b> take metal from the lower shafts.'));
+  box.appendChild(H('div','yhint', MF.t(any ? 'shelf.any' : 'shelf.none')));
   host.appendChild(box);
 };
 
@@ -9746,7 +9810,7 @@ MF.slotsWanted = function(t){ return t.slots; };
 /* ---------- the right column, below: the mold ---------- */
 MF.paintCraft = function(host, st){
   var box = E('div','panel craft');
-  box.appendChild(H('div','panel-tag','THE CRAFT FLOOR'));
+  box.appendChild(H('div','panel-tag', MF.t('craft.tag')));
 
   if(st.note){
     box.appendChild(H('div','note', st.note));
@@ -9754,7 +9818,7 @@ MF.paintCraft = function(host, st){
   }
 
   if(!st.picked){
-    box.appendChild(H('div','coldmold','The mold is cold.'));
+    box.appendChild(H('div','coldmold', MF.t('craft.cold')));
     box.appendChild(MF.says(MF.saysLine('forge-cold')));
     host.appendChild(box);
     return;
@@ -9773,7 +9837,7 @@ MF.paintCraft = function(host, st){
 
   /* THE TARGET, LARGE AND ON SCREEN THE WHOLE TIME. */
   var tgt = E('div','castfor');
-  tgt.appendChild(H('div','cflab','THIS MOLD IS CUT FOR'));
+  tgt.appendChild(H('div','cflab', MF.t('craft.for')));
   tgt.appendChild(H('div','cfeq', MF.castText(t)));
   tgt.appendChild(H('div','cfwhy', t.forge));
   box.appendChild(tgt);
@@ -9783,7 +9847,7 @@ MF.paintCraft = function(host, st){
 
   var want = MF.slotsWanted(t);
   var cru = E('div','crucible');
-  cru.appendChild(H('h4',null,'What is going in'));
+  cru.appendChild(H('h4',null, MF.t('craft.in')));
   var slotRow = E('div','ingotrow');
   for(var i=0;i<want;i++){
     (function(idx){
@@ -9792,40 +9856,37 @@ MF.paintCraft = function(host, st){
         var chip = E('button','ingot' + (isPlainMetal(got.ingot)?' pure':''));
         chip.type='button';
         chip.appendChild(document.createTextNode(ingotText(got.ingot)));
-        chip.title='Take it back out';
-        chip.setAttribute('aria-label', ingotText(got.ingot) + ' is in the mold. Take it back out.');
+        chip.title = MF.t('craft.chip.title');
+        chip.setAttribute('aria-label', MF.t('craft.chip.aria', {metal: ingotText(got.ingot)}));
         on(chip,'click',function(){ st.slots.splice(idx,1); st.note=null; MF.paintForge(); });
         slotRow.appendChild(chip);
       } else {
-        var empty = H('div','slot moldslot','<span style="opacity:.6">empty</span>');
+        var empty = H('div','slot moldslot','<span style="opacity:.6">' + MF.t('craft.empty') + '</span>');
         slotRow.appendChild(empty);
       }
     })(i);
   }
   cru.appendChild(slotRow);
-  cru.appendChild(H('div','hint', st.slots.length
-    ? 'Click one to take it back out.'
-    : 'Click a metal on the rack below to drop it in.'));
+  cru.appendChild(H('div','hint', MF.t(st.slots.length ? 'craft.hint.out' : 'craft.hint.in')));
   box.appendChild(cru);
 
   /* THE POUR SITS UNDER THE MOLD, NOT UNDER THE RACK */
   var full = st.slots.length === want;
   var pourRow = E('div','row pourrow');
   /* THE POUR ARMS WHEN THE MOLD IS FULL, AND SAYS NOTHING ABOUT WHETHER THE METALS ARE RIGHT. */
-  var pour = E('button','btn primary big pourbtn','Pour the mold'); pour.type='button';
+  var pour = E('button','btn primary big pourbtn', MF.t('craft.pour')); pour.type='button';
   pour.disabled = !full;
   if(full) pour.setAttribute('data-armed','yes');
   on(pour,'click',function(){ MF.forgePour(st); });
   pourRow.appendChild(pour);
-  if(!full) pourRow.appendChild(H('div','hint','The mold is not full yet.'));
+  if(!full) pourRow.appendChild(H('div','hint', MF.t('craft.notfull')));
   box.appendChild(pourRow);
 
   MF.paintRack(box, st);
 
   /* WHAT IT IS WAITING FOR, when you cannot fill it. */
   if(!MF.toolReady(st.picked) && st.slots.length < want){
-    box.appendChild(H('div','note warn','<b>The rack cannot make ' + MF.castText(t) + ' yet.</b> ' +
-      'No ' + want + ' metals on it multiply to that. Nothing is locked — break more ore and what comes out is racked here.'));
+    box.appendChild(H('div','note warn', MF.t('craft.cannot', {cast: MF.castText(t), n: want})));
   }
   /* FOCUS ONLY ON THE DROP THAT FILLED IT, and without scrolling: the button is
      already beside the rack, so moving the page would be the hurdle rather than
@@ -10219,7 +10280,7 @@ MF.forgePour = function(st){
   /* THE POUR IS THE PICTURE, NOT THE PARAGRAPH. */
   var box = E('div','casting castingwrap ' + (sound.ok?'clean':'deformed'));
   box.appendChild(MF.moldScene(st.picked, {ok:sound.ok, maths:MF.moldMaths(ingots, prod)}));
-  box.appendChild(H('h4',null, sound.ok ? 'Sound.' : 'Scrap.'));
+  box.appendChild(H('h4',null, MF.t(sound.ok ? 'pour.sound' : 'pour.scrap')));
   box.appendChild(H('p',null, sound.why));
   st.result = box;
 
@@ -10227,30 +10288,26 @@ MF.forgePour = function(st){
     /* A PART IS KEPT, NOT HUNG ON A BELT */
     MF.spendFromYard(st.slots.map(function(s){ return s.key; }));
     MF.state.parts[st.picked] = {cast:true};
-    var pkeep = E('button','btn primary','Send it to ' + t.fits); pkeep.type='button';
+    var pkeep = E('button','btn primary', MF.t('pour.send', {fits: t.fits})); pkeep.type='button';
     on(pkeep,'click',function(){ st.picked=null; st.slots=[]; st.result=null; MF.paintForge(); });
     box.appendChild(pkeep);
     var pfoot = E('div','castfoot');
-    pfoot.appendChild(H('div','note','<b>' + t.does.charAt(0).toUpperCase() + t.does.slice(1) + '.</b> ' +
-      'That is the whole of what a deep casting teaches, and it is on the shelf below. ' +
-      '<b>It is not an instrument</b> &mdash; nothing on your belt changed, and nothing in the mine reads differently for it.'));
+    pfoot.appendChild(H('div','note', MF.t('pour.part.foot', {does: t.does.charAt(0).toUpperCase() + t.does.slice(1)})));
     box.appendChild(pfoot);
   } else if(sound.ok){
     MF.spendFromYard(st.slots.map(function(s){ return s.key; }));
     MF.state.tools[st.picked] = {forged:true};
     /* THE OBJECT FIRST, THE SCHOOL AFTER IT */
-    var keep = E('button','btn primary','Hang it on your belt'); keep.type='button';
+    var keep = E('button','btn primary', MF.t('pour.belt')); keep.type='button';
     on(keep,'click',function(){ st.picked=null; st.slots=[]; st.result=null; MF.paintForge(); });
     box.appendChild(keep);
 
     var foot = E('div','castfoot');
-    foot.appendChild(H('div','note','<b>The lesson for it has opened on the Casting Shed’s working floor.</b> ' +
-      'It walks ' + MF.SCHEMA[st.picked].name.toLowerCase() + ' a step at a time on a lump chosen for it, ' +
-      'and there is one to try at the end. Nothing in the mine is waiting on it.'));
-    foot.appendChild(MF.jump('Read it in the Casting Shed &rarr;', 'shed-methods'));
+    foot.appendChild(H('div','note', MF.t('pour.lesson', {name: MF.SCHEMA[st.picked].name.toLowerCase()})));
+    foot.appendChild(MF.jump(MF.t('pour.read'), 'shed-methods'));
     box.appendChild(foot);
   } else {
-    var again = E('button','btn','Rake it out and try again'); again.type='button';
+    var again = E('button','btn', MF.t('pour.rake')); again.type='button';
     on(again,'click',function(){ st.slots=[]; st.result=null; MF.paintForge(); });
     box.appendChild(again);
   }
@@ -10270,30 +10327,25 @@ MF.forgeJudge = function(t, ingots, prod){
   /* A DEEP CASTING IS JUDGED AGAINST AN ORE, AND FIRST */
   if(t.castOre){
     if(prod.ore && MF.oreEq(prod.ore, t.castOre))
-      return {ok:true, why:'The metals that multiply to it were the metals in it.'};
+      return {ok:true, why:MF.t('judge.ok')};
     return {ok:false, why: (prod.ore || !prod.overflow
-        ? 'That casts <b>' + (prod.ore ? MF.oreLabel(prod.ore) : quad(prod.a,prod.b,prod.c)) +
-          '</b>, which is a sound object &mdash; just not this one. The order is for <b>' +
-          MF.castText(t) + '</b>.'
-        : 'That is more metal than the mold holds — it has run over the sides. ' +
-          'The order is for <b>' + MF.castText(t) + '</b>.')};
+        ? MF.t('judge.other', {got: prod.ore ? MF.oreLabel(prod.ore) : quad(prod.a,prod.b,prod.c), want: MF.castText(t)})
+        : MF.t('judge.over', {want: MF.castText(t)}))};
   }
   if(prod.overflow)
     /* AND IT SAYS WHAT CAME OUT, when it can. */
     return {ok:false, why: (prod.ore
-        ? 'That casts <b>' + MF.oreLabel(prod.ore) + '</b>, which is a sound object &mdash; ' +
-          'just not this one. The order is for <b>' + MF.castText(t) + '</b>.'
-        : 'That is more metal than the mold holds — it has run over the sides. ' +
-          'The order is for <b>' + MF.castText(t) + '</b>, and what you poured is bigger than that.')};
+        ? MF.t('judge.other', {got: MF.oreLabel(prod.ore), want: MF.castText(t)})
+        : MF.t('judge.over.big', {want: MF.castText(t)}))};
   /* AS FEW WORDS AS THE VERDICT NEEDS. */
   if(prod.a===want.a && prod.b===want.b && prod.c===want.c)
-    return {ok:true, why:'The metals that multiply to it were the metals in it.'};
+    return {ok:true, why:MF.t('judge.ok')};
 
   var off = [];
-  if(prod.a!==want.a) off.push('x²&nbsp;<b>' + num(prod.a) + '</b>, wanted <b>' + num(want.a) + '</b>');
-  if(prod.b!==want.b) off.push('middle&nbsp;<b>' + num(prod.b) + '</b>, wanted <b>' + num(want.b) + '</b>');
-  if(prod.c!==want.c) off.push('end&nbsp;<b>' + num(prod.c) + '</b>, wanted <b>' + num(want.c) + '</b>');
-  return {ok:false, why:'Missed: ' + off.join(' &middot; ') + '.'};
+  if(prod.a!==want.a) off.push(MF.t('judge.off.a', {got: num(prod.a), want: num(want.a)}));
+  if(prod.b!==want.b) off.push(MF.t('judge.off.b', {got: num(prod.b), want: num(want.b)}));
+  if(prod.c!==want.c) off.push(MF.t('judge.off.c', {got: num(prod.c), want: num(want.c)}));
+  return {ok:false, why:MF.t('judge.missed', {list: off.join(' &middot; ')})};
 };
 
 /* ===== THE MINE ===== */
