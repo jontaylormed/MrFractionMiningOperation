@@ -4119,7 +4119,42 @@ MF.STR.en = {
   'read.drill.sq.pos': 'no — the end is positive',
   'read.drill.sq.not': 'no — one end is not a square',
   'read.drill.twin.hint': 'A number and its own opposite &mdash; the only pair that adds to nothing. Take the square root of each end and that is both brackets.',
-  'read.drill.not.hint': 'Not a twin seam, so there is nothing to read off the shape. The <b>Crosscut</b> is the one for this lump &mdash; it hunts the pair instead of recognising it.'
+  'read.drill.not.hint': 'Not a twin seam, so there is nothing to read off the shape. The <b>Crosscut</b> is the one for this lump &mdash; it hunts the pair instead of recognising it.',
+  'read.pair.must': 'so the pair must multiply to {m} and add to {a}',
+  'read.becomes': '   becomes   ',
+
+  /* the Shifter, on the floor */
+  'read.shifter.cube.not': 'The box wants an x&sup2; in its first corner, and this one starts a power higher.',
+  'read.shifter.two.not': 'The box wants a plain number in the corner opposite the x&sup2;, and this one ends in y&sup2;.',
+  'read.shifter.group.not': 'No x&sup2; here to put in the first corner of a box.',
+  'read.shifter.gear.lab': 'DROP IT A GEAR &mdash; READ THE x&sup2; AS THE UNIT',
+  'read.shifter.trinomial': 'AND NOW IT IS A TRINOMIAL',
+  'read.shifter.gear.native': '<b>And no whole pair does both</b>, so it does not come apart this way &mdash; nor any other. This one is finished.',
+  'read.shifter.gear.seam': '<b>Then look at each half again.</b> A half like x&sup2; &minus; 4 is two squares with a minus between them, and the Drill knows what to do with that. That second look is where a lump like this actually finishes.',
+  'read.shifter.none': '<b>No x² in this one.</b> The box needs one for its first corner.',
+  'read.shifter.xfirst': 'THE X FIRST',
+  'read.shifter.box': 'AND THE PAIR GOES IN THE BOX',
+  'read.shifter.box.cap': 'Two corners are given, one is lit, and every side is still open.',
+  'read.shifter.box.a11y': 'A two by two box with {sq} in one corner and {c} in the opposite corner, and every side marked with a question mark.',
+  'read.shifter.middles': 'the two middles must come to',
+  'read.shifter.hint': 'Pull the common metal off each row and each column, and the sides of the box are the answer.',
+
+  /* the Crosscut, on the floor */
+  'read.dial.cube.not': 'An X hangs under a middle term, and this one has no middle term at all.',
+  'read.dial.lab.end': 'THE X &mdash; the end on top, the middle below',
+  'read.dial.lab.ac': 'THE X &mdash; a&middot;c on top, the middle below',
+  'read.dial.y': 'AND EACH ONE COMES WITH A y',
+  'read.dial.two.native': 'No whole pair does both, so nothing comes out of this one. It is an element.',
+  'read.dial.two.seam': 'The same two numbers a plain trinomial would give you &mdash; each carrying the y that was always there, wearing a 1.',
+  'read.dial.quart.not': 'The crosscut hangs an X under an x&sup2;, and the front of this one is a fourth power.',
+  'read.dial.group.not': 'The crosscut hangs an X under one middle term, and this lump has two.',
+  'read.dial.number': '<b>The crosscut is cut for lumps with an x in them.</b> A plain number has no middle term to hang an X under.',
+  'read.dial.given': 'One of the pair is given. The other is what is left when you ask the same two questions of it &mdash; and the hammer is the only thing that confirms it.',
+  'read.dial.linear': '<b>No x&sup2;, so there is no a&middot;c to put on top.</b> The Steel Head is the one for this lump.',
+  'read.dial.nopair': 'AND IF NO WHOLE PAIR DOES BOTH',
+
+  /* the Prospector's Pick, on the floor */
+  'read.pick.floor': '<b>This one works at the seam, not on the floor.</b> Hold it to a lump still in the wall and it names what kind of ore is in there before you cut it out. Down here you already have the lump.'
 };
 MF._missing = {};
 MF.lang = function(){
@@ -5605,57 +5640,53 @@ MF.TOOL_READ = {
 
   /* THE EXPONENT RAIL: the X carried into the box. */
   shifter: function(host, ore, pieceId){
-    if(MF.isCube(ore)){ MF.notMyCube(host, 'shifter', 'The box wants an x&sup2; in its first corner, and this one starts a power higher.'); return; }
+    if(MF.isCube(ore)){ MF.notMyCube(host, 'shifter', MF.t('read.shifter.cube.not')); return; }
     if(MF.isBi(ore)){ MF.readBracket(host, 'shifter', ore); return; }
     if(MF.isTwo(ore)){
-      MF.notMyPair(host, 'shifter', 'The box wants a plain number in the corner opposite the x&sup2;, and this one ends in y&sup2;.');
+      MF.notMyPair(host, 'shifter', MF.t('read.shifter.two.not'));
       return;
     }
     if(MF.isGroup(ore)){
-      MF.notMyLump(host, 'shifter', 'No x&sup2; here to put in the first corner of a box.');
+      MF.notMyLump(host, 'shifter', MF.t('read.shifter.group.not'));
       return;
     }
     /* THE GEAR CHANGE, WHICH IS WHAT THIS INSTRUMENT IS */
     if(MF.isQuart(ore)){
       var qn = MF.isNative(ore), qsp = MF.quartSplit(ore);
-      host.appendChild(H('div','diaglab','DROP IT A GEAR &mdash; READ THE x&sup2; AS THE UNIT'));
-      MF.workLine(host, null, [MF.oreLabel(ore), '   becomes   ',
+      host.appendChild(H('div','diaglab', MF.t('read.shifter.gear.lab')));
+      MF.workLine(host, null, [MF.oreLabel(ore), MF.t('read.becomes'),
         '( x<sup>2</sup> )<sup>2</sup>' + signed2(ore.b) + '( x<sup>2</sup> )' + signed(ore.c)], 'wbig');
-      host.appendChild(H('div','diaglab','AND NOW IT IS A TRINOMIAL'));
+      host.appendChild(H('div','diaglab', MF.t('read.shifter.trinomial')));
       MF.xDiagram(host, {top:num(ore.c), bottom:num(ore.b), left:null, right:null});
-      MF.workLine(host, 'so the pair must multiply to ' + num(ore.c) +
-        ' and add to ' + num(ore.b), [null, '  and  ', null], 'wbig');
-      host.appendChild(H('div','hint', qn
-        ? '<b>And no whole pair does both</b>, so it does not come apart this way &mdash; nor any other. This one is finished.'
-        : '<b>Then look at each half again.</b> A half like x&sup2; &minus; 4 is two squares with a minus between them, and the Drill knows what to do with that. That second look is where a lump like this actually finishes.'));
+      MF.workLine(host, MF.t('read.pair.must', {m: num(ore.c), a: num(ore.b)}), [null, MF.t('schema.and'), null], 'wbig');
+      host.appendChild(H('div','hint', MF.t(qn ? 'read.shifter.gear.native' : 'read.shifter.gear.seam')));
       MF.methodLine(host, 'shifter');
       if(!qn) MF.paintNameSide(host, ore, pieceId);
       return;
     }
     if(ore.kind==='number' || ore.a===0){
-      host.appendChild(H('p','hint','<b>No x² in this one.</b> The box needs one for its first corner.'));
+      host.appendChild(H('p','hint', MF.t('read.shifter.none')));
       MF.methodLine(host, "shifter");
       return;
     }
     var pr = MF.xPair(ore);
-    host.appendChild(H('div','diaglab','THE X FIRST'));
+    host.appendChild(H('div','diaglab', MF.t('read.shifter.xfirst')));
     MF.xDiagram(host, {
       top: num(ore.a * ore.c), bottom: num(ore.b),
       left: pr ? num(pr.p) : null, right: null,
       topWhy: ore.a===1 ? '' : '= ' + num(ore.a) + ' × ' + num(ore.c)
     });
-    host.appendChild(H('div','diaglab','AND THE PAIR GOES IN THE BOX'));
+    host.appendChild(H('div','diaglab', MF.t('read.shifter.box')));
     MF.xBox(host, {
       rows:[{label:'?'},{label:'?'}],
       cols:[{label:'?'},{label:'?'}],
       cells:[[{kind:'sq',text:quadText(ore.a,0,0)},{kind:'x',text: pr ? xt2(pr.p) : '?'}],
              [{kind:'x',text:'?'},{kind:'k',text:num(ore.c)}]],
-      caption:'Two corners are given, one is lit, and every side is still open.',
-      a11y:'A two by two box with ' + quadText(ore.a,0,0) + ' in one corner and ' + num(ore.c) +
-           ' in the opposite corner, and every side marked with a question mark.'
+      caption:MF.t('read.shifter.box.cap'),
+      a11y:MF.t('read.shifter.box.a11y', {sq: quadText(ore.a,0,0), c: num(ore.c)})
     });
-    MF.workLine(host, 'the two middles must come to', [xt2(ore.b)], 'wbig');
-    host.appendChild(H('div','hint','Pull the common metal off each row and each column, and the sides of the box are the answer.'));
+    MF.workLine(host, MF.t('read.shifter.middles'), [xt2(ore.b)], 'wbig');
+    host.appendChild(H('div','hint', MF.t('read.shifter.hint')));
     MF.methodLine(host, 'shifter');
     MF.paintNameSide(host, ore, pieceId);
   },
@@ -5663,60 +5694,56 @@ MF.TOOL_READ = {
   /* THE DECIMAL DIAL: why nothing will come out, when nothing will. */
   /* THE CROSSCUT: the X first, and the dial under it. */
   dial: function(host, ore, pieceId){
-    if(MF.isCube(ore)){ MF.notMyCube(host, 'dial', 'An X hangs under a middle term, and this one has no middle term at all.'); return; }
+    if(MF.isCube(ore)){ MF.notMyCube(host, 'dial', MF.t('read.dial.cube.not')); return; }
     if(MF.isBi(ore)){ MF.readBracket(host, 'dial', ore); return; }
     /* THE PAIR HUNT, UNCHANGED, WITH A y ON THE ANSWERS */
     if(MF.isTwo(ore)){
       var tn = MF.isNative(ore);
       var tsp2 = MF.twoSplit(ore);
-      host.appendChild(H('div','diaglab','THE X &mdash; the end on top, the middle below'));
+      host.appendChild(H('div','diaglab', MF.t('read.dial.lab.end')));
       MF.xDiagram(host, {top:num(ore.c), bottom:num(ore.b),
         left: tsp2 ? num(tsp2.left.p) : null, right:null});
-      MF.workLine(host, 'so the pair must multiply to ' + num(ore.c) +
-        ' and add to ' + num(ore.b), [tsp2 ? num(tsp2.left.p) : null, '  and  ', null], 'wbig');
-      host.appendChild(H('div','diaglab','AND EACH ONE COMES WITH A y'));
+      MF.workLine(host, MF.t('read.pair.must', {m: num(ore.c), a: num(ore.b)}),
+        [tsp2 ? num(tsp2.left.p) : null, MF.t('schema.and'), null], 'wbig');
+      host.appendChild(H('div','diaglab', MF.t('read.dial.y')));
       MF.splitDiagram(host, {whole:MF.oreLabel(ore),
         left: tsp2 ? '( x ' + (tsp2.left.p<0?'&minus; '+num(-tsp2.left.p):'+ '+num(tsp2.left.p)) + 'y )' : '( x + ? y )',
         right:'( x + ? y )',
-        key: tn
-          ? 'No whole pair does both, so nothing comes out of this one. It is an element.'
-          : 'The same two numbers a plain trinomial would give you &mdash; each carrying the y that was always there, wearing a 1.'});
+        key: MF.t(tn ? 'read.dial.two.native' : 'read.dial.two.seam')});
       MF.methodLine(host, 'dial');
       if(!tn) MF.paintNameSide(host, ore, pieceId);
       return;
     }
     if(MF.isQuart(ore)){
-      MF.notMyGear(host, 'dial', 'The crosscut hangs an X under an x&sup2;, and the front of this one is a fourth power.');
+      MF.notMyGear(host, 'dial', MF.t('read.dial.quart.not'));
       return;
     }
     if(MF.isGroup(ore)){
-      MF.notMyLump(host, 'dial', 'The crosscut hangs an X under one middle term, and this lump has two.');
+      MF.notMyLump(host, 'dial', MF.t('read.dial.group.not'));
       return;
     }
     if(ore.kind==='number'){
-      host.appendChild(H('p','hint','<b>The crosscut is cut for lumps with an x in them.</b> A plain number has no middle term to hang an X under.'));
+      host.appendChild(H('p','hint', MF.t('read.dial.number')));
       MF.methodLine(host, "dial");
       return;
     }
     if(ore.a !== 0){
-      host.appendChild(H('div','diaglab','THE X &mdash; ' +
-        (ore.a===1 ? 'the end on top, the middle below' : 'a&middot;c on top, the middle below')));
+      host.appendChild(H('div','diaglab', MF.t(ore.a===1 ? 'read.dial.lab.end' : 'read.dial.lab.ac')));
       var dpr = MF.xPair(ore);
       MF.xDiagram(host, {
         top: num(ore.a===1 ? ore.c : ore.a*ore.c),
         bottom: num(ore.b), left: dpr ? num(dpr.p) : null, right:null,
         topWhy: ore.a===1 ? '' : num(ore.a) + ' × ' + num(ore.c)
       });
-      MF.workLine(host, 'so the pair must multiply to ' + num(ore.a===1 ? ore.c : ore.a*ore.c) +
-        ' and add to ' + num(ore.b), [dpr ? num(dpr.p) : null, '  and  ', null], 'wbig');
+      MF.workLine(host, MF.t('read.pair.must', {m: num(ore.a===1 ? ore.c : ore.a*ore.c), a: num(ore.b)}),
+        [dpr ? num(dpr.p) : null, MF.t('schema.and'), null], 'wbig');
       if(dpr)
-        host.appendChild(H('div','hint','One of the pair is given. The other is what is left when you ask ' +
-          'the same two questions of it &mdash; and the hammer is the only thing that confirms it.'));
+        host.appendChild(H('div','hint', MF.t('read.dial.given')));
     } else {
-      host.appendChild(H('p','hint','<b>No x&sup2;, so there is no a&middot;c to put on top.</b> The Steel Head is the one for this lump.'));
+      host.appendChild(H('p','hint', MF.t('read.dial.linear')));
     }
     /* AND THE DIAL, which is the same method's honest ending */
-    host.appendChild(H('div','diaglab','AND IF NO WHOLE PAIR DOES BOTH'));
+    host.appendChild(H('div','diaglab', MF.t('read.dial.nopair')));
     MF.paintDial(host, {ore:ore});
     MF.methodLine(host, 'dial');
     MF.paintNameSide(host, ore, pieceId);
@@ -5724,7 +5751,7 @@ MF.TOOL_READ = {
 
   /* THE PROSPECTOR'S PICK works at the face, not on the floor. */
   pick: function(host, ore, pieceId){
-    host.appendChild(H('p','hint','<b>This one works at the seam, not on the floor.</b> Hold it to a lump still in the wall and it names what kind of ore is in there before you cut it out. Down here you already have the lump.'));
+    host.appendChild(H('p','hint', MF.t('read.pick.floor')));
     MF.methodLine(host, "pick");
   },
 
