@@ -1817,8 +1817,12 @@ Byte-identical meant keeping three English slips, each flagged in a comment besi
 
 ### Still to do before a second language
 
-- **Checks that are English-shaped:** the `nogrades` banned and `marky` regexes, the 210-character
-  guide beat, the prose budgets, and the checks that find an element by its English text. With
-  the stand-in language on, the 211-character beat is the one that fires — brackets add two.
+- ~~Checks that are English-shaped~~ — **done.** The beat length, the no-grades, marking and
+  counting regexes, the swing-invite phrases and how the hint names the Casting Shed live in
+  `MF.LANG.en.checks`; `MF.langChecks()` gives English's for any a language leaves out, and the
+  `lang` group reports each one missing. Checks that found an element by its English text use a
+  class (`.swingbtn`) or the table (`MF.plainT`, `MF.fromKey`). Each rewired check was proved by
+  putting its fault back: all eight fired. With the stand-in language on, **one** error is left —
+  a 211-character beat, because the brackets add two.
 - **The caveat under the picker**, *"Translations are drafts — corrections welcome."*, is
   student-facing and waits for approval.
