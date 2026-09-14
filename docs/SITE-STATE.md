@@ -1880,3 +1880,44 @@ opened, he is wholly on screen and the bubble's tail lands on his centre.
 **The first attempt did nothing, and the reason is worth keeping:** a `@media(max-width:430px)` block
 later in the stylesheet put him back in the corner at 380, so a rule written above it lost on
 source order. The peek now comes after the phone block.
+
+## Languages, phase 1: Spanish (2026-09-13)
+
+**USER:** *"Continue with the language project."*
+
+**Español is the second language, and it is a draft.** Every one of the **1,158 keys** in `MF.STR.en`
+has a Spanish string in `MF.STR.es`, in the same order, in one block headed
+`/* ===== LANGUAGE: es ===== */`. **No fluent speaker or teacher has read any of it.** The picker
+now shows in Reading & Access, with the approved line under it: *"Translations are drafts —
+corrections welcome."* Neutral Spanish, *tú*.
+
+**The words the mine turns on:** *veta* (seam), *metal nativo* (native metal), *lingote* (ingot),
+*paréntesis* (bracket), *MCD* (GCF), *el Bocarte* (the Stamp Mill — the real mining word),
+*la Nave de Fundición* (the Casting Shed), *la Forja*. Mr Factor keeps his name. Instruments:
+*el Pico de Prospector, la Linterna, el Pico de Acero, el Crucero, el Cambiador, el Taladro,
+la Barrena Mecánica*. The mining wordplay is where a draft is most likely to read strangely.
+
+### What had to change so a second language could pass honestly
+
+- **Twenty more checks were reading English.** The doors, the cart buttons, the swing pop-out, the
+  Drill's squares and cubes, the finished-metal readings, and the prose budgets all moved into
+  `MF.LANG.<lang>.checks`. Spanish's budgets are English's plus about 15%; its beat limit is 250.
+- **The two controls that must fail were English sentences**, so Spanish's sweeps passed them.
+  Each language now carries its own (`markyControl`, `bannedControl`).
+- **The quiz shuffle was seeded from the words on screen**, so Spanish put the supported answer in
+  slot 3 for four of six questions — a slot worth guessing. `MF.qSeed` seeds every language from
+  the English (each question carries its key as `id`), so the order is the same everywhere and
+  **no English option moved** (7 questions compared, old file against new).
+- **One Spanish phrase was too long for the Order Board** (`tool.auger.does`, 58 of 56); it was
+  shortened, not the limit raised.
+
+### How it was proved
+
+- `MF.validate()` in Spanish: **0 errors at 1250 and 380**, 27,799 checks, both controls failing
+  as required; `MF.playthrough(1…9)` clean; no key fell back to English.
+- In English: **0 errors at 1250 and 380**; the text harvest differs by exactly the four strings of
+  the picker (*English, Español, Language*, the caveat).
+- **Every rewired check fired with its fault put back, in Spanish** — the marking control, the
+  no-grades control, the Drill's prime reading, and the quiz slot seeded from the Spanish text.
+
+**What it did not look at:** whether the Spanish is good Spanish, and pixels at 560 and 994.

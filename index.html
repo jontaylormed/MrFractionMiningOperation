@@ -3262,7 +3262,59 @@ MF.LANG = {
       dockCount: /(\d+\s*(?:%|percent))|(\b\d+\s*(?:of|out of|\/)\s*\d+\b)|\b(score|scored|complete[d]?|progress|streak)\b/i,
       /* how the hint names the building - a pattern, because a language that
          inflects a noun will not repeat the menu's word letter for letter */
-      shedName: /casting shed/i
+      shedName: /casting shed/i,
+      /* what the doors, the cart and the pop-out must say, in words */
+      doorOre: /Stamp|Mill|Crush|Break/i,
+      doorMold: /Cast|Mold/i,
+      routeBreak: /floor|bench|break/i,
+      routeYard: /yard/i,
+      popSwing: /swing/i,
+      popScan: /scan/i,
+      /* prose budgets are counted in characters, and a language's characters
+         are not English's: 1150 for a lesson, plus what the closing slide costs */
+      lessonProse: 1340,
+      panelProse: 620,
+      /* the Drill names both shapes it reads; the finished-metal readings say so */
+      cubeWord: 'cube',
+      squareWord: 'square',
+      finishedSteel: /nothing.*bite|is a prime|no whole-number seam/i,
+      finishedLantern: /nothing moves|is a prime|no whole-number seam/i,
+      /* the two controls must fail in this language's words, or they prove
+         nothing about this language's sweeps */
+      markyControl: 'Nothing here is marked',
+      bannedControl: 'you scored 7 out of 10',
+      /* the Drill, held to a prime, names it as one */
+      drillPrime: /is a prime/i
+    }},
+  /* A DRAFT. Its check words follow its own drafted phrasing - change a
+     phrase in MF.STR.es and the pattern here may need to change with it. */
+  es: {nm:'Español', dir:'ltr', speech:'es', stop:'. ',
+    checks: {
+      /* Spanish runs about a fifth longer than English for the same sentence */
+      beat: 250,
+      banned: /(\d+\s*(?:%|por ciento))|(\b\d+\s*(?:sobre|\/)\s*\d+\b)|\b(puntuaci[oó]n|puntuad[oa]s?|calificaci[oó]n|calificad[oa]s?|precisi[oó]n|clasificaci[oó]n|ranking|racha|respuestas correctas)\b/i,
+      marky: /\b(calificad[oa]s?|calificar|calificaci[oó]n|sin notas|puntuad[oa]s?|corregid[oa]s?)\b/i,
+      outOf: /\b\d+\s*(?:de|sobre|\/)\s*\d+\b/i,
+      swingInvite: /nombra uno y golpea|se puede golpear|pueden golpear|sigue siendo tuy|siguen siendo tuy/i,
+      xPrescribed: /Pon la <?b?>?X\b|la <b>X<\/b>|\bX\b encima/,
+      dockCount: /(\d+\s*(?:%|por ciento))|(\b\d+\s*(?:de|sobre|\/)\s*\d+\b)|\b(puntuaci[oó]n|completad[oa]s?|progreso|racha)\b/i,
+      shedName: /nave de fundici[oó]n/i,
+      doorOre: /Bocarte|Mazo|Tritur|Romp/i,
+      doorMold: /Fundici|Molde/i,
+      routeBreak: /suelo|banco|romp/i,
+      routeYard: /patio/i,
+      popSwing: /golpe/i,
+      popScan: /explor/i,
+      /* English's budgets and about 15% more, which is what Spanish costs */
+      lessonProse: 1540,
+      panelProse: 715,
+      cubeWord: 'cubo',
+      squareWord: 'cuadrado',
+      finishedSteel: /nada que morder|d[oó]nde morder|es un n[uú]mero primo|ninguna veta de n[uú]meros enteros/i,
+      finishedLantern: /no se mueve nada|es un n[uú]mero primo|ninguna veta de n[uú]meros enteros/i,
+      markyControl: 'Aquí nada está calificado',
+      bannedControl: 'sacaste 7 sobre 10',
+      drillPrime: /es un n[uú]mero primo/i
     }}
 };
 MF.STR = {};
@@ -4573,6 +4625,1312 @@ MF.STR.en = {
   'list.sep': ', ',
   'part.sheet.up': 'It is up on the surface now, fitted to {fits} &mdash; made out of metal you brought up from the deep shafts.'
 };
+
+/* ===== LANGUAGE: es ===== */
+/* Spanish. A DRAFT by Claude that no fluent speaker or teacher has read yet -
+   corrections welcome, one key at a time. Same keys, same order as English;
+   anything missing here is shown in English. Neutral Spanish, "tú".
+   The words the whole mine turns on: veta (seam), metal nativo (native metal),
+   lingote (ingot), paréntesis (bracket), MCD (GCF), el Bocarte (the Stamp
+   Mill), la Nave de Fundición (the Casting Shed), la Forja (the Forge). */
+MF.STR.es = {
+  /* the markup around every screen */
+  'site.name': 'La Explotación Minera de Mr Factor',
+  'load.sub': 'El mineral parece roca. <b>x&sup2; &minus; 5x + 6</b> parece un trozo de piedra.<br> Aquí abajo son el mismo problema.',
+  'load.enter': 'Entrar en la Explotación',
+  'top.tagline': 'sepáralo &middot; vuélvelo a verter &middot; compruébalo',
+  'top.access': '<span aria-hidden="true">&#9881;</span> Lectura y Accesibilidad',
+  'top.access.aria': 'Ajustes de lectura y accesibilidad, incluido el volumen de la música y el sonido. También se abre con Alt y A.',
+  'top.accesscap': 'Opciones de música y sonido',
+  'nav.aria': 'Principal',
+  'nav.home': 'Superficie',
+  'nav.mill': 'Bocarte',
+  'nav.shed': 'Nave de Fundición',
+  'nav.mine': 'La Mina',
+  'nav.forge': 'La Forja',
+  'load.tick.1': 'abriendo el pozo',
+  'load.tick.2': 'encendiendo las lámparas',
+  'load.tick.3': 'arrancando los mazos',
+  'load.tick.4': 'calentando la forja',
+  'load.tick.5': 'cargando la vagoneta',
+  'load.tick.6': 'la roca está lista',
+
+  /* Reading & Access */
+  'access.label': 'Ajustes de lectura y accesibilidad',
+  'access.title': 'Lectura y Accesibilidad',
+  'access.sub': 'Cambia cómo se lee esto. <b>Aquí no se guarda nada</b>: dura lo que dure esta visita.',
+  'access.close': 'Listo',
+  'access.foot': 'Pulsa <b>Alt + A</b> en cualquier momento para abrir esto, y <b>Esc</b> para cerrarlo. Nada de esto cambia las matemáticas.',
+  'access.lang': 'Idioma',
+  'access.lang.hint': 'Las traducciones son borradores: se agradecen las correcciones.',
+  'access.off': 'No',
+  'access.on': 'Sí',
+  'access.type': 'Tipo de letra',
+  'access.type.hint': 'Elige la que te resulte más fácil. No hay una correcta.',
+  'access.type.standard': 'Estándar',
+  'access.type.rounded': 'Redondeada',
+  'access.type.dys': 'Adaptada a la dislexia',
+  'access.type.dysnote': 'Esto pide primero <b>OpenDyslexic</b>. Si no está instalada en este equipo, tendrás la letra más parecida que haya &mdash; las letras seguirán siendo más anchas y redondas de lo normal, pero no será exactamente esa fuente.',
+  'access.size': 'Tamaño del texto',
+  'access.tint': 'Color de la página',
+  'access.tint.hint': 'A algunas personas les resulta más fácil leer sobre un color que sobre blanco.',
+  'access.tint.none': 'Ninguno',
+  'access.tint.peach': 'Melocotón',
+  'access.tint.blue': 'Azul',
+  'access.tint.green': 'Verde',
+  'access.tint.grey': 'Gris',
+  'access.ruler': 'Regla de lectura',
+  'access.ruler.hint': 'Una franja que sigue al puntero.',
+  'access.spacing': 'Más espacio entre líneas',
+  'access.motion': 'Movimiento',
+  'access.motion.hint': 'La mina tiene su jornada de trabajo, humo y una rueda que gira.',
+  'access.motion.auto': 'Lo que diga mi dispositivo',
+  'access.motion.reduce': 'Reducirlo',
+  'access.sound': 'SONIDO',
+  'access.fx.synth': 'Los efectos grabados no se cargan desde aquí, así que estos son los <b>inventados</b> &mdash; osciladores, no un martillo de verdad. Siguen sonando en todo.',
+  'access.fx.part': 'Algunos de los efectos grabados no se cargan desde aquí; esos se sintetizan en su lugar.',
+  'access.fx.loading': 'Las grabaciones todavía están llegando. Hasta entonces, efectos sintetizados.',
+  'access.amb.synth': 'La grabación no se carga desde aquí, así que este es un sonido ambiente <b>sintetizado</b>.',
+  'access.amb.loading': 'La grabación todavía está llegando.',
+  'access.music.none': '<b>Desde aquí no hay ninguna pista que reproducir.</b> Una canción no se puede sintetizar, así que este control seguirá en silencio hasta que se cargue el archivo &mdash; cosa que sí pasará en el sitio publicado.',
+  'access.music.loading': 'La pista todavía está llegando.',
+  'access.mute': 'Silenciarlo todo',
+  'access.level.off': 'apagado',
+  'access.fx': 'Efectos de sonido',
+  'access.fx.hint': 'El martillo al caer, una veta que se abre, la colada.',
+  'access.amb': 'Ambiente de la mina',
+  'access.amb.hint': 'El sonido del lugar &mdash; maquinaria, muy a lo lejos. Sube en la mina.',
+  'access.music': 'Música',
+  'access.music.hint': 'Una pista por encima de todo.',
+  'access.quiet': 'Los dos están apagados ahora mismo. La música sube en la superficie y el ambiente en la mina &mdash; y en cuanto muevas tú cualquiera de los dos, se queda exactamente donde lo dejes.',
+  'access.read': 'LEER EN VOZ ALTA',
+  'access.read.none': 'Este navegador no tiene voz integrada, así que aquí no se puede leer en voz alta.',
+  'access.read.hint': 'Lee lo que dice Mr Factor y el texto de una lección. No lee los diagramas &mdash; esos llevan su propia descripción para los lectores de pantalla, y dicen más de lo que dirían los números.',
+  'access.read.play': '&#9654; Leer esta página',
+  'access.read.stop': '&#9632; Parar',
+  'access.speed': 'Velocidad',
+
+  /* the surface */
+  'home.doors': 'Los edificios son las puertas &mdash; haz clic en uno. O usa los botones de abajo, si lo prefieres.',
+  'home.h2': 'El mineral parece roca.',
+  'home.lede1': 'Una veta <em>es</em> un factor — ya estaba en la roca antes de que llegaras. En la mina <b>rompes</b>: nombras un factor, golpeas, y la roca te dice si la veta se abrió. Lo que queda vuelve bajo el martillo hasta que nada se separe.',
+  'home.lede2': 'La <b>forja</b> lo hace al revés — los metales entran en un molde y sale un solo objeto. Eso es <b>distribuir</b>, y no pasa en ningún otro sitio.',
+  'home.lede3': '<b>72</b> y <b>x² − 5x + 6</b> son el mismo trabajo. Un número primo y un polinomio que nada separa son la misma cosa: un <b>lingote</b> — ya puro. Para eso existe toda esta explotación.',
+  'home.open': 'Aquí nada tiene tiempo límite ni se guarda, y nada está bloqueado.<br>Puedes bajar a la mina ahora, o pasar antes un rato por un taller — las dos puertas están abiertas.',
+  'home.card.shed.title': 'La Nave de Fundición',
+  'home.card.shed.why': 'Vierte metales en un molde y mira cómo sale un solo objeto formado. Esta es la propiedad distributiva, y es el movimiento que la mina hace al revés todo el día.',
+  'home.card.shed.go': 'Abrir el Molde',
+  'home.card.mill.title': 'El Bocarte',
+  'home.card.mill.why': 'Desmonta cualquier número. Descubre por qué dos mineros que cortan por sitios distintos llegan a los mismos metales, y qué significa que un trozo ya sea puro.',
+  'home.card.mill.go': 'Entrar al Bocarte',
+  'home.card.mine.title': 'La Mina',
+  'home.card.mine.why': 'Excava tan hondo como quieras y llena la vagoneta — nunca tienes que romper nada para bajar más. Luego trabaja un trozo cuando te apetezca.',
+  'home.card.mine.go': 'Entrar en la Mina',
+  'home.stat.shapes': 'formas',
+  'home.stat.directions': 'direcciones',
+  'home.stat.idea': 'idea',
+
+  /* Mr Factor: the rooms, in the order he says them */
+  'guide.home.where': 'LA SUPERFICIE',
+  'guide.home.1': 'Todo lo que ves aquí es un edificio en el que puedes entrar, y la barra de arriba lleva a todos.',
+  'guide.home.2': 'Empieza en <b>la mina</b> si quieres romper algo, en el <b>Bocarte</b> si prefieres empezar con números sencillos, o en la <b>Nave de Fundición</b> si prefieres leer primero. Ninguno es obligatorio y ninguno se bloquea.',
+  'guide.home.3': 'El patio de la esquina es donde acaba tu metal. Es lo único de ahí fuera en lo que no se entra &mdash; el patio de trabajo es una franja dentro de la mina.',
+  'guide.mine.where': 'LA MINA',
+  'guide.mine.1': 'Saca un trozo de la pared y va a tu vagoneta. Excava tan hondo como quieras — no hay que trabajar nada antes de seguir.',
+  'guide.mine.2': 'Pon uno en el banco y <b>nombra un factor</b>, luego golpea. O la veta se abre o el pico resbala, y la roca te dice cuál.',
+  'guide.mine.3': 'Lo que queda vuelve bajo el martillo. Sigue hasta que nada se separe — eso es <b>metal nativo</b>, y está terminado.',
+  'guide.mine.4': 'Aquí nada tiene tiempo límite. Un golpe fallido solo te cuesta el golpe.',
+  'guide.forge.where': 'LA FORJA',
+  'guide.forge.1': 'Aquí <b>multiplicas</b> en vez de romper, y es el único sitio donde lo haces <b>por encargo</b>. El metal entra en un molde y sale un solo objeto.',
+  'guide.forge.2': 'Coge un encargo de un tablero y te abro el molde. Para llenarlo gastas metal del patio.',
+  'guide.forge.3': 'Si la pieza sale sana, te quedas con lo que hiciste. Los siete del Tablero de Encargos son instrumentos &mdash; cada uno te lee un trozo, y ninguno bloquea nada. Las cuatro piezas profundas son objetos, y no leen nada.',
+  'guide.workshop-mold.where': 'LA NAVE DE FUNDICIÓN',
+  'guide.workshop-mold.1': 'Tres talleres cortos. <b>Las Palabras</b> es el vocabulario, <b>Los Moldes</b> es lo que hace de verdad una colada, y <b>Las Herramientas</b> es cómo funciona cada instrumento.',
+  'guide.workshop-mold.2': 'Ninguno es obligatorio. Vuelve aquí cuando una palabra de la mina deje de tener sentido.',
+  'guide.shed-mold.where': 'LOS MOLDES',
+  'guide.shed-mold.1': 'Mueve los controles y mira la colada. Lo que metes decide lo que sale — la forma nunca la eliges tú.',
+  'guide.shed-mold.2': 'El desarrollo de abajo es la misma multiplicación escrita línea a línea &mdash; cada parte de un metal se encuentra con cada parte del otro.',
+  'guide.shed-words.where': 'LAS PALABRAS',
+  'guide.shed-words.1': 'Cada nombre minero de aquí es una cosa matemática real con un nombre real. La tabla tiene las dos columnas.',
+  'guide.shed-words.2': 'Luego emparéjalas tú en la actividad. Una pareja que no va junta te dice qué significa cada palabra y se suelta.',
+  'guide.shed-methods.where': 'LAS HERRAMIENTAS',
+  'guide.shed-methods.1': 'Una lección por cada instrumento que hayas fundido, así que esta sala se llena a medida que forjas. Cada lección recorre su método diapositiva a diapositiva, y cada diapositiva lleva el dibujo.',
+  'guide.shed-methods.2': 'Debajo de cada recorrido hay un banco con tres trozos. <b>Descuelga el instrumento y acércaselo a uno</b> — esa es la parte que no es leer.',
+  'guide.workshop-ore.where': 'EL BOCARTE',
+  'guide.workshop-ore.1': 'Números sencillos, y los factores de todo hasta cien.',
+  'guide.workshop-ore.2': 'Pon un trozo en el banco y tira de la palanca. La prensa encuentra lo que lo divide — y lo que no se separa es un <b>número primo</b>, que es el mismo objeto que el metal nativo.',
+
+  /* Mr Factor on the breaking floor */
+  'guide.floor.where': 'EL SUELO DE ROTURA',
+  'guide.room.where': 'EN LA SALA',
+  'guide.shed.1': 'Varios fallos seguidos suelen querer decir que es el método, no la aritmética.',
+  'guide.shed.2': 'Todavía no has entrado en <b>la Nave de Fundición</b>. Empieza por <b>Los Moldes</b> — escribe una colada línea a línea, y romper es eso hecho al revés.',
+  'guide.give.1': 'Ese se te está resistiendo, así que te lo digo sin más: <b>{factor}</b> lo atraviesa. Ajusta el martillo a eso y golpea.',
+  'guide.give.2': 'Lo que quede cuando salga es el otro lado, y esa parte sigue siendo tuya para nombrarla.',
+  'guide.native.1': 'Por ese no pasa ninguna veta de <b>números enteros</b>. Es <b>metal nativo</b> — ya es un elemento, y nunca iba a separarse con un martillo entero.',
+  'guide.native.2': 'No es que se te haya escapado. Ponlo en el estante y coge la siguiente pieza.',
+  'guide.hint.group.1': 'Cuatro términos, así que esto no es buscar una pareja. Tómalos <b>de dos en dos</b> y saca la parte común de cada mitad — si sale el mismo paréntesis de las dos, atraviesa todo el trozo.',
+  'guide.hint.group.2': 'El final te lo dice antes de empezar: <b>{b} × {c}</b> tiene que ser el número del final, y aquí es <b>{d}</b>.',
+  'guide.hint.cube': 'Dos extremos y nada en medio. Pregúntate si <b>los dos extremos son cubos exactos</b> — si lo son, un paréntesis sale a simple vista y la pieza de detrás nunca se rompe.',
+  'guide.hint.bi': 'Ese es un solo paréntesis con dos letras. No hay nada que buscar en él — es <b>metal nativo</b>, y está terminado.',
+  'guide.hint.quart.1': 'Lee el <b>x&sup2; como la unidad</b> — x&sup2; por sí mismo es de donde salió el x&#8308; — y vuelve a ser un trinomio.',
+  'guide.hint.quart.2': 'Luego la <b>X</b>, sobre eso: la pareja tiene que multiplicar <b>{c}</b> y sumar <b>{b}</b>. Y el martillo se ajusta a <b>x&sup2;</b>, no a x.',
+  'guide.hint.two.1': 'La misma <b>X</b> de siempre, y la segunda letra va con ella: la pareja tiene que multiplicar <b>{c}</b> y sumar <b>{b}</b>.',
+  'guide.hint.two.2': 'Cada paréntesis sale como <b>x + ?y</b> — el número que encuentres es lo que lleva la y.',
+  'guide.hint.number': 'En un número sencillo, lo que golpees tiene que <b>dividirlo exactamente</b>. Ve subiendo por los primos pequeños — 2, luego 3, luego 5, luego 7.',
+  'guide.hint.linear': 'En este no hay x&sup2;. Busca lo que <b>lleva cada término</b> y ponlo delante de un paréntesis &mdash; y si no llevan nada en común, eso también es una respuesta: ya es un elemento.',
+  'guide.hint.pair.1': 'Pon la <b>X</b> encima: la pareja tiene que multiplicar <b>{ac}</b> y sumar <b>{b}</b>. Las dos cosas a la vez, o no es la pareja.',
+  'guide.hint.pair.2': 'Y un martillo se ajusta a una forma entera. Si ninguna pareja entera hace las dos cosas, ahí dentro no hay dos paréntesis &mdash; una vez que hayas sacado lo que <b>lleva cada término</b>.',
+  'guide.hint.any': 'Toma las piezas de una en una, y nombra lo que creas que atraviesa la que está bajo el pico.',
+  'voice.hint.dyn': '(cambia según el trozo) Pon la X encima: la pareja tiene que multiplicar … y sumar ….',
+  'voice.give.dyn': '(cambia según el trozo) Ese se te está resistiendo, así que te lo digo sin más: … lo atraviesa.',
+
+  /* Mr Factor inside a room */
+  'says.prefix': '<b>Mr Factor:</b> ',
+  'says.mold-after-pour': 'Recuerda esta forma. En la mina la harás <b>al revés</b> — tendrás la pieza y buscarás los metales que la hicieron.',
+  'says.mill-done': 'Esa fila lo es todo. Dos mineros que cortan en otro orden acaban igualmente con esos mismos lingotes — y por eso un número tiene un solo juego de metales.',
+  'says.mill-going': 'Sigue golpeando con los mazos hasta que cada pieza sea un lingote. Eso es todo, y es exactamente lo que harás con un trinomio en la mina.',
+  'says.forge-cold': 'Lo que eches se gasta — así que si gastas tu único (x + 3), tendrás que volver a bajar a por otro.',
+
+  /* his dock */
+  'guide.aria.bubble': 'Mr Factor, sobre {where}',
+  'guide.aria.shut': 'Cerrar lo que está diciendo Mr Factor',
+  'guide.aria.back': 'Lo que dijo antes de esto',
+  'guide.gotit': 'entendido',
+  'guide.next': 'siguiente →',
+  'guide.aria.next': 'Lo siguiente que tiene que decir',
+  'guide.aria.tab.open': 'Abrir lo que Mr Factor tiene que decir sobre {where}',
+  'guide.aria.tab.close': 'Cerrar lo que Mr Factor tiene que decir sobre {where}',
+  'guide.aria.tab.fresh': '. Todavía no te ha enseñado esta sala.',
+
+  /* the Casting Shed */
+  'shed.title': 'La Nave de Fundición',
+  'shed.lede1': '<b>Esta es la sala donde se explican las cosas.</b> Aquí dentro no se excava, no se rompe ni se gasta nada — son tres talleres cortos y un sitio al que volver cuando una palabra de la mina deje de tener sentido.',
+  'shed.lede2': 'La nave se llama así por lo que hace: el metal fundido entra en un molde y sale <b>un solo objeto formado</b>. La forma la decide lo que viertes — nunca la eliges tú. Partir el molde en dos no cambia cuánto metal hay dentro; solo te deja describir el mismo objeto dos veces. Esa es toda la propiedad distributiva, y la mina la hace al revés todo el día.',
+  'shed.open': 'Aquí dentro nada tiene tiempo límite ni se guarda, y nada es obligatorio. Puedes bajar a la mina sin haber leído nada de esto — la regla `nogate` vale en todas partes.',
+  'shed.aria.open': 'Abrir el taller: {room}',
+  'shed.shed-words.nm': 'Las Palabras',
+  'shed.shed-words.why': 'Cada palabra que usa este lugar es una cosa matemática real con un nombre real. <b>Una veta es un factor.</b> Aprende una columna y habrás aprendido la mitad.',
+  'shed.shed-words.go': 'A Las Palabras',
+  'shed.shed-mold.nm': 'Los Moldes',
+  'shed.shed-mold.why': 'Vierte dos metales y sale <b>un solo objeto formado</b>. Cada parte de uno se encuentra con cada parte del otro &mdash; y la mina hace eso al revés todo el día.',
+  'shed.shed-mold.go': 'A Los Moldes',
+  'shed.shed-methods.nm': 'Las Herramientas',
+  'shed.shed-methods.why': 'Por qué funciona cada instrumento y cómo usarlo, diapositiva a diapositiva &mdash; y <b>mineral en un banco al que acercarlo</b>, que es la parte que no es leer.',
+  'shed.shed-methods.go': 'A Las Herramientas',
+
+  /* the Stamp Mill */
+  'mill.title': 'El Bocarte',
+  'mill.lede': 'Los mazos <b>parten el mineral</b>, y siguen hasta que lo que queda ya no se rompe. Algunos trozos salen de aquí sin cambios — no se les ha desprendido nada, porque ya son un elemento. Eso es <b>metal nativo</b>. En los números los llamamos primos; más abajo en la mina te encontrarás con polinomios así, y son la misma cosa.',
+  'mill.why.whole': 'El mazo se ajusta a un número entero. Pon uno en la casilla y vuelve a tirar.',
+  'mill.why.ingot': '{n} ya es un lingote. No se le desprende nada, por muy fuerte que caiga el mazo.',
+  'mill.why.bounce': '<b>El mazo rebotó.</b> {d} no divide a {n} — {n} ÷ {d} deja {rest}. No se pierde nada; el trozo está exactamente como estaba.',
+  'mill.why.remainder': 'un resto de {r}',
+  'mill.why.nothing': 'nada con lo que trabajar',
+  'mill.why.split': '<b>{n} se separó en {a} y {b}.</b>',
+  'mill.why.prime': '<b>{n} es un lingote.</b> Es primo — solo lo dividen el 1 y él mismo.',
+  'mill.done': '<b>Cada pieza es un lingote.</b> Nada de lo que queda en el banco se separa — y esa fila es <b>todo el metal de {n}</b>, lo hayas cortado como lo hayas cortado.',
+  'mill.under': 'BAJO EL MAZO',
+  'mill.hint.name': 'Nombra un número entero que creas que lo divide, y luego tira de la palanca. Aquí nada dice si lo hará — eso lo dice el mazo.',
+  'mill.aria.input': 'Un número entero que creas que divide a {n}',
+  'mill.pull': 'Tirar de la palanca',
+  'mill.aria.pull': 'Dejar caer el mazo sobre {n}',
+  'mill.every': 'TODO EL METAL DE {n}',
+  'mill.bench': 'EN EL BANCO',
+  'mill.aria.ingot': '{n} — un lingote. No hay nada en él que se separe.',
+  'mill.aria.ore': '{n} — todavía es mineral. Haz clic para ponerlo bajo el mazo.',
+  'mill.new': 'PON UN TROZO NUEVO EN EL BANCO',
+  'mill.aria.slider': 'Elige un número entre {min} y {max}',
+  'mill.hint.range': 'Cualquiera de {min} a {max}. Algunos se separan cuatro veces y otros no se mueven en absoluto.',
+
+  /* the questions at the foot of a workshop */
+  'q.lab': 'ANTES DE IRTE',
+  'q.lede': 'Aquí no se guarda nada. Están aquí porque responder una es la forma de saber si lo seguiste.',
+  'q.aria.m': 'cuántas x — déjalo vacío para una sola x, o pon 0 para un número sencillo',
+  'q.aria.num': 'el número',
+  'q.aria.k': 'el número del final',
+  'q.try': 'Probar',
+  'q.notwhole': 'Eso no es un número entero, así que todavía no hay nada que probar.',
+  'q.aria.choose': 'Elegir {label}',
+  'q.chose': '<b>Elegiste {label}.</b> ',
+  'q.aria.prev': 'La pregunta anterior',
+  'q.aria.next': 'La pregunta siguiente',
+  'q.aria.goto': 'Ir a la pregunta {n}',
+  'q.count': '{at} de {n}',
+
+  /* The Molds */
+  'molds.lede': 'Dos metales entran <b>separados</b> y sale un objeto <b>único</b>. El molde no elige la forma — la eligen los metales. Y como el resultado está determinado, hacerlo al revés tiene una respuesta concreta, que es justo la razón por la que la mina es posible.',
+  'molds.slide.a': 'Profundidad del molde (a)',
+  'molds.slide.b': 'Primera parte (b)',
+  'molds.slide.c': 'Segunda parte (c)',
+  'molds.slide.a2': 'Primer paréntesis, su número (a)',
+  'molds.slide.d2': 'Profundidad del primer paréntesis (d)',
+  'molds.slide.c2': 'Segundo paréntesis, su número (c)',
+  'molds.mode': 'Qué hay en el molde',
+  'molds.mode.num': 'dos partes sencillas',
+  'molds.mode.x': 'una parte con una x',
+  'molds.mode.two': 'dos paréntesis',
+  'molds.cap.two': 'Cuatro esquinas, porque cada parte de un paréntesis se encuentra con cada parte del otro. Las dos esquinas con x son el mismo tipo de cosa.',
+  'molds.a11y.two': 'Un molde cortado como ( {bx} + {a} ) por ( x + {c} ), que muestra cuatro productos.',
+  'molds.cap.one': 'Los dos lados del molde están fijados, así que cada parte de la pieza se deduce de ellos.',
+  'molds.a11y.one': 'Un molde de profundidad {a} dividido en una parte de anchura {b} y otra de anchura {c}.',
+  'molds.q1': 'Un molde de profundidad <b>4</b> se corta en una parte de anchura <b>x</b> y otra de anchura <b>3</b>. ¿Qué sale?',
+  'molds.q1.sub': 'Las dos partes siguen siendo una sola pieza. Cortar el molde no añade nada.',
+  'molds.q1.a': 'Las dos partes tienen toda la profundidad. 4 × x es 4x y 4 × 3 es 12, y la pieza es las dos juntas.',
+  'molds.q1.b': 'Eso le da la profundidad a la primera parte y no a la segunda. El molde tiene 4 de profundidad <em>de lado a lado</em> — el 3 también está en metal de 4 de profundidad, así que sale 12.',
+  'molds.q1.c': 'Eso suma la profundidad a una anchura en lugar de multiplicarlas. 4 y x son dos lados del mismo rectángulo, no dos cosas puestas una tras otra.',
+  'molds.q2': '¿Por qué nunca puedes <b>elegir</b> qué forma sale del molde?',
+  'molds.q2.a.label': 'Porque lo deciden los metales',
+  'molds.q2.a': 'La distribución tiene un resultado determinado. Una vez sabes lo que entró, solo hay una cosa que pueda salir — y por eso hacerlo al revés tiene una respuesta concreta que buscar.',
+  'molds.q2.b.label': 'Porque la forja solo tiene un molde',
+  'molds.q2.b': 'En el tablero hay siete moldes, uno por encargo. La limitación no es cuántos moldes hay — es que lo que sale se deduce de lo que entró.',
+  'molds.q2.c.label': 'Porque todavía no has forjado la herramienta adecuada',
+  'molds.q2.c': 'Ninguna herramienta de este sitio cambia el resultado de una colada. Una herramienta ayuda; nunca bloquea y nunca altera la aritmética.',
+  'molds.q3': 'Ahora hazlo <b>al revés</b>, que es la dirección de la mina. <b>2x&sup2; + 10x + 12</b> salió de un molde. Nombra <b>uno</b> de los metales que entraron.',
+  'molds.q3.sub': 'Una casilla de x vacía significa una sola x. Pon 0 para nombrar un metal sencillo.',
+  'molds.q3.cta': 'Verterlo al revés',
+  'molds.q3.ok': '<b>Ese entró.</b> <b>{left}</b> y <b>{right}</b> vuelven a dar eso al multiplicarse — y aquí hay más de una primera respuesta correcta, porque 2 · (x + 2) · (x + 3) tiene tres metales.',
+  'molds.q3.no': '<b>{why}</b> No se pierde nada. El mismo motor que usa el yunque acaba de responder eso, y está describiendo la roca, no a ti.',
+
+  /* the translation table — the mine's word, the textbook's, and why */
+  'rosetta.ore.mine': 'mineral',
+  'rosetta.ore.real': 'una expresión',
+  'rosetta.ore.note': 'Cualquier expresión — un número, un monomio, un binomio, un trinomio.',
+  'rosetta.ore.show': '{ore} es un trozo de mineral',
+  'rosetta.seam.mine': 'una veta, un filón',
+  'rosetta.seam.real': 'un factor',
+  'rosetta.seam.note': 'Ya estaba en la roca antes de que llegaras. Encontrarlo no lo pone ahí.',
+  'rosetta.seam.show': '( {g} ) atraviesa {ore}',
+  'rosetta.break.mine': 'romperlo',
+  'rosetta.break.real': 'factorizar',
+  'rosetta.break.note': 'Un golpe saca un factor. Lo que queda vuelve bajo el martillo, y eso se repite hasta que nada se separe.',
+  'rosetta.native.mine': 'metal nativo',
+  'rosetta.native.real': 'un número primo, o un polinomio irreducible',
+  'rosetta.native.note': 'LA RAZÓN DE SER DE ESTE LUGAR. No son dos cosas parecidas — son el mismo objeto, un elemento que romper no puede separar más.',
+  'rosetta.native.show': '{p} y {ore} son el mismo tipo de cosa',
+  'rosetta.twin.mine': 'una veta gemela',
+  'rosetta.twin.real': 'una diferencia de cuadrados',
+  'rosetta.twin.note': 'Sin término central, y los dos extremos son cuadrados. Los dos términos centrales se anulan entre sí.',
+  'rosetta.common.mine': 'el metal común',
+  'rosetta.common.real': 'el máximo común divisor (el MCD)',
+  'rosetta.common.note': 'Lo único que lleva cada término. Siempre es lo primero que hay que buscar.',
+  'rosetta.loaded.mine': 'mineral cargado',
+  'rosetta.loaded.real': 'ax² + bx + c con a ≠ 1',
+  'rosetta.loaded.note': 'Los dos extremos están fijados, así que las partes con x tienen que multiplicar a y los números c. Para eso sirve la factorización por agrupación.',
+  'rosetta.assay.mine': 'el ensayo',
+  'rosetta.assay.real': 'reconocer la forma antes de trabajarla',
+  'rosetta.assay.note': 'Nombrar qué tipo de cosa tienes delante, que es el paso que decide qué método vas a usar.',
+  'rosetta.assay.show': '{ore} es {kind}',
+  'rosetta.pour.mine': 'la colada, el molde',
+  'rosetta.pour.real': 'la propiedad distributiva',
+  'rosetta.pour.note': 'El movimiento de la forja, y el único sitio donde ocurre. Los metales entran separados y sale un solo objeto.',
+  'rosetta.sound.mine': 'sana, o chatarra',
+  'rosetta.sound.real': 'comprobar multiplicando de vuelta',
+  'rosetta.sound.note': 'Si las piezas vuelven a dar la roca de la que salieron al multiplicarse, eran las piezas. No hay nada más que comprobar.',
+  'rosetta.sound.show': 'multiplica las piezas y mira si vuelve a salir {ore}',
+  'rosetta.tag': 'LO QUE SIGNIFICA CADA PALABRA DE AQUÍ',
+  'rosetta.lede': 'Este lugar llama a las cosas con nombres de minería, y cada uno es una cosa matemática real con un nombre real. Si solo aprendes una columna, has aprendido la mitad.',
+  'rosetta.th.mine': 'en la mina',
+  'rosetta.th.real': 'en matemáticas',
+  'rosetta.th.ex': 'resuelto',
+  'rosetta.matters': '<b>La fila que más importa es la de “metal nativo”.</b> Un número primo y un polinomio que nada separa no se <em>parecen</em>. Son el mismo objeto: algo ya refinado, que romper no puede llevar más lejos. Por eso <b>72</b> y <b>x² − 5x + 6</b> son un solo trabajo y no dos.',
+
+  /* matching the two columns */
+  'match.lab': '&#128279; PON CADA UNA CON SU NOMBRE REAL',
+  'match.hint': 'Haz clic en una palabra de la izquierda y luego en el nombre que le corresponde a la derecha. Una pareja que no va junta te dice qué significa cada una y se suelta.',
+  'match.col.mine': 'Lo que dice este lugar',
+  'match.col.real': 'Cómo se llama',
+  'match.aria.mine': 'La palabra de la mina: {w}',
+  'match.aria.real': 'El nombre real: {w}',
+  'match.good': '<b>{mine} es {real}.</b> ',
+  'match.all': 'Ya están todas. Las dos columnas son una sola.',
+  'match.bad': '<b>Esas son dos cosas distintas.</b> {m1} es <b>{r1}</b>, y {r2} es lo que este lugar llama <b>{m2}</b>.',
+
+  /* The Words */
+  'words.lede': 'Una metáfora es una puerta de entrada hasta que se convierte en un idioma privado, y entonces es un muro. Todo lo de la izquierda es cómo llama este lugar a una cosa. Todo lo de la derecha es cómo llaman un libro de texto, un profesor y un examen a <b>la misma cosa</b>. No se parecen. Son el mismo objeto con dos nombres.',
+  'words.q1': '¿Cuál de estos <b>ya es metal nativo</b>?',
+  'words.q1.sub': 'Metal nativo es la palabra de la mina. La palabra matemática está en la tabla de arriba.',
+  'words.q1.a': 'No sale nada entero de él. Es un <b>polinomio irreducible</b> — el mismo tipo de objeto que un número primo, ya un elemento, no un trozo que no consiguió romperse.',
+  'words.q1.b': 'Ese todavía se separa. Dos cuadrados con un menos y sin término central es una <b>veta gemela</b> — una diferencia de cuadrados — y se abre en (x + 3) y (x − 3).',
+  'words.q1.c': 'Cada término ahí lleva un 2, así que lo atraviesa una veta. Saca el <b>factor común</b> y te queda 2(x + 3).',
+  'words.q2': 'La tabla dice que <b>el metal común</b> es <b>el máximo común divisor</b>. Escribe el metal común de <b>18x + 24</b>.',
+  'words.q2.sub': 'Pon el número sencillo en la casilla.',
+  'words.q2.cta': 'Sacarlo',
+  'words.q2.ok': '<b>{g} es el mayor de todos.</b> {ore} = {g}({rest}), y nada mayor divide a los dos.',
+  'words.q2.part': '<b>{k} sí atraviesa a los dos</b> — la veta es real y el martillo entraría. Pero no es el <em>mayor</em>: {g} también divide a los dos, y sacar {k} deja {right} con una veta todavía.',
+  'words.q2.no': '<b>{why}</b> Fíjate en entre qué se dividen tanto 18 como 24.',
+
+  /* what went wrong */
+  'miscut.lab': '&#9935; ¿QUÉ HIZO MAL EL MINERO?',
+  'miscut.q': '¿Dónde se equivocó?',
+  'miscut.hint': 'Aquí no se guarda nada. Cada respuesta describe el desarrollo — también las que no son lo que salió mal.',
+  'wmiscut.lede': 'Un minero anotó esto en el registro y puso el trozo en el estante como metal terminado. La aritmética de cada línea está bien. La <b>palabra</b> del final, no.',
+  'wmiscut.w1.note': 'el trozo',
+  'wmiscut.w2.line': '1 y &minus;9 no comparten nada salvo el 1',
+  'wmiscut.w2.note': 'buscó un metal común',
+  'wmiscut.w3.line': 'así que no sale nada de él',
+  'wmiscut.w3.note': 'el paso que está mal',
+  'wmiscut.w4.line': '&rarr; metal nativo',
+  'wmiscut.w4.note': 'guardado como terminado',
+  'wmiscut.a.label': '"Nada divide a todos los términos" no es lo mismo que "nada se separa"',
+  'wmiscut.a': 'Justo eso. Un <b>factor común</b> es algo que lleva cada término — este trozo no tiene ninguno, y el minero lo comprobó bien. <b>Irreducible</b> significa que el conjunto no se separa en dos paréntesis, que es otra pregunta y aquí tiene otra respuesta: x² − 9 es una <b>veta gemela</b> y se abre en (x + 3)(x − 3).',
+  'wmiscut.b.label': 'La aritmética está mal &mdash; 1 y &minus;9 sí comparten un factor',
+  'wmiscut.b': 'No lo comparten. 1 y −9 solo comparten el 1, y en eso el minero tenía razón. El fallo no está en la cuenta; está en lo que se creyó que la cuenta demostraba.',
+  'wmiscut.c.label': 'x&sup2; &minus; 9 no tiene término central, así que no se puede factorizar',
+  'wmiscut.c': 'Que falte el término central es lo que hace este <em>fácil</em>, no imposible. Dos cuadrados con un menos entre ellos y nada en medio es la forma de una veta gemela — (x + 3)(x − 3) vuelve a dar x² − 9 al multiplicar, con los términos centrales anulándose, y por eso no hay término central que ver.',
+  'wmiscut.after': '<b>Las dos palabras no son intercambiables.</b> Un trozo sin metal común puede seguir separándose, y un trozo que se separa puede no tener metal común. Esa es la pareja que toda esta tabla existe para mantener separada.',
+
+  /* the three workshop illustrations */
+  'art.mold.aria': 'Dos metales bajan por canales separados hasta un molde, que se llena; de él se saca una sola barra formada.',
+  'art.mold.mold': 'el molde',
+  'art.mold.out': 'un solo objeto formado',
+  'art.words.aria': 'Dos columnas de palabras enfrentadas — palabras de minería a la izquierda, términos matemáticos a la derecha — con una luz que recorre la barra que une cada pareja.',
+  'art.words.mine': 'EN LA MINA',
+  'art.words.maths': 'EN MATEMÁTICAS',
+  'art.words.1.mine': 'mineral',
+  'art.words.1.real': 'una expresión',
+  'art.words.2.mine': 'una veta',
+  'art.words.2.real': 'un factor',
+  'art.words.3.mine': 'metal nativo',
+  'art.words.3.real': 'un número primo',
+  'art.words.same': 'el mismo objeto, dos veces',
+  'art.methods.aria': 'Una escalera de siete peldaños que sube hacia la derecha junto a una fila de trozos de mineral cada vez más grandes, con una lámpara subiendo por los peldaños.',
+  'art.methods.rung': 'un método por peldaño, y el mineral se endurece a la par',
+
+  /* The Tools */
+  'methods.lede': 'En la forja cuelgan siete instrumentos, y cada uno lleva <b>un método</b> — el método de la caja, la factorización por agrupación, sacar el MCD. El instrumento es una comodidad. <b>El método es lo que merece la pena tener</b>, y funciona en un cuaderno sin ninguna herramienta. Esta es la planta donde se enseñan los que has <b>fundido</b>.',
+  'methods.note': '<b>Una herramienta muestra parte de una factorización y nunca toda.</b> La linterna ilumina un lado y pone un <span class="qm">?</span> en el otro; el taladro enumera todas las parejas y no elige ninguna. Lo que nombres va al martillo, y la que responde es la roca.',
+  'methods.q1': 'Tienes en la mano <b>6x&sup2; + 7x &minus; 3</b>. ¿Qué método está hecho para él?',
+  'methods.q1.a.label': 'Factorización por agrupación',
+  'methods.q1.a': 'Hay algo delante del x², así que los dos extremos están fijados. Multiplica a·c para obtener −18, busca la pareja que multiplica −18 y suma 7, parte el término central en esos dos y agrupa.',
+  'methods.q1.b.label': 'La diferencia de cuadrados',
+  'methods.q1.b': 'Esa necesita que no haya término central y que los dos extremos sean cuadrados. Este trozo tiene 7x en medio, así que no hay nada que anular.',
+  'methods.q1.c.label': 'Sacar el factor común',
+  'methods.q1.c': 'Siempre vale la pena probarlo primero — pero 6, 7 y −3 no comparten nada salvo el 1, así que aquí no hay metal común que sacar. Sigue siendo la primera pregunta correcta.',
+  'methods.q2': 'En el <b>método de la caja</b>, ¿por qué los dos lados quedan obligados una vez colocas el x&sup2; y el número del final?',
+  'methods.q2.a.label': 'Un x&sup2; solo puede salir de multiplicar dos partes con x',
+  'methods.q2.a': 'Y el número sencillo del final solo puede salir de multiplicar los dos números. Así que dos esquinas opuestas fijan los dos lados, y las otras dos esquinas tienen que sumar el término central — esa es toda la comprobación.',
+  'methods.q2.b.label': 'Porque una caja siempre tiene cuatro esquinas iguales',
+  'methods.q2.b': 'Las cuatro esquinas son cuatro productos distintos y casi nunca son iguales. Lo que hace que la caja funcione es <em>de dónde puede haber salido cada producto</em>, no que coincidan.',
+  'methods.q2.c.label': 'Porque el término central siempre es la suma de los lados',
+  'methods.q2.c': 'El término central es la suma de las dos esquinas <em>cruzadas</em>, no de los lados. Sumar los lados mezclaría una longitud con un área.',
+  'methods.q3': 'La linterna ilumina <b>un</b> lado y pone un <span class="qm">?</span> en el otro. ¿Por qué no ilumina los dos?',
+  'methods.q3.a.label': 'Porque el segundo lado es el trabajo',
+  'methods.q3.a': 'Cuando un lado ya ha salido, el otro es exactamente lo que queda — así que iluminar uno es un punto de apoyo e iluminar los dos es hacer justo lo que viniste a hacer. Una herramienta muestra una parte, nunca todo.',
+  'methods.q3.b.label': 'Porque la linterna todavía no alumbra lo suficiente',
+  'methods.q3.b': 'Nada en este sitio se hace más fuerte con el uso, y no hay ninguna mejora que ilumine el segundo lado. El límite es a propósito, no un nivel.',
+  'methods.q3.c.label': 'Para que tengas que comprar una herramienta mejor',
+  'methods.q3.c': 'Aquí no se compra nada y nada está bloqueado. Cada capa funciona con el cinturón vacío — las herramientas solo hacen más fácil de ver lo que ya está ahí.',
+  'methods.q4': 'Haz <b>la X</b> tú. <b>x&sup2; &minus; 5x + 6</b>: busca los dos números que multiplican 6 y suman &minus;5, y luego nombra <b>un</b> paréntesis.',
+  'methods.q4.sub': 'Una casilla de x vacía significa una sola x.',
+  'methods.q4.cta': 'Nombrar un lado',
+  'methods.q4.ok': '<b>La pareja era −2 y −3.</b> Multiplican 6 y suman −5, así que los paréntesis son (x − 2) y (x − 3) — y <b>{left}</b> es uno de ellos.',
+  'methods.q4.no': '<b>{why}</b> Dos números que multiplican <b>6</b>: 1 y 6, 2 y 3, −1 y −6, −2 y −3. ¿Qué pareja suma <b>−5</b>?',
+
+  /* the working floor */
+  'school.tag': 'LA PLANTA DE TRABAJO',
+  'school.empty.lede': '<b>Todavía no llevas nada en el cinturón, así que aquí no hay nada que enseñar.</b> En esta planta aparece una lección por cada instrumento que hayas <b>fundido</b> — el método que lleva, recorrido paso a paso sobre un trozo elegido para él, y luego uno para que lo pruebes tú.',
+  'school.empty.note': 'Los instrumentos no se reparten. Los haces en la forja, con metal que tú mismo sacaste de la roca — así que la primera lección de aquí te la habrás ganado factorizando. <b>Nada en la mina depende de ello:</b> cada capa funciona con el cinturón vacío, y las salas de arriba enseñan las matemáticas sin ningún instrumento.',
+  'school.to.forge': 'A la forja &rarr;',
+  'school.to.mill': 'El Bocarte &rarr;',
+  'school.lede': 'Una lección por cada instrumento que hayas fundido. Cada una es el método que lleva ese instrumento, <b>recorrido paso a paso</b> sobre un trozo elegido para él — y al final, el mismo trozo para que lo pruebes tú. Lo que te responde es el motor que usa el yunque.',
+
+  /* a lesson */
+  'lesson.reveal': 'Sin guardarse nada.',
+  'lesson.reveal.hint': 'En la mina el instrumento se detiene antes de esto. Aquí no.',
+  'lesson.lab': 'EL MÉTODO',
+  'lesson.tool': 'Lo lleva <b>{tool}</b> &mdash; pero el método funciona en un cuaderno.',
+  'lesson.alldone': 'las {n} diapositivas a la vista',
+  'lesson.at': 'diapositiva {at} de {n}',
+  'lesson.why': 'POR QUÉ FUNCIONA',
+  'lesson.through': 'DE PRINCIPIO A FIN',
+  'lesson.back': '&larr; una diapositiva atrás',
+  'lesson.aria.back': 'Volver una diapositiva atrás en este método',
+  'lesson.how': 'ahora, cómo →',
+  'lesson.yours': 'y luego es tuyo →',
+  'lesson.next': 'siguiente diapositiva →',
+  'lesson.aria.next': 'Mostrar la siguiente diapositiva de {name}',
+  'lesson.again': 'empezar de nuevo',
+  'lesson.inmine': '<b>En la mina:</b> este instrumento en tu cinturón, y luego una roca.',
+
+  /* where the numbers came from */
+  'why.native': 'No sale nada de él. Esa es la lectura, no un fracaso al buscar.',
+  'why.number': 'Esos son los primos con los que está hecho {n} &mdash; nada más lo divide.',
+  'why.group': '{b} &times; {c} es {d}, y justo por eso salió el mismo paréntesis de las dos mitades.',
+  'why.cube': 'Los dos extremos son cubos exactos, así que el paréntesis son sus dos raíces &mdash; y {right} tiene discriminante negativo, así que ahí se acaba.',
+  'why.two': '{p} y {q} multiplican {c} y suman {b} &mdash; cada uno con la y que siempre estuvo ahí.',
+  'why.quart': '{p} y {q} multiplican {c} y suman {b}, leyendo el x&sup2; como la unidad &mdash; y luego se vuelve a mirar cada mitad.',
+  'why.common': '{g} divide a todos los términos, así que sale delante antes que nada.',
+  'why.twin': 'Un número y su opuesto &mdash; que es la única pareja que suma cero, y por eso el término central se anula solo.',
+  'why.pair': '{p} y {q} multiplican {ac} y suman {b}. Esa es toda la búsqueda, terminada.',
+  'why.any': 'Las piezas de arriba vuelven a darlo al multiplicarse, que es la única prueba que hay.',
+
+  /* now you */
+  'practice.lab': 'AHORA TÚ',
+  'practice.aria.m2': 'cuántas x al cuadrado — déjalo vacío para una sola x al cuadrado',
+  'practice.aria.take': 'el número que estás sacando',
+  'practice.aria.y': 'cuántas y hay en este paréntesis',
+  'practice.ok': '<b>La veta se abre.</b> De ahí salió <b>{left}</b>, y <b>{right}</b> es lo que quedó. Ese es el movimiento — y es el mismo que hace el yunque.',
+  'practice.no': '<b>{why}</b> No se pierde nada — el trozo está exactamente como estaba, y puedes volver a intentarlo.',
+  'practice.hint': 'No se guarda &mdash; es el mismo motor que usa el yunque.',
+
+  /* the bench in a lesson */
+  'bench.lab': '&#128296; ACÉRCALO AL MINERAL &mdash; ESTA ES LA PARTE QUE NO ES LEER',
+  'bench.armed': '<b>{tool} está en tu mano.</b> Haz clic en un trozo para acercárselo. Vuelve a hacer clic en el mismo trozo y se quita.',
+  'bench.idle': 'Descuelga <b>{tool}</b> y luego haz clic en un trozo. Los números grabados en la roca cambian — eso es todo lo que hace un instrumento.',
+  'bench.aria.armed': '{tool}. En tu mano — haz clic en un trozo para acercárselo, o vuelve a hacer clic para dejarlo.',
+  'bench.aria.idle': '{tool}. Haz clic para cogerlo, y luego haz clic en un trozo.',
+  'bench.aria.on': '{ore}. {tool} está sobre él — haz clic para quitarlo.',
+  'bench.aria.off': '{ore}. Haz clic para acercarle {tool}.',
+  'bench.found': '<b>{tool}:</b> {found}',
+  'bench.nothing': '<b>Ahí dentro no se mueve nada.</b>',
+  'bench.plain': 'roca sin más — todavía no tiene nada encima',
+  'bench.hint': 'Prueba los tres &mdash; también ese del que no puede decir nada.',
+
+  /* outside a mine, and a reflection */
+  'rw.summary': '&#127758; el mismo movimiento, fuera de una mina &mdash; <b>{where}</b>',
+  'rw.pick.where': 'Clasificar chatarra antes de fundirla',
+  'rw.pick.body': 'Un desguace que compra chatarra prueba cada pieza antes de que se acerque al horno — un imán, una prueba de chispa, un arañazo. Nada de eso dice cuánto <b>vale</b> la pieza. Dice qué <b>tipo</b> de cosa es, para que la siguiente decisión se tome a propósito y no a ciegas.',
+  'rw.pick.tie': 'Ese es exactamente este método: nombra la forma antes de comprometerte con un movimiento, y acepta que nombrarla no te dice nada de la respuesta.',
+  'rw.lantern.where': 'Leer una receta al revés',
+  'rw.lantern.body': 'Sabes que una olla de sopa dio para doce personas y que usaste tres latas. No necesitas rehacer toda la receta para saber para cuánto dio cada lata — una parte conocida obliga a la otra, porque el total es las dos multiplicadas.',
+  'rw.lantern.tie': 'Un lado iluminado obliga al otro. Por eso la linterna no ilumina los dos: cuando tienes uno, el segundo no es una segunda pregunta.',
+  'rw.steel.where': 'Presupuestar un trabajo',
+  'rw.steel.body': 'Tres partes de un presupuesto salen a 6 €, 15 € y 9 €. Un albañil no lo lee como tres números sin relación — ve tres treses, y lo presupuesta como "tres veces 2 €, 5 € y 3 €". Sacar la cantidad común es como se comprueba un presupuesto de cabeza en la puerta de una casa.',
+  'rw.steel.tie': 'Eso es el MCD, y es lo primero que hay que probar en cualquier trozo por la misma razón: hace más pequeño todo lo que viene después.',
+  'rw.dial.where': 'Ajustar una pareja de engranajes',
+  'rw.dial.body': 'Necesitas dos engranajes cuyos dientes multipliquen una relación fija y cuyos tamaños sumen el espacio de la carcasa. Hay una lista corta de parejas que multiplican bien, y solo algunas además caben — así que haces la lista de las que dan en el primer objetivo y luego las compruebas con el segundo.',
+  'rw.dial.tie': 'Multiplicar un número, sumar otro: eso es la X, y es la misma búsqueda que hace quien diseña una caja de cambios. Y cuando ninguna pareja entera hace las dos cosas, los engranajes no caben — que es el mismo hecho que un trozo que no se separa, no un fallo al buscar.',
+  'rw.shifter.where': 'Distribuir una habitación',
+  'rw.shifter.body': 'Un suelo de 7 m por 5 m son 35 m². Embaldósalo en dos franjas — de 4 m y de 3 m — y son 20 + 15, el mismo suelo descrito dos veces. Todo el que monta cocinas y todo el que pone baldosas trabaja en este rectángulo, y ninguno lo llama propiedad distributiva.',
+  'rw.shifter.tie': 'El método de la caja ES ese rectángulo, hecho al revés: conoces el área y buscas los dos lados.',
+  'rw.drill.where': 'Dos atajos que la gente ya usa',
+  'rw.drill.body': '47 × 53 es 50 − 3 y 50 + 3, así que es 50² − 3² = 2491, de cabeza. Y 1001 es 10³ + 1³, así que es 11 × 91 — por eso 1001 = 7 × 11 × 13, y por eso cualquier número de tres cifras repetidas es divisible por los tres.',
+  'rw.drill.tie': 'Los dos son este instrumento leído al revés: una diferencia de cuadrados y una suma de cubos. Ninguno se busca — miras los dos extremos y los paréntesis vienen solos.',
+  'rw.auger.where': 'Repartir una cuenta que no se reparte a partes iguales',
+  'rw.auger.body': 'Seis personas, un total incómodo, y dos de ellas compartieron un plato. Partes el total en trozos que se agrupan limpiamente en vez de dividirlo todo de golpe — reagrupa primero, y la aritmética fea se convierte en dos cuentas fáciles.',
+  'rw.auger.tie': 'Eso es la factorización por agrupación: parte el término central en dos trozos que comparten algo cada uno con su vecino, y luego saca la parte común de cada pareja.',
+  'reflect.lab': '&#9998; ANTES DE IRTE',
+  'reflect.placeholder': 'Con tus propias palabras…',
+  'reflect.aria': 'Un espacio para escribir. Nada de lo que escribas aquí se lee, se revisa ni se guarda.',
+  'reflect.note': '<b>Aquí nada se lee, se revisa ni se guarda.</b> No se envía a ningún sitio y desaparece cuando sales de la página. Lo que importa de escribirlo es escribirlo.',
+
+  /* the kinds of ore — what the assay calls each shape */
+  'assay.pure.name': 'Lingote Puro',
+  'assay.pure.tell': 'No se separa nada. Ya es un elemento — un número primo, o un polinomio que no atraviesa ninguna veta de números enteros.',
+  'assay.composite.name': 'Se Separa',
+  'assay.composite.tell': 'Tiene factores dentro. Pártelo y sigue partiendo hasta que todo sea puro.',
+  'assay.shared.name': 'Metal Compartido',
+  'assay.shared.tell': 'Cada término lleva el mismo trozo. Eso sale delante antes que nada.',
+  'assay.twin.name': 'Veta Gemela',
+  'assay.twin.tell': 'Dos cuadrados perfectos con un menos entre ellos, y ningún término central.',
+  'assay.plain.name': 'Trinomio Simple',
+  'assay.plain.tell': 'Un x² sin nada delante. Dos números que multiplican c y suman b.',
+  'assay.loaded.name': 'Trinomio Cargado',
+  'assay.loaded.tell': 'Hay algo delante del x². La pareja que buscas multiplica a·c.',
+  'assay.grouped.name': 'Veta Agrupada',
+  'assay.grouped.tell': 'Cuatro términos y dos letras. Tómalos de dos en dos y sale el mismo paréntesis de los dos grupos.',
+  'assay.stacked.name': 'Veta Apilada',
+  'assay.stacked.tell': 'Una x a la cuarta. Lee el x&sup2; como la unidad y es un trinomio corriente — luego vuelve a mirar cada mitad.',
+  'assay.twoel.name': 'Dos Elementos',
+  'assay.twoel.tell': 'Dos letras de principio a fin. La pareja sigue multiplicando el final y sumando el término central — lo nuevo es la y, no la búsqueda.',
+  'assay.cubes.name': 'Veta Cúbica',
+  'assay.cubes.tell': 'Los dos extremos son cubos exactos. Un paréntesis sale a simple vista, y lo que queda detrás nunca se separa.',
+
+  /* the nine layers of the shaft */
+  'layer.1.name': 'Grava',
+  'layer.1.what': 'números sencillos',
+  'layer.2.name': 'Roca de Veta',
+  'layer.2.what': 'metal compartido — 6x + 15, 3x² + 12x',
+  'layer.3.name': 'Lechos Gemelos',
+  'layer.3.what': 'mineral de dos términos — x² − 9, y lingotes puros',
+  'layer.4.name': 'Trinomio',
+  'layer.4.what': 'x² + bx + c',
+  'layer.5.name': 'Veta Cargada',
+  'layer.5.what': 'ax² + bx + c',
+  'layer.6.name': 'Agrupación',
+  'layer.6.what': 'cuatro términos, dos letras — xy + 3x + 2y + 6',
+  'layer.7.name': 'Una Marcha Más',
+  'layer.7.what': 'x⁴ + bx² + c — un trinomio una marcha más arriba',
+  'layer.8.name': 'Dos Elementos',
+  'layer.8.what': 'x² + bxy + cy² — la misma búsqueda, dos letras',
+  'layer.9.name': 'Cubos',
+  'layer.9.what': 'x³ ± un cubo — un paréntesis a simple vista, y lo demás está terminado',
+
+  /* the seven instruments */
+  'tool.pick.nm': 'El Pico de Prospector',
+  'tool.pick.short': 'Pico de Prospector',
+  'tool.pick.order': 'un pico con el que probar la roca',
+  'tool.pick.ds': 'Dice qué tipo de mineral es un trozo antes de que lo golpees.',
+  'tool.pick.forge': 'Funde <b>12</b> con metal puro. Tres lingotes sencillos, y uno de ellos sale dos veces.',
+  'tool.pick.does': 'nombra la forma antes de factorizar',
+  'tool.lantern.nm': 'La Linterna',
+  'tool.lantern.short': 'Linterna',
+  'tool.lantern.order': 'una linterna de pozo para las galerías bajas',
+  'tool.lantern.ds': 'Acércala a un trozo y te dice si todavía lo atraviesa una veta — así sabes cuándo una pieza merece otro golpe y cuándo es un elemento. Nunca dice por dónde.',
+  'tool.lantern.forge': 'Funde <b>30</b> con metal puro. Tres primos distintos, y solo un trío sirve.',
+  'tool.lantern.does': 'da un factor; el resto es lo que queda',
+  'tool.steel.nm': 'El Pico de Acero',
+  'tool.steel.short': 'Pico de Acero',
+  'tool.steel.order': 'una cabeza de acero para la veta común',
+  'tool.steel.ds': 'Arranca el metal común de un trozo de un solo golpe, sin que tengas que nombrarlo. Solo se lleva el metal que lleva cada término — el resto de la roca sigue siendo tuyo para romper.',
+  'tool.steel.forge': 'Funde <b>3x + 12</b>. Un metal sencillo repartido sobre un paréntesis — y repartir un metal común es el movimiento que esta cabeza hace después al revés.',
+  'tool.steel.does': 'saca el máximo común divisor',
+  'tool.dial.nm': 'El Crucero',
+  'tool.dial.short': 'Crucero',
+  'tool.dial.order': 'un crucero abierto sobre la veta',
+  'tool.dial.ds': 'Dibuja la X sobre un trozo: arriba lo que tiene que multiplicar la pareja, abajo lo que tiene que sumar. Nunca rellena los lados. Mueve el final fuera de un número entero y verás cómo deja de existir la veta que buscaba.',
+  'tool.dial.forge': 'Funde <b>x² + 3x + 2</b>. Dos paréntesis que se llevan uno — a·c es 2 y el término central es 3, que es la X honesta más pequeña que hay.',
+  'tool.dial.does': 'la X: multiplica a·c, suma b',
+  'tool.shifter.nm': 'El Cambiador',
+  'tool.shifter.short': 'Cambiador',
+  'tool.shifter.order': 'un cambio de marchas para la casa de máquinas',
+  'tool.shifter.ds': 'Acercado a un trozo, muestra de dónde puede haber salido su x² — de las dos partes con x multiplicadas, que es el único sitio del que sale un x².',
+  'tool.shifter.forge': 'Funde <b>x² + 8x + 16</b>. El mismo paréntesis dos veces, así que no hay ninguna duda de dónde salió el x².',
+  'tool.shifter.does': 'el modelo de área — cuatro productos en una caja',
+  'tool.drill.nm': 'El Taladro',
+  'tool.drill.short': 'Taladro',
+  'tool.drill.order': 'un taladro de testigos para la oficina de ensayos',
+  'tool.drill.ds': 'Saca un testigo y lee los dos extremos. Dos cuadrados con un menos y sin término central es una veta gemela &mdash; los paréntesis son un número y su opuesto. Dos cubos exactos es una veta cúbica: sale un paréntesis, y la pieza de detrás nunca se rompe.',
+  'tool.drill.forge': 'Funde <b>x² − 25</b>. Dos paréntesis con números opuestos, así que el término central se anula solo y del molde sale una veta gemela.',
+  'tool.drill.does': 'dos cuadrados o dos cubos, leídos en los extremos',
+  'tool.auger.nm': 'La Barrena Mecánica',
+  'tool.auger.short': 'Barrena Mecánica',
+  'tool.auger.order': 'una barrena mecánica para el mineral cargado',
+  'tool.auger.ds': 'Muestra por dónde tiene que ir una veta antes de abrirla: qué tiene que dividir la parte con x que sacas, y qué tiene que dividir el número. Cuando un golpe entra, dibuja la división.',
+  'tool.auger.forge': 'Funde <b>6x² + 7x − 3</b>. Los dos extremos están fijados: las partes con x tienen que multiplicar 6 y los números −3, y solo una combinación hace además que el término central dé 7.',
+  'tool.auger.does': 'parte el término central y agrupa',
+
+  /* the four deep castings */
+  'part.frame.nm': 'El Bastidor de Extracción',
+  'part.frame.short': 'Bastidor de Extracción',
+  'part.frame.order': 'un bastidor cruzado para la casa de máquinas',
+  'part.frame.ds': 'Dos paréntesis con dos letras distintas. Nada se puede agrupar con nada, así que se quedan los cuatro productos.',
+  'part.frame.forge': 'Funde <b>xy + 2x + 3y + 6</b> con <b>x + 3</b> e <b>y + 2</b>. Cuatro productos y ni una pareja de ellos es del mismo tipo de término — y por eso un trozo de cuatro términos es donde empieza la agrupación.',
+  'part.frame.does': 'cuatro términos, y ninguno se junta',
+  'part.frame.fits': 'la casa de máquinas',
+  'part.stamp4.nm': 'El Cuarto Mazo',
+  'part.stamp4.short': 'Cuarto Mazo',
+  'part.stamp4.order': 'un cuarto mazo para la batería del bocarte',
+  'part.stamp4.ds': 'Dos cuadráticas irreducibles multiplicadas. El cambio de marcha hacia delante: x² por x² es de donde sale la cuarta potencia.',
+  'part.stamp4.forge': 'Funde <b>x<sup>4</sup> + 5x<sup>2</sup> + 4</b> con <b>x<sup>2</sup> + 1</b> y <b>x<sup>2</sup> + 4</b>. Los dos metales son elementos — ninguno se rompe — y el objeto que forman está una marcha entera más arriba.',
+  'part.stamp4.does': 'x² × x² es de donde sale un x⁴',
+  'part.stamp4.fits': 'el bocarte',
+  'part.rail2.nm': 'El Segundo Riel',
+  'part.rail2.short': 'Segundo Riel',
+  'part.rail2.order': 'un segundo riel para la vía de la vagoneta',
+  'part.rail2.ds': 'Dos paréntesis que llevan las dos letras. Aquí los términos centrales SÍ son del mismo tipo, así que se juntan — lo contrario del bastidor, a propósito.',
+  'part.rail2.forge': 'Funde <b>x<sup>2</sup> + 3xy + 2y<sup>2</sup></b> con <b>x + y</b> y <b>x + 2y</b>. Otra vez cuatro productos, y esta vez dos de ellos son xy y se juntan.',
+  'part.rail2.does': 'dos letras, y los términos centrales se juntan',
+  'part.rail2.fits': 'la vía de la vagoneta',
+  'part.counter.nm': 'El Contrapeso Cúbico',
+  'part.counter.short': 'Contrapeso Cúbico',
+  'part.counter.order': 'un contrapeso para el castillete',
+  'part.counter.ds': 'Un paréntesis y su compañero. Entran seis productos y cuatro se anulan entre sí, y por eso solo sobreviven los dos extremos.',
+  'part.counter.forge': 'Funde <b>x<sup>3</sup> &minus; 8</b> con <b>x &minus; 2</b> y <b>x<sup>2</sup> + 2x + 4</b>. Mira cómo desaparecen los términos centrales: esa anulación es toda la razón por la que el compañero nunca se rompe.',
+  'part.counter.does': 'seis productos, cuatro se anulan',
+  'part.counter.fits': 'el castillete',
+
+  /* the lessons: words shared by several methods */
+  'schema.hunt': 'multiplica {m}, suma {a}',
+  'schema.and': '  y  ',
+
+  /* the Prospector's Pick */
+  'schema.pick.s1': 'Acércalo a un trozo que todavía esté en la pared.',
+  'schema.pick.s1.key': 'Uno de estos. No qué números — qué <b>forma</b>.',
+  'schema.pick.s2': 'Elige la forma de esa lista y ahí se detiene.',
+  'schema.pick.s2.key': '<b>{name}.</b> {tell}',
+  'schema.pick.s3': 'Qué números lleva dentro sigue siendo cosa tuya.',
+  'schema.pick.s3.label': '{name}, así que la veta es',
+
+  /* the Lantern */
+  'schema.lantern.none': 'Ahí dentro no se mueve nada. Un elemento no tiene dos lados.',
+  'schema.lantern.none.key': 'No existe ningún lado. Eso <b>es</b> el metal nativo.',
+  'schema.lantern.s1': 'La linterna ilumina la <b>forma</b> de un lado &mdash; cuántas x, y hacia dónde va el signo.',
+  'schema.lantern.s1.key': 'Ilumina el lado <b>más sencillo</b>, y ni siquiera entero: la cifra sigue siendo tuya.',
+  'schema.lantern.s2': 'Rellena esa cifra, y el lado oscuro es lo que quede cuando salga.',
+  'schema.lantern.s3': 'Nómbralo y golpea. La linterna no te dirá si aciertas &mdash; te lo dirá la roca.',
+  'schema.lantern.s3.label': 'ajusta el martillo a',
+
+  /* the Steel Pick */
+  'schema.steel.s1': 'Pregúntate qué divide a todos los términos.',
+  'schema.steel.s1.label': 'lo más grande que los divide a todos',
+  'schema.steel.none': 'Nada salvo el uno, así que no hay metal que sacar. Un golpe nombrado sigue funcionando.',
+  'schema.steel.none.key': 'Sacar algo que no cambia nada no es un movimiento.',
+  'schema.steel.s2': 'Ponlo delante de un paréntesis.',
+  'schema.steel.s2.key': 'El metal ya ha salido. Lo que queda en el paréntesis es tuyo.',
+  'schema.steel.s3': 'Lo que va dentro es cada término dividido entre él.',
+
+  /* the Crosscut */
+  'schema.dial.two.s1': 'La misma X de siempre. El final arriba, el término central abajo.',
+  'schema.dial.two.s2': 'Y la misma búsqueda.',
+  'schema.dial.two.s3': 'Lo nuevo es dónde caen. Cada uno lleva una y.',
+  'schema.dial.two.s3.key': 'La pareja es cuántas <b>y</b> &mdash; no el final entero de un paréntesis.',
+  'schema.dial.two.s4': 'Que es lo que x&sup2; + 5x + 6 estaba haciendo desde el principio.',
+  'schema.dial.two.s4.why': 'Un 1 en los huecos da el trinomio simple. Una y da este.',
+  'schema.dial.two.s5': 'Y que no haya pareja entera sigue significando que no hay veta.',
+  'schema.dial.two.s5.key': 'Entre dos marcas está la roca, no tú.',
+  'schema.dial.two.s5.keyno': 'Este cae entre las marcas.',
+  'schema.dial.number': 'Una X necesita un término central debajo, y un número sencillo no tiene ninguno.',
+  'schema.dial.number.label': 'aquí no hay nada que cruzar',
+  'schema.dial.linear': 'No hay x&sup2;, así que no hay a&middot;c que poner arriba. Busca el metal que lleva cada término.',
+  'schema.dial.linear.label': 'este es del Pico de Acero',
+  'schema.dial.s1': 'El número del final va arriba de la X.',
+  'schema.dial.s1.loaded': 'Multiplica el x&sup2; por el final &mdash; a&middot;c. Eso va arriba.',
+  'schema.dial.s2': 'El término central va debajo.',
+  'schema.dial.s3': 'La pareja que hace las dos cosas va a los lados. Nada los rellena por ti.',
+  'schema.dial.s4': 'Y si ninguna pareja entera hace las dos cosas, no hay ninguna que encontrar &mdash; mueve el final fuera de un número entero y mira cómo desaparece.',
+  'schema.dial.s4.key': 'Entre dos marcas. Esa es la roca, no tú.',
+  'schema.is': '   es   ',
+
+  /* each method's name, the claim it rests on, and the lump to try */
+  'schema.pick.name': 'Probar la roca antes de golpear',
+  'schema.pick.why': 'Todos los demás instrumentos trabajan sobre un trozo que ya has sacado. Este trabaja en la pared, y nombra el TIPO en vez de la respuesta — así que elegir qué sacar es una decisión y no una lotería.',
+  'schema.pick.practice.ask': 'Nombra un número entero que atraviese el 12.',
+  'schema.lantern.name': 'Un lado iluminado, un lado oscuro',
+  'schema.lantern.why': 'Una factorización tiene dos lados, y cuando uno ha salido el otro es lo que queda. Así que un lado es un punto de apoyo, no la respuesta &mdash; y la linterna ilumina el más sencillo.',
+  'schema.lantern.practice.ask': 'x&sup2; &minus; 5x + 6 lleva ( x &minus; 2 ). Nombra el otro lado.',
+  'schema.steel.name': 'Sacar el factor común (el MCD)',
+  'schema.steel.why': 'Si cada término lleva el mismo metal, sale de todos a la vez y se pone delante de un paréntesis. Esa es la propiedad distributiva hecha al revés, y siempre es lo primero que hay que probar.',
+  'schema.steel.practice.ask': '6x + 15 &mdash; ¿qué es lo más grande que divide a los dos términos? Pon 0 en la casilla de x y ese número al final.',
+  'schema.dial.name': 'El método de la X',
+  'schema.dial.why': 'Dos números tienen que hacer dos trabajos a la vez: multiplicar a&middot;c y sumar el término central. Pon los dos objetivos en una X y la pareja que buscas es la que cumple los dos.',
+  'schema.dial.practice.ask': 'x&sup2; + 5xy + 6y&sup2; &mdash; la pareja multiplica 6 y suma 5. Nombra un paréntesis, y acuérdate de la y.',
+  'schema.shifter.name': 'El método de la caja',
+  'schema.shifter.why': 'Un x&sup2; solo puede salir de multiplicar dos partes con x, y el final solo de multiplicar los dos números. Pon eso en esquinas opuestas y los lados quedan obligados. Cambia de marcha antes y una cuarta potencia va en la misma caja.',
+  'schema.shifter.practice.ask': 'x&#8308; &minus; 5x&sup2; + 4 &mdash; lee el x&sup2; como la unidad y la pareja multiplica 4 y suma &minus;5. Nombra una mitad.',
+  'schema.drill.name': 'Dos extremos, leídos a simple vista',
+  'schema.drill.why': 'Algunos trozos no necesitan búsqueda: los dos extremos dan los paréntesis. Los cuadrados dan un número y su opuesto; los cubos dan un paréntesis y una pieza que nunca se separa.',
+  'schema.drill.practice.ask': 'x&sup3; &minus; 8 &mdash; los dos extremos son cubos exactos. Nombra el paréntesis que sale.',
+  'schema.auger.name': 'Factorización por agrupación',
+  'schema.auger.why': 'Cuatro términos se agrupan en dos parejas, y si sale el mismo paréntesis de las dos, atraviesa todo el trozo. Tres términos hay que <b>convertirlos</b> en cuatro primero &mdash; para eso está la X.',
+  'schema.auger.practice.ask': '3 &times; 2 es 6, así que se agrupa. Elige una letra y nombra ese paréntesis.',
+
+  /* the Shifter */
+  'schema.shifter.q1': 'x&sup2; multiplicado por sí mismo es x&#8308;. Así que lee el x&sup2; como la unidad.',
+  'schema.shifter.q2': 'Que es un trinomio, y va en la caja como cualquier otro.',
+  'schema.shifter.q2.cap': 'Esquinas opuestas, exactamente como antes &mdash; solo que las potencias van una marcha más arriba.',
+  'schema.shifter.q2.a11y': 'Una caja de dos por dos con x a la cuarta en una esquina y {c} en la opuesta.',
+  'schema.shifter.q3': 'Los lados llevan un solo x&sup2;, y los dos siguen siendo tuyos.',
+  'schema.shifter.cap.mid': 'Estos dos tienen que dar {mid}. Esa es toda la comprobación.',
+  'schema.shifter.away': ', restado',
+  'schema.shifter.q3.a11y': 'La misma caja una marcha más arriba, con los dos lados desconocidos.',
+  'schema.shifter.q4': 'Y luego lo que un trinomio nunca tiene: vuelve a mirar cada mitad.',
+  'schema.shifter.q4.key': 'Una mitad como x<sup>2</sup> &minus; 4 son dos cuadrados con un menos entre ellos, y vuelve a separarse. Esa segunda mirada es donde termina un trozo como este.',
+  'schema.shifter.q4.keyno': 'Ninguna pareja entera hace las dos cosas, así que no se separa de esta forma &mdash; ni de ninguna otra. Este está terminado.',
+  'schema.shifter.none': 'La caja necesita un x&sup2; para su primera esquina, y en este no hay.',
+  'schema.shifter.none.label': 'no hay x² que poner en una esquina',
+  'schema.shifter.m1': 'El x&sup2; va en una esquina, y el número del final en la opuesta.',
+  'schema.shifter.m1.cap': 'Esquinas opuestas, porque es la única forma de que un x² y un número sencillo salgan de los mismos dos lados.',
+  'schema.shifter.m1.a11y': 'Una caja de dos por dos con {sq} en una esquina y {c} en la opuesta, con las otras dos esquinas vacías.',
+  'schema.shifter.m2': 'Los lados de la caja son las dos piezas que buscas. Todavía no se conoce ninguna.',
+  'schema.shifter.m2.cap': 'Dos esquinas vienen dadas. Los dos lados, y las otras dos esquinas, no.',
+  'schema.shifter.m2.a11y': 'Una caja de dos por dos con {sq} en una esquina y {c} en la esquina opuesta, con cada lado marcado con un signo de interrogación.',
+  'schema.shifter.m3': 'Rellena las otras dos esquinas de modo que sumen el término central. Entonces los lados son la respuesta.',
+  'schema.shifter.m3.a11y': 'La misma caja, con las dos esquinas que quedan marcadas con signos de interrogación que tienen que sumar {mid}.',
+
+  /* the Drill */
+  'schema.drill.c1': 'Dos extremos, sin término central. ¿Son los dos cubos exactos?',
+  'schema.drill.front': 'el principio',
+  'schema.drill.end': 'el final',
+  'schema.drill.notcube': 'no es un cubo',
+  'schema.drill.c2': 'Lo son, así que ya se conoce un paréntesis: las dos raíces, con el signo que ya tiene el trozo.',
+  'schema.drill.c2.no': 'Uno no lo es, así que aquí no hay veta cúbica.',
+  'schema.drill.c2.key': 'Sin buscar. Las raíces <b>son</b> el paréntesis.',
+  'schema.drill.c2.keyno': 'Nada que leer.',
+  'schema.drill.c3': 'La pieza de detrás tiene tres términos.',
+  'schema.drill.c4': 'Esa pieza nunca se separa. Con ningún cubo.',
+  'schema.drill.c4.label': '{right}  es',
+  'schema.drill.c4.labelno': 'la pieza de detrás es',
+  'schema.drill.c4.el': 'un elemento',
+  'schema.drill.c4.why': 'Su discriminante siempre es negativo &mdash; así que esto termina en <b>un</b> golpe.',
+  'schema.drill.number': 'Una veta gemela es una forma, y un número sencillo no tiene forma que tener.',
+  'schema.drill.number.label': 'nada cuadrado en',
+  'schema.drill.linear': 'No hay x&sup2;, así que no hay dos cuadrados de los que ser la diferencia.',
+  'schema.drill.linear.key': 'Este trozo es del Pico de Acero.',
+  'schema.drill.not1': 'Dos pruebas, y este trozo falla una: ¿el término central es cero, y los dos extremos son cuadrados?',
+  'schema.drill.not1.label': 'término central',
+  'schema.drill.not2': 'Así que no es una veta gemela. Llévale la X en su lugar.',
+  'schema.drill.t1': 'Dos pruebas. ¿El término central es cero, y los dos extremos son cuadrados perfectos?',
+  'schema.drill.t1.label': 'centro',
+  'schema.drill.t2': 'Pasa las dos, así que la pareja tiene que sumar cero &mdash; un número y su opuesto.',
+  'schema.drill.t2.bot': 'nada en el centro',
+  'schema.drill.t3': 'Así que saca la raíz cuadrada de cada extremo. Ese número, con más y con menos, son los dos paréntesis.',
+
+  /* the Powered Auger */
+  'schema.auger.g1': 'Ya son cuatro términos. No hay nada que partir.',
+  'schema.auger.g1.label': 'cuéntalos',
+  'schema.auger.g2': 'Tómalos de dos en dos.',
+  'schema.auger.g3': 'Saca la parte común de cada mitad.',
+  'schema.auger.g4': '¿Ha salido el <b>mismo</b> paréntesis de las dos?',
+  'schema.auger.g4.key': 'Uno que sale <b>dos veces</b> atraviesa el trozo. Lo que había delante de cada mitad es el otro lado.',
+  'schema.auger.g5': 'Así que el final te lo dice antes de empezar.',
+  'schema.auger.g5.label': '{b}  ×  {c}  es',
+  'schema.auger.g5.why': 'Aquí es <b>{d}</b>. Una multiplicación es toda la prueba.',
+  'schema.auger.g6': 'Un trinomio es esto, un paso después.',
+  'schema.auger.g6.why': '6x&sup2; + 7x &minus; 3 tiene tres, así que la X parte el término central y <b>forma</b> cuatro.',
+  'schema.auger.number': 'Lo que salga de un número sencillo tiene que dividirlo exactamente. Esa es la única regla aquí.',
+  'schema.auger.number.key': 'Nada que agrupar — un número no tiene término central que partir.',
+  'schema.auger.linear': 'No hay x&sup2;, así que no hay nada que agrupar. Lo que salga tiene que dividir a los dos términos.',
+  'schema.auger.linear.label': 'tiene que dividir a los dos',
+  'schema.auger.m1': 'Multiplica el x&sup2; por el final. Eso es lo de arriba de la X.',
+  'schema.auger.m2': 'Busca la pareja que hace las dos cosas. La barrena no la elegirá por ti.',
+  'schema.auger.m3': 'Parte el término central en esas dos piezas &mdash; cuatro términos en vez de tres.',
+  'schema.auger.m4': 'Los cuatro van en una caja. Saca el metal común de cada fila y cada columna.',
+  'schema.auger.m4.cap': 'El término central partido llena las otras dos esquinas. Los bordes son los factores.',
+  'schema.auger.m4.a11y': 'Una caja de dos por dos con los cuatro términos, y las dos parejas de bordes desconocidas.',
+  'schema.auger.m5': 'Sale el mismo paréntesis de los dos grupos. Esa repetición es la veta.',
+  'schema.auger.m5.key': 'Un paréntesis que sale <b>dos veces</b> atraviesa todo el trozo.',
+
+  /* the diagrams the lessons and the instruments draw with */
+  'dia.unknown': 'desconocido',
+  'dia.x.top': '<b>arriba</b> — lo que multiplican',
+  'dia.x.bottom': '<b>abajo</b> — lo que suman',
+  'dia.x.sides': '<b>lados</b> — la pareja que buscas',
+  'dia.x.aria': 'Un diagrama en X. Arriba: {top}, el número que multiplica la pareja. Abajo: {bottom}, el número que suma la pareja. Izquierda: {left}. Derecha: {right}.',
+  'dia.split.aria': 'Un diagrama de separación. {whole} se separa en {left} y {right}.',
+  'dia.split.lump': 'Un trozo',
+  'dia.split.unknown': 'una pieza desconocida',
+  'dia.kinds.lit': 'Una lista corta de tipos de mineral, con {kind} señalado.',
+  'dia.kinds.none': 'Una lista corta de tipos de mineral, todavía sin ninguno señalado.',
+  'dia.tick.on': 'Una regla marcada en los números enteros, con una veta sobre una marca.',
+  'dia.tick.off': 'Una regla marcada en los números enteros, con una veta que cae entre dos marcas, donde ningún lingote entero puede caer.',
+  'dia.xbox.aria': 'Una caja de dos por dos con los cuatro términos, y los factores a lo largo de sus bordes.',
+  'dia.area.aria': 'modelo de área',
+
+  /* the pour, written out, and the mold seen from above */
+  'pour.lab': 'LA COLADA, POR ESCRITO',
+  'pour.in': 'lo que entró en el molde',
+  'pour.over': 'Eso es más metal del que cabe en el molde.',
+  'pour.pairs': 'cada parte de un metal se encuentra con cada parte del otro',
+  'pour.terms': 'cada pareja multiplicada',
+  'pour.depth': 'la profundidad llega a cada parte',
+  'pour.merged': '{from} son el mismo tipo de cosa, así que son un solo término',
+  'pour.out': 'sale un solo objeto',
+  'mold.casting': 'una pieza',
+  'mold.aria.pour': 'Visto desde arriba: metal que baja por un canal hasta un molde cortado con la forma de {tool}, y los factores que se resuelven en {single}',
+  'mold.aria.wait': 'Visto desde arriba: un molde cortado con la forma de {tool}, esperando el metal.',
+
+  /* what an instrument writes into the ore, and says about it */
+  'lens.steel.found': 'cada término lleva {g}',
+  'lens.native': 'ahí dentro no se mueve nada',
+  'lens.shaped': 'uno de sus lados tiene la forma {shape}',
+  'lens.half.shaped': 'una de sus mitades tiene la forma {shape}',
+  'lens.side': 'uno de sus lados es {side}',
+  'lens.drill.cubes': 'los dos extremos son cubos exactos',
+  'lens.drill.sum': 'el centro es una suma',
+  'lens.shifter.gear': 'un trinomio, una marcha más abajo',
+  'lens.shifter.product': 'el final es un producto',
+  'lens.auger.halves': 'dos mitades, y un paréntesis ya fuera de la primera',
+  'lens.auger.four': 'cuatro términos, no tres',
+  'lens.dial.pair': 'la pareja multiplica {m} y suma {a}',
+  'lens.pick.apart': 'se separa',
+  'lens.x.aria': 'Una X. Arriba: {top}, lo que multiplica la pareja. Abajo: {bot}, lo que suma. {sides}',
+  'lens.x.one': 'Izquierda: {left}. Derecha desconocida.',
+  'lens.x.none': 'Los dos lados desconocidos.',
+  'lens.none.owner': 'no muerde — ese trozo es de {tool}',
+  'lens.none': 'no muerde en esta forma',
+  'lens.readby': '{ore}, leído con {tool} como {read}',
+  'lens.notmy.group': '<b>{line}</b> Cuatro términos y dos letras es trozo de la <b>Barrena Mecánica</b> &mdash; los toma de dos en dos.',
+  'lens.notmy.cube': '<b>{line}</b> Una x al cubo es trozo del <b>Taladro</b> &mdash; lee los dos extremos y saca un paréntesis a simple vista.',
+  'lens.notmy.pair': '<b>{line}</b> Dos letras de principio a fin es trozo del <b>Crucero</b> &mdash; la búsqueda es la misma, solo cambia el aspecto de los paréntesis.',
+  'lens.notmy.gear': '<b>{line}</b> Una x a la cuarta es trozo del <b>Cambiador</b> &mdash; primero baja todo una marcha.',
+  'lens.bracket.big': 'Ahí dentro no se mueve nada.',
+  'lens.bracket.sm': 'Una sola x, una sola y, y nada que divida a las dos. {ore} es un elemento &mdash; el mismo tipo de objeto que un número primo.',
+
+  /* an instrument held to a piece on the breaking floor: words shared by several */
+  'read.nothing': 'Ahí dentro no se mueve nada.',
+  'read.seam': 'Todavía lo atraviesa una veta.',
+  'read.light': 'HASTA DONDE LLEGA LA LUZ',
+
+  /* the Lantern, on the floor */
+  'read.lantern.cube.native': 'Ningún extremo es un cubo exacto y tampoco sale de él nada lineal. Es un elemento.',
+  'read.lantern.cube.seam': 'Sale un paréntesis, y lo que queda detrás está terminado en cuanto cae.',
+  'read.lantern.cube.key': 'Cuántas x, y hacia dónde va el signo. La cifra es tuya &mdash; y también toda la pieza de tres términos de detrás.',
+  'read.lantern.two.native': 'No hay dos números enteros que multipliquen el final y sumen el término central, así que no sale nada. Es un elemento.',
+  'read.lantern.two.seam': 'Se separa en dos paréntesis, y los dos llevan las dos letras. La linterna ilumina la forma de uno.',
+  'read.lantern.two.key': 'Una sola x, luego un signo, luego cierto número de y. La cifra es tuya, y también todo el otro paréntesis.',
+  'read.lantern.quart.native': 'No lo atraviesa ninguna veta de números enteros &mdash; ni como trinomio en x&sup2;, ni de ninguna otra forma. Es un elemento.',
+  'read.lantern.quart.seam': 'Se separa en dos mitades, y merece la pena volver a mirar cada una. La linterna ilumina la forma de una.',
+  'read.lantern.quart.key': 'Un solo x&sup2; y hacia dónde va el signo. La cifra es tuya, y también toda la otra mitad.',
+  'read.lantern.group.native': 'El final no es el producto de los dos del centro, así que estos cuatro términos no se separan de dos en dos. Es un elemento.',
+  'read.lantern.group.seam': 'Se separará en dos paréntesis, con dos letras distintas. La linterna ilumina la forma de uno.',
+  'read.lantern.group.key': 'Qué letra y hacia dónde va el signo. La cifra sigue siendo tuya, y también todo el otro paréntesis.',
+  'read.lantern.prime': 'Es un número primo. A la luz, sigue siendo exactamente lo que es.',
+  'read.lantern.element': 'No lo atraviesa ninguna veta de números enteros. Es un elemento — el mismo tipo de objeto que un número primo.',
+  'read.lantern.apart': 'Se separará. La linterna ilumina un lado y deja el otro a oscuras.',
+  'read.lantern.key.plain': 'Un lado está iluminado. El otro es lo que quede cuando ese salga — y la linterna no lo iluminará.',
+  'read.lantern.key.shape': 'La <b>forma</b> de un lado, y no su número. La linterna te muestra cuántas x y hacia dónde va el signo; la cifra sigue siendo tuya, y también todo el otro lado.',
+
+  /* the Drill, on the floor */
+  'read.drill.cube.lab': 'LA PRUEBA DE LA VETA CÚBICA',
+  'read.drill.cube.front': '¿el principio es un cubo exacto?',
+  'read.drill.cube.end': '¿y el final?',
+  'read.drill.cube.no': 'no — nada al cubo da {n}',
+  'read.drill.cube.yes': 'sí — {r}<sup>3</sup> es {n}',
+  'read.drill.cube.off': 'ASÍ QUE UN PARÉNTESIS SALE A SIMPLE VISTA',
+  'read.drill.cube.key': 'Las dos raíces cúbicas, con el signo que ya tiene el trozo. Lo que queda es una pieza de tres términos &mdash; y <b>esa nunca se separa</b>, que es lo que merece la pena recordar.',
+  'read.drill.cube.none': '<b>Así que no hay veta cúbica en él.</b> ',
+  'read.drill.cube.finished': 'Y tampoco lo atraviesa nada más &mdash; este está terminado.',
+  'read.drill.cube.other': 'De este trozo sí sale algo, pero no por los cubos.',
+  'read.drill.tests': 'LAS DOS PRUEBAS DE LA VETA GEMELA',
+  'read.drill.q.mid': '¿el término central es cero?',
+  'read.drill.q.sq': '¿los dos extremos son cuadrados, con un menos entre ellos?',
+  'read.drill.adds': 'ASÍ QUE LA PAREJA SUMA CERO',
+  'read.drill.two.mid': 'sí — {ore} no tiene término en xy',
+  'read.drill.two.sq': 'sí — x<sup>2</sup>, y {y} al cuadrado',
+  'read.drill.two.key': 'El mismo número las dos veces, una hacia cada lado &mdash; y aquí es cuántas <b>y</b>, no un número sencillo.',
+  'read.drill.two.not': 'Hay término central, así que esto no es una veta gemela.',
+  'read.drill.quart.mid': 'sí — {ore} no tiene término en x<sup>2</sup>',
+  'read.drill.quart.sq': 'sí — x<sup>4</sup> es ( x<sup>2</sup> )<sup>2</sup>, y {c} es {r}<sup>2</sup>',
+  'read.drill.quart.key': 'El mismo número las dos veces, una hacia cada lado. Qué número es cosa tuya &mdash; y luego una de estas dos mitades vuelve a separarse.',
+  'read.drill.quart.not': 'No falta el término central ni hay un menos entre dos cuadrados, así que aquí no hay nada que leer en la forma.',
+  'read.drill.group.not': 'Aquí no hay nada al cuadrado, así que no hay dos cuadrados entre los que buscar una diferencia.',
+  'read.drill.prime.lab': 'DE ESTE NO SALE NINGUNA PAREJA',
+  'read.drill.prime.label': 'la única pareja que hay',
+  'read.drill.prime.pair': '1  y  {n}',
+  'read.drill.prime.hint': '<b>{n} es un número primo</b>, así que esa pareja es el número y nada. Es metal nativo &mdash; el mismo objeto que un polinomio irreducible, y ahí dentro no hay nada que buscar para el taladro.',
+  'read.drill.num.label': 'cada pareja que multiplica',
+  'read.drill.num.hint': '<b>El taladro no elegirá una fila por ti.</b> Con cualquiera se puede golpear; algunas dejan más por romper.',
+  'read.drill.lin.label': 'no hay x² en la que buscar — mira',
+  'read.drill.lin.and': ' y ',
+  'read.drill.lin.together': ' juntos',
+  'read.drill.mid.yes': 'sí — {ore} no tiene término en x',
+  'read.drill.mid.no': 'no — es {mid}',
+  'read.drill.sq.yes': 'sí',
+  'read.drill.sq.pos': 'no — el final es positivo',
+  'read.drill.sq.not': 'no — uno de los extremos no es un cuadrado',
+  'read.drill.twin.hint': 'Un número y su opuesto &mdash; la única pareja que suma cero. Saca la raíz cuadrada de cada extremo y eso son los dos paréntesis.',
+  'read.drill.not.hint': 'No es una veta gemela, así que no hay nada que leer en la forma. El <b>Crucero</b> es el de este trozo &mdash; busca la pareja en vez de reconocerla.',
+  'read.pair.must': 'así que la pareja tiene que multiplicar {m} y sumar {a}',
+  'read.becomes': '   se convierte en   ',
+
+  /* the Shifter, on the floor */
+  'read.shifter.cube.not': 'La caja quiere un x&sup2; en su primera esquina, y este empieza una potencia más arriba.',
+  'read.shifter.two.not': 'La caja quiere un número sencillo en la esquina opuesta al x&sup2;, y este termina en y&sup2;.',
+  'read.shifter.group.not': 'Aquí no hay x&sup2; que poner en la primera esquina de una caja.',
+  'read.shifter.gear.lab': 'BÁJALO UNA MARCHA &mdash; LEE EL x&sup2; COMO LA UNIDAD',
+  'read.shifter.trinomial': 'Y AHORA ES UN TRINOMIO',
+  'read.shifter.gear.native': '<b>Y ninguna pareja entera hace las dos cosas</b>, así que no se separa de esta forma &mdash; ni de ninguna otra. Este está terminado.',
+  'read.shifter.gear.seam': '<b>Luego vuelve a mirar cada mitad.</b> Una mitad como x&sup2; &minus; 4 son dos cuadrados con un menos entre ellos, y el Taladro sabe qué hacer con eso. Esa segunda mirada es donde de verdad termina un trozo como este.',
+  'read.shifter.none': '<b>En este no hay x².</b> La caja necesita uno para su primera esquina.',
+  'read.shifter.xfirst': 'PRIMERO LA X',
+  'read.shifter.box': 'Y LA PAREJA VA EN LA CAJA',
+  'read.shifter.box.cap': 'Dos esquinas vienen dadas, una está iluminada, y todos los lados siguen abiertos.',
+  'read.shifter.box.a11y': 'Una caja de dos por dos con {sq} en una esquina y {c} en la esquina opuesta, y cada lado marcado con un signo de interrogación.',
+  'read.shifter.middles': 'los dos términos centrales tienen que dar',
+  'read.shifter.hint': 'Saca el metal común de cada fila y de cada columna, y los lados de la caja son la respuesta.',
+
+  /* the Crosscut, on the floor */
+  'read.dial.cube.not': 'Una X cuelga bajo un término central, y este no tiene ninguno.',
+  'read.dial.lab.end': 'LA X &mdash; el final arriba, el término central abajo',
+  'read.dial.lab.ac': 'LA X &mdash; a&middot;c arriba, el término central abajo',
+  'read.dial.y': 'Y CADA UNO VIENE CON UNA y',
+  'read.dial.two.native': 'Ninguna pareja entera hace las dos cosas, así que de este no sale nada. Es un elemento.',
+  'read.dial.two.seam': 'Los mismos dos números que te daría un trinomio simple &mdash; cada uno con la y que siempre estuvo ahí, llevando un 1.',
+  'read.dial.quart.not': 'El crucero cuelga una X bajo un x&sup2;, y el principio de este es una cuarta potencia.',
+  'read.dial.group.not': 'El crucero cuelga una X bajo un término central, y este trozo tiene dos.',
+  'read.dial.number': '<b>El crucero está hecho para trozos que llevan una x.</b> Un número sencillo no tiene término central bajo el que colgar una X.',
+  'read.dial.given': 'Uno de la pareja viene dado. El otro es lo que queda cuando le haces las mismas dos preguntas &mdash; y el martillo es lo único que lo confirma.',
+  'read.dial.linear': '<b>No hay x&sup2;, así que no hay a&middot;c que poner arriba.</b> El Pico de Acero es el de este trozo.',
+  'read.dial.nopair': 'Y SI NINGUNA PAREJA ENTERA HACE LAS DOS COSAS',
+
+  /* the Prospector's Pick, on the floor */
+  'read.pick.floor': '<b>Este trabaja en la veta, no en el suelo.</b> Acércalo a un trozo que todavía esté en la pared y te dice qué tipo de mineral hay antes de sacarlo. Aquí abajo ya tienes el trozo.',
+
+  /* the Steel Pick, on the floor */
+  'read.steel.divides': 'ENTRE QUÉ SE DIVIDE CADA TÉRMINO',
+  'read.steel.both': 'lo más grande que divide a los dos',
+  'read.steel.three': 'lo más grande que divide a los tres',
+  'read.steel.four': 'lo más grande que divide a los cuatro',
+  'read.steel.nothing': 'Así que no hay nada que poner delante de un paréntesis.',
+  'read.steel.two.not': 'Un trozo con un solo x&sup2; al principio nunca lleva un metal sencillo.',
+  'read.steel.native': '<b>Y tampoco va a salir nada más.</b> {why} Es metal nativo &mdash; ya lo más refinado de la mina. El acero no tiene dónde morder porque ahí dentro no queda nada que morder.',
+  'read.steel.prime': '{n} es un número primo.',
+  'read.steel.noseam': 'No lo atraviesa ninguna veta de números enteros.',
+  'read.steel.x': 'Así que no hay nada que poner delante de un paréntesis. La X es la forma de entrar en este:',
+  'read.steel.neither': 'Así que no hay nada que poner delante de un paréntesis, ni x&sup2; bajo el que colgar una X. Lo que queda es nombrar un factor tú.',
+  'read.steel.neither.key': 'Los dos lados siguen siendo tuyos. Nombra uno y golpea.',
+  'read.steel.same': 'CADA TÉRMINO LLEVA EL MISMO METAL',
+  'read.steel.each': 'cada uno se divide entre',
+  'read.steel.front': 'así que sale delante',
+  'read.steel.rip': 'Arrancar el metal común',
+
+  /* the Powered Auger, on the floor */
+  'read.auger.cube.not': 'Dos términos, así que no hay término central que partir ni nada que tomar de dos en dos.',
+  'read.auger.two.not': 'Tres términos, y la pareja va directa a los paréntesis &mdash; no hay término central que partir antes.',
+  'read.auger.quart.not': 'Tres términos, y ningún término central que merezca la pena partir hasta que bajen las potencias.',
+  'read.auger.g1': '1 &mdash; TÓMALOS DE DOS EN DOS',
+  'read.auger.g2': '2 &mdash; SACA LA PARTE COMÚN DE CADA MITAD',
+  'read.auger.g3': '3 &mdash; Y SI SALIÓ EL MISMO PARÉNTESIS DE LAS DOS',
+  'read.auger.g.key': 'El paréntesis que salió de las dos mitades es un lado; lo que quedó delante de cada una es el otro. La barrena no escribirá el segundo por ti.',
+  'read.auger.g.keyno': 'De la segunda mitad no salió nada común, así que las dos no coinciden. Compara {d} con {b} × {c} &mdash; esa es toda la prueba.',
+  'read.auger.num.label': 'lo que salga tiene que dividir',
+  'read.auger.lin.label': 'lo que salga tiene que dividir a los dos',
+  'read.auger.m1': '1 — LA X',
+  'read.auger.m2': '2 — PARTE EL TÉRMINO CENTRAL CON ESA PAREJA',
+  'read.auger.m3': '3 — LOS CUATRO TÉRMINOS VAN EN LA CAJA',
+  'read.auger.m3.cap': 'Saca el metal común de cada fila y de cada columna. Los lados son los factores.',
+  'read.auger.m4': '4 — LEE LOS FACTORES EN LOS BORDES',
+  'read.auger.hint': 'Los dos lados son tuyos. La barrena lee la roca y no elegirá por ti.',
+
+  /* the panel an instrument opens in, and the method line under every reading */
+  'sheet.close': 'Cerrar',
+  'sheet.close.aria': '{close} — cierra este panel',
+  'sheet.fail': 'Este instrumento no ha podido leer eso.',
+  'sheet.guide.who': 'Mr Factor',
+  'sheet.guide.give': 'te va a decir este sin más',
+  'sheet.guide.word': 'tiene algo que decir sobre este',
+  'sheet.foot': 'Aquí nada golpea por ti. Pulsa <b>Esc</b> para guardarlo.',
+  'sheet.method.go': 'léelo en la Nave de Fundición &rarr;',
+  'sheet.method.aria': 'Leer el método completo de {name} en la Nave de Fundición',
+  'sheet.schema.why': 'por qué funciona',
+  'sheet.schema.reach': 'Este método no llega a ese trozo.',
+  'sheet.schema.foot': 'Los pasos abiertos son tuyos. Aquí nada los hace, y nada dice si los tienes bien.',
+  'tool.sheet.label': '{tool}, acercado a {ore}',
+  'tool.sheet.sub': 'acercado a <b>{ore}</b>',
+  'tool.sheet.close': 'Retirarlo',
+  'part.sheet.label': '{part}, ya fundido',
+  'part.sheet.sub': 'fundido <b>{cast}</b>, colocado en {fits}',
+  'part.sheet.foot': 'Una pieza no es un instrumento. Nada de tu cinturón cambió al fundirla, y nada en la mina se lee distinto por ella.',
+  'part.sheet.why': '<b>{does}.</b> La mina hace esto al revés &mdash; eso es todo lo que es factorizar.',
+  'room.name.mill': 'el Bocarte',
+  'room.name.shed': 'la Nave de Fundición',
+
+  /* naming the other side */
+  'side.lab': 'EL OTRO LADO',
+  'side.hint': 'Escribe lo que crees que es, y luego llévalo al yunque. El martillo es lo único de aquí que confirma algo.',
+  'side.aria.num': 'el número que crees que lo atraviesa',
+  'side.go': 'Ajustar el martillo a eso',
+  'side.notwhole': 'Eso no es un número entero, así que todavía no hay nada a lo que ajustar la cabeza.',
+  'side.gone': 'Esa pieza ya no está en el suelo.',
+
+  /* the decimal dial and the pair table */
+  'dial.tag': 'DIAL DECIMAL',
+  'dial.hint': 'Mueve el último número fuera de los enteros y mira qué le pasa a la veta. La roca nunca cambia — lo que cambia es la <em>búsqueda</em>.',
+  'dial.aria': 'Mover el último término',
+  'dial.clean': '<b>Por este pasa una veta de números enteros.</b> Los lingotes enteros caerán sobre ella — aunque el dial no te va a decir cuáles.',
+  'dial.none': '<b>No hay veta de números enteros.</b> ',
+  'dial.two': 'La veta es real — cerca de {p} y {q} — pero esos no son números enteros, y los lingotes enteros nunca caerán sobre ellos.',
+  'dial.one': 'La veta es real — pasa por {r} — pero ese no es un número entero, y los lingotes enteros nunca caerán sobre él.',
+  'dial.nodec': 'Y tampoco ninguna en decimales.',
+  'scan.pair': 'pareja',
+  'scan.mul': 'multiplican',
+  'scan.add': 'suman',
+  'scan.cell': '{a}  y  {b}',
+
+  /* the belt */
+  'belt.lab': 'EN TU CINTURÓN',
+  'belt.h3': 'En tu cinturón',
+  'belt.bare': 'Cuero desnudo. Las herramientas no se reparten — las haces en la forja, con metal que tú mismo sacaste.',
+  'belt.armed': '<b>{tool} está en tu mano.</b> Haz clic en una roca para usarlo.',
+  'belt.idle': 'Haz clic en uno y luego en una roca — o arrástralo hasta una. <b>¿cómo?</b> abre la sala que lo enseña.',
+  'belt.aria.armed': '{tool}. {ds} En tu mano — haz clic en una roca para usarlo, o vuelve a hacer clic para dejarlo.',
+  'belt.aria.idle': '{tool}. {ds} Haz clic para cogerlo y luego haz clic en una roca. O arrástralo hasta una.',
+  'belt.how': '¿cómo?',
+  'belt.how.aria': '¿Cómo funciona {tool}? Ir a {room}.',
+  'belt.how.title': 'Cómo funciona — {room}',
+
+  'flash.done': 'Hecho.',
+
+  /* the Forge */
+  'forge.title': 'La Forja',
+  'forge.lede': '<b>Aquí es donde se hacen las cosas.</b> La mina parte la roca; aquí el horno va al revés — el metal nativo entra en un molde y sale una herramienta formada. Eso es <b>distribuir</b>, no pasa en ningún otro sitio de la explotación, y el molde toma la forma de lo que viertes en vez de elegirse. La pieza sale sana, o es chatarra.',
+  'board.h3': 'El Tablero de Encargos',
+  'board.hint': 'Cada encargo está cortado para <b>un objeto exacto</b>. Encuentra los metales que al multiplicarse lo dan y la pieza sale sana. Se vuelven más difíciles hacia abajo del tablero, y las herramientas también.',
+  'order.cast': 'fundir <b>{cast}</b>',
+  'order.fitted': 'colocado en {fits}',
+  'order.hands': 'en tus manos',
+  'order.ready': 'tienes el metal',
+  'order.short': 'todavía no está en el estante',
+  'order.aria': '{nm} — {does}. Fundir {cast}. {state}',
+  'order.aria.fitted': 'Ya fundido y colocado en {fits}.',
+  'order.aria.belt': 'Ya hecho y en tu cinturón.',
+  'order.aria.ready': 'Tienes el metal para esto. Abre el molde.',
+  'order.aria.short': 'Todavía no tienes el metal para esto. Abre el molde para ver qué pide.',
+  'deep.h3': 'Piezas Profundas',
+  'deep.hint': 'El metal de los pozos bajos &mdash; paréntesis con <b>y</b>, paréntesis con dos letras, elementos que no se rompen &mdash; no sirve para ningún encargo del Tablero de Encargos. Estos están cortados para él. <b>Ninguno es un instrumento</b>: son piezas para la explotación, y la razón para fundir una es la multiplicación que te hace hacer. Cada una que fundes sube a la superficie, colocada en el edificio para el que se cortó.',
+  'rack.lab': 'EL ESTANTE &mdash; metal nativo, listo para gastar',
+  'rack.empty': 'Vacío. Rompe un trozo hasta el final en la mina y el metal se guarda aquí.',
+  'rack.plain': 'metal sencillo',
+  'rack.x': 'metal con una x',
+  'rack.deep': 'metal de los pozos profundos',
+  'rack.aria.used': '{metal} — ya está en el molde',
+  'rack.aria.open': '{metal} — échalo en el molde',
+  'rack.aria.first': '{metal} — elige antes un encargo',
+  'rack.title.used': 'Ya está en el molde',
+  'rack.title.open': 'Échalo en el molde',
+  'rack.title.first': 'Elige antes un encargo',
+  'rack.note.used': 'Ese ya está en el molde. Haz clic en él en la ranura para sacarlo.',
+  'rack.note.first': 'Elige antes un encargo del Tablero de Encargos, y el molde se abrirá.',
+  'rack.note.full': 'El molde está lleno. Saca algo de una ranura si quieres cambiarlo.',
+  'heap.tag': 'EL PATIO &mdash; LO QUE TODAVÍA ES ROCA',
+  'heap.lab': 'EL MONTÓN &mdash; todavía con una veta',
+  'heap.empty': 'Aquí no se ha echado nada. Lo que dejes a medio romper en la mina acaba en el montón.',
+  'heap.aria': '{ore} — todavía es roca. La forja no puede gastarlo hasta que se rompa.',
+  'heap.hint': '<b>El horno no acepta roca.</b> Todo lo del montón todavía tiene una veta — rómpelo en la mina y el metal vuelve aquí.',
+  'shelf.tag': 'LA REPISA &mdash; EN QUÉ SE CONVIRTIÓ EL METAL PROFUNDO',
+  'shelf.empty': 'un hueco vacío',
+  'shelf.aria.made': '{nm}, fundido {cast}, colocado en {fits}',
+  'shelf.aria.empty': 'Un hueco vacío en la repisa.',
+  'shelf.any': '<b>Ninguna de estas es un instrumento.</b> Una pieza es el objeto en sí &mdash; nada de tu cinturón cambió al fundirla. Cada una está arriba en la superficie, en el edificio para el que se cortó.',
+  'shelf.none': 'Todavía no se ha fundido nada. Solo los encargos de <b>Piezas Profundas</b> usan metal de los pozos bajos.',
+  'craft.tag': 'EL TALLER DE FUNDICIÓN',
+  'craft.cold': 'El molde está frío.',
+  'craft.for': 'ESTE MOLDE ESTÁ CORTADO PARA',
+  'craft.in': 'Lo que va dentro',
+  'craft.chip.title': 'Sacarlo',
+  'craft.chip.aria': '{metal} está en el molde. Sacarlo.',
+  'craft.empty': 'vacío',
+  'craft.hint.out': 'Haz clic en uno para sacarlo.',
+  'craft.hint.in': 'Haz clic en un metal del estante de abajo para echarlo.',
+  'craft.pour': 'Verter el molde',
+  'craft.notfull': 'El molde todavía no está lleno.',
+  'craft.cannot': '<b>El estante todavía no puede hacer {cast}.</b> No hay {n} metales en él que al multiplicarse den eso. Nada está bloqueado — rompe más mineral y lo que salga se guarda aquí.',
+  'pour.sound': 'Sana.',
+  'pour.scrap': 'Chatarra.',
+  'pour.send': 'Enviarla a {fits}',
+  'pour.part.foot': '<b>{does}.</b> Eso es todo lo que enseña una pieza profunda, y está en la repisa de abajo. <b>No es un instrumento</b> &mdash; nada de tu cinturón cambió, y nada en la mina se lee distinto por ella.',
+  'pour.belt': 'Colgarla del cinturón',
+  'pour.lesson': '<b>Su lección se ha abierto en la planta de trabajo de la Nave de Fundición.</b> Recorre {name} paso a paso sobre un trozo elegido para ello, y al final hay uno para probar. Nada en la mina depende de ello.',
+  'pour.read': 'Leerla en la Nave de Fundición &rarr;',
+  'pour.rake': 'Rastrillarla y volver a probar',
+  'judge.ok': 'Los metales que al multiplicarse lo dan eran los metales que lleva.',
+  'judge.other': 'Eso funde <b>{got}</b>, que es un objeto sano &mdash; solo que no es este. El encargo es para <b>{want}</b>.',
+  'judge.over': 'Eso es más metal del que cabe en el molde — se ha desbordado. El encargo es para <b>{want}</b>.',
+  'judge.over.big': 'Eso es más metal del que cabe en el molde — se ha desbordado. El encargo es para <b>{want}</b>, y lo que has vertido es más grande que eso.',
+  'judge.off.a': 'x²&nbsp;<b>{got}</b>, se quería <b>{want}</b>',
+  'judge.off.b': 'centro&nbsp;<b>{got}</b>, se quería <b>{want}</b>',
+  'judge.off.c': 'final&nbsp;<b>{got}</b>, se quería <b>{want}</b>',
+  'judge.missed': 'Falló: {list}.',
+
+  /* the Mine: the shaft */
+  'shaft.h3': 'El Pozo',
+  'shaft.hint': 'Baja tan hondo como quieras. Nunca tienes que romper nada para descender — llena la vagoneta y trabájala cuando te apetezca.',
+  'shaft.layer': 'CAPA {n}',
+  'shaft.shut': 'TODAVÍA SIN ENTIBAR',
+
+  /* the Mine: the rock face */
+  'face.h3': 'Capa {n} &mdash; {name}',
+  'face.depth': 'Aquí el mineral es {what}. Mira uno bien antes de golpear &mdash; nada se rompe hasta que tú lo digas.',
+  'face.aria': 'Una veta de roca en la capa {n}, más ancha que la pantalla. Desplázate o usa los botones de exploración para moverte por ella.',
+  'face.rock.aria': 'Un trozo de mineral: {ore}. Míralo, y luego rómpelo.',
+  'face.scan.back': '◀ volver atrás',
+  'face.scan.along': 'seguir la veta ▶',
+  'face.where': 'Por dónde vas en la veta',
+
+  /* the Mine: a lump picked out of the wall */
+  'insp.aria': 'Lo que estás mirando, y qué hacer con ello',
+  'insp.lab': 'ESTÁS MIRANDO',
+  'insp.front.number': 'no lleva ninguna x',
+  'insp.front.flat': 'sin x², una veta plana',
+  'insp.front.one': 'un x², sin nada delante',
+  'insp.front.a': '{a} delante del x²',
+  'insp.vein.one': 'Una veta',
+  'insp.vein.many': '{n} vetas',
+  'insp.obs': '<b>{veins}</b> · {front} · capa {layer}, {name}',
+  'insp.pick': '<br><b class="pickread">El pico lo lee como {name}.</b> <em>{tell}</em>',
+  'insp.native': 'Nada que romper. El sitio de este es el patio.',
+  'insp.worth': 'Lo atraviesa una veta. Merece la vagoneta.',
+  'insp.nopick': '<br><em>Qué veta lo atraviesa no es algo que puedas ver desde aquí — eso es trabajo del ensayo.</em>',
+  'insp.swing': 'Golpear con el pico',
+  'insp.swing.aria': 'Sacar {ore} de la veta y echarlo a la vagoneta',
+  'insp.keep': 'Seguir explorando',
+  'insp.keep.aria': 'Dejar {ore} en la pared y seguir por la veta',
+
+  /* the Mine: the cart */
+  'cart.tag': 'LA VAGONETA',
+  'cart.empty': 'Vacía. Golpea con el pico la pared de arriba — saca todo lo que quieras antes de trabajar nada.',
+  'cart.drag': '<b>Arrastra un instrumento hasta una roca</b> y los números grabados en ella cambian.',
+  'cart.aria.armed': '{ore}, capa {layer}. Haz clic para usar {tool} en él.',
+  'cart.aria.idle': '{ore}, capa {layer}. Suelta un instrumento sobre él, o envíalo con los dos controles de abajo.',
+  'cart.break': 'Romperlo',
+  'cart.break.aria': 'Poner {ore} en el suelo de rotura y trabajarlo',
+  'cart.yard': 'Al patio',
+  'cart.yard.aria': 'Apartar {ore} en el patio sin trabajarlo',
+  /* an instrument sitting on a rock, and the way back off it */
+  'slot.aria': '{tool} está sobre {ore}. Quitarlo.',
+  'slot.title': 'Quitar {tool}',
+
+  /* the Mine: the breaking floor and the assay */
+  'floor.tag': 'EL SUELO DE ROTURA',
+  'assay.offer': '¿Qué tipo de roca es esta?',
+  'assay.offer.aria': 'Nombra qué tipo de roca es esta. Opcional — el martillo funciona igual.',
+  'assay.offer.hint': 'Opcional. El martillo funciona igual.',
+  'assay.called': '<b>Lo has llamado: {name}.</b> ',
+  'assay.ask': '<b>¿Qué tipo de roca tienes en la mano?</b> Nada depende de esto — puedes golpear sin ello. Está aquí porque una decisión que tomaste es lo único en lo que luego te puedes pillar a ti mismo.',
+  'assay.lamp': '<b>Lámpara de Ensayo:</b> ',
+  'assay.lamp.number': 'Es un número sencillo, así que la única pregunta es si algo lo divide.',
+  'assay.lamp.below': 'No hace falta comprobar nada por debajo de {n} pasado ese punto.',
+  'assay.lamp.term.one': '<b>{n}</b> término.',
+  'assay.lamp.term.many': '<b>{n}</b> términos.',
+  'assay.lamp.gcd': 'Cada término se divide entre <b>{g}</b>.',
+  'assay.lamp.nogcd': 'Ningún número mayor que 1 divide a todos los términos.',
+  'assay.lamp.noend': 'No hay número sencillo al final, así que cada término todavía lleva una x.',
+  'assay.lamp.front.one': 'No hay nada delante del x².',
+  'assay.lamp.front.none': 'No hay ningún x².',
+  'assay.lamp.front.a': 'Delante del x² hay <b>{a}</b>.',
+  'assay.lamp.twin': 'Dos términos con un menos entre ellos — comprueba si los dos extremos son cuadrados perfectos.',
+  'assay.also': 'También es cierto — esto de verdad son dos cuadrados con un menos entre ellos. Las dos lecturas son correctas; el trozo compartido suele salir primero, porque una vez fuera la veta gemela de debajo se ve mejor.',
+  'assay.skip': 'Da igual — volver al martillo',
+
+  /* the Mine: the anvil and what the hammer is cut to */
+  'burst.thud': '¡PUM!',
+  'burst.clang': '¡CLANG!',
+  'echo.empty.group': 'la cabeza está vacía — elige una letra y escribe el número que va con ella',
+  'echo.empty': 'la cabeza está vacía — escribe lo que vas a sacar',
+  'echo.notwhole': '<span class="bad">eso no es un número entero</span>',
+  'echo.power': '<span class="bad">una x se ajusta a una potencia entera, y como mínimo la primera</span>',
+  'echo.cut': 'el martillo está ajustado a <b>{head}</b>',
+  'anvil.aria': '{ore} — en el yunque. Haz clic para dejar caer el martillo sobre él.',
+
+  /* the Mine: the pieces on the floor, and the ways off it */
+  'floor.spent': '<b>Cada pieza es metal nativo.</b> Nada de ninguna se separa más. Ese es el final del trozo &mdash; no un fracaso por no llegar más adentro.',
+  'floor.cue': '<b>Haz clic en el mineral.</b> El martillo te preguntará qué le vas a sacar.',
+  'floor.on': 'En el suelo',
+  'floor.native': 'metal nativo',
+  'floor.rock': 'todavía roca',
+  'floor.aria.native': '{ore} — metal nativo. No hay nada en él que se separe.',
+  'floor.aria.rock': '{ore} — todavía roca. Haz clic para ponerlo en el yunque.',
+  'floor.why.native': 'En ese ya no queda nada. {ore} no se separa — es un elemento.',
+  'floor.ok': '<b>La veta se abre.</b> De ahí salió <b>{left}</b>, y <b>{right}</b> es lo que quedó.',
+  'floor.swung': ' El martillo estaba ajustado a <b>{head}</b>.',
+  'floor.lost': ' No se pierde nada &mdash; la roca está exactamente como estaba, y puedes volver a golpear.',
+  'floor.carry': 'Llevar el metal al patio',
+  'floor.carry.flash': 'Metal nativo en el estante.',
+  'floor.tip': 'Echar lo que tienes al patio',
+  'floor.tip.flash': 'Echado en el patio. La roca sigue ahí cuando la quieras.',
+  'floor.tip.hint': 'El metal va al estante, la roca al montón. El montón se puede romper más tarde.',
+  'floor.leave': 'Dejarlo por ahora',
+
+  /* the Mine: the hammer */
+  'hammer.label': 'El martillo, sobre {ore}',
+  'hammer.title': 'Nombra una cosa que lleve dentro',
+  'hammer.close': 'Dejarlo',
+  'hammer.foot': 'Decide la roca, no este panel. <b>Esc</b> deja el martillo.',
+  'hammer.cut': 'ajusta la cabeza a',
+  'hammer.v.aria': 'el paréntesis con {v}',
+  'hammer.pow.aria': 'a qué potencia está elevada la x — déjalo vacío para una sola x',
+  'hammer.hint.group': 'Elige la letra, y luego el número que va con ella. Los dos paréntesis de un trozo de cuatro términos llevan una sola letra.',
+  'hammer.hint.num': 'Un número entero que lo atraviese.',
+  'hammer.hint.x': 'Una parte con x vacía es una sola x. Pon 0 para sacar un número sencillo en su lugar.',
+  'hammer.swing': 'Dejar caer el martillo',
+  'hammer.swing.empty': 'Dejar caer el martillo — todavía no, la cabeza está vacía',
+  'hammer.drill': '<span style="opacity:.8">Un taladro de testigos leería las parejas de este.</span>',
+  'swing.empty': 'La cabeza está vacía. Escribe lo que vas a sacar, y el martillo tendrá algo que cortar.',
+  'swing.power': 'Una x se ajusta a una potencia entera, y como mínimo la primera.',
+  'swing.whole': 'Un martillo se ajusta a una forma entera. Esas casillas solo aceptan números enteros.',
+
+  /* the Mine: what the Auger and the Shifter show after a swing */
+  'trace.tag': '&#128295; LA BARRENA &mdash; CÓMO FUE',
+  'trace.h.part': 'esta parte de la roca',
+  'trace.h.from': 'salió de',
+  'trace.h.is': 'que es',
+  'trace.x2': 'el x²',
+  'trace.end': 'el final',
+  'trace.mid': 'el centro',
+  'trace.mid.from': '{a} × {b}  y  {c} × {d}',
+  'trace.mid.is': '{p} y {q}, que se juntan en {s}',
+  'trace.hint': 'Los extremos venían obligados. El centro es la parte que había que comprobar, y salió bien.',
+  'rail.tag': '&#8646; EL CARRIL DE EXPONENTES',
+  'rail.xx': 'parte con x × parte con x',
+  'rail.xn': 'parte con x × número',
+  'rail.nx': 'número × parte con x',
+  'rail.nn': 'número × número',
+  'rail.xx.why': 'x · x = x², y este es el único sitio del que puede salir un x²',
+  'rail.mid.why': 'sobrevive una x, así que cae en el centro',
+  'rail.nn.why': 'no queda ninguna x, así que cae al final',
+  'rail.h.which': 'cuáles dos',
+  'rail.h.mult': 'multiplicados',
+  'rail.h.gives': 'dan',
+  'rail.h.why': 'por qué cae donde cae',
+  'rail.hint': 'Las dos filas sombreadas son el mismo tipo de cosa, así que se juntan: <b>{p}</b> y <b>{q}</b> dan <b>{s}</b>.',
+
+  /* the Mine: straight to the yard, and choosing an instrument for a slot */
+  'yard.flash.rack': '{ore} es metal nativo — guardado en el patio.',
+  'yard.flash.heap': '{ore} todavía tiene una veta. En el montón, esperando a que quieras.',
+  'slot.sheet.label': 'Elige un instrumento para acercar a {ore}',
+  'slot.sheet.title': 'La ranura',
+  'slot.sheet.sub': 'sobre <b>{ore}</b>',
+  'slot.sheet.empty': '<b>Todavía no hay nada en el cinturón.</b> Aquí los instrumentos no se reparten — los haces en la forja, con metal que tú mismo sacaste. Todo en la mina funciona sin ellos; solo hacen que se vea más fácil.',
+  'slot.sheet.which': '¿Cuál quieres acercarle?',
+  'slot.sheet.aria': 'Acercar {tool} a {ore}',
+
+  /* the Mine: the yard, and a screen that failed to build */
+  'yard.h': 'El Patio',
+  'yard.hint': 'Todo lo que has sacado. La roca en el montón, el metal en el estante.',
+  'yard.rack': 'EL ESTANTE &mdash; metal nativo',
+  'yard.rack.empty': 'Vacío. Todo lo que rompas hasta un elemento se guarda aquí, con el trozo del que salió escrito debajo — y esto es lo que gasta la forja.',
+  'yard.shelf.plain': 'metal sencillo',
+  'yard.shelf.x': 'metal con una x',
+  'yard.shelf.deep': 'metal de los pozos profundos',
+  'yard.from': 'de {ore}',
+  'yard.more': ' <span class="mmore">+{n} más</span>',
+  'yard.face': '<span class="mmore">directo de la pared</span>',
+  'yard.heap': 'EL MONTÓN &mdash; todavía con una veta',
+  'yard.heap.empty': 'Vacío. Lo que eches aquí a medio romper acaba en el montón, y sigue aquí cuando vuelvas a por ello.',
+  'yard.heap.aria': '{ore} — todavía roca. Volver a ponerlo bajo el pico.',
+  'yard.heap.title': 'Volver a ponerlo bajo el pico',
+  'yard.heap.hint': 'Vuelve a poner uno bajo el pico — haz clic en él, o arrástralo hasta el suelo.',
+  'yard.toforge': 'Llevar el metal a la forja',
+  'go.failed': '<b>Esta pantalla no se ha podido construir.</b> Es un fallo de la mina, no tuyo. ({err})',
+
+  /* the engine: what the rock says when a hammer comes down on it */
+  'break.malformed': 'Esa no es una forma a la que se pueda ajustar un martillo.',
+  'break.zero': 'Eso no es nada — no tiene filo que dejar caer.',
+  'break.one': 'Todo se divide entre uno. Sacarlo dejaría el trozo exactamente como está.',
+  'break.quart.pow': 'El martillo resbaló. Este trozo está hecho de mitades con x&sup2;, y la cabeza está ajustada a x{pow}.',
+  'break.nopow': 'El martillo resbaló. En este no hay ningún x<sup>{pow}</sup> en el que eso pueda morder.',
+  'break.unsound': 'Las piezas no vuelven a dar la roca de la que salieron.',
+  'break.runs': 'La veta se abre.',
+  'break.cube.other': 'El martillo resbaló. De este sí sale algo, pero no por los cubos — no es una forma que enseñe la mina.',
+  'break.cube.none': 'El martillo resbaló. Ningún extremo es un cubo exacto, así que no hay veta cúbica en él.',
+  'break.cube.bracket': 'El martillo resbaló. Ese no es el paréntesis que da una veta cúbica.',
+  'break.two.front': 'El martillo resbaló. Aquí los dos paréntesis tienen una sola x al principio.',
+  'break.two.none': 'El martillo resbaló. No hay dos números enteros que multipliquen {c} y sumen {b}, así que de este no sale nada.',
+  'break.bracket': 'El martillo resbaló. Ese paréntesis no está ahí dentro.',
+  'break.bi': 'Ese es el trozo entero. Solo el 1 divide a {ore}.',
+  'break.quart.front': 'El martillo resbaló. Las dos mitades de un trozo como este tienen un solo x&sup2; al principio.',
+  'break.quart.none': 'El martillo resbaló. No hay dos números enteros que multipliquen {c} y sumen {b}, así que no se separa de esa forma.',
+  'break.quart.half': 'El martillo resbaló. Esa mitad no está ahí dentro.',
+  'break.group.plain': 'El martillo resbaló. Solo el 1 divide a los cuatro términos — en este no hay metal sencillo que sacar delante.',
+  'break.group.front': 'El martillo resbaló. Los dos paréntesis de un trozo como este tienen una sola {v} al principio.',
+  'break.group.none': 'El martillo resbaló. {d} no es {b} × {c}, así que estos cuatro términos no se separan de dos en dos.',
+  'break.num.shape': 'En este trozo no hay ninguna x en la que eso pueda morder.',
+  'break.num.glance': 'El martillo resbaló. {d} no atraviesa a {n}.',
+  'break.whole': 'Ese es el trozo entero. No dejaría nada detrás.',
+  'break.plain.glance': 'El martillo resbaló. {g} no atraviesa todos los términos.',
+  'break.shape': 'El martillo resbaló. Por este no pasa nada con esa forma.',
+  'break.middle': 'El martillo resbaló. Los extremos coinciden pero el centro no.',
+
+  /* pictures: what a screen reader hears for Mr Factor and the surface */
+  'factor.aria': 'Mr Factor, un minero con lámpara en el casco y un pico',
+  'surface.aria': 'Una explotación minera en la superficie: una casa de máquinas con una rueda que gira, la casa de fundición, la nave de fundición, la forja con el horno encendido, una vagoneta sobre raíles y la entrada de la mina.',
+
+  /* the nameplates bolted to the surface buildings - the plate widens to fit */
+  'plate.windmill': 'Molino',
+  'plate.mill': 'El Bocarte',
+  'plate.shed': 'Nave de Fundición',
+  'plate.forge': 'La Forja',
+  'plate.mine': 'La Mina',
+  'plate.yard': 'El Patio',
+
+  /* the buildings on the surface are doors, and this is what each one is called */
+  'door.mill': 'El Bocarte',
+  'door.shed': 'La Nave de Fundición',
+  'door.forge': 'La Forja',
+  'door.mine': 'Entrar en la Mina',
+
+  /* the surface: the deep castings fitted to the buildings, and what is in the yard */
+  'surface.part.title': '{part}, colocado en {fits} — fundido con metal que subiste de los pozos profundos.',
+  'surface.aria.parts': 'Colocadas en los edificios, cada una fundida con metal de los pozos profundos: {parts}.',
+  'surface.yard.bare': 'El patio: tierra desnuda, hasta que suba metal de la mina.',
+  'surface.yard.rack': 'En el estante: {metal}.',
+  'surface.yard.heap': 'En el montón: {rock}.',
+  'part.sheet.up': 'Ahora está arriba en la superficie, colocado en {fits} &mdash; hecho con metal que subiste de los pozos profundos.',
+  'list.sep': ', '
+};
+/* ===== END LANGUAGE: es ===== */
 MF._missing = {};
 MF.lang = function(){
   var l = MF.state && MF.state.access && MF.state.access.lang;
@@ -9152,7 +10510,7 @@ MF.paintQuestions = function(host, o){
     } else {
       var opts = E('div','qopts');
       /* THE ANSWER MUST NOT SIT IN THE SAME SLOT EVERY TIME. */
-      MF.spreadOptions('q|' + String(qn.q).replace(/<[^>]+>/g,''), qn.options).forEach(function(op, oi){
+      MF.spreadOptions(MF.qSeed(qn), qn.options).forEach(function(op, oi){
         var b = E('button','qopt'); b.type='button';
         b.innerHTML = op.label;
         b.setAttribute('aria-label', MF.t('q.aria.choose', {label: op.a11y || op.label.replace(/<[^>]+>/g,'')}));
@@ -9482,7 +10840,7 @@ MF.SCREENS['shed-mold'] = function(host){
   host.appendChild(panel);
 
   MF.paintQuestions(host, {list:[
-    {kind:'pick',
+    {kind:'pick', id:'molds.q1',
      q:MF.t('molds.q1'),
      sub:MF.t('molds.q1.sub'),
      options:[
@@ -9490,7 +10848,7 @@ MF.SCREENS['shed-mold'] = function(host){
        {label:'4x + 3', says:MF.t('molds.q1.b')},
        {label:'7x', says:MF.t('molds.q1.c')}
      ]},
-    {kind:'pick',
+    {kind:'pick', id:'molds.q2',
      q:MF.t('molds.q2'),
      options:[
        {label:MF.t('molds.q2.a.label'), holds:true, says:MF.t('molds.q2.a')},
@@ -9620,7 +10978,7 @@ MF.SCREENS['shed-words'] = function(host){
   var wMiscut = MF.paintMiscut(document.createElement('div'), MF.WORDS_MISCUT);
 
   MF.paintQuestions(host, {also:[wMiscut], list:[
-    {kind:'pick',
+    {kind:'pick', id:'words.q1',
      q:MF.t('words.q1'),
      sub:MF.t('words.q1.sub'),
      options:[
@@ -9657,21 +11015,21 @@ MF.SCREENS['shed-methods'] = function(host){
   MF.paintToolSchool(host);
 
   MF.paintQuestions(host, {list:[
-    {kind:'pick',
+    {kind:'pick', id:'methods.q1',
      q:MF.t('methods.q1'),
      options:[
        {label:MF.t('methods.q1.a.label'), holds:true, says:MF.t('methods.q1.a')},
        {label:MF.t('methods.q1.b.label'), says:MF.t('methods.q1.b')},
        {label:MF.t('methods.q1.c.label'), says:MF.t('methods.q1.c')}
      ]},
-    {kind:'pick',
+    {kind:'pick', id:'methods.q2',
      q:MF.t('methods.q2'),
      options:[
        {label:MF.t('methods.q2.a.label'), holds:true, says:MF.t('methods.q2.a')},
        {label:MF.t('methods.q2.b.label'), says:MF.t('methods.q2.b')},
        {label:MF.t('methods.q2.c.label'), says:MF.t('methods.q2.c')}
      ]},
-    {kind:'pick',
+    {kind:'pick', id:'methods.q3',
      q:MF.t('methods.q3'),
      options:[
        {label:MF.t('methods.q3.a.label'), holds:true, says:MF.t('methods.q3.a')},
@@ -11962,6 +13320,14 @@ MF.balanced = function(seed, list){
   return out;
 };
 
+/* THE SHUFFLE IS SEEDED FROM THE ENGLISH, in every language. Seeded from the
+   words on screen, Spanish put the supported option in slot 3 for four of six
+   questions - a slot worth guessing. A question that carries its key (`id`)
+   reads the English text for it; one that does not keeps the text it shows. */
+MF.qSeed = function(q){
+  var src = (q.id && MF.STR.en[q.id] != null) ? MF.STR.en[q.id] : q.q;
+  return 'q|' + String(src).replace(/<[^>]+>/g,'');
+};
 /* AND WHERE THE ANSWER LANDS IS PLACED, NOT LEFT TO THE SHUFFLE. */
 MF.spreadOptions = function(seed, options){
   var n = options.length;
@@ -14482,10 +15848,10 @@ MF.validate = function(){
   /* the ore workshop must open the room about BREAKING ORE APART, not the mold
      - these were once wired to each other's screens. */
   chk('doors');
-  if(!/Stamp|Mill|Crush|Break/i.test(doors['workshop-ore']||''))
+  if(!MF.langChecks().doorOre.test(doors['workshop-ore']||''))
     errs.push('doors: the ore workshop is behind "' + doors['workshop-ore'] + '", which does not read as a place ore is broken up');
   chk('doors');
-  if(!/Cast|Mold/i.test(doors['workshop-mold']||'')) errs.push('doors: the mold workshop is behind "' + doors['workshop-mold'] + '", which does not read as casting');
+  if(!MF.langChecks().doorMold.test(doors['workshop-mold']||'')) errs.push('doors: the mold workshop is behind "' + doors['workshop-mold'] + '", which does not read as casting');
 
   /* 5f. THE THREE BOXES THAT CLOSE THE SURFACE. */
   var sellProbe = document.createElement('div');
@@ -14712,8 +16078,8 @@ MF.validate = function(){
     cyBtns = route ? [].slice.call(route.querySelectorAll('button')).map(function(b){
       return (b.textContent||'').trim(); }) : [];
   })();
-  if(!cyBtns.some(function(t){ return /floor|bench|break/i.test(t); }) ||
-     !cyBtns.some(function(t){ return /yard/i.test(t); }))
+  if(!cyBtns.some(function(t){ return MF.langChecks().routeBreak.test(t); }) ||
+     !cyBtns.some(function(t){ return MF.langChecks().routeYard.test(t); }))
     errs.push('nogate: a lump in the cart offers no choice between the breaking floor and the yard — it read ' +
       JSON.stringify(cyBtns));
   /* AND THE BREAKING FLOOR MUST NOT OPEN BY ITSELF. */
@@ -16406,7 +17772,7 @@ MF.validate = function(){
           Math.round(yAfter - yBefore) + 'px — it is overlaid, so nothing below it may shift');
       chk('knock');
       var labels = [].map.call(pPop.querySelectorAll('.btn'), function(b){ return b.textContent; }).join(' | ');
-      if(!/swing/i.test(labels) || !/scan/i.test(labels))
+      if(!MF.langChecks().popSwing.test(labels) || !MF.langChecks().popScan.test(labels))
         errs.push('knock: the pop-out offers "' + labels + '" — it asks whether to swing ' +
           'or to keep scanning, and both have to be in it');
       chk('knock');
@@ -17367,7 +18733,7 @@ MF.validate = function(){
     var right = null, holds = 0;
     q.options.forEach(function(op){ if(op.holds){ holds++; right = op; } });
     if(holds !== 1) return;                     /* two true readings is a real shape */
-    var seed = 'q|' + String(q.q).replace(/<[^>]+>/g,'');
+    var seed = MF.qSeed(q);
     var ord = MF.spreadOptions(seed, q.options);
     var at = -1;
     ord.forEach(function(op, i){ if(op === right) at = i; });
@@ -17998,7 +19364,7 @@ MF.validate = function(){
       if(!g.qm)
         errs.push('visual: ' + tk + ' held to ' + MF.oreText(ore) + ' left no ? — it either does the work or asks nothing');
       chk('visual');
-      if(g.prose > 620)
+      if(g.prose > MF.langChecks().panelProse)
         errs.push('visual: ' + tk + ' held to ' + MF.oreText(ore) + ' is ' + g.prose +
                   ' characters of prose outside its diagrams — the picture is not the panel');
     });
@@ -18132,7 +19498,7 @@ MF.validate = function(){
       /* 1150, PLUS WHAT THE CLOSING SLIDE COSTS */
       chk('taught');
       var p = tgProse(body);
-      if(p > 1150 + 190)
+      if(p > MF.langChecks().lessonProse)
         errs.push('taught: ' + (body.querySelector('.lsnm')||{}).textContent + ' is ' + p +
                   ' characters of prose outside its diagrams — the lesson is still a wall of text');
     });
@@ -18793,21 +20159,22 @@ MF.validate = function(){
                 'the layer is either a ritual or a wall');
 
     /* WHAT THE DRILL SAYS ABOUT ITSELF, IN ALL FOUR PLACES IT SAYS IT */
+    var cubeW = MF.langChecks().cubeWord, squareW = MF.langChecks().squareWord;
     ['ds','does'].forEach(function(f){
       var s = String(MF.TOOLS.drill[f] || '').toLowerCase();
       chk('cubes');
-      if(s.indexOf('cube') < 0)
+      if(s.indexOf(cubeW) < 0)
         errs.push('cubes: the Drill\'s "' + f + '" line still describes only squares, and it reads cubes now');
       chk('cubes');
-      if(s.indexOf('square') < 0)
+      if(s.indexOf(squareW) < 0)
         errs.push('cubes: the Drill\'s "' + f + '" line dropped the squares it has always read');
     });
     var rwD = String(MF.REALWORLD.drill.body + ' ' + MF.REALWORLD.drill.tie).toLowerCase();
     chk('cubes');
-    if(rwD.indexOf('cube') < 0)
+    if(rwD.indexOf(cubeW) < 0)
       errs.push('cubes: the Drill\'s real-world tie-back sits under four cube slides and never mentions a cube');
     chk('cubes');
-    if(rwD.indexOf('square') < 0)
+    if(rwD.indexOf(squareW) < 0)
       errs.push('cubes: the Drill\'s real-world tie-back dropped the squares');
 
     /* ---- AND THE MAP HAS NOTHING LEFT ON IT THAT IS NOT REAL ---- */
@@ -19206,8 +20573,8 @@ MF.validate = function(){
     });
 
     /* 4. THE TWO TOOLS THAT NOW NAME IT, NAME IT. */
-    [['steel', 'nothing.*bite|is a prime|no whole-number seam'],
-     ['lantern','nothing moves|is a prime|no whole-number seam']].forEach(function(p){
+    [['steel', MF.langChecks().finishedSteel],
+     ['lantern', MF.langChecks().finishedLantern]].forEach(function(p){
       [{kind:'number',n:97}, {kind:'poly',a:1,b:0,c:4}, {kind:'poly',a:0,b:5,c:3}].forEach(function(o){
         chk('reading');
         if(!(new RegExp(p[1],'i')).test(read(p[0], o).txt))
@@ -19215,7 +20582,7 @@ MF.validate = function(){
       });
     });
     chk('reading');
-    if(!/is a prime/i.test(read('drill', {kind:'number',n:97}).txt))
+    if(!MF.langChecks().drillPrime.test(read('drill', {kind:'number',n:97}).txt))
       errs.push('reading: the drill does not say that 97 is a prime');
 
     /* 5. AND A METHOD SHOWS PART, NEVER ALL. */
@@ -19892,8 +21259,9 @@ MF.validate = function(){
     errs.push('CONTROL: breakOff accepts x + 1 on x⁴ + 5x² + 4, so the give-rung check proves nothing');
 
   chk('nogrades');
-  if(!marky.test('Nothing here is marked'))
-    errs.push('CONTROL: the marking sweep does not catch "Nothing here is marked"');
+  var markyCtl = MF.langChecks().markyControl;
+  if(!marky.test(markyCtl))
+    errs.push('CONTROL: the marking sweep does not catch "' + markyCtl + '"');
   chk('nogrades');
   if(marky.test('a ruler marked at the whole numbers'.replace('marked','ticked')))
     errs.push('CONTROL: the marking sweep is matching something it should not');
@@ -19955,9 +21323,10 @@ MF.validate = function(){
   /* 7. CONTROL - must fail, or none of the above is looking at anything */
   chk('control');
   var controlFailed = !(MF.smeltPoly(1,-5,6).kind === 'twin');   /* it is 'plain' */
-  var bannedControl = banned.test('you scored 7 out of 10');      /* must be caught */
+  var bannedCtl = MF.langChecks().bannedControl;
+  var bannedControl = banned.test(bannedCtl);                     /* must be caught */
   if(!controlFailed)  errs.push('CONTROL: seam control did not fail - the instrument is not measuring');
-  if(!bannedControl)  errs.push('CONTROL: the no-grades regex does not catch "7 out of 10"');
+  if(!bannedControl)  errs.push('CONTROL: the no-grades regex does not catch "' + bannedCtl + '"');
 
   /* hand the page back exactly as it was found */
   MF._mine = _liveMine;
