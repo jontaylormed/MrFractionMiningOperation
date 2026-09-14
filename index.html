@@ -2947,32 +2947,28 @@ MF.assayAccepts = function(o){
   return out;
 };
 
+/* THE WORDS ON A TABLE ROW ARE GETTERS on `<prefix>.<field>`, attached after
+   the row is built, so everything that reads `MF.TOOLS.pick.nm` or
+   `MF.ASSAY.twin.name` gets the current language and none of it had to
+   change. They call MF.t when read, not when attached. */
+function tFields(row, prefix, fields){
+  fields.forEach(function(f){
+    Object.defineProperty(row, f, {enumerable:true, configurable:true,
+      get: function(){ return MF.t(prefix + '.' + f); }});
+  });
+  return row;
+}
+
 MF.ASSAY = {
-  pure:      {name:'Pure Ingot',        tell:'Nothing separates out. It is already an element — a prime, or a polynomial no whole-number seam runs through.'},
-  composite: {name:'Comes Apart',       tell:'It has factors in it. Split it and keep splitting until everything is pure.'},
-  shared:    {name:'Shared Metal',      tell:'Every term carries the same lump. That comes out in front before anything else.'},
-  twin:      {name:'Twin Seam',         tell:'Two perfect squares with a minus between them, and no middle term at all.'},
-  plain:     {name:'Plain Trinomial',   tell:'One x² with nothing in front. Two numbers that multiply to c and add to b.'},
-  loaded:    {name:'Loaded Trinomial',  tell:'Something sits in front of the x². The pair you hunt multiplies to a·c.'},
-  grouped:   {name:'Grouped Vein',      tell:'Four terms and two letters. Take them two at a time and the same bracket comes out of both.'},
-  stacked:   {name:'Stacked Seam',      tell:'An x to the fourth. Read the x&sup2; as the unit and it is an ordinary trinomial — then look at each half again.'},
-  twoel:     {name:'Two Elements',      tell:'Two letters all the way through. The pair still multiplies to the end and adds to the middle — it is the y that is new, not the hunt.'},
-  cubes:     {name:'Cube Seam',         tell:'Both ends are whole cubes. One bracket comes off on sight, and what is left behind never comes apart at all.'}
+  pure:{}, composite:{}, shared:{}, twin:{}, plain:{},
+  loaded:{}, grouped:{}, stacked:{}, twoel:{}, cubes:{}
 };
+Object.keys(MF.ASSAY).forEach(function(k){ tFields(MF.ASSAY[k], 'assay.' + k, ['name','tell']); });
 
 /* THE ORE GENERATOR. Endless, per layer, and every lump is checked against the
    engine before it is ever handed to a student. */
-MF.LAYERS = [
-  {n:1, name:'Gravel',      what:'plain numbers'},
-  {n:2, name:'Seam Rock',   what:'shared metal — 6x + 15, 3x² + 12x'},
-  {n:3, name:'Twin Beds',   what:'two-term ore — x² − 9, and pure ingots'},
-  {n:4, name:'Trinomial',   what:'x² + bx + c'},
-  {n:5, name:'Loaded Vein', what:'ax² + bx + c'},
-  {n:6, name:'Grouping',    what:'four terms, two letters — xy + 3x + 2y + 6'},
-  {n:7, name:'Higher Ground', what:'x⁴ + bx² + c — a trinomial one gear up'},
-  {n:8, name:'Two Elements', what:'x² + bxy + cy² — the same hunt, two letters'},
-  {n:9, name:'Cubes',        what:'x³ ± a cube — one bracket on sight, and the rest is finished'}
-];
+MF.LAYERS = [{n:1}, {n:2}, {n:3}, {n:4}, {n:5}, {n:6}, {n:7}, {n:8}, {n:9}];
+MF.LAYERS.forEach(function(L){ tFields(L, 'layer.' + L.n, ['name','what']); });
 /* EMPTY, AND IT STAYS EMPTY UNTIL THERE IS SOMETHING REAL TO PUT IN IT. */
 MF.SHUT_SHAFTS = [];
 
@@ -3733,7 +3729,123 @@ MF.STR.en = {
   'reflect.lab': '&#9998; BEFORE YOU GO',
   'reflect.placeholder': 'In your own words…',
   'reflect.aria': 'A space to write in. Nothing you write here is read, checked or kept.',
-  'reflect.note': '<b>Nothing here is read, checked or kept.</b> It is not sent anywhere and it is gone when you leave the page. The point of writing it is the writing.'
+  'reflect.note': '<b>Nothing here is read, checked or kept.</b> It is not sent anywhere and it is gone when you leave the page. The point of writing it is the writing.',
+
+  /* the kinds of ore — what the assay calls each shape */
+  'assay.pure.name': 'Pure Ingot',
+  'assay.pure.tell': 'Nothing separates out. It is already an element — a prime, or a polynomial no whole-number seam runs through.',
+  'assay.composite.name': 'Comes Apart',
+  'assay.composite.tell': 'It has factors in it. Split it and keep splitting until everything is pure.',
+  'assay.shared.name': 'Shared Metal',
+  'assay.shared.tell': 'Every term carries the same lump. That comes out in front before anything else.',
+  'assay.twin.name': 'Twin Seam',
+  'assay.twin.tell': 'Two perfect squares with a minus between them, and no middle term at all.',
+  'assay.plain.name': 'Plain Trinomial',
+  'assay.plain.tell': 'One x² with nothing in front. Two numbers that multiply to c and add to b.',
+  'assay.loaded.name': 'Loaded Trinomial',
+  'assay.loaded.tell': 'Something sits in front of the x². The pair you hunt multiplies to a·c.',
+  'assay.grouped.name': 'Grouped Vein',
+  'assay.grouped.tell': 'Four terms and two letters. Take them two at a time and the same bracket comes out of both.',
+  'assay.stacked.name': 'Stacked Seam',
+  'assay.stacked.tell': 'An x to the fourth. Read the x&sup2; as the unit and it is an ordinary trinomial — then look at each half again.',
+  'assay.twoel.name': 'Two Elements',
+  'assay.twoel.tell': 'Two letters all the way through. The pair still multiplies to the end and adds to the middle — it is the y that is new, not the hunt.',
+  'assay.cubes.name': 'Cube Seam',
+  'assay.cubes.tell': 'Both ends are whole cubes. One bracket comes off on sight, and what is left behind never comes apart at all.',
+
+  /* the nine layers of the shaft */
+  'layer.1.name': 'Gravel',
+  'layer.1.what': 'plain numbers',
+  'layer.2.name': 'Seam Rock',
+  'layer.2.what': 'shared metal — 6x + 15, 3x² + 12x',
+  'layer.3.name': 'Twin Beds',
+  'layer.3.what': 'two-term ore — x² − 9, and pure ingots',
+  'layer.4.name': 'Trinomial',
+  'layer.4.what': 'x² + bx + c',
+  'layer.5.name': 'Loaded Vein',
+  'layer.5.what': 'ax² + bx + c',
+  'layer.6.name': 'Grouping',
+  'layer.6.what': 'four terms, two letters — xy + 3x + 2y + 6',
+  'layer.7.name': 'Higher Ground',
+  'layer.7.what': 'x⁴ + bx² + c — a trinomial one gear up',
+  'layer.8.name': 'Two Elements',
+  'layer.8.what': 'x² + bxy + cy² — the same hunt, two letters',
+  'layer.9.name': 'Cubes',
+  'layer.9.what': 'x³ ± a cube — one bracket on sight, and the rest is finished',
+
+  /* the seven instruments */
+  'tool.pick.nm': 'The Prospector\'s Pick',
+  'tool.pick.short': 'Prospector\'s Pick',
+  'tool.pick.order': 'a pick you can test rock with',
+  'tool.pick.ds': 'Names what kind of ore a lump is before you swing at it.',
+  'tool.pick.forge': 'Cast <b>12</b> out of pure metal. Three plain ingots, and one of them turns up twice.',
+  'tool.pick.does': 'names the form before you factor',
+  'tool.lantern.nm': 'The Lantern',
+  'tool.lantern.short': 'Lantern',
+  'tool.lantern.order': 'a pit lantern for the lower workings',
+  'tool.lantern.ds': 'Hold it to a lump and it tells you whether a seam still runs through it — so you know when a piece is worth another swing, and when it is an element. It never says along what.',
+  'tool.lantern.forge': 'Cast <b>30</b> out of pure metal. Three different primes, and only one set of three will do it.',
+  'tool.lantern.does': 'gives one factor; the rest is what is left',
+  'tool.steel.nm': 'The Steel Pick',
+  'tool.steel.short': 'Steel Pick',
+  'tool.steel.order': 'a steel head for the common seam',
+  'tool.steel.ds': 'Rips the common metal out of a lump in one blow, without you naming it. It only ever takes the metal every term is carrying — the rest of the rock is still yours to break.',
+  'tool.steel.forge': 'Cast <b>3x + 12</b>. One plain metal spread over one bracket — and spreading a common metal is the move this head then runs backwards.',
+  'tool.steel.does': 'factors out the greatest common factor',
+  'tool.dial.nm': 'The Crosscut',
+  'tool.dial.short': 'Crosscut',
+  'tool.dial.order': 'a cross-cut driven over the vein',
+  'tool.dial.ds': 'Draws the X on a lump: what the pair has to multiply to on top, what it has to add to underneath. It never fills the sides in. Nudge the end off a whole number and you can watch the seam it was hunting stop existing.',
+  'tool.dial.forge': 'Cast <b>x² + 3x + 2</b>. Two brackets one apart — a·c is 2 and the middle is 3, which is the smallest honest X there is.',
+  'tool.dial.does': 'the X: multiply to a·c, add to b',
+  'tool.shifter.nm': 'The Shifter',
+  'tool.shifter.short': 'Shifter',
+  'tool.shifter.order': 'a gear shifter for the winding house',
+  'tool.shifter.ds': 'Held to a lump it shows where its x² can have come from — the two x-parts multiplied, which is the only place an x² ever comes from.',
+  'tool.shifter.forge': 'Cast <b>x² + 8x + 16</b>. The same bracket twice, so there is no doubt at all where the x² came from.',
+  'tool.shifter.does': 'the area model — four products in a box',
+  'tool.drill.nm': 'The Drill',
+  'tool.drill.short': 'Drill',
+  'tool.drill.order': 'a core drill for the assay office',
+  'tool.drill.ds': 'Takes a core and reads the two ends. Two squares with a minus and no middle term is a twin seam &mdash; the brackets are a number and its own opposite. Two whole cubes is a cube seam: one bracket comes off, and the piece behind it never breaks.',
+  'tool.drill.forge': 'Cast <b>x² − 25</b>. Two brackets with opposite numbers, so the middle cancels itself out and a twin seam is what comes off the mold.',
+  'tool.drill.does': 'two squares or two cubes, read off the ends',
+  'tool.auger.nm': 'The Powered Auger',
+  'tool.auger.short': 'Powered Auger',
+  'tool.auger.order': 'a powered auger for the loaded ore',
+  'tool.auger.ds': 'Shows how a seam has to run before you drive it: what the x-part you take out must divide, and what the number must divide. On a swing that lands it traces the division out.',
+  'tool.auger.forge': 'Cast <b>6x² + 7x − 3</b>. Both ends are pinned: the x-parts have to multiply to 6 and the numbers to −3, and only one pairing also makes the middle come to 7.',
+  'tool.auger.does': 'splits the middle term, then factors by grouping',
+
+  /* the four deep castings */
+  'part.frame.nm': 'The Winding Frame',
+  'part.frame.short': 'Winding Frame',
+  'part.frame.order': 'a cross-frame for the winding house',
+  'part.frame.ds': 'Two brackets in two different letters. Nothing in it can be collected with anything else, so all four products stay.',
+  'part.frame.forge': 'Cast <b>xy + 2x + 3y + 6</b> out of <b>x + 3</b> and <b>y + 2</b>. Four products and not one pair of them is the same kind of term — which is why a four-term lump is where grouping starts.',
+  'part.frame.does': 'four terms, and none of them merge',
+  'part.frame.fits': 'the winding house',
+  'part.stamp4.nm': 'The Fourth Stamp',
+  'part.stamp4.short': 'Fourth Stamp',
+  'part.stamp4.order': 'a fourth stamp for the mill battery',
+  'part.stamp4.ds': 'Two irreducible quadratics multiplied. The gear change run forwards: x² times x² is where the fourth power comes from.',
+  'part.stamp4.forge': 'Cast <b>x<sup>4</sup> + 5x<sup>2</sup> + 4</b> out of <b>x<sup>2</sup> + 1</b> and <b>x<sup>2</sup> + 4</b>. Both metals are elements — neither will break — and the object they make is a whole gear up.',
+  'part.stamp4.does': 'x² × x² is where an x⁴ comes from',
+  'part.stamp4.fits': 'the stamp mill',
+  'part.rail2.nm': 'The Second Rail',
+  'part.rail2.short': 'Second Rail',
+  'part.rail2.order': 'a second rail for the cart track',
+  'part.rail2.ds': 'Two brackets carrying both letters. Here the middles ARE the same kind of term, so they collect — the opposite of the frame, on purpose.',
+  'part.rail2.forge': 'Cast <b>x<sup>2</sup> + 3xy + 2y<sup>2</sup></b> out of <b>x + y</b> and <b>x + 2y</b>. Four products again, and this time two of them are both xy and run together.',
+  'part.rail2.does': 'two letters, and the middles collect',
+  'part.rail2.fits': 'the cart track',
+  'part.counter.nm': 'The Cube Counterweight',
+  'part.counter.short': 'Cube Counterweight',
+  'part.counter.order': 'a counterweight for the headframe',
+  'part.counter.ds': 'A bracket and its companion. Six products go in and four of them cancel each other out, which is why only the two ends survive.',
+  'part.counter.forge': 'Cast <b>x<sup>3</sup> &minus; 8</b> out of <b>x &minus; 2</b> and <b>x<sup>2</sup> + 2x + 4</b>. Watch the middle terms go: that cancellation is the whole reason the companion never breaks.',
+  'part.counter.does': 'six products, four of them cancel',
+  'part.counter.fits': 'the headframe'
 };
 MF._missing = {};
 MF.lang = function(){
@@ -3798,59 +3910,22 @@ MF.state = {
 /* ===== THE INSTRUMENTS. ===== */
 /* ---- EVERY ORDER NAMES THE EXACT OBJECT ITS MOLD IS CUT FOR. */
 MF.TOOLS = {
-  pick: {
-    /* WAS 'The Deep Pick', 'three lumps a swing'. */
-    rank:1, ic:'&#9935;', nm:'The Prospector\'s Pick', order:'a pick you can test rock with',
-    ds:'Names what kind of ore a lump is before you swing at it.',
-    cast:{a:0,b:0,c:12}, slots:3,
-    forge:'Cast <b>12</b> out of pure metal. Three plain ingots, and one of them turns up twice.',
-    does:'names the form before you factor'
-  },
-  lantern: {
-    rank:2, ic:'&#128367;', nm:'The Lantern', order:'a pit lantern for the lower workings',
-    ds:'Hold it to a lump and it tells you whether a seam still runs through it — so you know when a piece is worth another swing, and when it is an element. It never says along what.',
-    cast:{a:0,b:0,c:30}, slots:3,
-    forge:'Cast <b>30</b> out of pure metal. Three different primes, and only one set of three will do it.',
-    does:'gives one factor; the rest is what is left'
-  },
-  steel: {
-    rank:3, ic:'&#128296;', nm:'The Steel Pick', order:'a steel head for the common seam',
-    ds:'Rips the common metal out of a lump in one blow, without you naming it. It only ever takes the metal every term is carrying — the rest of the rock is still yours to break.',
-    cast:{a:0,b:3,c:12}, slots:2,
-    forge:'Cast <b>3x + 12</b>. One plain metal spread over one bracket — and spreading a common metal is the move this head then runs backwards.',
-    does:'factors out the greatest common factor'
-  },
+  /* WAS 'The Deep Pick', 'three lumps a swing'. */
+  pick:    {rank:1, ic:'&#9935;',   cast:{a:0,b:0,c:12}, slots:3},
+  lantern: {rank:2, ic:'&#128367;', cast:{a:0,b:0,c:30}, slots:3},
+  steel:   {rank:3, ic:'&#128296;', cast:{a:0,b:3,c:12}, slots:2},
   /* rank 4. THE X, AND IT IS THE METHOD A SCHOOL ACTUALLY TEACHES. */
-  dial: {
-    rank:4, ic:'&#10005;', nm:'The Crosscut', order:'a cross-cut driven over the vein',
-    ds:'Draws the X on a lump: what the pair has to multiply to on top, what it has to add to underneath. It never fills the sides in. Nudge the end off a whole number and you can watch the seam it was hunting stop existing.',
-    cast:{a:1,b:3,c:2}, slots:2,
-    forge:'Cast <b>x² + 3x + 2</b>. Two brackets one apart — a·c is 2 and the middle is 3, which is the smallest honest X there is.',
-    does:'the X: multiply to a·c, add to b'
-  },
-  shifter: {
-    rank:5, ic:'&#8646;', nm:'The Shifter', order:'a gear shifter for the winding house',
-    ds:'Held to a lump it shows where its x² can have come from — the two x-parts multiplied, which is the only place an x² ever comes from.',
-    cast:{a:1,b:8,c:16}, slots:2,
-    forge:'Cast <b>x² + 8x + 16</b>. The same bracket twice, so there is no doubt at all where the x² came from.',
-    does:'the area model — four products in a box'
-  },
+  dial:    {rank:4, ic:'&#10005;',  cast:{a:1,b:3,c:2},  slots:2},
+  shifter: {rank:5, ic:'&#8646;',   cast:{a:1,b:8,c:16}, slots:2},
   /* rank 6. THE TWIN SEAM, AND NOTHING ELSE NOW. */
-  drill: {
-    rank:6, ic:'&#9881;', nm:'The Drill', order:'a core drill for the assay office',
-    ds:'Takes a core and reads the two ends. Two squares with a minus and no middle term is a twin seam &mdash; the brackets are a number and its own opposite. Two whole cubes is a cube seam: one bracket comes off, and the piece behind it never breaks.',
-    cast:{a:1,b:0,c:-25}, slots:2,
-    forge:'Cast <b>x² − 25</b>. Two brackets with opposite numbers, so the middle cancels itself out and a twin seam is what comes off the mold.',
-    does:'two squares or two cubes, read off the ends'
-  },
-  auger: {
-    rank:7, ic:'&#128295;', nm:'The Powered Auger', order:'a powered auger for the loaded ore',
-    ds:'Shows how a seam has to run before you drive it: what the x-part you take out must divide, and what the number must divide. On a swing that lands it traces the division out.',
-    cast:{a:6,b:7,c:-3}, slots:2,
-    forge:'Cast <b>6x² + 7x − 3</b>. Both ends are pinned: the x-parts have to multiply to 6 and the numbers to −3, and only one pairing also makes the middle come to 7.',
-    does:'splits the middle term, then factors by grouping'
-  }
+  drill:   {rank:6, ic:'&#9881;',   cast:{a:1,b:0,c:-25}, slots:2},
+  auger:   {rank:7, ic:'&#128295;', cast:{a:6,b:7,c:-3}, slots:2}
 };
+/* `short` is the name on the hook and the belt. It used to be `nm` with
+   /^The / stripped off, which is an English article and nothing else. */
+Object.keys(MF.TOOLS).forEach(function(k){
+  tFields(MF.TOOLS[k], 'tool.' + k, ['nm','short','order','ds','forge','does']);
+});
 /* the board reads in ladder order, so the escalation is visible rather than
    something a student has to notice */
 MF.toolOrder = function(){
@@ -3858,40 +3933,15 @@ MF.toolOrder = function(){
 };
 /* ===== THE DEEP CASTINGS — four parts, and not one of them is an instrument. ===== */
 MF.PARTS = {
-  frame: {
-    rank:1, ic:'&#9974;', nm:'The Winding Frame', order:'a cross-frame for the winding house',
-    ds:'Two brackets in two different letters. Nothing in it can be collected with anything else, so all four products stay.',
-    castOre: MF.groupOre(2,3,6), slots:2,
-    forge:'Cast <b>xy + 2x + 3y + 6</b> out of <b>x + 3</b> and <b>y + 2</b>. Four products and not one pair of them is the same kind of term — which is why a four-term lump is where grouping starts.',
-    does:'four terms, and none of them merge',
-    fits:'the winding house'
-  },
-  stamp4: {
-    /* NOT THE BALANCE SCALE it was first given. */
-    rank:2, ic:'&#9707;', nm:'The Fourth Stamp', order:'a fourth stamp for the mill battery',
-    ds:'Two irreducible quadratics multiplied. The gear change run forwards: x² times x² is where the fourth power comes from.',
-    castOre: MF.quartOre(5,4), slots:2,
-    forge:'Cast <b>x<sup>4</sup> + 5x<sup>2</sup> + 4</b> out of <b>x<sup>2</sup> + 1</b> and <b>x<sup>2</sup> + 4</b>. Both metals are elements — neither will break — and the object they make is a whole gear up.',
-    does:'x² × x² is where an x⁴ comes from',
-    fits:'the stamp mill'
-  },
-  rail2: {
-    rank:3, ic:'&#128646;', nm:'The Second Rail', order:'a second rail for the cart track',
-    ds:'Two brackets carrying both letters. Here the middles ARE the same kind of term, so they collect — the opposite of the frame, on purpose.',
-    castOre: MF.twoOre(3,2), slots:2,
-    forge:'Cast <b>x<sup>2</sup> + 3xy + 2y<sup>2</sup></b> out of <b>x + y</b> and <b>x + 2y</b>. Four products again, and this time two of them are both xy and run together.',
-    does:'two letters, and the middles collect',
-    fits:'the cart track'
-  },
-  counter: {
-    rank:4, ic:'&#11042;', nm:'The Cube Counterweight', order:'a counterweight for the headframe',
-    ds:'A bracket and its companion. Six products go in and four of them cancel each other out, which is why only the two ends survive.',
-    castOre: MF.cubeOre(1,-8), slots:2,
-    forge:'Cast <b>x<sup>3</sup> &minus; 8</b> out of <b>x &minus; 2</b> and <b>x<sup>2</sup> + 2x + 4</b>. Watch the middle terms go: that cancellation is the whole reason the companion never breaks.',
-    does:'six products, four of them cancel',
-    fits:'the headframe'
-  }
+  frame:   {rank:1, ic:'&#9974;',   castOre: MF.groupOre(2,3,6), slots:2},
+  /* NOT THE BALANCE SCALE it was first given. */
+  stamp4:  {rank:2, ic:'&#9707;',   castOre: MF.quartOre(5,4),   slots:2},
+  rail2:   {rank:3, ic:'&#128646;', castOre: MF.twoOre(3,2),     slots:2},
+  counter: {rank:4, ic:'&#11042;',  castOre: MF.cubeOre(1,-8),   slots:2}
 };
+Object.keys(MF.PARTS).forEach(function(k){
+  tFields(MF.PARTS[k], 'part.' + k, ['nm','short','order','ds','forge','does','fits']);
+});
 MF.partOrder = function(){
   return Object.keys(MF.PARTS).sort(function(a,b){ return MF.PARTS[a].rank - MF.PARTS[b].rank; });
 };
@@ -8127,7 +8177,7 @@ MF.lessonBench = function(host, key){
   if(b.armed) tb.setAttribute('data-armed','yes');
   tb.setAttribute('aria-pressed', b.armed ? 'true' : 'false');
   tb.appendChild(H('span','bic', t.ic));
-  tb.appendChild(H('span','bnm', t.nm.replace(/^The /,'')));
+  tb.appendChild(H('span','bnm', t.short));
   tb.setAttribute('aria-label', MF.t(b.armed ? 'bench.aria.armed' : 'bench.aria.idle', {tool: t.nm}));
   on(tb,'click',function(){ b.armed = !b.armed; MF.drawLesson(host.parentNode || host, key); });
   hook.appendChild(tb);
@@ -12119,7 +12169,7 @@ MF.paintBelt = function(host, atWork){
     b.setAttribute('data-tool', k);
     /* NO draggable="true". */
     b.appendChild(H('span','bic', t.ic));
-    b.appendChild(H('span','bnm', t.nm.replace(/^The /,'')));
+    b.appendChild(H('span','bnm', t.short));
     /* ONE CLICK DOES IT TOO. Click the instrument to pick it up, click a rock
        to use it - the same thing the drag does. */
     if(MF.state.armedTool === k) b.setAttribute('data-armed','yes');
