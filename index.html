@@ -4320,7 +4320,41 @@ MF.STR.en = {
   'judge.off.a': 'x²&nbsp;<b>{got}</b>, wanted <b>{want}</b>',
   'judge.off.b': 'middle&nbsp;<b>{got}</b>, wanted <b>{want}</b>',
   'judge.off.c': 'end&nbsp;<b>{got}</b>, wanted <b>{want}</b>',
-  'judge.missed': 'Missed: {list}.'
+  'judge.missed': 'Missed: {list}.',
+
+  /* the Mine: the shaft */
+  'shaft.h3': 'The Shaft',
+  'shaft.hint': 'Go as deep as you like. You never have to break anything to descend — fill the cart and work it whenever you feel like it.',
+  'shaft.layer': 'LAYER {n}',
+  'shaft.shut': 'NOT YET TIMBERED',
+
+  /* the Mine: the rock face */
+  'face.h3': 'Layer {n} &mdash; {name}',
+  'face.depth': 'The ore here is {what}. Look one over before you swing &mdash; nothing breaks until you say so.',
+  'face.aria': 'A seam of rock at layer {n}, wider than the screen. Scroll or use the scan buttons to move along it.',
+  'face.rock.aria': 'A lump of ore: {ore}. Look at it, then break it.',
+  'face.scan.back': '◀ scan back',
+  'face.scan.along': 'scan along ▶',
+  'face.where': 'Where you are along the seam',
+
+  /* the Mine: a lump picked out of the wall */
+  'insp.aria': 'What you are looking at, and what to do with it',
+  'insp.lab': 'YOU ARE LOOKING AT',
+  'insp.front.number': 'no x in it at all',
+  'insp.front.flat': 'no x², a flat seam',
+  'insp.front.one': 'one x², nothing in front',
+  'insp.front.a': '{a} in front of the x²',
+  'insp.vein.one': 'One vein',
+  'insp.vein.many': '{n} veins',
+  'insp.obs': '<b>{veins}</b> · {front} · layer {layer}, {name}',
+  'insp.pick': '<br><b class="pickread">The pick reads it as {name}.</b> <em>{tell}</em>',
+  'insp.native': 'Nothing to break. The yard is where this one belongs.',
+  'insp.worth': 'A seam runs through it. Worth carting.',
+  'insp.nopick': '<br><em>Which seam runs through it is not something you can see from here — that is the assay’s job.</em>',
+  'insp.swing': 'Swing the pick',
+  'insp.swing.aria': 'Cut {ore} out of the seam and into the cart',
+  'insp.keep': 'Keep scanning',
+  'insp.keep.aria': 'Leave {ore} in the wall and carry on along the seam'
 };
 MF._missing = {};
 MF.lang = function(){
@@ -10430,8 +10464,8 @@ MF.paintGear = function(){ MF.repaint(['cart','work']); };
 MF.paintShaft = function(){
   var host = clear(MF._mine.left);
   var box = E('div','shaft');
-  box.appendChild(H('h3',null,'The Shaft'));
-  box.appendChild(H('div','hint','Go as deep as you like. You never have to break anything to descend — fill the cart and work it whenever you feel like it.'));
+  box.appendChild(H('h3',null, MF.t('shaft.h3')));
+  box.appendChild(H('div','hint', MF.t('shaft.hint')));
 
   /* the drawn shaft on the left, the layer buttons on the right */
   var body = E('div','shaftbody');
@@ -10449,7 +10483,7 @@ MF.paintShaft = function(){
 
   MF.LAYERS.forEach(function(L){
     var b = E('button','layer'); b.type='button';
-    b.appendChild(H('span','n','LAYER ' + L.n));
+    b.appendChild(H('span','n', MF.t('shaft.layer', {n: L.n})));
     b.appendChild(document.createTextNode(L.name));
     b.appendChild(H('div','hint', L.what));
     if(MF.state.layer===L.n) b.setAttribute('aria-current','true');
@@ -10464,7 +10498,7 @@ MF.paintShaft = function(){
   });
   MF.SHUT_SHAFTS.forEach(function(s){
     var b = E('button','layer shut'); b.type='button'; b.disabled = true;
-    b.appendChild(H('span','n','NOT YET TIMBERED'));
+    b.appendChild(H('span','n', MF.t('shaft.shut')));
     b.appendChild(document.createTextNode(s.name));
     b.appendChild(H('div','hint', s.what));
     rungs.appendChild(b);
@@ -10753,14 +10787,14 @@ MF.paintFace = function(){
 
   var wall = E('div','wall');
   wall.style.background = 'linear-gradient(180deg,'+look.rock+','+look.rock2+')';
-  wall.appendChild(H('h3',null,'Layer ' + L.n + ' &mdash; ' + L.name));
-  wall.appendChild(H('div','depthline', 'The ore here is ' + L.what + '. Look one over before you swing &mdash; nothing breaks until you say so.'));
+  wall.appendChild(H('h3',null, MF.t('face.h3', {n: L.n, name: L.name})));
+  wall.appendChild(H('div','depthline', MF.t('face.depth', {what: L.what})));
 
   /* the viewport scrolls; the seam inside it is far wider than the screen */
   var faceBox = E('div','face seamview');
   var W=MF.SEAM_W, VH=MF.SEAM_H;
   var svg = S('svg',{viewBox:'0 0 '+W+' '+VH,role:'group',
-    'aria-label':'A seam of rock at layer '+L.n+', wider than the screen. Scroll or use the scan buttons to move along it.'});
+    'aria-label':MF.t('face.aria', {n: L.n})});
   /* THE SVG IS SIZED AFTER THE WALL IS MOUNTED, by MF.sizeSeam - it takes its
      height from the space the flex column gives it, and that is not knowable
      until it is in the document. */
@@ -10794,7 +10828,7 @@ MF.paintFace = function(){
   /* the rocks */
   rocks.forEach(function(o, idx){
     var g = S('g',{class:'rock',tabindex:'0',role:'button','data-i':idx,
-      'aria-label':'A lump of ore: ' + MF.oreText(o) + '. Look at it, then break it.'});
+      'aria-label':MF.t('face.rock.aria', {ore: MF.oreText(o)})});
     if(MF.state.inspecting===idx) g.setAttribute('data-sel','on');
     var x=o.px, y=o.py, r=o.sz;
     var sel = S('circle',{class:'sel',cx:x,cy:y,r:r+9,fill:'none',stroke:'#E8A33D','stroke-width':'3','stroke-dasharray':'6 5'});
@@ -10890,10 +10924,10 @@ MF.paintFace = function(){
     on(b,'click',function(){ faceBox.scrollBy({left: dir * Math.round(faceBox.clientWidth*0.8), behavior:'smooth'}); });
     return b;
   }
-  scanRow.appendChild(scanBtn('◀ scan back', -1));
-  scanRow.appendChild(scanBtn('scan along ▶', 1));
+  scanRow.appendChild(scanBtn(MF.t('face.scan.back'), -1));
+  scanRow.appendChild(scanBtn(MF.t('face.scan.along'), 1));
   var posWrap = E('div'); posWrap.style.flex='1 1 160px'; posWrap.style.minWidth='140px';
-  posWrap.appendChild(H('div','hint','Where you are along the seam'));
+  posWrap.appendChild(H('div','hint', MF.t('face.where')));
   var track = E('div');
   track.style.cssText='height:10px;border-radius:999px;background:#241D18;border:2px solid #6B5B48;position:relative;overflow:hidden';
   var marker = E('div');
@@ -10951,7 +10985,7 @@ MF.paintFace = function(){
   var insp = E('div','inspect inspectpop');
   insp.hidden = true;
   insp.setAttribute('role','dialog');
-  insp.setAttribute('aria-label','What you are looking at, and what to do with it');
+  insp.setAttribute('aria-label', MF.t('insp.aria'));
   faceWrap.appendChild(insp);
   wall.appendChild(scanRow);          /* seam navigation, below what it acts on */
 
@@ -11090,39 +11124,36 @@ MF.paintInspect = function(){
   insp.hidden = false;
   if(true){
     var o = rocks[MF.state.inspecting];
-    insp.appendChild(H('div','label','YOU ARE LOOKING AT'));
+    insp.appendChild(H('div','label', MF.t('insp.lab')));
     insp.appendChild(H('div','expr', MF.oreLabel(o)));
     /* one line, not a four-bullet list: this panel and the swing button have to
        sit on the same screen as the rock they describe, or a click produces no
        response the student can see */
     var terms = (o.kind==='number') ? 1 : [o.a,o.b,o.c].filter(function(v){ return v!==0; }).length;
-    var frontOf = (o.kind==='number') ? 'no x in it at all'
-      : (o.a===0 ? 'no x², a flat seam' : (o.a===1 ? 'one x², nothing in front' : num(o.a) + ' in front of the x²'));
+    var frontOf = (o.kind==='number') ? MF.t('insp.front.number')
+      : (o.a===0 ? MF.t('insp.front.flat') : (o.a===1 ? MF.t('insp.front.one') : MF.t('insp.front.a', {a: num(o.a)})));
     /* WHAT THE PROSPECTOR'S PICK IS FOR, and the only place it does anything. */
     var held = MF.hasTool('pick');
     insp.appendChild(H('div','obs',
-      '<b>' + (terms===1 ? 'One vein' : terms + ' veins') + '</b> · ' + frontOf +
-      ' · layer ' + o.layer + ', ' + MF.LAYERS[o.layer-1].name +
+      MF.t('insp.obs', {veins: terms===1 ? MF.t('insp.vein.one') : MF.t('insp.vein.many', {n: terms}),
+        front: frontOf, layer: o.layer, name: MF.LAYERS[o.layer-1].name}) +
       (held
-        ? '<br><b class="pickread">The pick reads it as ' + MF.ASSAY[MF.assayOf(o)].name + '.</b> ' +
-          '<em>' + MF.ASSAY[MF.assayOf(o)].tell + '</em>' +
+        ? MF.t('insp.pick', {name: MF.ASSAY[MF.assayOf(o)].name, tell: MF.ASSAY[MF.assayOf(o)].tell}) +
           /* AND WHAT THAT MEANS FOR THE CHOICE BELOW. */
-          '<br><b class="pickread">' + (MF.isNative(o)
-            ? 'Nothing to break. The yard is where this one belongs.'
-            : 'A seam runs through it. Worth carting.') + '</b>'
-        : '<br><em>Which seam runs through it is not something you can see from here — that is the assay’s job.</em>')));
+          '<br><b class="pickread">' + MF.t(MF.isNative(o) ? 'insp.native' : 'insp.worth') + '</b>'
+        : MF.t('insp.nopick'))));
 
     /* CUTTING FILLS THE CART, AND THAT IS THE WHOLE DECISION HERE */
     /* THE TWO WAYS OUT OF THE POP-OUT, and they are the question it asks: swing
        at this one, or leave it and carry on scanning. */
     var brow = E('div','row poprow'); brow.style.marginTop='10px';
-    var br = E('button','btn primary big','Swing the pick'); br.type='button';
-    br.setAttribute('aria-label','Cut ' + MF.oreText(o) + ' out of the seam and into the cart');
+    var br = E('button','btn primary big', MF.t('insp.swing')); br.type='button';
+    br.setAttribute('aria-label', MF.t('insp.swing.aria', {ore: MF.oreText(o)}));
     on(br,'click',function(){ MF.breakRock(MF.state.inspecting, 'cart'); });
     brow.appendChild(br);
-    var skip = E('button','btn popkeep','Keep scanning'); skip.type='button';
+    var skip = E('button','btn popkeep', MF.t('insp.keep')); skip.type='button';
     skip.style.background='#241D18'; skip.style.color='#E4D5BB'; skip.style.borderColor='#6B5B48';
-    skip.setAttribute('aria-label','Leave ' + MF.oreText(o) + ' in the wall and carry on along the seam');
+    skip.setAttribute('aria-label', MF.t('insp.keep.aria', {ore: MF.oreText(o)}));
     /* putting a lump down is a selection change like any other, and it used to
        rebuild the whole face to clear a ring */
     on(skip,'click',function(){ MF.selectRock(null); });
