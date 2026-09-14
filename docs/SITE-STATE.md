@@ -1865,3 +1865,18 @@ whether or not it was cast, a yard that draws metal for nobody, a part with its 
 **Also fixed in passing:** a deep metal dropped in the mold showed **"0"** — `ingotHtml` read `m`
 and `k`, which a labelled ingot keeps at zero. The `parts` group now puts each Deep Casting's own
 metals in the mold and reads the chips back.
+
+## On a phone, Mr Factor peeks from the edge (2026-09-13)
+
+**USER:** *"Fix Mr Factor covering the text at 380px."*
+
+At 560px and under the text column is the width of the screen, and the dock portrait fixed in
+the corner sat over text at **10 of 13 scroll positions** at 380. **He keeps his size** (76px, the
+sister site's phone size) and now tucks past the right edge with **30px showing**; he comes all the
+way in when he has something new (`data-new`), while he is talking (`data-open` on the dock, set in
+`MF.paintGuide`), and on keyboard focus or hover. Measured after: **1 of 13 positions, by 5px**;
+opened, he is wholly on screen and the bubble's tail lands on his centre.
+
+**The first attempt did nothing, and the reason is worth keeping:** a `@media(max-width:430px)` block
+later in the stylesheet put him back in the corner at 380, so a rule written above it lost on
+source order. The peek now comes after the phone block.

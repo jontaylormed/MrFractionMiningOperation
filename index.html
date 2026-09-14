@@ -2074,6 +2074,17 @@ table.scan tr.hit td{background:#F1F8F5; color:var(--vein); font-weight:700}
   .gtab{width:76px; height:76px}
   .gtab svg{width:74px}
 }
+/* AT 560px AND UNDER HE PEEKS FROM THE EDGE, at the same size. The column is the
+   width of the screen there, and fixed in the corner he sat over the text at 10
+   of 13 scroll positions at 380. He comes all the way in when he has something
+   new, when he is talking, and when a keyboard or a pointer reaches him. AFTER
+   the phone block, which set him back in the corner when it came first. */
+@media (max-width:560px){
+  .guide{right:0}
+  .gtab{transform:translateX(46px); transition:transform .22s ease}
+  .guide[data-open]{right:8px}
+  .guide[data-open] .gtab, .gtab[data-new], .gtab:focus-visible, .gtab:hover{transform:none}
+}
 @media print{ .guide{display:none} }
 
 /* ---- THE READING & ACCESS PANEL ---- */
@@ -7102,6 +7113,8 @@ MF.paintGuide = function(){
   var beats = advice ? advice.beats.concat(g.beats) : g.beats;
   var where = g.where;
   if(G.at >= beats.length) G.at = beats.length - 1;
+  /* on a narrow screen he peeks from the edge, and comes all the way in to talk */
+  host.toggleAttribute('data-open', !!G.open);
 
   if(G.open){
     var bub = E('div','gbubble');
