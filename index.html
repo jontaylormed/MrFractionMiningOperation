@@ -4154,7 +4154,43 @@ MF.STR.en = {
   'read.dial.nopair': 'AND IF NO WHOLE PAIR DOES BOTH',
 
   /* the Prospector's Pick, on the floor */
-  'read.pick.floor': '<b>This one works at the seam, not on the floor.</b> Hold it to a lump still in the wall and it names what kind of ore is in there before you cut it out. Down here you already have the lump.'
+  'read.pick.floor': '<b>This one works at the seam, not on the floor.</b> Hold it to a lump still in the wall and it names what kind of ore is in there before you cut it out. Down here you already have the lump.',
+
+  /* the Steel Pick, on the floor */
+  'read.steel.divides': 'WHAT EVERY TERM DIVIDES BY',
+  'read.steel.both': 'the biggest that divides both',
+  'read.steel.three': 'the biggest that divides all three',
+  'read.steel.four': 'the biggest that divides all four',
+  'read.steel.nothing': 'So there is nothing to stand in front of a bracket.',
+  'read.steel.two.not': 'A lump with a single x&sup2; at the front never carries a plain metal.',
+  'read.steel.native': '<b>And nothing else is coming out either.</b> {why} It is native metal &mdash; already the most refined thing in the mine. The steel has nothing to bite on because there is nothing left in there to bite.',
+  'read.steel.prime': '{n} is a prime.',
+  'read.steel.noseam': 'No whole-number seam runs through it.',
+  'read.steel.x': 'So there is nothing to stand in front of a bracket. The X is the way into this one:',
+  'read.steel.neither': 'So there is nothing to stand in front of a bracket, and no x&sup2; to hang an X under either. What is left is to name a factor yourself.',
+  'read.steel.neither.key': 'Both sides are still yours. Name one and swing.',
+  'read.steel.same': 'EVERY TERM IS CARRYING THE SAME METAL',
+  'read.steel.each': 'each divides by',
+  'read.steel.front': 'so it comes out in front',
+  'read.steel.rip': 'Rip out the common metal',
+
+  /* the Powered Auger, on the floor */
+  'read.auger.cube.not': 'Two terms, so there is no middle to split and nothing to take two at a time.',
+  'read.auger.two.not': 'Three terms, and the pair goes straight into the brackets &mdash; there is no middle to split first.',
+  'read.auger.quart.not': 'Three terms, and no middle worth splitting until the powers come down.',
+  'read.auger.g1': '1 &mdash; TAKE THEM TWO AT A TIME',
+  'read.auger.g2': '2 &mdash; PULL THE COMMON PIECE OFF EACH HALF',
+  'read.auger.g3': '3 &mdash; AND IF THE SAME BRACKET CAME OUT OF BOTH',
+  'read.auger.g.key': 'The bracket that came out of both halves is one side; what was left in front of each is the other. The auger will not write the second one for you.',
+  'read.auger.g.keyno': 'Nothing common came out of the second half, so the two do not meet. Check {d} against {b} × {c} &mdash; that is the whole test.',
+  'read.auger.num.label': 'whatever comes out has to divide',
+  'read.auger.lin.label': 'whatever comes out has to divide both',
+  'read.auger.m1': '1 — THE X',
+  'read.auger.m2': '2 — SPLIT THE MIDDLE WITH THAT PAIR',
+  'read.auger.m3': '3 — THE FOUR TERMS GO IN THE BOX',
+  'read.auger.m3.cap': 'Pull the common metal off each row and each column. The sides are the factors.',
+  'read.auger.m4': '4 — READ THE FACTORS OFF THE EDGES',
+  'read.auger.hint': 'Both sides are yours. The auger reads the rock and will not choose for you.'
 };
 MF._missing = {};
 MF.lang = function(){
@@ -5758,61 +5794,57 @@ MF.TOOL_READ = {
   /* THE STEEL PICK: the common metal, drawn out in front of a bracket. */
   steel: function(host, ore, pieceId){
     if(MF.isCube(ore)){
-      host.appendChild(H('div','diaglab','WHAT EVERY TERM DIVIDES BY'));
+      host.appendChild(H('div','diaglab', MF.t('read.steel.divides')));
       MF.workLine(host, null, [MF.oreLabel(ore)], 'wbig');
-      MF.workLine(host, 'the biggest that divides both', ['1'], 'wbig');
-      MF.notMyCube(host, 'steel', 'So there is nothing to stand in front of a bracket.');
+      MF.workLine(host, MF.t('read.steel.both'), ['1'], 'wbig');
+      MF.notMyCube(host, 'steel', MF.t('read.steel.nothing'));
       return;
     }
     if(MF.isBi(ore)){ MF.readBracket(host, 'steel', ore); return; }
     if(MF.isTwo(ore)){
-      host.appendChild(H('div','diaglab','WHAT EVERY TERM DIVIDES BY'));
+      host.appendChild(H('div','diaglab', MF.t('read.steel.divides')));
       MF.workLine(host, null, [MF.oreLabel(ore)], 'wbig');
-      MF.workLine(host, 'the biggest that divides all three', ['1'], 'wbig');
-      MF.notMyPair(host, 'steel', 'A lump with a single x&sup2; at the front never carries a plain metal.');
+      MF.workLine(host, MF.t('read.steel.three'), ['1'], 'wbig');
+      MF.notMyPair(host, 'steel', MF.t('read.steel.two.not'));
       return;
     }
     if(MF.isQuart(ore)){
       /* the generator makes these monic on purpose, so the honest reading is
          that there is no plain metal — and that is what leaves the gear change
          as the only move. */
-      host.appendChild(H('div','diaglab','WHAT EVERY TERM DIVIDES BY'));
+      host.appendChild(H('div','diaglab', MF.t('read.steel.divides')));
       MF.workLine(host, null, [MF.oreLabel(ore)], 'wbig');
-      MF.workLine(host, 'the biggest that divides them all', ['1'], 'wbig');
-      MF.notMyGear(host, 'steel', 'So there is nothing to stand in front of a bracket.');
+      MF.workLine(host, MF.t('schema.steel.s1.label'), ['1'], 'wbig');
+      MF.notMyGear(host, 'steel', MF.t('read.steel.nothing'));
       return;
     }
     if(MF.isGroup(ore)){
       /* THE ONE THING THE STEEL CAN HONESTLY SAY HERE, and it is worth saying:
          a grouping lump on this layer is deliberately monic, so there is no
          plain metal in it at all. */
-      host.appendChild(H('div','diaglab','WHAT EVERY TERM DIVIDES BY'));
+      host.appendChild(H('div','diaglab', MF.t('read.steel.divides')));
       MF.workLine(host, null, [MF.oreLabel(ore)], 'wbig');
-      MF.workLine(host, 'the biggest that divides all four', ['1'], 'wbig');
-      MF.notMyLump(host, 'steel', 'So there is nothing to stand in front of a bracket.');
+      MF.workLine(host, MF.t('read.steel.four'), ['1'], 'wbig');
+      MF.notMyLump(host, 'steel', MF.t('read.steel.nothing'));
       return;
     }
     var g = MF.commonMetal(ore);
     if(!g){
       /* NOTHING TO BITE ON IS STILL A READING, and it still gets drawn. */
-      host.appendChild(H('div','diaglab','WHAT EVERY TERM DIVIDES BY'));
+      host.appendChild(H('div','diaglab', MF.t('read.steel.divides')));
       var sTerms = (ore.kind==='number') ? [num(ore.n)]
         : [ore.a?sqTerm(ore.a):null, ore.b?xt2(ore.b):null, ore.c?num(ore.c):null].filter(Boolean);
       MF.workLine(host, null, [sTerms.join('   ')], 'wbig');
-      MF.workLine(host, 'the biggest that divides them all', ['1'], 'wbig');
+      MF.workLine(host, MF.t('schema.steel.s1.label'), ['1'], 'wbig');
       /* WHAT COMES NEXT DEPENDS ON THE LUMP, AND IT USED TO NOT. */
       if(MF.isNative(ore)){
-        host.appendChild(H('div','hint','<b>And nothing else is coming out either.</b> ' +
-          (ore.kind==='number'
-            ? num(ore.n) + ' is a prime.'
-            : 'No whole-number seam runs through it.') +
-          ' It is native metal &mdash; already the most refined thing in the mine. ' +
-          'The steel has nothing to bite on because there is nothing left in there to bite.'));
+        host.appendChild(H('div','hint', MF.t('read.steel.native', {
+          why: ore.kind==='number' ? MF.t('read.steel.prime', {n: num(ore.n)}) : MF.t('read.steel.noseam')})));
         MF.methodLine(host, 'steel');
         return;                     /* and no swing is offered at a finished lump */
       }
       if(ore.kind==='poly' && ore.a!==0){
-        host.appendChild(H('div','hint','So there is nothing to stand in front of a bracket. The X is the way into this one:'));
+        host.appendChild(H('div','hint', MF.t('read.steel.x')));
         var sPr = MF.xPair(ore);
         MF.xDiagram(host, {
           top: num(ore.a*ore.c), bottom: num(ore.b),
@@ -5820,21 +5852,21 @@ MF.TOOL_READ = {
           topWhy: ore.a===1 ? '' : '= ' + num(ore.a) + ' × ' + num(ore.c)
         });
       } else {
-        host.appendChild(H('div','hint','So there is nothing to stand in front of a bracket, and no x&sup2; to hang an X under either. What is left is to name a factor yourself.'));
+        host.appendChild(H('div','hint', MF.t('read.steel.neither')));
         MF.splitDiagram(host, {whole:MF.oreLabel(ore), left:null, right:null,
-          key:'Both sides are still yours. Name one and swing.'});
+          key:MF.t('read.steel.neither.key')});
       }
       MF.methodLine(host, 'steel');
       MF.paintNameSide(host, ore, pieceId);
       return;
     }
-    host.appendChild(H('div','diaglab','EVERY TERM IS CARRYING THE SAME METAL'));
+    host.appendChild(H('div','diaglab', MF.t('read.steel.same')));
     var terms = (ore.kind==='number') ? [num(ore.n)]
       : [ore.a?sqTerm(ore.a):null, ore.b?xt2(ore.b):null, ore.c?num(ore.c):null].filter(Boolean);
     MF.workLine(host, null, [terms.join('   ')], 'wbig');
-    MF.workLine(host, 'each divides by', [num(g)], 'wbig');
-    MF.workLine(host, 'so it comes out in front', [num(g), ' ( ', null, ' )'], 'wbig');
-    var b = E('button','btn primary big','Rip out the common metal'); b.type='button';
+    MF.workLine(host, MF.t('read.steel.each'), [num(g)], 'wbig');
+    MF.workLine(host, MF.t('read.steel.front'), [num(g), ' ( ', null, ' )'], 'wbig');
+    var b = E('button','btn primary big', MF.t('read.steel.rip')); b.type='button';
     on(b,'click',function(){ MF.ripCommon(ore); });
     host.appendChild(b);
     MF.methodLine(host, "steel");
@@ -5843,70 +5875,69 @@ MF.TOOL_READ = {
   /* THE POWERED AUGER: the full X-box on loaded ore — and the whole method on a
      four-term one, which is the shaft it was really always for. */
   auger: function(host, ore, pieceId){
-    if(MF.isCube(ore)){ MF.notMyCube(host, 'auger', 'Two terms, so there is no middle to split and nothing to take two at a time.'); return; }
+    if(MF.isCube(ore)){ MF.notMyCube(host, 'auger', MF.t('read.auger.cube.not')); return; }
     if(MF.isBi(ore)){ MF.readBracket(host, 'auger', ore); return; }
     if(MF.isTwo(ore)){
-      MF.notMyPair(host, 'auger', 'Three terms, and the pair goes straight into the brackets &mdash; there is no middle to split first.');
+      MF.notMyPair(host, 'auger', MF.t('read.auger.two.not'));
       return;
     }
     if(MF.isQuart(ore)){
-      MF.notMyGear(host, 'auger', 'Three terms, and no middle worth splitting until the powers come down.');
+      MF.notMyGear(host, 'auger', MF.t('read.auger.quart.not'));
       return;
     }
     if(MF.isGroup(ore)){
       var gh = MF.groupHalves(ore), gs = MF.groupSplit(ore);
-      host.appendChild(H('div','diaglab','1 &mdash; TAKE THEM TWO AT A TIME'));
+      host.appendChild(H('div','diaglab', MF.t('read.auger.g1')));
       MF.workLine(host, null, [gh.first, '     ', gh.second], 'wbig');
-      host.appendChild(H('div','diaglab','2 &mdash; PULL THE COMMON PIECE OFF EACH HALF'));
+      host.appendChild(H('div','diaglab', MF.t('read.auger.g2')));
       /* the first half is done for you, because x is visible in both its terms;
          the second is the one worth looking at, so its bracket is the hole. */
       MF.workLine(host, null, ['x ( y' + signed(ore.b) + ' )', '     ',
                                num(ore.c) + ' ( y', '  ', null, ' )'], 'wbig');
-      host.appendChild(H('div','diaglab','3 &mdash; AND IF THE SAME BRACKET CAME OUT OF BOTH'));
+      host.appendChild(H('div','diaglab', MF.t('read.auger.g3')));
       MF.splitDiagram(host, {
         whole: MF.oreLabel(ore),
         left: gs ? '( x' + signed(ore.c) + ' )' : null,
         right: null,
         key: gs
-          ? 'The bracket that came out of both halves is one side; what was left in front of each is the other. The auger will not write the second one for you.'
-          : 'Nothing common came out of the second half, so the two do not meet. Check ' +
-            num(ore.d) + ' against ' + num(ore.b) + ' × ' + num(ore.c) + ' &mdash; that is the whole test.'
+          ? MF.t('read.auger.g.key')
+          : MF.t('read.auger.g.keyno', {d: num(ore.d), b: num(ore.b), c: num(ore.c)})
       });
       MF.methodLine(host, 'auger');
       MF.paintNameSide(host, ore, pieceId);
       return;
     }
     if(ore.kind==='number'){
-      MF.workLine(host, 'whatever comes out has to divide', [num(ore.n)], 'wbig');
+      MF.workLine(host, MF.t('read.auger.num.label'), [num(ore.n)], 'wbig');
       MF.methodLine(host, "auger");
       return;
     }
     if(ore.a===0){
-      MF.workLine(host, 'whatever comes out has to divide both', [num(ore.b), ' and ', num(ore.c)], 'wbig');
+      MF.workLine(host, MF.t('read.auger.lin.label'), [num(ore.b), MF.t('read.drill.lin.and'), num(ore.c)], 'wbig');
       MF.methodLine(host, "auger");
       MF.paintNameSide(host, ore, pieceId);
       return;
     }
     var pr = MF.xPair(ore);
-    host.appendChild(H('div','diaglab','1 — THE X'));
+    host.appendChild(H('div','diaglab', MF.t('read.auger.m1')));
     MF.xDiagram(host, {
       top: num(ore.a*ore.c), bottom: num(ore.b),
       left: pr ? num(pr.p) : null, right: null,
       topWhy: '= ' + num(ore.a) + ' × ' + num(ore.c)
     });
-    host.appendChild(H('div','diaglab','2 — SPLIT THE MIDDLE WITH THAT PAIR'));
+    host.appendChild(H('div','diaglab', MF.t('read.auger.m2')));
     MF.termLine(host, null, [sqTerm(ore.a), pr ? xt2(pr.p) : null, null, num(ore.c)], 'wbig');
-    host.appendChild(H('div','diaglab','3 — THE FOUR TERMS GO IN THE BOX'));
+    host.appendChild(H('div','diaglab', MF.t('read.auger.m3')));
     MF.xBox(host, {
       rows:[{label:'?'},{label:'?'}],
       cols:[{label:'?'},{label:'?'}],
       cells:[[{kind:'sq',text:quadText(ore.a,0,0)},{kind:'x',text: pr ? xt2(pr.p) : '?'}],
              [{kind:'x',text:'?'},{kind:'k',text:num(ore.c)}]],
-      caption:'Pull the common metal off each row and each column. The sides are the factors.'
+      caption:MF.t('read.auger.m3.cap')
     });
-    host.appendChild(H('div','diaglab','4 — READ THE FACTORS OFF THE EDGES'));
+    host.appendChild(H('div','diaglab', MF.t('read.auger.m4')));
     MF.workLine(host, null, ['( ', null, ' )', ' × ', '( ', null, ' )'], 'wbig');
-    host.appendChild(H('div','hint','Both sides are yours. The auger reads the rock and will not choose for you.'));
+    host.appendChild(H('div','hint', MF.t('read.auger.hint')));
     MF.methodLine(host, 'auger');
     MF.paintNameSide(host, ore, pieceId);
   }
