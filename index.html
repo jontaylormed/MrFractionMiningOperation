@@ -3238,6 +3238,30 @@ MF.ACCESS_FX = 0.85;
    arrival — see MF.ROOM_SOUND for why that distinction cost a bug. */
 MF.ACCESS_MUSIC = 0.30;
 
+/* ===== LANGUAGES ===== */
+/* One table of strings per language, and one lookup. `MF.t(key, vars)` reads
+   the current language, falls back to English one key at a time, and fills
+   `{name}` placeholders, so a translation may put the words in its own order.
+   A language that is only partly written still works: whatever it lacks is
+   shown in English, never as a blank. The maths is not in here - the printers
+   draw symbols, and symbols read the same in every language. */
+MF.LANG = {
+  en: {nm:'English', dir:'ltr', speech:'en', stop:'. '}
+};
+MF.STR = { en: {} };
+MF._missing = {};
+MF.lang = function(){
+  var l = MF.state && MF.state.access && MF.state.access.lang;
+  return (l && MF.LANG[l]) ? l : 'en';
+};
+MF.t = function(key, vars){
+  var table = MF.STR[MF.lang()], s = table && table[key];
+  if(s == null) s = MF.STR.en[key];
+  if(s == null){ MF._missing[key] = 1; s = key; }
+  if(vars) s = String(s).replace(/\{(\w+)\}/g, function(m, k){ return vars[k] != null ? String(vars[k]) : m; });
+  return s;
+};
+
 MF.state = {
   screen:'home',
   layer:1,
@@ -3255,7 +3279,8 @@ MF.state = {
   /* READING & ACCESS, and it is held exactly like everything else */
   /* THREE SOUND LEVELS, NOT TWO. */
   access:{ type:'standard', size:100, tint:'none', ruler:false, spacing:false,
-           motion:'auto', fx:MF.ACCESS_FX, music:MF.ACCESS_MUSIC, ambience:0, mute:false, speed:1 },
+           motion:'auto', fx:MF.ACCESS_FX, music:MF.ACCESS_MUSIC, ambience:0, mute:false, speed:1,
+           lang:'en' },
   rng: makeRng((Date.now()^0x5f3759df)>>>0)
 };
 
@@ -6009,6 +6034,9 @@ MF.applyAccess = function(){
       .forEach(function(k){ r.style.removeProperty(k); });
   }
   r.setAttribute('data-tint', a.tint);
+  /* the language, and the direction it reads in */
+  r.setAttribute('lang', MF.lang());
+  r.setAttribute('dir', MF.LANG[MF.lang()].dir);
   if(a.spacing) r.setAttribute('data-spacing','loose'); else r.removeAttribute('data-spacing');
   if(a.motion === 'reduce') r.setAttribute('data-motion','reduce'); else r.removeAttribute('data-motion');
   MF.accessRuler(a.ruler);
@@ -6091,6 +6119,12 @@ MF.openAccess = function(opener){
     foot:'Press <b>Alt + A</b> any time to open this, and <b>Esc</b> to close it. ' +
          'Nothing here changes the mathematics.',
     fill: function(b){
+      /* LANGUAGE FIRST, and only once there is a second one to choose. A
+         change redraws the room the student is standing in. */
+      if(Object.keys(MF.LANG).length > 1)
+        pick(b, 'Language', null,
+          Object.keys(MF.LANG).map(function(k){ return {nm:MF.LANG[k].nm, v:k}; }),
+          MF.lang(), function(v){ a.lang = v; MF.applyAccess(); MF.go(MF.state.screen); });
       pick(b, 'Typeface', 'Pick whichever you find easiest. There is no correct one.',
         [{nm:'Standard', v:'standard'},{nm:'Rounded', v:'rounded'},{nm:'Dyslexia-friendly', v:'dys'}],
         a.type, function(v){ a.type = v; });
@@ -6207,7 +6241,11 @@ MF.readAloud = function(){
     });
   });
   if(!said.length) return 0;
-  var u = new SpeechSynthesisUtterance(said.join('. '));
+  var lg = MF.LANG[MF.lang()];
+  var u = new SpeechSynthesisUtterance(said.join(lg.stop));
+  /* English keeps whatever voice the device picks; any other language asks
+     for a voice that can say it */
+  if(MF.lang() !== 'en') u.lang = lg.speech;
   u.rate = MF.state.access.speed || 1;
   window.speechSynthesis.speak(u);
   return said.length;
@@ -18658,6 +18696,52 @@ MF.validate = function(){
   chk('nogrades');
   if(marky.test('a ruler marked at the whole numbers'.replace('marked','ticked')))
     errs.push('CONTROL: the marking sweep is matching something it should not');
+
+  /* 6c. LANGUAGES. Every language offered has a table and says how it reads;
+     no translation carries a key English lacks or different {placeholders};
+     and no key the site asked for during this run is missing from English.
+     Last, so every group above has already asked for its strings. */
+  var phOf = function(s){ return (String(s).match(/\{\w+\}/g) || []).sort().join(','); };
+  Object.keys(MF.LANG).forEach(function(l){
+    chk('lang');
+    var L = MF.LANG[l];
+    if(!MF.STR[l]){ errs.push('lang: "' + l + '" is offered and has no string table'); return; }
+    chk('lang');
+    if(!L.nm || (L.dir !== 'ltr' && L.dir !== 'rtl') || !L.speech || L.stop == null)
+      errs.push('lang: "' + l + '" is missing its name, direction, voice or sentence stop');
+    if(l === 'en') return;
+    Object.keys(MF.STR[l]).forEach(function(k){
+      chk('lang');
+      if(MF.STR.en[k] == null){ errs.push('lang: ' + l + ' has "' + k + '", which English does not'); return; }
+      if(phOf(MF.STR[l][k]) !== phOf(MF.STR.en[k]))
+        errs.push('lang: ' + l + ' "' + k + '" does not carry the same {placeholders} as English');
+    });
+  });
+  chk('lang');
+  var lgMissed = Object.keys(MF._missing);
+  if(lgMissed.length)
+    errs.push('lang: a key was asked for that English does not have — "' + lgMissed[0] + '"');
+  /* CONTROL: a key that is not there is noticed, and comes back as itself */
+  chk('lang');
+  var lgSavedMiss = MF._missing; MF._missing = {};
+  var lgCtl = MF.t('__control_no_such_key__');
+  var lgSeen = !!MF._missing.__control_no_such_key__;
+  MF._missing = lgSavedMiss;
+  if(!lgSeen || lgCtl !== '__control_no_such_key__')
+    errs.push('CONTROL: MF.t does not notice a key that is not there');
+  /* CONTROL: a translated string fills its placeholders, and one the language
+     lacks falls back to English — on a throwaway language, removed after */
+  chk('lang');
+  var lgSavedLang = MF.state.access.lang;
+  MF.LANG.zz = {nm:'test', dir:'ltr', speech:'zz', stop:'. '};
+  MF.STR.zz = {__ctl_a:'B {n}'};
+  MF.STR.en.__ctl_a = 'A {n}'; MF.STR.en.__ctl_b = 'only in English';
+  MF.state.access.lang = 'zz';
+  var lgA = MF.t('__ctl_a', {n:7}), lgB = MF.t('__ctl_b');
+  MF.state.access.lang = lgSavedLang;
+  delete MF.LANG.zz; delete MF.STR.zz; delete MF.STR.en.__ctl_a; delete MF.STR.en.__ctl_b;
+  if(lgA !== 'B 7') errs.push('lang: a translated string did not come back with its placeholder filled');
+  if(lgB !== 'only in English') errs.push('lang: a string the language lacks did not fall back to English');
 
   /* 7. CONTROL - must fail, or none of the above is looking at anything */
   chk('control');

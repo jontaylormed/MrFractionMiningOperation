@@ -112,6 +112,7 @@ docs/VERIFICATION.md             102 rules, each written after a real failure
 docs/VOICE.md                    the recording script for Mr Factor — generated, not typed
 .claude/agents/                  five review charters, deliberately disjoint
 tools/verify-published.js        run this ON THE LIVE URL — see above
+tools/text-harvest.js            every string a student sees, before vs after — proves an extraction changed none
 tools/                           serve.ps1, zz-drive.js — scaffolding, never shipped
 ```
 
