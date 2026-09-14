@@ -3461,7 +3461,56 @@ MF.STR.en = {
   'mill.aria.ore': '{n} — still ore. Click to put it under the stamp.',
   'mill.new': 'PUT A NEW LUMP ON THE BENCH',
   'mill.aria.slider': 'Choose a number between {min} and {max}',
-  'mill.hint.range': 'Anything from {min} to {max}. Some of them come apart four times over and some will not move at all.'
+  'mill.hint.range': 'Anything from {min} to {max}. Some of them come apart four times over and some will not move at all.',
+
+  /* the questions at the foot of a workshop */
+  'q.lab': 'BEFORE YOU GO',
+  'q.lede': 'Nothing here is kept. They are here because answering one is how you find out whether you followed it.',
+  'q.aria.m': 'how many x — leave it empty for a single x, or put 0 for a plain number',
+  'q.aria.num': 'the number',
+  'q.aria.k': 'the number on the end',
+  'q.try': 'Try it',
+  'q.notwhole': 'That is not a whole number, so there is nothing to try yet.',
+  'q.aria.choose': 'Choose {label}',
+  'q.chose': '<b>You chose {label}.</b> ',
+  'q.aria.prev': 'The question before this one',
+  'q.aria.next': 'The next question',
+  'q.aria.goto': 'Go to question {n}',
+  'q.count': '{at} of {n}',
+
+  /* The Molds */
+  'molds.lede': 'Two metals go in <b>separate</b> and one object comes out <b>single</b>. The mold does not choose the shape — the metals do. And because the result is determined, running it backwards has a definite answer, which is the whole reason the mine is possible at all.',
+  'molds.slide.a': 'Depth of the mold (a)',
+  'molds.slide.b': 'First part (b)',
+  'molds.slide.c': 'Second part (c)',
+  'molds.slide.a2': 'First bracket, its number (a)',
+  'molds.slide.d2': 'Depth on the first bracket (d)',
+  'molds.slide.c2': 'Second bracket, its number (c)',
+  'molds.mode': 'What is in the mold',
+  'molds.mode.num': 'two plain parts',
+  'molds.mode.x': 'a part with an x in it',
+  'molds.mode.two': 'two brackets',
+  'molds.cap.two': 'Four corners, because every part of one bracket meets every part of the other. The two x corners are the same kind of thing.',
+  'molds.a11y.two': 'A mold cut as ( {bx} + {a} ) by ( x + {c} ), showing four products.',
+  'molds.cap.one': 'Both sides of the mold are set, so every part of the casting follows from them.',
+  'molds.a11y.one': 'A mold of depth {a} split into a part of width {b} and a part of width {c}.',
+  'molds.q1': 'A mold of depth <b>4</b> is cut into a part of width <b>x</b> and a part of width <b>3</b>. What comes out?',
+  'molds.q1.sub': 'The two parts are still one casting. Nothing is added by cutting the mold.',
+  'molds.q1.a': 'Both parts get the full depth. 4 × x is 4x and 4 × 3 is 12, and the casting is the two of them together.',
+  'molds.q1.b': 'That gives the depth to the first part and not the second. The mold is 4 deep <em>all the way across</em> — the 3 sits in metal 4 deep too, so it comes out 12.',
+  'molds.q1.c': 'That adds the depth to a width instead of multiplying them. 4 and x are two sides of the same rectangle, not two things stacked end to end.',
+  'molds.q2': 'Why can you never <b>choose</b> which shape comes out of the mold?',
+  'molds.q2.a.label': 'Because the metals decide it',
+  'molds.q2.a': 'Distribution has a determined result. Once you know what went in there is exactly one thing that can come out — which is why running it backwards has a definite answer to hunt for.',
+  'molds.q2.b.label': 'Because the forge only owns one mold',
+  'molds.q2.b': 'There are seven molds on the board, one per order. The constraint is not how many molds exist — it is that what comes out follows from what went in.',
+  'molds.q2.c.label': 'Because you have not forged the right tool yet',
+  'molds.q2.c': 'No tool anywhere on this site changes what a pour comes to. A tool assists; it never gates and it never alters the arithmetic.',
+  'molds.q3': 'Now run it <b>backwards</b>, which is the mine\'s direction. <b>2x&sup2; + 10x + 12</b> came out of a mold. Name <b>one</b> of the metals that went in.',
+  'molds.q3.sub': 'An empty x-box means a single x. Put 0 in it to name a plain metal instead.',
+  'molds.q3.cta': 'Pour it back',
+  'molds.q3.ok': '<b>That went in.</b> <b>{left}</b> and <b>{right}</b> multiply back to it — and there is more than one right first answer here, because 2 · (x + 2) · (x + 3) has three metals in it.',
+  'molds.q3.no': '<b>{why}</b> Nothing is lost. The same engine the anvil swings through just answered that, and it is describing the rock, not you.'
 };
 MF._missing = {};
 MF.lang = function(){
@@ -8063,9 +8112,8 @@ MF.paintReflection = function(host, o){
 /* ===== FOLLOW-UP QUESTIONS, AND NOT ONE OF THEM IS MARKED. ===== */
 MF.paintQuestions = function(host, o){
   var box = E('div','asks');
-  box.appendChild(H('div','askslab', o.lab || 'BEFORE YOU GO'));
-  box.appendChild(H('p','askslede', o.lede ||
-    'Nothing here is kept. They are here because answering one is how you find out whether you followed it.'));
+  box.appendChild(H('div','askslab', o.lab || MF.t('q.lab')));
+  box.appendChild(H('p','askslede', o.lede || MF.t('q.lede')));
 
   /* ONE AT A TIME, AND IT COMES ROUND AGAIN. */
   var cards = [];
@@ -8089,22 +8137,22 @@ MF.paintQuestions = function(host, o){
       if(!isNum){
         bx.appendChild(H('span','paren','('));
         mi = document.createElement('input'); mi.type='text'; mi.inputMode='numeric'; mi.placeholder='1';
-        mi.setAttribute('aria-label','how many x — leave it empty for a single x, or put 0 for a plain number');
+        mi.setAttribute('aria-label', MF.t('q.aria.m'));
         bx.appendChild(mi);
         bx.appendChild(H('span','paren','x +'));
       }
       var ki = document.createElement('input'); ki.type='text'; ki.inputMode='numeric'; ki.placeholder='0';
-      ki.setAttribute('aria-label', isNum ? 'the number' : 'the number on the end');
+      ki.setAttribute('aria-label', MF.t(isNum ? 'q.aria.num' : 'q.aria.k'));
       bx.appendChild(ki);
       if(!isNum) bx.appendChild(H('span','paren',')'));
       row.appendChild(bx);
-      var go = E('button','btn primary', qn.cta || 'Try it'); go.type='button';
+      var go = E('button','btn primary', qn.cta || MF.t('q.try')); go.type='button';
       on(go,'click',function(){
         var m = isNum ? 0 : MF.readPickM(mi.value);
         var k = MF.readInt(ki.value);
         clear(out);
         if(!isFinite(m) || !isFinite(k) || isNaN(m) || isNaN(k)){
-          out.appendChild(H('div','note','That is not a whole number, so there is nothing to try yet.'));
+          out.appendChild(H('div','note', MF.t('q.notwhole')));
           return;
         }
         var got = qn.check(m, k);
@@ -8119,14 +8167,14 @@ MF.paintQuestions = function(host, o){
       MF.spreadOptions('q|' + String(qn.q).replace(/<[^>]+>/g,''), qn.options).forEach(function(op, oi){
         var b = E('button','qopt'); b.type='button';
         b.innerHTML = op.label;
-        b.setAttribute('aria-label', 'Choose ' + (op.a11y || op.label.replace(/<[^>]+>/g,'')));
+        b.setAttribute('aria-label', MF.t('q.aria.choose', {label: op.a11y || op.label.replace(/<[^>]+>/g,'')}));
         on(b,'click',function(){
           Array.prototype.forEach.call(opts.children, function(n){ n.removeAttribute('data-chosen'); });
           b.setAttribute('data-chosen','yes');
           clear(out);
           /* THE DESCRIPTION IS OF THE LUMP, NOT OF THE STUDENT. */
-          out.appendChild(H('div','note' + (op.holds ? ' good' : ''), '<b>You chose ' +
-            op.label.replace(/<[^>]+>/g,'') + '.</b> ' + op.says));
+          out.appendChild(H('div','note' + (op.holds ? ' good' : ''),
+            MF.t('q.chose', {label: op.label.replace(/<[^>]+>/g,'')}) + op.says));
         });
         opts.appendChild(b);
       });
@@ -8145,15 +8193,15 @@ MF.paintQuestions = function(host, o){
     var nav = E('div','askturn');
     var prev = E('button','btn askprev'); prev.type='button';
     prev.innerHTML = '&larr;';
-    prev.setAttribute('aria-label','The question before this one');
+    prev.setAttribute('aria-label', MF.t('q.aria.prev'));
     var count = H('span','askcount','');
     var dots = E('div','askdots');
     var next = E('button','btn asknext'); next.type='button';
     next.innerHTML = '&rarr;';
-    next.setAttribute('aria-label','The next question');
+    next.setAttribute('aria-label', MF.t('q.aria.next'));
     cards.forEach(function(_, di){
       var d = E('button','askdot'); d.type='button';
-      d.setAttribute('aria-label','Go to question ' + (di+1));
+      d.setAttribute('aria-label', MF.t('q.aria.goto', {n: di+1}));
       on(d,'click',function(){ show(di); });
       dots.appendChild(d);
     });
@@ -8164,7 +8212,7 @@ MF.paintQuestions = function(host, o){
         if(di === at) d.setAttribute('data-on','yes'); else d.removeAttribute('data-on');
         d.setAttribute('aria-current', di === at ? 'true' : 'false');
       });
-      count.textContent = (at+1) + ' of ' + cards.length;
+      count.textContent = MF.t('q.count', {at: at+1, n: cards.length});
     }
     on(prev,'click',function(){ show(at - 1); });
     on(next,'click',function(){ show(at + 1); });
@@ -8400,9 +8448,7 @@ MF.shedFoot = function(host, key){
 MF.SCREENS['shed-mold'] = function(host){
   var st = {a:3, b:4, c:5, d:1, mode:'num'};
   MF.shedHead(host, 'shed-mold');
-  host.appendChild(H('p','lede','Two metals go in <b>separate</b> and one object comes out <b>single</b>. ' +
-    'The mold does not choose the shape — the metals do. And because the result is determined, running it backwards has a definite answer, ' +
-    'which is the whole reason the mine is possible at all.'));
+  host.appendChild(H('p','lede', MF.t('molds.lede')));
 
   var panel = E('div','panel light');
   /* NO "PLAY - NOTHING TO ANSWER" TAG. */
@@ -8424,16 +8470,17 @@ MF.SCREENS['shed-mold'] = function(host){
     on(r,'input',function(){ st[w._key]=parseInt(r.value,10); v.textContent=num(st[w._key]); draw(); });
     w.appendChild(r); ctrls.appendChild(w); return w;
   }
-  var aw = slider('a','Depth of the mold (a)',1,9);
-  var bw = slider('b','First part (b)',1,9);
-  var cw = slider('c','Second part (c)',1,9);
+  var aw = slider('a', MF.t('molds.slide.a'),1,9);
+  var bw = slider('b', MF.t('molds.slide.b'),1,9);
+  var cw = slider('c', MF.t('molds.slide.c'),1,9);
   /* 1 1 180px, NOT 0 0 auto. */
   /* STACKED AND ALIGNED RIGHT. */
   var mw = E('div','moldmode'); mw.style.flex='1 1 180px'; mw.style.minWidth='0';
-  mw.appendChild(H('div','hint','What is in the mold'));
+  mw.appendChild(H('div','hint', MF.t('molds.mode')));
   var seg = E('div','moldseg');
   /* THREE THINGS YOU CAN POUR, and the third one is the mine's own job. */
-  [['num','two plain parts'],['x','a part with an x in it'],['two','two brackets']].forEach(function(m){
+  ['num','x','two'].forEach(function(mode){
+    var m = [mode, MF.t('molds.mode.' + mode)];
     var b=E('button','btn',m[1]); b.type='button';
     on(b,'click',function(){ st.mode=m[0]; draw(); });
     seg.appendChild(b); b.dataset.mode=m[0];
@@ -8448,36 +8495,29 @@ MF.SCREENS['shed-mold'] = function(host){
 
   MF.paintQuestions(host, {list:[
     {kind:'pick',
-     q:'A mold of depth <b>4</b> is cut into a part of width <b>x</b> and a part of width <b>3</b>. What comes out?',
-     sub:'The two parts are still one casting. Nothing is added by cutting the mold.',
+     q:MF.t('molds.q1'),
+     sub:MF.t('molds.q1.sub'),
      options:[
-       {label:'4x + 12', holds:true,
-        says:'Both parts get the full depth. 4 × x is 4x and 4 × 3 is 12, and the casting is the two of them together.'},
-       {label:'4x + 3',
-        says:'That gives the depth to the first part and not the second. The mold is 4 deep <em>all the way across</em> — the 3 sits in metal 4 deep too, so it comes out 12.'},
-       {label:'7x',
-        says:'That adds the depth to a width instead of multiplying them. 4 and x are two sides of the same rectangle, not two things stacked end to end.'}
+       {label:'4x + 12', holds:true, says:MF.t('molds.q1.a')},
+       {label:'4x + 3', says:MF.t('molds.q1.b')},
+       {label:'7x', says:MF.t('molds.q1.c')}
      ]},
     {kind:'pick',
-     q:'Why can you never <b>choose</b> which shape comes out of the mold?',
+     q:MF.t('molds.q2'),
      options:[
-       {label:'Because the metals decide it', holds:true,
-        says:'Distribution has a determined result. Once you know what went in there is exactly one thing that can come out — which is why running it backwards has a definite answer to hunt for.'},
-       {label:'Because the forge only owns one mold',
-        says:'There are seven molds on the board, one per order. The constraint is not how many molds exist — it is that what comes out follows from what went in.'},
-       {label:'Because you have not forged the right tool yet',
-        says:'No tool anywhere on this site changes what a pour comes to. A tool assists; it never gates and it never alters the arithmetic.'}
+       {label:MF.t('molds.q2.a.label'), holds:true, says:MF.t('molds.q2.a')},
+       {label:MF.t('molds.q2.b.label'), says:MF.t('molds.q2.b')},
+       {label:MF.t('molds.q2.c.label'), says:MF.t('molds.q2.c')}
      ]},
     {kind:'type', plain:false,
-     q:'Now run it <b>backwards</b>, which is the mine\'s direction. <b>2x&sup2; + 10x + 12</b> came out of a mold. Name <b>one</b> of the metals that went in.',
-     sub:'An empty x-box means a single x. Put 0 in it to name a plain metal instead.',
-     cta:'Pour it back',
+     q:MF.t('molds.q3'),
+     sub:MF.t('molds.q3.sub'),
+     cta:MF.t('molds.q3.cta'),
      check:function(m,k){
        var got = MF.breakOff({kind:'poly',a:2,b:10,c:12}, {m:m, k:k});
        return got.ok
-         ? {ok:true, why:'<b>That went in.</b> <b>' + MF.oreLabel(got.left) + '</b> and <b>' + MF.oreLabel(got.right) +
-            '</b> multiply back to it — and there is more than one right first answer here, because 2 · (x + 2) · (x + 3) has three metals in it.'}
-         : {ok:false, why:'<b>' + got.why + '</b> Nothing is lost. The same engine the anvil swings through just answered that, and it is describing the rock, not you.'};
+         ? {ok:true, why:MF.t('molds.q3.ok', {left: MF.oreLabel(got.left), right: MF.oreLabel(got.right)})}
+         : {ok:false, why:MF.t('molds.q3.no', {why: got.why})};
      }}
   ]});
 
@@ -8490,9 +8530,9 @@ MF.SCREENS['shed-mold'] = function(host){
     var a=st.a, c=st.c, b=(isTwo ? st.d : st.b);
     /* THE FIRST BRACKET CARRIES A DEPTH, SO THE x² MOVES */
     bw.style.display = isX ? 'none' : '';
-    aw._lab.innerHTML = isTwo ? 'First bracket, its number (a)' : 'Depth of the mold (a)';
-    bw._lab.innerHTML = isTwo ? 'Depth on the first bracket (d)' : 'First part (b)';
-    cw._lab.innerHTML = isTwo ? 'Second bracket, its number (c)' : 'Second part (c)';
+    aw._lab.innerHTML = MF.t(isTwo ? 'molds.slide.a2' : 'molds.slide.a');
+    bw._lab.innerHTML = MF.t(isTwo ? 'molds.slide.d2' : 'molds.slide.b');
+    cw._lab.innerHTML = MF.t(isTwo ? 'molds.slide.c2' : 'molds.slide.c');
     /* the middle slider changes which number it is holding, so it has to be
        re-pointed and re-read every time the mode moves */
     bw._key = isTwo ? 'd' : 'b';
@@ -8530,8 +8570,8 @@ MF.SCREENS['shed-mold'] = function(host){
         cells:[[{kind:'sq',text:quadText(b,0,0)}, {kind:'x',text:xt2(b*c)}],
                [{kind:'x',text:xt2(a)},           {kind:'k',text:num(a*c)}]],
         sideMode:'show',
-        caption:'Four corners, because every part of one bracket meets every part of the other. The two x corners are the same kind of thing.',
-        a11y:'A mold cut as ( '+bx+' + '+num(a)+' ) by ( x + '+num(c)+' ), showing four products.'
+        caption:MF.t('molds.cap.two'),
+        a11y:MF.t('molds.a11y.two', {bx: bx, a: num(a), c: num(c)})
       });
       MF.pourChain(chainHost, [{m:b,k:a},{m:1,k:c}]);
       eq.innerHTML = '( '+bx+' + '+num(a)+' )( x + '+num(c)+' ) <span class="op">=</span> ' +
@@ -8544,8 +8584,8 @@ MF.SCREENS['shed-mold'] = function(host){
       cols:[{label:isX?'x':num(b)},{label:num(c)}],
       cells:[[ isX?{kind:'x',text:num(a)+'x'}:{kind:'k',text:num(a*b)}, {kind:'k',text:num(a*c)} ]],
       sideMode:'show',
-      caption:'Both sides of the mold are set, so every part of the casting follows from them.',
-      a11y:'A mold of depth '+num(a)+' split into a part of width '+(isX?'x':num(b))+' and a part of width '+num(c)+'.'
+      caption:MF.t('molds.cap.one'),
+      a11y:MF.t('molds.a11y.one', {a: num(a), b: isX ? 'x' : num(b), c: num(c)})
     });
     /* THE SAME CHAIN ON THE ONE-BRACKET POUR, so the two modes are visibly the
        same act at different sizes rather than two different lessons. */
@@ -11448,7 +11488,7 @@ MF.openHammer = function(B, opener){
         box.appendChild(H('span','paren','('));
         var mi = document.createElement('input'); mi.type='text'; mi.inputMode='numeric';
         mi.value = B.raw.m; mi.placeholder = '1';
-        mi.setAttribute('aria-label','how many x — leave it empty for a single x, or put 0 for a plain number');
+        mi.setAttribute('aria-label', MF.t('q.aria.m'));
         on(mi,'input',function(){ B.raw.m = mi.value; MF.echoHammer(B); });
         on(mi,'keydown',fire);
         box.appendChild(mi);
