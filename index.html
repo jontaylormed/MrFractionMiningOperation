@@ -3615,7 +3615,125 @@ MF.STR.en = {
   'art.words.3.real': 'a prime',
   'art.words.same': 'the same object, twice',
   'art.methods.aria': 'A ladder of seven rungs climbing to the right against a row of lumps of ore that grow larger, with a lamp climbing the rungs.',
-  'art.methods.rung': 'one method a rung, and the ore gets harder in step'
+  'art.methods.rung': 'one method a rung, and the ore gets harder in step',
+
+  /* The Tools */
+  'methods.lede': 'Seven instruments hang at the forge, and each one carries <b>a method</b> — the box method, factoring by grouping, pulling out the GCF. The instrument is a convenience. <b>The method is the part worth having</b>, and it works in a notebook with no tool at all. This is the floor where the ones you have <b>cast</b> get taught.',
+  'methods.note': '<b>A tool shows part of a factorisation and never all of it.</b> The lantern lights one side and prints a <span class="qm">?</span> for the other; the drill lists every pair and chooses none. Whatever you name goes to the hammer, and the rock is what answers.',
+  'methods.q1': 'You are holding <b>6x&sup2; + 7x &minus; 3</b>. Which method is cut for it?',
+  'methods.q1.a.label': 'Factoring by grouping',
+  'methods.q1.a': 'Something sits in front of the x², so both ends are pinned. Multiply a·c to get −18, find the pair that multiplies to −18 and adds to 7, split the middle into those two, and group.',
+  'methods.q1.b.label': 'The difference of two squares',
+  'methods.q1.b': 'That one needs no middle term and both ends square. This lump has a middle of 7x, so there is nothing for the two middles to cancel.',
+  'methods.q1.c.label': 'Pulling out the common factor',
+  'methods.q1.c': 'Always worth trying first — but 6, 7 and −3 share nothing but 1, so there is no common metal here to lift out. It is still the right first question to ask.',
+  'methods.q2': 'In the <b>box method</b>, why are the two sides forced once you place the x&sup2; and the number on the end?',
+  'methods.q2.a.label': 'An x&sup2; can only come from two x-parts multiplied',
+  'methods.q2.a': 'And the plain number on the end can only come from the two numbers multiplied. Two opposite corners therefore pin both sides, and the other two corners have to add to the middle — that is the whole check.',
+  'methods.q2.b.label': 'Because a box always has four equal corners',
+  'methods.q2.b': 'The four corners are four different products and are rarely equal. What makes the box work is <em>where each product can have come from</em>, not that they match.',
+  'methods.q2.c.label': 'Because the middle term is always the sum of the sides',
+  'methods.q2.c': 'The middle is the sum of the two <em>crossed</em> corners, not of the sides. Adding the sides would mix a length with an area.',
+  'methods.q3': 'The lantern lights <b>one</b> side and prints a <span class="qm">?</span> for the other. Why not light both?',
+  'methods.q3.a.label': 'Because the second side is the work',
+  'methods.q3.a': 'Once one side is out, the other is exactly what is left — so lighting one is a foothold and lighting both is doing the thing you came here to do. A tool shows part, never all.',
+  'methods.q3.b.label': 'Because the lantern is not bright enough yet',
+  'methods.q3.b': 'Nothing on this site gets stronger with use, and there is no upgrade that lights the second side. The limit is deliberate, not a level.',
+  'methods.q3.c.label': 'So that you have to buy a better tool',
+  'methods.q3.c': 'Nothing is bought and nothing is locked. Every layer works with an empty belt — the tools only make what is already there easier to see.',
+  'methods.q4': 'Run <b>the X</b> yourself. <b>x&sup2; &minus; 5x + 6</b>: find the two numbers that multiply to 6 and add to &minus;5, then name <b>one</b> bracket.',
+  'methods.q4.sub': 'An empty x-box means a single x.',
+  'methods.q4.cta': 'Name a side',
+  'methods.q4.ok': '<b>The pair was −2 and −3.</b> They multiply to 6 and add to −5, so the brackets are (x − 2) and (x − 3) — and <b>{left}</b> is one of them.',
+  'methods.q4.no': '<b>{why}</b> Two numbers that multiply to <b>6</b>: 1 and 6, 2 and 3, −1 and −6, −2 and −3. Which pair adds to <b>−5</b>?',
+
+  /* the working floor */
+  'school.tag': 'THE WORKING FLOOR',
+  'school.empty.lede': '<b>Nothing on your belt yet, so there is nothing to teach here.</b> A lesson appears on this floor for every instrument you have <b>cast</b> — the method it carries, walked one step at a time on a lump chosen for it, and then one to try yourself.',
+  'school.empty.note': 'Instruments are not handed out. You make them at the forge, out of metal you broke out of the rock yourself — so the first lesson here is one you will have earned by factoring. <b>Nothing in the mine is waiting on it:</b> every layer works with an empty belt, and the rooms above teach the mathematics with no instrument at all.',
+  'school.to.forge': 'To the forge &rarr;',
+  'school.to.mill': 'The Stamp Mill &rarr;',
+  'school.lede': 'One lesson for every instrument you have cast. Each is the method that instrument carries, <b>walked a step at a time</b> on a lump chosen for it — and at the end, the same lump to try yourself. The thing that answers you is the engine the anvil swings through.',
+
+  /* a lesson */
+  'lesson.reveal': 'Nothing held back.',
+  'lesson.reveal.hint': 'In the mine the instrument stops before this. Here it does not.',
+  'lesson.lab': 'THE METHOD',
+  'lesson.tool': '<b>{tool}</b> carries it &mdash; but the method works in a notebook.',
+  'lesson.alldone': 'all {n} slides out',
+  'lesson.at': 'slide {at} of {n}',
+  'lesson.why': 'WHY IT WORKS',
+  'lesson.through': 'ALL THE WAY THROUGH',
+  'lesson.back': '&larr; back a slide',
+  'lesson.aria.back': 'Go back one slide in this method',
+  'lesson.how': 'now how →',
+  'lesson.yours': 'and then it is yours →',
+  'lesson.next': 'next slide →',
+  'lesson.aria.next': 'Show the next slide of {name}',
+  'lesson.again': 'start it over',
+  'lesson.inmine': '<b>In the mine:</b> this instrument on your belt, then a rock.',
+
+  /* where the numbers came from */
+  'why.native': 'Nothing comes out of it. That is the reading, not a failure to find one.',
+  'why.number': 'Those are the primes {n} is built from &mdash; nothing else divides it.',
+  'why.group': '{b} &times; {c} is {d}, which is exactly why the same bracket came out of both halves.',
+  'why.cube': 'Both ends are whole cubes, so the bracket is their two roots &mdash; and {right} has a negative discriminant, so it stops there.',
+  'why.two': '{p} and {q} multiply to {c} and add to {b} &mdash; each carrying the y that was always there.',
+  'why.quart': '{p} and {q} multiply to {c} and add to {b}, reading the x&sup2; as the unit &mdash; and then each half is looked at again.',
+  'why.common': '{g} divides every term, so it comes out in front before anything else.',
+  'why.twin': 'A number and its own opposite &mdash; which is the only pair that adds to nothing, and why the middle term cancels itself.',
+  'why.pair': '{p} and {q} multiply to {ac} and add to {b}. That is the whole search, finished.',
+  'why.any': 'The pieces above multiply back to it, which is the only test there is.',
+
+  /* now you */
+  'practice.lab': 'NOW YOU',
+  'practice.aria.m2': 'how many x squared — leave it empty for a single x squared',
+  'practice.aria.take': 'the number you are taking out',
+  'practice.aria.y': 'how many y in this bracket',
+  'practice.ok': '<b>The seam runs.</b> <b>{left}</b> came out of it, and <b>{right}</b> is what was left behind. That is the move — and it is the same one the anvil makes.',
+  'practice.no': '<b>{why}</b> Nothing is lost — the lump is exactly as it was, and you can go again.',
+  'practice.hint': 'Not kept &mdash; the same engine the anvil swings through.',
+
+  /* the bench in a lesson */
+  'bench.lab': '&#128296; HOLD IT TO THE ORE &mdash; THIS IS THE PART THAT IS NOT READING',
+  'bench.armed': '<b>{tool} is in your hand.</b> Click a lump to hold it there. Click the same lump again and it comes off.',
+  'bench.idle': 'Take <b>{tool}</b> off the hook, then click a lump. The numbers cut into the rock change — that is the whole of what an instrument does.',
+  'bench.aria.armed': '{tool}. In your hand — click a lump to hold it there, or click again to put it back.',
+  'bench.aria.idle': '{tool}. Click to pick it up, then click a lump.',
+  'bench.aria.on': '{ore}. {tool} is on it — click to take it off.',
+  'bench.aria.off': '{ore}. Click to hold {tool} to it.',
+  'bench.found': '<b>{tool}:</b> {found}',
+  'bench.nothing': '<b>Nothing moves in there.</b>',
+  'bench.plain': 'plain rock — nothing on it yet',
+  'bench.hint': 'Try all three &mdash; including the one it can say nothing about.',
+
+  /* outside a mine, and a reflection */
+  'rw.summary': '&#127758; the same move, outside a mine &mdash; <b>{where}</b>',
+  'rw.pick.where': 'Sorting scrap before it is melted',
+  'rw.pick.body': 'A yard that buys scrap metal tests a piece before it goes anywhere near the furnace — a magnet, a spark test, a scratch. None of it says what the piece is <b>worth</b>. It says what <b>kind</b> of thing it is, so the next decision is made on purpose instead of by guessing.',
+  'rw.pick.tie': 'That is this method exactly: name the shape before you commit to a move, and accept that naming it tells you nothing about the answer.',
+  'rw.lantern.where': 'Reading a recipe backwards',
+  'rw.lantern.body': 'You know a pot of soup fed twelve and you know you used three tins. You do not need to re-derive the whole recipe to work out how much each tin covered — one known part forces the other, because the total is the two of them multiplied.',
+  'rw.lantern.tie': 'One side lit forces the other. That is why the lantern will not light both: once you have one, the second is not a second question.',
+  'rw.steel.where': 'Costing a job',
+  'rw.steel.body': 'Three parts of a quote come in at £6, £15 and £9. A builder does not read that as three unrelated numbers — they see three threes, and quote it as "three lots of £2, £5 and £3". Pulling the common amount out is how a quote gets checked in your head on a doorstep.',
+  'rw.steel.tie': 'That is the GCF, and it is the first thing to try on any lump for the same reason: it makes everything after it smaller.',
+  'rw.dial.where': 'Fitting a gear pair',
+  'rw.dial.body': 'You need two gears whose teeth multiply to a fixed ratio and whose sizes add up to the space in the housing. There is a short list of pairs that multiply right, and only some of them also fit — so you list the pairs that hit the first target and then check them against the second.',
+  'rw.dial.tie': 'Multiply to one number, add to another: that is the X, and it is the same search a gearbox designer runs. And when no whole pair does both, the gears do not fit — which is the same fact as a lump that will not come apart, not a failure of looking.',
+  'rw.shifter.where': 'Laying out a room',
+  'rw.shifter.body': 'A floor 7m by 5m is 35m². Tile it in two strips — 4m and 3m — and it is 20 + 15, the same floor described twice. Every kitchen fitter and every tiler works in this rectangle, and none of them call it the distributive property.',
+  'rw.shifter.tie': 'The box method IS that rectangle, run backwards: you know the area, and you are hunting for the two sides.',
+  'rw.drill.where': 'Two shortcuts people already use',
+  'rw.drill.body': '47 × 53 is 50 − 3 and 50 + 3, so it is 50² − 3² = 2491, in your head. And 1001 is 10³ + 1³, so it is 11 × 91 — which is why 1001 = 7 × 11 × 13, and why any three digits repeated divide by all three.',
+  'rw.drill.tie': 'Both are this instrument read backwards: a difference of two squares, and a sum of two cubes. Neither is hunted for — you look at the two ends and the brackets follow.',
+  'rw.auger.where': 'Splitting a bill that will not split evenly',
+  'rw.auger.body': 'Six people, an awkward total, and two of them shared a dish. You break the total into parts that group cleanly rather than dividing the whole thing at once — regroup first, and the arithmetic that was ugly becomes two easy sums.',
+  'rw.auger.tie': 'That is factoring by grouping: split the middle into two pieces that each share something with a neighbour, then take the common part out of each pair.',
+  'reflect.lab': '&#9998; BEFORE YOU GO',
+  'reflect.placeholder': 'In your own words…',
+  'reflect.aria': 'A space to write in. Nothing you write here is read, checked or kept.',
+  'reflect.note': '<b>Nothing here is read, checked or kept.</b> It is not sent anywhere and it is gone when you leave the page. The point of writing it is the writing.'
 };
 MF._missing = {};
 MF.lang = function(){
@@ -7701,28 +7819,21 @@ MF.paintRosetta = function(host){
 MF.paintToolSchool = function(host){
   var owned = MF.toolOrder().filter(MF.hasTool);
   var box = E('div','panel school');
-  box.appendChild(H('div','panel-tag','THE WORKING FLOOR'));
+  box.appendChild(H('div','panel-tag', MF.t('school.tag')));
 
   if(!owned.length){
     /* NOT A LOCKED DOOR, AND IT MUST NOT READ AS ONE. */
-    box.appendChild(H('p','lede','<b>Nothing on your belt yet, so there is nothing to teach here.</b> ' +
-      'A lesson appears on this floor for every instrument you have <b>cast</b> — the method it carries, ' +
-      'walked one step at a time on a lump chosen for it, and then one to try yourself.'));
-    box.appendChild(H('div','note','Instruments are not handed out. You make them at the forge, out of metal ' +
-      'you broke out of the rock yourself — so the first lesson here is one you will have earned by factoring. ' +
-      '<b>Nothing in the mine is waiting on it:</b> every layer works with an empty belt, and the rooms above ' +
-      'teach the mathematics with no instrument at all.'));
+    box.appendChild(H('p','lede', MF.t('school.empty.lede')));
+    box.appendChild(H('div','note', MF.t('school.empty.note')));
     var go = E('div','row'); go.style.marginTop = '10px';
-    go.appendChild(MF.jump('To the forge &rarr;', 'forge'));
-    go.appendChild(MF.jump('The Stamp Mill &rarr;', 'workshop-ore'));
+    go.appendChild(MF.jump(MF.t('school.to.forge'), 'forge'));
+    go.appendChild(MF.jump(MF.t('school.to.mill'), 'workshop-ore'));
     box.appendChild(go);
     host.appendChild(box);
     return box;
   }
 
-  box.appendChild(H('p','lede','One lesson for every instrument you have cast. Each is the method that instrument ' +
-    'carries, <b>walked a step at a time</b> on a lump chosen for it — and at the end, the same lump to try ' +
-    'yourself. The thing that answers you is the engine the anvil swings through.'));
+  box.appendChild(H('p','lede', MF.t('school.lede')));
 
   owned.forEach(function(key, i){
     var t = MF.TOOLS[key], s = MF.SCHEMA[key];
@@ -7769,38 +7880,31 @@ MF.fullBreak = function(ore){
 };
 /* WHERE THE NUMBERS CAME FROM, in the method's own terms. */
 MF.whyNumbers = function(ore){
-  if(MF.isNative(ore)) return 'Nothing comes out of it. That is the reading, not a failure to find one.';
+  if(MF.isNative(ore)) return MF.t('why.native');
   if(ore.kind === 'number')
-    return 'Those are the primes ' + num(ore.n) + ' is built from &mdash; nothing else divides it.';
+    return MF.t('why.number', {n: num(ore.n)});
   if(ore.kind === 'group')
-    return num(ore.b) + ' &times; ' + num(ore.c) + ' is ' + num(ore.d) +
-           ', which is exactly why the same bracket came out of both halves.';
+    return MF.t('why.group', {b: num(ore.b), c: num(ore.c), d: num(ore.d)});
   if(ore.kind === 'cube'){
     var cs = MF.cubeSplit(ore);
-    return 'Both ends are whole cubes, so the bracket is their two roots &mdash; and ' +
-           MF.oreLabel(cs.right) + ' has a negative discriminant, so it stops there.';
+    return MF.t('why.cube', {right: MF.oreLabel(cs.right)});
   }
   if(ore.kind === 'two'){
     var ts = MF.twoSplit(ore);
-    return num(ts.left.p) + ' and ' + num(ts.right.p) + ' multiply to ' + num(ore.c) +
-           ' and add to ' + num(ore.b) + ' &mdash; each carrying the y that was always there.';
+    return MF.t('why.two', {p: num(ts.left.p), q: num(ts.right.p), c: num(ore.c), b: num(ore.b)});
   }
   if(ore.kind === 'quart'){
     var qs = MF.quartSplit(ore);
-    return num(qs.left.c) + ' and ' + num(qs.right.c) + ' multiply to ' + num(ore.c) +
-           ' and add to ' + num(ore.b) + ', reading the x&sup2; as the unit &mdash; ' +
-           'and then each half is looked at again.';
+    return MF.t('why.quart', {p: num(qs.left.c), q: num(qs.right.c), c: num(ore.c), b: num(ore.b)});
   }
   var g = MF.commonMetal(ore);
-  if(g) return num(g) + ' divides every term, so it comes out in front before anything else.';
+  if(g) return MF.t('why.common', {g: num(g)});
   if(ore.a !== 0 && ore.b === 0 && ore.c < 0 && isSquare(ore.a) && isSquare(-ore.c))
-    return 'A number and its own opposite &mdash; which is the only pair that adds to nothing, ' +
-           'and why the middle term cancels itself.';
+    return MF.t('why.twin');
   var pr = MF.xPair(ore);
   if(pr)
-    return num(pr.p) + ' and ' + num(pr.q) + ' multiply to ' + num(pr.ac) +
-           ' and add to ' + num(ore.b) + '. That is the whole search, finished.';
-  return 'The pieces above multiply back to it, which is the only test there is.';
+    return MF.t('why.pair', {p: num(pr.p), q: num(pr.q), ac: num(pr.ac), b: num(ore.b)});
+  return MF.t('why.any');
 };
 
 MF.lessonState = function(key){
@@ -7821,13 +7925,13 @@ MF.drawLesson = function(box, key){
   /* THE REASONING IS THE FIRST SLIDE, NOT A FOLD. */
   /* AND ONE MORE BEAT AT THE END, WHICH FILLS EVERYTHING IN */
   /* THE ASIDE IS ONE LINE, NOT A PARAGRAPH. */
-  var reveal = {kind:'reveal', act:'Nothing held back.',
+  var reveal = {kind:'reveal', act:MF.t('lesson.reveal'),
     draw: function(li){
       var pieces = MF.fullBreak(ore);
       MF.workLine(li, MF.oreLabel(ore) + '  =  ',
         pieces.map(function(p){ return '( ' + MF.oreLabel(p) + ' )'; }), 'wbig');
       li.appendChild(H('div','swhy', MF.whyNumbers(ore)));
-      li.appendChild(H('div','hint','In the mine the instrument stops before this. Here it does not.'));
+      li.appendChild(H('div','hint', MF.t('lesson.reveal.hint')));
     }};
   var beats = [{kind:'why', act:s.why}].concat(steps).concat([reveal]);
   var st = MF.lessonState(key);
@@ -7845,19 +7949,19 @@ MF.drawLesson = function(box, key){
   rock.classList.add('lsrock');
   head.appendChild(rock);
   var hx = E('div','lstext');
-  hx.appendChild(H('div','lslab','THE METHOD'));
+  hx.appendChild(H('div','lslab', MF.t('lesson.lab')));
   hx.appendChild(H('div','lsnm', s.name));
   /* THE SAME METHOD'S NAME IN THE OTHER LANGUAGE. */
   hx.appendChild(H('div','lsdoes', t.does));
-  hx.appendChild(H('div','lstool','<b>' + t.nm + '</b> carries it &mdash; but the method works in a notebook.'));
+  hx.appendChild(H('div','lstool', MF.t('lesson.tool', {tool: t.nm})));
   head.appendChild(hx);
   wrap.appendChild(head);
 
   /* ---- THE WALKTHROUGH, AS FAR AS IT HAS BEEN OPENED ---- */
   var prog = E('div','lsprog');
   prog.appendChild(H('span','lsstep', done
-    ? 'all ' + beats.length + ' slides out'
-    : 'slide ' + (st.at + 1) + ' of ' + beats.length));
+    ? MF.t('lesson.alldone', {n: beats.length})
+    : MF.t('lesson.at', {at: st.at + 1, n: beats.length})));
   var pips = E('div','lspips');
   for(var pi=0; pi<beats.length; pi++)
     pips.appendChild(E('i', pi <= st.at ? 'on' : null));
@@ -7870,8 +7974,8 @@ MF.drawLesson = function(box, key){
     var li = E('li', (step.kind === 'why' ? 'whyslide ' : '') +
                      (step.kind === 'reveal' ? 'revealslide ' : '') +
                      (step.open ? 'open ' : '') + (i === st.at && !done ? 'now' : ''));
-    if(step.kind === 'why') li.appendChild(H('div','swhylab','WHY IT WORKS'));
-    if(step.kind === 'reveal') li.appendChild(H('div','swhylab','ALL THE WAY THROUGH'));
+    if(step.kind === 'why') li.appendChild(H('div','swhylab', MF.t('lesson.why')));
+    if(step.kind === 'reveal') li.appendChild(H('div','swhylab', MF.t('lesson.through')));
     li.appendChild(H('div','sact', step.act));
     if(step.shows) li.appendChild(H('div','sshow', step.shows));
     if(step.draw){ try { step.draw(li); } catch(e2){} }
@@ -7881,23 +7985,23 @@ MF.drawLesson = function(box, key){
 
   /* ---- WHAT MOVES YOU ALONG IT ---- */
   var nav = E('div','lsnav');
-  var back = E('button','btn lsback','&larr; back a slide'); back.type='button';
-  back.innerHTML = '&larr; back a slide';
+  var back = E('button','btn lsback', MF.t('lesson.back')); back.type='button';
+  back.innerHTML = MF.t('lesson.back');
   back.disabled = (st.at === 0);
-  back.setAttribute('aria-label','Go back one slide in this method');
+  back.setAttribute('aria-label', MF.t('lesson.aria.back'));
   on(back,'click',function(){ st.at--; MF.drawLesson(box, key); });
   nav.appendChild(back);
 
   if(!done){
     var next = E('button','btn primary lsnext'); next.type='button';
     var nx = beats[st.at + 1];
-    next.textContent = (st.at === 0) ? 'now how →' : ((nx && nx.open) ? 'and then it is yours →' : 'next slide →');
-    next.setAttribute('aria-label','Show the next slide of ' + s.name);
+    next.textContent = MF.t((st.at === 0) ? 'lesson.how' : ((nx && nx.open) ? 'lesson.yours' : 'lesson.next'));
+    next.setAttribute('aria-label', MF.t('lesson.aria.next', {name: s.name}));
     on(next,'click',function(){ st.at++; MF.drawLesson(box, key); });
     nav.appendChild(next);
     /* THE REASSURANCE LINE IS GONE. */
   } else {
-    var again = E('button','btn lsagain','start it over'); again.type='button';
+    var again = E('button','btn lsagain', MF.t('lesson.again')); again.type='button';
     on(again,'click',function(){ st.at = 0; MF.drawLesson(box, key); });
     nav.appendChild(again);
   }
@@ -7912,7 +8016,7 @@ MF.drawLesson = function(box, key){
   /* ---- WHERE THIS METHOD TURNS UP OUTSIDE A MINE ---- */
   MF.paintRealWorld(wrap, key);
 
-  wrap.appendChild(H('div','hint','<b>In the mine:</b> this instrument on your belt, then a rock.'));
+  wrap.appendChild(H('div','hint', MF.t('lesson.inmine')));
 
   box.appendChild(wrap);
   /* KEEP THE KEYBOARD WHERE IT WAS. */
@@ -7930,7 +8034,7 @@ MF.lessonPractice = function(host, key){
   var p = s && s.practice;
   if(!p) return null;
   var pr = E('div','practice');
-  pr.appendChild(H('div','prlab','NOW YOU'));
+  pr.appendChild(H('div','prlab', MF.t('practice.lab')));
   pr.appendChild(H('div','eq sm', MF.oreLabel(p.ore)));
   pr.appendChild(H('div','prask', p.ask));
 
@@ -7949,43 +8053,39 @@ MF.lessonPractice = function(host, key){
   } else if(!isNum){
     bx.appendChild(H('span','paren','('));
     mi = document.createElement('input'); mi.type='text'; mi.inputMode='numeric'; mi.placeholder='1';
-    mi.setAttribute('aria-label', isQrt ? 'how many x squared — leave it empty for a single x squared'
-                                        : 'how many x — leave it empty for a single x, or put 0 for a plain number');
+    mi.setAttribute('aria-label', MF.t(isQrt ? 'practice.aria.m2' : 'q.aria.m'));
     bx.appendChild(mi);
     bx.appendChild(H('span','paren', isQrt ? 'x&sup2; +' : 'x +'));
   }
   var ki = document.createElement('input'); ki.type='text'; ki.inputMode='numeric'; ki.placeholder='0';
-  ki.setAttribute('aria-label', isNum ? 'the number you are taking out'
-                  : (isTwo ? 'how many y in this bracket' : 'the number on the end'));
+  ki.setAttribute('aria-label', MF.t(isNum ? 'practice.aria.take' : (isTwo ? 'practice.aria.y' : 'q.aria.k')));
   bx.appendChild(ki);
   if(isTwo) bx.appendChild(H('span','paren','y )'));
   else if(!isNum) bx.appendChild(H('span','paren',')'));
   row.appendChild(bx);
 
   var out = E('div','prout');
-  var go = E('button','btn primary','Try it'); go.type='button';
+  var go = E('button','btn primary', MF.t('q.try')); go.type='button';
   on(go,'click',function(){
     var m = (isGrp || isTwo) ? 1 : (isNum ? 0 : MF.readPickM(mi.value));
     var k = MF.readInt(ki.value);
     clear(out);
     if(!isFinite(m) || !isFinite(k) || isNaN(m) || isNaN(k)){
-      out.appendChild(H('div','note','That is not a whole number, so there is nothing to try yet.'));
+      out.appendChild(H('div','note', MF.t('q.notwhole')));
       return;
     }
     var got = MF.breakOff(p.ore, {m:m, k:k, v:pv, p:(isQrt ? 2 : 1)});
     if(got.ok){
-      out.appendChild(H('div','note good','<b>The seam runs.</b> <b>' + MF.oreLabel(got.left) +
-        '</b> came out of it, and <b>' + MF.oreLabel(got.right) + '</b> is what was left behind. ' +
-        'That is the move — and it is the same one the anvil makes.'));
+      out.appendChild(H('div','note good', MF.t('practice.ok', {left: MF.oreLabel(got.left), right: MF.oreLabel(got.right)})));
     } else {
-      out.appendChild(H('div','note','<b>' + got.why + '</b> Nothing is lost — the lump is exactly as it was, and you can go again.'));
+      out.appendChild(H('div','note', MF.t('practice.no', {why: got.why})));
     }
   });
   on(ki,'keydown',function(e){ if(e.key==='Enter'){ e.preventDefault(); go.click(); } });
   row.appendChild(go);
   pr.appendChild(row);
   pr.appendChild(out);
-  pr.appendChild(H('div','hint','Not kept &mdash; the same engine the anvil swings through.'));
+  pr.appendChild(H('div','hint', MF.t('practice.hint')));
   host.appendChild(pr);
   return pr;
 };
@@ -8017,10 +8117,8 @@ MF.lessonBench = function(host, key){
   var b = st.bench;
 
   var box = E('div','lbench');
-  box.appendChild(H('div','lblab','&#128296; HOLD IT TO THE ORE &mdash; THIS IS THE PART THAT IS NOT READING'));
-  box.appendChild(H('p','lbhint', b.armed
-    ? '<b>' + t.nm + ' is in your hand.</b> Click a lump to hold it there. Click the same lump again and it comes off.'
-    : 'Take <b>' + t.nm + '</b> off the hook, then click a lump. The numbers cut into the rock change — that is the whole of what an instrument does.'));
+  box.appendChild(H('div','lblab', MF.t('bench.lab')));
+  box.appendChild(H('p','lbhint', MF.t(b.armed ? 'bench.armed' : 'bench.idle', {tool: t.nm})));
 
   /* ---- the instrument, on its hook ---- */
   var hook = E('div','lbhook');
@@ -8030,9 +8128,7 @@ MF.lessonBench = function(host, key){
   tb.setAttribute('aria-pressed', b.armed ? 'true' : 'false');
   tb.appendChild(H('span','bic', t.ic));
   tb.appendChild(H('span','bnm', t.nm.replace(/^The /,'')));
-  tb.setAttribute('aria-label', t.nm + '. ' + (b.armed
-    ? 'In your hand — click a lump to hold it there, or click again to put it back.'
-    : 'Click to pick it up, then click a lump.'));
+  tb.setAttribute('aria-label', MF.t(b.armed ? 'bench.aria.armed' : 'bench.aria.idle', {tool: t.nm}));
   on(tb,'click',function(){ b.armed = !b.armed; MF.drawLesson(host.parentNode || host, key); });
   hook.appendChild(tb);
   box.appendChild(hook);
@@ -8045,8 +8141,7 @@ MF.lessonBench = function(host, key){
     var btn = E('button','lbore' + (o.tool ? ' held' : '') + (nat ? ' native' : '')); btn.type='button';
     btn.setAttribute('data-lo', o.id);
     btn.appendChild(MF.oreRock(o, {native:nat}));
-    btn.setAttribute('aria-label', MF.oreDisplayText(o) +
-      (o.tool ? '. ' + t.nm + ' is on it — click to take it off.' : '. Click to hold ' + t.nm + ' to it.'));
+    btn.setAttribute('aria-label', MF.t(o.tool ? 'bench.aria.on' : 'bench.aria.off', {ore: MF.oreDisplayText(o), tool: t.nm}));
     on(btn,'click',function(){
       /* PICK IT UP FIRST. */
       if(!b.armed && !o.tool){ b.armed = true; }
@@ -8060,58 +8155,38 @@ MF.lessonBench = function(host, key){
       var read = null;
       try { read = MF.lensFor(o, key); } catch(e){ read = null; }
       cell.appendChild(H('div','lbfound', read && read.found
-        ? '<b>' + t.nm.replace(/^The /,'The ') + ':</b> ' + read.found
-        : '<b>Nothing moves in there.</b>'));
+        ? MF.t('bench.found', {tool: t.nm, found: read.found})
+        : MF.t('bench.nothing')));
     } else {
-      cell.appendChild(H('div','lbfound plain','plain rock — nothing on it yet'));
+      cell.appendChild(H('div','lbfound plain', MF.t('bench.plain')));
     }
     row.appendChild(cell);
   });
   box.appendChild(row);
-  box.appendChild(H('div','hint','Try all three &mdash; including the one it can say nothing about.'));
+  box.appendChild(H('div','hint', MF.t('bench.hint')));
   host.appendChild(box);
   return box;
 };
 
 /* ===== WHERE THE METHOD TURNS UP OUTSIDE A MINE. ===== */
+/* `where`, `body` and `tie` are getters on `rw.<tool>`, so the fold reads the
+   current language. The examples are local to a place — a translation may
+   swap the currency or the dish for one its readers would recognise. */
+function realWorld(key){
+  return { get where(){ return MF.t('rw.' + key + '.where'); },
+           get body(){ return MF.t('rw.' + key + '.body'); },
+           get tie(){ return MF.t('rw.' + key + '.tie'); } };
+}
 MF.REALWORLD = {
-  pick: {
-    where: 'Sorting scrap before it is melted',
-    body: 'A yard that buys scrap metal tests a piece before it goes anywhere near the furnace — a magnet, a spark test, a scratch. None of it says what the piece is <b>worth</b>. It says what <b>kind</b> of thing it is, so the next decision is made on purpose instead of by guessing.',
-    tie: 'That is this method exactly: name the shape before you commit to a move, and accept that naming it tells you nothing about the answer.'
-  },
-  lantern: {
-    where: 'Reading a recipe backwards',
-    body: 'You know a pot of soup fed twelve and you know you used three tins. You do not need to re-derive the whole recipe to work out how much each tin covered — one known part forces the other, because the total is the two of them multiplied.',
-    tie: 'One side lit forces the other. That is why the lantern will not light both: once you have one, the second is not a second question.'
-  },
-  steel: {
-    where: 'Costing a job',
-    body: 'Three parts of a quote come in at £6, £15 and £9. A builder does not read that as three unrelated numbers — they see three threes, and quote it as "three lots of £2, £5 and £3". Pulling the common amount out is how a quote gets checked in your head on a doorstep.',
-    tie: 'That is the GCF, and it is the first thing to try on any lump for the same reason: it makes everything after it smaller.',
-  },
+  pick: realWorld('pick'),
+  lantern: realWorld('lantern'),
+  steel: realWorld('steel'),
   /* THE GEAR PAIR MOVED WITH THE METHOD. */
-  dial: {
-    where: 'Fitting a gear pair',
-    body: 'You need two gears whose teeth multiply to a fixed ratio and whose sizes add up to the space in the housing. There is a short list of pairs that multiply right, and only some of them also fit — so you list the pairs that hit the first target and then check them against the second.',
-    tie: 'Multiply to one number, add to another: that is the X, and it is the same search a gearbox designer runs. And when no whole pair does both, the gears do not fit — which is the same fact as a lump that will not come apart, not a failure of looking.'
-  },
-  shifter: {
-    where: 'Laying out a room',
-    body: 'A floor 7m by 5m is 35m². Tile it in two strips — 4m and 3m — and it is 20 + 15, the same floor described twice. Every kitchen fitter and every tiler works in this rectangle, and none of them call it the distributive property.',
-    tie: 'The box method IS that rectangle, run backwards: you know the area, and you are hunting for the two sides.'
-  },
+  dial: realWorld('dial'),
+  shifter: realWorld('shifter'),
   /* BOTH IDENTITIES NOW, because the lesson above it teaches both. */
-  drill: {
-    where: 'Two shortcuts people already use',
-    body: '47 × 53 is 50 − 3 and 50 + 3, so it is 50² − 3² = 2491, in your head. And 1001 is 10³ + 1³, so it is 11 × 91 — which is why 1001 = 7 × 11 × 13, and why any three digits repeated divide by all three.',
-    tie: 'Both are this instrument read backwards: a difference of two squares, and a sum of two cubes. Neither is hunted for — you look at the two ends and the brackets follow.'
-  },
-  auger: {
-    where: 'Splitting a bill that will not split evenly',
-    body: 'Six people, an awkward total, and two of them shared a dish. You break the total into parts that group cleanly rather than dividing the whole thing at once — regroup first, and the arithmetic that was ugly becomes two easy sums.',
-    tie: 'That is factoring by grouping: split the middle into two pieces that each share something with a neighbour, then take the common part out of each pair.'
-  }
+  drill: realWorld('drill'),
+  auger: realWorld('auger')
 };
 
 MF.paintRealWorld = function(host, key){
@@ -8122,7 +8197,7 @@ MF.paintRealWorld = function(host, key){
   var d = document.createElement('details');
   d.className = 'rwfold';
   var sm = document.createElement('summary');
-  sm.innerHTML = '&#127758; the same move, outside a mine &mdash; <b>' + rw.where + '</b>';
+  sm.innerHTML = MF.t('rw.summary', {where: rw.where});
   d.appendChild(sm);
   d.appendChild(H('p','rwbody', rw.body));
   box.appendChild(d);
@@ -8177,16 +8252,15 @@ MF.paintMiscut = function(host, o){
 
 MF.paintReflection = function(host, o){
   var box = E('div','reflect');
-  box.appendChild(H('div','rflab', o.lab || '&#9998; BEFORE YOU GO'));
+  box.appendChild(H('div','rflab', o.lab || MF.t('reflect.lab')));
   box.appendChild(H('p','rfask', o.prompt));
   var ta = document.createElement('textarea');
   ta.className = 'rfbox';
   ta.rows = 4;
-  ta.placeholder = o.placeholder || 'In your own words…';
-  ta.setAttribute('aria-label', o.a11y || 'A space to write in. Nothing you write here is read, checked or kept.');
+  ta.placeholder = o.placeholder || MF.t('reflect.placeholder');
+  ta.setAttribute('aria-label', o.a11y || MF.t('reflect.aria'));
   box.appendChild(ta);
-  box.appendChild(H('div','rfnote','<b>Nothing here is read, checked or kept.</b> It is not sent anywhere and it ' +
-    'is gone when you leave the page. The point of writing it is the writing.'));
+  box.appendChild(H('div','rfnote', MF.t('reflect.note')));
   if(o.prompts && o.prompts.length){
     var ul = E('ul','rfprompts');
     o.prompts.forEach(function(p){ ul.appendChild(H('li', null, p)); });
@@ -8752,55 +8826,41 @@ MF.SCREENS['shed-words'] = function(host){
 MF.SCREENS['shed-methods'] = function(host){
   MF.shedHead(host, 'shed-methods');
   host.appendChild(MF.shedArt('methods'));
-  host.appendChild(H('p','lede','Seven instruments hang at the forge, and each one carries <b>a method</b> — the box method, factoring by grouping, ' +
-    'pulling out the GCF. The instrument is a convenience. <b>The method is the part worth having</b>, and it works in a notebook with no tool at all. ' +
-    'This is the floor where the ones you have <b>cast</b> get taught.'));
-  host.appendChild(H('div','note','<b>A tool shows part of a factorisation and never all of it.</b> ' +
-    'The lantern lights one side and prints a <span class="qm">?</span> for the other; the drill lists every pair and chooses none. ' +
-    'Whatever you name goes to the hammer, and the rock is what answers.'));
+  host.appendChild(H('p','lede', MF.t('methods.lede')));
+  host.appendChild(H('div','note', MF.t('methods.note')));
   MF.paintToolSchool(host);
 
   MF.paintQuestions(host, {list:[
     {kind:'pick',
-     q:'You are holding <b>6x&sup2; + 7x &minus; 3</b>. Which method is cut for it?',
+     q:MF.t('methods.q1'),
      options:[
-       {label:'Factoring by grouping', holds:true,
-        says:'Something sits in front of the x², so both ends are pinned. Multiply a·c to get −18, find the pair that multiplies to −18 and adds to 7, split the middle into those two, and group.'},
-       {label:'The difference of two squares',
-        says:'That one needs no middle term and both ends square. This lump has a middle of 7x, so there is nothing for the two middles to cancel.'},
-       {label:'Pulling out the common factor',
-        says:'Always worth trying first — but 6, 7 and −3 share nothing but 1, so there is no common metal here to lift out. It is still the right first question to ask.'}
+       {label:MF.t('methods.q1.a.label'), holds:true, says:MF.t('methods.q1.a')},
+       {label:MF.t('methods.q1.b.label'), says:MF.t('methods.q1.b')},
+       {label:MF.t('methods.q1.c.label'), says:MF.t('methods.q1.c')}
      ]},
     {kind:'pick',
-     q:'In the <b>box method</b>, why are the two sides forced once you place the x&sup2; and the number on the end?',
+     q:MF.t('methods.q2'),
      options:[
-       {label:'An x&sup2; can only come from two x-parts multiplied', holds:true,
-        says:'And the plain number on the end can only come from the two numbers multiplied. Two opposite corners therefore pin both sides, and the other two corners have to add to the middle — that is the whole check.'},
-       {label:'Because a box always has four equal corners',
-        says:'The four corners are four different products and are rarely equal. What makes the box work is <em>where each product can have come from</em>, not that they match.'},
-       {label:'Because the middle term is always the sum of the sides',
-        says:'The middle is the sum of the two <em>crossed</em> corners, not of the sides. Adding the sides would mix a length with an area.'}
+       {label:MF.t('methods.q2.a.label'), holds:true, says:MF.t('methods.q2.a')},
+       {label:MF.t('methods.q2.b.label'), says:MF.t('methods.q2.b')},
+       {label:MF.t('methods.q2.c.label'), says:MF.t('methods.q2.c')}
      ]},
     {kind:'pick',
-     q:'The lantern lights <b>one</b> side and prints a <span class="qm">?</span> for the other. Why not light both?',
+     q:MF.t('methods.q3'),
      options:[
-       {label:'Because the second side is the work', holds:true,
-        says:'Once one side is out, the other is exactly what is left — so lighting one is a foothold and lighting both is doing the thing you came here to do. A tool shows part, never all.'},
-       {label:'Because the lantern is not bright enough yet',
-        says:'Nothing on this site gets stronger with use, and there is no upgrade that lights the second side. The limit is deliberate, not a level.'},
-       {label:'So that you have to buy a better tool',
-        says:'Nothing is bought and nothing is locked. Every layer works with an empty belt — the tools only make what is already there easier to see.'}
+       {label:MF.t('methods.q3.a.label'), holds:true, says:MF.t('methods.q3.a')},
+       {label:MF.t('methods.q3.b.label'), says:MF.t('methods.q3.b')},
+       {label:MF.t('methods.q3.c.label'), says:MF.t('methods.q3.c')}
      ]},
     {kind:'type', plain:false,
-     q:'Run <b>the X</b> yourself. <b>x&sup2; &minus; 5x + 6</b>: find the two numbers that multiply to 6 and add to &minus;5, then name <b>one</b> bracket.',
-     sub:'An empty x-box means a single x.',
-     cta:'Name a side',
+     q:MF.t('methods.q4'),
+     sub:MF.t('methods.q4.sub'),
+     cta:MF.t('methods.q4.cta'),
      check:function(m,k){
        var got = MF.breakOff({kind:'poly',a:1,b:-5,c:6}, {m:m, k:k});
        return got.ok
-         ? {ok:true, why:'<b>The pair was −2 and −3.</b> They multiply to 6 and add to −5, so the brackets are (x − 2) and (x − 3) — and <b>' +
-            MF.oreLabel(got.left) + '</b> is one of them.'}
-         : {ok:false, why:'<b>' + got.why + '</b> Two numbers that multiply to <b>6</b>: 1 and 6, 2 and 3, −1 and −6, −2 and −3. Which pair adds to <b>−5</b>?'};
+         ? {ok:true, why:MF.t('methods.q4.ok', {left: MF.oreLabel(got.left)})}
+         : {ok:false, why:MF.t('methods.q4.no', {why: got.why})};
      }}
   ]});
 
