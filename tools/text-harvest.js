@@ -12,6 +12,7 @@
      await (await fetch('tools/text-harvest.js')).text().then(eval)
      await MFHarvest.saveBaseline()   // BEFORE editing: stores today's index.html
      await MFHarvest.compare()        // AFTER editing: old vs new, string by string
+     await MFHarvest.english()        // a stand-in language on: what is still English
 
    READ THE DENOMINATOR. It sees text set through textContent, innerHTML,
    innerText, nodeValue, insertAdjacentHTML, createTextNode, the title

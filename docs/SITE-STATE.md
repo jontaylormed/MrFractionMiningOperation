@@ -1770,3 +1770,55 @@ change automatic semicolon insertion; there turned out to be none. Then:
 mechanically chosen, and a few are terse (*"310, not 430."*) or end on "…". Where a headline
 misleads, the fix is to rewrite that one note from the full text at `3b90bbd`, not to restore the
 essay.
+
+## Languages, phase 0: every word goes through one door (2026-09-13)
+
+**USER:** *"As many mainstream languages as possible, as we get notes - we will update the text."*
+
+**Only English exists.** What exists is the machinery a second language drops into, and the
+proof that fitting it changed nothing a student sees.
+
+- **`MF.STR.en`** holds every student-facing string by key; **`MF.t(key, vars)`** looks one up in
+  the current language, falls back to English per key, and fills `{placeholders}`. A key nobody
+  wrote lands in `MF._missing` and comes back as itself, never as blank.
+- **Glued sentences became whole templates** (`'Into ' + name` → `{room}`), so a translator can
+  move words. Pure maths stays literal — `MF.oreLabel` and friends print symbols only.
+- **Tables kept their shape.** `MF.TOOLS`, `LAYERS`, `ASSAY`, `PARTS`, `SCHEMA`, `GUIDE`, `SAYS`,
+  `ROSETTA`, `REALWORLD` and the rest read their words through getters, so nothing that consumes
+  them changed.
+- **`MF.LANG`** says how each language reads: name, direction, speech voice, sentence stop.
+  `MF.applyAccess` sets `lang` and `dir` on `<html>`, and **a change of language — and only
+  that — rebuilds the room you are in.** Read aloud sets the voice when it is not English.
+- **The Language row in Reading & Access appears only when there is more than one language**, so
+  today it is not drawn.
+- **The `lang` group** (49th): every offered language has a table and its reading details, no
+  translation carries a key English lacks or different placeholders, no key asked for during the
+  run is missing. Two controls: an unknown key is noticed, and a throwaway language fills its
+  placeholders and falls back to English.
+
+### How it was proved: `tools/text-harvest.js`
+
+Before any extraction, a copy of the page was stored as the baseline. `MFHarvest.compare()` loads
+the baseline and today's file into hidden frames, **hooks every way text reaches the DOM**, pins the
+clock the ore is seeded from, silences all audio, runs `MF.validate()` and `MF.playthrough(1…9)`,
+walks the finished DOM, and diffs the two sets of strings. **Every batch was identical before it was
+committed** — 2,557 strings at 1250 and 2,558 at 380, 0 errors at both.
+
+**`MFHarvest.english()`** runs the same drive with a stand-in language that wraps every string in
+⟦ ⟧, and lists what is still English outside the brackets. **What is left is the checks' own probe
+text and the two language names** — nothing a student sees.
+
+**What it did not look at:** text on a path neither validate nor the playthroughs reach, and pixels.
+
+### Kept wrong on purpose, to be fixed as their own change
+
+Byte-identical meant keeping three English slips, each flagged in a comment beside its key:
+`lens.readby` and `slot.title` print *"the The Lantern"*, and `cart.aria.armed` does the same.
+
+### Still to do before a second language
+
+- **Checks that are English-shaped:** the `nogrades` banned and `marky` regexes, the 210-character
+  guide beat, the prose budgets, and the checks that find an element by its English text. With
+  the stand-in language on, the 211-character beat is the one that fires — brackets add two.
+- **The caveat under the picker**, *"Translations are drafts — corrections welcome."*, is
+  student-facing and waits for approval.

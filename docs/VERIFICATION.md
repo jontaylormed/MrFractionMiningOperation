@@ -2292,3 +2292,33 @@ and it fired immediately when the original placement was put back.
 > Keep the geometric sweep as well, for the overlaps it *can* see — but mount into the document,
 > not into a detached div. **A layout assertion over elements with no layout is the purest form of
 > the check that cannot fail** (§94), and it took writing one to notice.
+
+## §103. Moving text is proved by the text, and the instrument is proved first
+
+Moving every English string into a language table touches about 1,700 lines, and a slip in any one
+of them is a sentence a student reads wrong: a lost space, a swapped placeholder, a word dropped
+between two fragments. **`MF.validate()` cannot see that.** It checks what the words *do*, not what
+they *say*.
+
+So the proof is the text itself. `tools/text-harvest.js` stores the page before the work starts,
+then loads old and new side by side, hooks every setter text can reach the DOM through, drives both
+the same way, and diffs the strings. **A batch is committed only when the two sets are identical.**
+
+**The instrument was wrong three times before it proved anything:**
+
+| | what it reported | what was true |
+|---|---|---|
+| 1 | two harvests of the *same* file, 420 strings apart | the ore is seeded from `Date.now()`, not `Math.random` — pinning the first clock read fixed it |
+| 2 | every run played every sound in the site, twice | the frames were not silenced; the user heard it (§11) |
+| 3 | the stand-in language had half the site in English | `validate`'s own control builds and deletes a `zz` language, and the stand-in was also `zz` |
+
+And once it caught the code, not itself: `MF.t` skipped a placeholder whose value was `undefined`,
+so *"LAYER undefined"* came out as *"LAYER {n}"* — three strings, visible only because the diff
+compared words.
+
+> **Before trusting a diff that says "identical", show it saying "different".** Two runs of one
+> file must match; one deliberate change must not. Otherwise "identical" may only mean the
+> instrument sees nothing (§2).
+
+**Read the denominator:** it sees what `validate` and nine playthroughs reach at the width it runs.
+Run it at 1250 and at 380; a string only a narrow screen builds is only proved there.

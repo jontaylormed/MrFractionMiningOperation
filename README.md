@@ -18,7 +18,7 @@ A single-file, zero-dependency site for learning to factor — built on one idea
 
 ## Run it
 
-Open `index.html`. That is the whole instruction — no build step, no server, no dependencies, no storage. **≈1.09 MB, one file, and it runs from `file://`.**
+Open `index.html`. That is the whole instruction — no build step, no server, no dependencies, no storage. **≈1.15 MB, one file, and it runs from `file://`.**
 
 The only thing it ever fetches is **sound**, out of `sfx/` beside it — and every one of those fetches is allowed to fail. Without the folder the cues fall back to synthesised oscillators, the music bed stays silent, and the site behaves exactly as it did before there was any audio at all. **Adding sound files can never take sound away, and removing them can never break the page.**
 
@@ -73,9 +73,9 @@ The line between a score and a grade is drawn in `docs/MR-FRACTION-PHILOSOPHY.md
 MF.validate()
 ```
 
-**26,600 checks across 48 groups, 0 errors, and two controls that must fail — and do.** It sweeps the factor engine, seam classification, **hundreds of generated lumps across the nine layers** (the ore is generated, not authored, so nobody has ever seen most of it), the printer, the pour, the forge, the Casting Shed's three workshops, every tool's reading and lesson, colour contrast on every rendered surface, the reading-and-access panel, the sound layer, the seam's whole length, the doors on the surface, the three claims the front page makes to a stranger, the four deep castings and the multiplications they draw, the no-gate rule, and the no-grades rule.
+**26,600 checks across 49 groups, 0 errors, and two controls that must fail — and do.** It sweeps the factor engine, seam classification, **hundreds of generated lumps across the nine layers** (the ore is generated, not authored, so nobody has ever seen most of it), the printer, the pour, the forge, the Casting Shed's three workshops, every tool's reading and lesson, colour contrast on every rendered surface, the reading-and-access panel, the sound layer, the seam's whole length, the doors on the surface, the three claims the front page makes to a stranger, the four deep castings and the multiplications they draw, the no-gate rule, and the no-grades rule.
 
-**Every check carries a control that must fail**, and a new one is proved by reintroducing the fault it exists to catch — not by watching it pass. `docs/VERIFICATION.md` is 102 rules, each written after a real failure.
+**Every check carries a control that must fail**, and a new one is proved by reintroducing the fault it exists to catch — not by watching it pass. `docs/VERIFICATION.md` is 103 rules, each written after a real failure.
 
 Run it at **380×780, 560×760, 994×700 and 1250×900**; a group green at one width has only ever proved itself at that width.
 
@@ -108,7 +108,7 @@ sfx/SOURCES.md                   what was cut from where, measured levels, the l
 docs/MINE-SPEC.md                what v1 is, and what is deliberately out
 docs/MR-FRACTION-PHILOSOPHY.md   what makes it a Mr Fraction site (incl. §2.5a)
 docs/SITE-STATE.md               the only document that states what exists
-docs/VERIFICATION.md             102 rules, each written after a real failure
+docs/VERIFICATION.md             103 rules, each written after a real failure
 docs/VOICE.md                    the recording script for Mr Factor — generated, not typed
 .claude/agents/                  five review charters, deliberately disjoint
 tools/verify-published.js        run this ON THE LIVE URL — see above
@@ -156,7 +156,7 @@ attributed as such:
 
 - **Every commit carries a `Co-Authored-By: Claude` trailer.** `git log` is the complete,
   unedited record — including the commits that record what was broken and why.
-- `docs/VERIFICATION.md` is the collaboration's actual output: 102 rules, each one written
+- `docs/VERIFICATION.md` is the collaboration's actual output: 103 rules, each one written
   immediately after a real failure, most of them failures Claude introduced.
 
 Mathematical content, pedagogy and every decision about what this teaches are the author's.
