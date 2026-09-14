@@ -3510,7 +3510,112 @@ MF.STR.en = {
   'molds.q3.sub': 'An empty x-box means a single x. Put 0 in it to name a plain metal instead.',
   'molds.q3.cta': 'Pour it back',
   'molds.q3.ok': '<b>That went in.</b> <b>{left}</b> and <b>{right}</b> multiply back to it — and there is more than one right first answer here, because 2 · (x + 2) · (x + 3) has three metals in it.',
-  'molds.q3.no': '<b>{why}</b> Nothing is lost. The same engine the anvil swings through just answered that, and it is describing the rock, not you.'
+  'molds.q3.no': '<b>{why}</b> Nothing is lost. The same engine the anvil swings through just answered that, and it is describing the rock, not you.',
+
+  /* the translation table — the mine's word, the textbook's, and why */
+  'rosetta.ore.mine': 'ore',
+  'rosetta.ore.real': 'an expression',
+  'rosetta.ore.note': 'Any expression at all — a number, a monomial, a binomial, a trinomial.',
+  'rosetta.ore.show': '{ore} is a lump of ore',
+  'rosetta.seam.mine': 'a seam, a vein',
+  'rosetta.seam.real': 'a factor',
+  'rosetta.seam.note': 'It was in the rock before you arrived. Finding it does not put it there.',
+  'rosetta.seam.show': '( {g} ) runs through {ore}',
+  'rosetta.break.mine': 'breaking it',
+  'rosetta.break.real': 'factoring',
+  'rosetta.break.note': 'One swing takes out one factor. What is left goes back under the hammer, and that repeats until nothing will come apart.',
+  'rosetta.native.mine': 'native metal',
+  'rosetta.native.real': 'a prime, or an irreducible polynomial',
+  'rosetta.native.note': 'THE ONE THIS PLACE EXISTS FOR. They are not two similar things — they are the same object, an element that breaking cannot separate further.',
+  'rosetta.native.show': '{p} and {ore} are the same kind of thing',
+  'rosetta.twin.mine': 'a twin seam',
+  'rosetta.twin.real': 'a difference of two squares',
+  'rosetta.twin.note': 'No middle term, and both ends square. The two middles cancel each other out.',
+  'rosetta.common.mine': 'the common metal',
+  'rosetta.common.real': 'the greatest common factor (the GCF)',
+  'rosetta.common.note': 'The one thing every term is carrying. Always the first thing to look for.',
+  'rosetta.loaded.mine': 'loaded ore',
+  'rosetta.loaded.real': 'ax² + bx + c with a ≠ 1',
+  'rosetta.loaded.note': 'Both ends are pinned, so the x-parts have to multiply to a and the numbers to c. That is what factoring by grouping is for.',
+  'rosetta.assay.mine': 'the assay',
+  'rosetta.assay.real': 'recognising the form before you work it',
+  'rosetta.assay.note': 'Naming what kind of thing is in front of you, which is the step that decides which method you reach for.',
+  'rosetta.assay.show': '{ore} is {kind}',
+  'rosetta.pour.mine': 'the pour, the mold',
+  'rosetta.pour.real': 'the distributive property',
+  'rosetta.pour.note': 'The forge’s move, and the only place it happens. Metals go in separate and one object comes out.',
+  'rosetta.sound.mine': 'sound, or scrap',
+  'rosetta.sound.real': 'checking by multiplying back',
+  'rosetta.sound.note': 'If the pieces multiply back to the rock they came out of, they were the pieces. There is nothing else to check.',
+  'rosetta.sound.show': 'multiply the pieces and see whether {ore} comes back',
+  'rosetta.tag': 'WHAT EVERY WORD HERE MEANS',
+  'rosetta.lede': 'This place calls things by mining names, and every one of them is a real mathematical thing with a real name. If you only ever learn one column you have learned half of it.',
+  'rosetta.th.mine': 'in the mine',
+  'rosetta.th.real': 'in the maths',
+  'rosetta.th.ex': 'worked out',
+  'rosetta.matters': '<b>The row that matters most is “native metal”.</b> A prime and a polynomial that nothing separates are not <em>like</em> each other. They are the same object: something already refined, which breaking cannot take further. That is why <b>72</b> and <b>x² − 5x + 6</b> are one job and not two.',
+
+  /* matching the two columns */
+  'match.lab': '&#128279; PUT EACH ONE WITH ITS REAL NAME',
+  'match.hint': 'Click a word on the left, then the name it is for on the right. A pair that does not go together tells you what each one means and lets go.',
+  'match.col.mine': 'What this place says',
+  'match.col.real': 'What it is called',
+  'match.aria.mine': 'The mine\'s word: {w}',
+  'match.aria.real': 'The real name: {w}',
+  'match.good': '<b>{mine} is {real}.</b> ',
+  'match.all': 'That is all of them. The two columns are one column.',
+  'match.bad': '<b>Those are two different things.</b> {m1} is <b>{r1}</b>, and {r2} is what this place calls <b>{m2}</b>.',
+
+  /* The Words */
+  'words.lede': 'A metaphor is a way in until it becomes a private language, and then it is a wall. Everything on the left is what this place calls a thing. Everything on the right is what a textbook, a teacher and an exam paper call <b>the same thing</b>. They are not similar. They are the same object under two names.',
+  'words.q1': 'Which of these is <b>already native metal</b>?',
+  'words.q1.sub': 'Native metal is the mine\'s word. The maths word is on the table above.',
+  'words.q1.a': 'Nothing whole comes out of it. It is an <b>irreducible polynomial</b> — the same kind of object as a prime, already an element, not a lump that failed to break.',
+  'words.q1.b': 'That one still comes apart. Two squares with a minus and no middle term is a <b>twin seam</b> — a difference of two squares — and it runs at (x + 3) and (x − 3).',
+  'words.q1.c': 'Every term there is carrying a 2, so a seam runs through it. Pull the <b>common factor</b> out and you get 2(x + 3).',
+  'words.q2': 'The table says <b>the common metal</b> is <b>the greatest common factor</b>. Type the common metal of <b>18x + 24</b>.',
+  'words.q2.sub': 'Put the plain number in the box.',
+  'words.q2.cta': 'Pull it out',
+  'words.q2.ok': '<b>{g} is the greatest of them.</b> {ore} = {g}({rest}), and nothing bigger divides both.',
+  'words.q2.part': '<b>{k} does run through both</b> — the seam is real and the hammer would land. But it is not the <em>greatest</em> one: {g} also divides both, and taking {k} leaves {right} still carrying a seam.',
+  'words.q2.no': '<b>{why}</b> Look at what 18 and 24 both divide by.',
+
+  /* what went wrong */
+  'miscut.lab': '&#9935; WHAT DID THE MINER DO WRONG?',
+  'miscut.q': 'Where did it go wrong?',
+  'miscut.hint': 'Nothing here is kept. Every answer describes the working — including the ones that are not what went wrong.',
+  'wmiscut.lede': 'A miner wrote this up in the log and racked the lump as finished metal. The arithmetic on every line is right. The <b>word</b> at the end is not.',
+  'wmiscut.w1.note': 'the lump',
+  'wmiscut.w2.line': '1 and &minus;9 share nothing but 1',
+  'wmiscut.w2.note': 'checked for a common metal',
+  'wmiscut.w3.line': 'so nothing comes out of it',
+  'wmiscut.w3.note': 'the step that is wrong',
+  'wmiscut.w4.line': '&rarr; native metal',
+  'wmiscut.w4.note': 'racked as finished',
+  'wmiscut.a.label': '"Nothing divides every term" is not the same claim as "nothing comes apart"',
+  'wmiscut.a': 'That is exactly it. A <b>common factor</b> is something every term carries — this lump has none, and the miner checked that correctly. <b>Irreducible</b> means the whole thing will not come apart into two brackets, which is a different question and has a different answer here: x² − 9 is a <b>twin seam</b> and it runs at (x + 3)(x − 3).',
+  'wmiscut.b.label': 'The arithmetic is wrong &mdash; 1 and &minus;9 do share a factor',
+  'wmiscut.b': 'They do not. 1 and −9 share only 1, and the miner was right about that. The fault is not in the sum; it is in what the sum was taken to prove.',
+  'wmiscut.c.label': 'x&sup2; &minus; 9 has no middle term, so it cannot be factored',
+  'wmiscut.c': 'A missing middle term is what makes this one <em>easy</em>, not impossible. Two squares with a minus between them and nothing in the middle is the shape of a twin seam — (x + 3)(x − 3) multiplies back to x² − 9 with the middles cancelling, which is why there is no middle to see.',
+  'wmiscut.after': '<b>The two words are not interchangeable.</b> A lump with no common metal in it can still come apart, and a lump that comes apart can still have no common metal. That is the pair this whole table exists to keep separate.',
+
+  /* the three workshop illustrations */
+  'art.mold.aria': 'Two metals run down separate channels into one mold, which fills; a single formed bar is lifted out of it.',
+  'art.mold.mold': 'the mold',
+  'art.mold.out': 'one formed object',
+  'art.words.aria': 'Two columns of words facing each other — mining words on the left, mathematical terms on the right — with a light travelling along the bar that joins each pair.',
+  'art.words.mine': 'IN THE MINE',
+  'art.words.maths': 'IN THE MATHS',
+  'art.words.1.mine': 'ore',
+  'art.words.1.real': 'an expression',
+  'art.words.2.mine': 'a seam',
+  'art.words.2.real': 'a factor',
+  'art.words.3.mine': 'native metal',
+  'art.words.3.real': 'a prime',
+  'art.words.same': 'the same object, twice',
+  'art.methods.aria': 'A ladder of seven rungs climbing to the right against a row of lumps of ore that grow larger, with a lamp climbing the rungs.',
+  'art.methods.rung': 'one method a rung, and the ore gets harder in step'
 };
 MF._missing = {};
 MF.lang = function(){
@@ -7443,66 +7548,56 @@ MF.areaModel = function(host, o){
 };
 
 /* ===== THE TRANSLATION TABLE, and it is generated rather than typed. ===== */
+/* Each row's `mine`, `real` and `note` are getters on `rosetta.<id>`, so the
+   table, the matching activity and the checks all read the current language.
+   `show` builds the worked example; where it joins words to the maths the
+   words are a template, and where it is notation alone it is left as it is. */
+function rosettaRow(id, ore, show, holds){
+  return { id:id, ore:ore, show:show, holds:holds,
+           get mine(){ return MF.t('rosetta.' + id + '.mine'); },
+           get real(){ return MF.t('rosetta.' + id + '.real'); },
+           get note(){ return MF.t('rosetta.' + id + '.note'); } };
+}
 MF.ROSETTA = [
-  { mine:'ore',                real:'an expression',
-    note:'Any expression at all — a number, a monomial, a binomial, a trinomial.',
-    ore:{kind:'poly',a:2,b:10,c:12},
-    show:function(o){ return MF.oreLabel(o) + ' is a lump of ore'; },
-    holds:function(o){ return o.kind==='poly'; } },
+  rosettaRow('ore', {kind:'poly',a:2,b:10,c:12},
+    function(o){ return MF.t('rosetta.ore.show', {ore: MF.oreLabel(o)}); },
+    function(o){ return o.kind==='poly'; }),
 
-  { mine:'a seam, a vein',     real:'a factor',
-    note:'It was in the rock before you arrived. Finding it does not put it there.',
-    ore:{kind:'poly',a:1,b:5,c:6},
-    show:function(o){ var g = MF.simplestFactor(o); return '( ' + ingotHtml(g) + ' ) runs through ' + MF.oreLabel(o); },
-    holds:function(o){ var g = MF.simplestFactor(o); return !!g && MF.breakOff(o, g).ok; } },
+  rosettaRow('seam', {kind:'poly',a:1,b:5,c:6},
+    function(o){ var g = MF.simplestFactor(o); return MF.t('rosetta.seam.show', {g: ingotHtml(g), ore: MF.oreLabel(o)}); },
+    function(o){ var g = MF.simplestFactor(o); return !!g && MF.breakOff(o, g).ok; }),
 
-  { mine:'breaking it',        real:'factoring',
-    note:'One swing takes out one factor. What is left goes back under the hammer, and that repeats until nothing will come apart.',
-    ore:{kind:'poly',a:2,b:10,c:12},
-    show:function(o){ return MF.oreLabel(o) + ' <span class="op">&rarr;</span> ' + MF.smeltString(MF.smeltPoly(o.a,o.b,o.c)); },
-    holds:function(o){ return !!MF.smeltPoly(o.a,o.b,o.c).ingots; } },
+  rosettaRow('break', {kind:'poly',a:2,b:10,c:12},
+    function(o){ return MF.oreLabel(o) + ' <span class="op">&rarr;</span> ' + MF.smeltString(MF.smeltPoly(o.a,o.b,o.c)); },
+    function(o){ return !!MF.smeltPoly(o.a,o.b,o.c).ingots; }),
 
-  { mine:'native metal',       real:'a prime, or an irreducible polynomial',
-    note:'THE ONE THIS PLACE EXISTS FOR. They are not two similar things — they are the same object, an element that breaking cannot separate further.',
-    ore:{kind:'poly',a:1,b:0,c:4},
-    show:function(o){ return num(7) + ' and ' + MF.oreLabel(o) + ' are the same kind of thing'; },
-    holds:function(o){ return MF.isNative(o) && isPrime(7); } },
+  rosettaRow('native', {kind:'poly',a:1,b:0,c:4},
+    function(o){ return MF.t('rosetta.native.show', {p: num(7), ore: MF.oreLabel(o)}); },
+    function(o){ return MF.isNative(o) && isPrime(7); }),
 
-  { mine:'a twin seam',        real:'a difference of two squares',
-    note:'No middle term, and both ends square. The two middles cancel each other out.',
-    ore:{kind:'poly',a:1,b:0,c:-25},
-    show:function(o){ return MF.oreLabel(o) + ' <span class="op">=</span> ' + MF.smeltString(MF.smeltPoly(o.a,o.b,o.c)); },
-    holds:function(o){ return MF.smeltPoly(o.a,o.b,o.c).kind === 'twin'; } },
+  rosettaRow('twin', {kind:'poly',a:1,b:0,c:-25},
+    function(o){ return MF.oreLabel(o) + ' <span class="op">=</span> ' + MF.smeltString(MF.smeltPoly(o.a,o.b,o.c)); },
+    function(o){ return MF.smeltPoly(o.a,o.b,o.c).kind === 'twin'; }),
 
-  { mine:'the common metal',   real:'the greatest common factor (the GCF)',
-    note:'The one thing every term is carrying. Always the first thing to look for.',
-    ore:{kind:'poly',a:0,b:3,c:12},
-    show:function(o){ return MF.oreLabel(o) + ' <span class="op">=</span> ' + num(MF.commonMetal(o)) + ' ( ' + quad(0, o.b/MF.commonMetal(o), o.c/MF.commonMetal(o)) + ' )'; },
-    holds:function(o){ var g = MF.commonMetal(o); return !!g && Math.abs(g) > 1 && o.b % g === 0 && o.c % g === 0; } },
+  rosettaRow('common', {kind:'poly',a:0,b:3,c:12},
+    function(o){ return MF.oreLabel(o) + ' <span class="op">=</span> ' + num(MF.commonMetal(o)) + ' ( ' + quad(0, o.b/MF.commonMetal(o), o.c/MF.commonMetal(o)) + ' )'; },
+    function(o){ var g = MF.commonMetal(o); return !!g && Math.abs(g) > 1 && o.b % g === 0 && o.c % g === 0; }),
 
-  { mine:'loaded ore',         real:'ax² + bx + c with a ≠ 1',
-    note:'Both ends are pinned, so the x-parts have to multiply to a and the numbers to c. That is what factoring by grouping is for.',
-    ore:{kind:'poly',a:6,b:7,c:-3},
-    show:function(o){ return MF.oreLabel(o) + ' <span class="op">=</span> ' + MF.smeltString(MF.smeltPoly(o.a,o.b,o.c)); },
-    holds:function(o){ return o.a !== 1 && o.a !== 0; } },
+  rosettaRow('loaded', {kind:'poly',a:6,b:7,c:-3},
+    function(o){ return MF.oreLabel(o) + ' <span class="op">=</span> ' + MF.smeltString(MF.smeltPoly(o.a,o.b,o.c)); },
+    function(o){ return o.a !== 1 && o.a !== 0; }),
 
-  { mine:'the assay',          real:'recognising the form before you work it',
-    note:'Naming what kind of thing is in front of you, which is the step that decides which method you reach for.',
-    ore:{kind:'poly',a:1,b:-5,c:6},
-    show:function(o){ return MF.oreLabel(o) + ' is ' + (MF.ASSAY[MF.assayOf(o)] ? MF.ASSAY[MF.assayOf(o)].name : MF.assayOf(o)); },
-    holds:function(o){ return !!MF.ASSAY[MF.assayOf(o)]; } },
+  rosettaRow('assay', {kind:'poly',a:1,b:-5,c:6},
+    function(o){ return MF.t('rosetta.assay.show', {ore: MF.oreLabel(o), kind: MF.ASSAY[MF.assayOf(o)] ? MF.ASSAY[MF.assayOf(o)].name : MF.assayOf(o)}); },
+    function(o){ return !!MF.ASSAY[MF.assayOf(o)]; }),
 
-  { mine:'the pour, the mold', real:'the distributive property',
-    note:'The forge’s move, and the only place it happens. Metals go in separate and one object comes out.',
-    ore:{kind:'poly',a:1,b:5,c:6},
-    show:function(o){ return '( x + 2 )( x + 3 ) <span class="op">=</span> ' + MF.oreLabel(o); },
-    holds:function(o){ var p = ingotProduct([{m:1,k:2},{m:1,k:3}]); return p.a===o.a && p.b===o.b && p.c===o.c; } },
+  rosettaRow('pour', {kind:'poly',a:1,b:5,c:6},
+    function(o){ return '( x + 2 )( x + 3 ) <span class="op">=</span> ' + MF.oreLabel(o); },
+    function(o){ var p = ingotProduct([{m:1,k:2},{m:1,k:3}]); return p.a===o.a && p.b===o.b && p.c===o.c; }),
 
-  { mine:'sound, or scrap',    real:'checking by multiplying back',
-    note:'If the pieces multiply back to the rock they came out of, they were the pieces. There is nothing else to check.',
-    ore:{kind:'poly',a:1,b:5,c:6},
-    show:function(o){ return 'multiply the pieces and see whether ' + MF.oreLabel(o) + ' comes back'; },
-    holds:function(o){ var p = ingotProduct([{m:1,k:2},{m:1,k:3}]); return p.a===o.a && p.b===o.b && p.c===o.c; } }
+  rosettaRow('sound', {kind:'poly',a:1,b:5,c:6},
+    function(o){ return MF.t('rosetta.sound.show', {ore: MF.oreLabel(o)}); },
+    function(o){ var p = ingotProduct([{m:1,k:2},{m:1,k:3}]); return p.a===o.a && p.b===o.b && p.c===o.c; })
 ];
 
 /* PAIRING THE TWO COLUMNS UP, WHICH IS A THING TO DO RATHER THAN A THING TO BE ASKED. */
@@ -7512,14 +7607,13 @@ MF.paintMatch = function(host, o){
   var pool = MF.ROSETTA.slice();
   var pairs = MF.balanced('match|words', pool).slice(0, n);
   var box = E('div','matchbox');
-  box.appendChild(H('div','mtlab','&#128279; PUT EACH ONE WITH ITS REAL NAME'));
-  box.appendChild(H('p','mthint','Click a word on the left, then the name it is for on the right. ' +
-    'A pair that does not go together tells you what each one means and lets go.'));
+  box.appendChild(H('div','mtlab', MF.t('match.lab')));
+  box.appendChild(H('p','mthint', MF.t('match.hint')));
 
   var grid = E('div','mtgrid');
   var left = E('div','mtcol'), right = E('div','mtcol');
-  left.appendChild(H('div','mtch','What this place says'));
-  right.appendChild(H('div','mtch','What it is called'));
+  left.appendChild(H('div','mtch', MF.t('match.col.mine')));
+  right.appendChild(H('div','mtch', MF.t('match.col.real')));
   var out = E('div','mtout');
   var held = null, done = 0;
 
@@ -7527,8 +7621,8 @@ MF.paintMatch = function(host, o){
     var b = E('button','mtchip'); b.type='button';
     b.innerHTML = (side === 'mine') ? r.mine : r.real;
     b.setAttribute('data-side', side);
-    b.setAttribute('aria-label', (side === 'mine' ? 'The mine\'s word: ' : 'The real name: ') +
-      String(side === 'mine' ? r.mine : r.real).replace(/<[^>]+>/g,''));
+    b.setAttribute('aria-label', MF.t(side === 'mine' ? 'match.aria.mine' : 'match.aria.real',
+      {w: String(side === 'mine' ? r.mine : r.real).replace(/<[^>]+>/g,'')}));
     on(b,'click',function(){
       if(b.hasAttribute('data-done')) return;
       /* clicking a second one on the SAME side just moves the hold - a student
@@ -7551,18 +7645,16 @@ MF.paintMatch = function(host, o){
       if(a.row === r){
         [a.el, b].forEach(function(n2){ n2.setAttribute('data-done','yes'); n2.removeAttribute('data-held'); });
         done++;
-        out.appendChild(H('div','note good','<b>' + String(r.mine).replace(/<[^>]+>/g,'') +
-          ' is ' + String(r.real).replace(/<[^>]+>/g,'') + '.</b> ' + r.note));
+        out.appendChild(H('div','note good', MF.t('match.good', {
+          mine: String(r.mine).replace(/<[^>]+>/g,''), real: String(r.real).replace(/<[^>]+>/g,'')}) + r.note));
         if(done === pairs.length)
-          out.appendChild(H('div','mtall','That is all of them. The two columns are one column.'));
+          out.appendChild(H('div','mtall', MF.t('match.all')));
       } else {
         var mineRow = (a.side === 'mine') ? a.row : r;
         var realRow = (a.side === 'mine') ? r : a.row;
-        out.appendChild(H('div','note','<b>Those are two different things.</b> ' +
-          String(mineRow.mine).replace(/<[^>]+>/g,'') + ' is <b>' +
-          String(mineRow.real).replace(/<[^>]+>/g,'') + '</b>, and ' +
-          String(realRow.real).replace(/<[^>]+>/g,'') + ' is what this place calls <b>' +
-          String(realRow.mine).replace(/<[^>]+>/g,'') + '</b>.'));
+        out.appendChild(H('div','note', MF.t('match.bad', {
+          m1: String(mineRow.mine).replace(/<[^>]+>/g,''), r1: String(mineRow.real).replace(/<[^>]+>/g,''),
+          r2: String(realRow.real).replace(/<[^>]+>/g,''), m2: String(realRow.mine).replace(/<[^>]+>/g,'')})));
       }
     });
     return b;
@@ -7581,12 +7673,11 @@ MF.paintMatch = function(host, o){
 
 MF.paintRosetta = function(host){
   var box = E('div','panel light');
-  box.appendChild(H('div','panel-tag','WHAT EVERY WORD HERE MEANS'));
-  box.appendChild(H('p','lede','This place calls things by mining names, and every one of them is a real mathematical thing with a real name. ' +
-    'If you only ever learn one column you have learned half of it.'));
+  box.appendChild(H('div','panel-tag', MF.t('rosetta.tag')));
+  box.appendChild(H('p','lede', MF.t('rosetta.lede')));
   var tbl = E('table','rosetta');
   var hr = E('tr');
-  ['in the mine','in the maths','worked out'].forEach(function(h){ hr.appendChild(E('th',null,h)); });
+  ['rosetta.th.mine','rosetta.th.real','rosetta.th.ex'].forEach(function(h){ hr.appendChild(E('th',null, MF.t(h))); });
   tbl.appendChild(hr);
   MF.ROSETTA.forEach(function(r){
     var tr = E('tr');
@@ -7601,9 +7692,7 @@ MF.paintRosetta = function(host){
   var scroller = E('div','tablescroll');
   scroller.appendChild(tbl);
   box.appendChild(scroller);
-  box.appendChild(H('div','note good','<b>The row that matters most is “native metal”.</b> ' +
-    'A prime and a polynomial that nothing separates are not <em>like</em> each other. They are the same object: something already refined, ' +
-    'which breaking cannot take further. That is why <b>72</b> and <b>x² − 5x + 6</b> are one job and not two.'));
+  box.appendChild(H('div','note good', MF.t('rosetta.matters')));
   host.appendChild(box);
   return box;
 };
@@ -8048,7 +8137,7 @@ MF.paintMiscut = function(host, o){
   /* CLASS `ask` AS WELL AS `miscut`: the quiz group sweeps `.ask` cards and
      clicks every `.qopt` in them, requiring each to say something back. */
   var box = E('div','miscut ask');
-  box.appendChild(H('div','mclab', o.lab || '&#9935; WHAT DID THE MINER DO WRONG?'));
+  box.appendChild(H('div','mclab', o.lab || MF.t('miscut.lab')));
   if(o.lede) box.appendChild(H('p','mclede', o.lede));
 
   /* the log, line by line, with what the miner thought each line showed */
@@ -8062,27 +8151,26 @@ MF.paintMiscut = function(host, o){
   });
   box.appendChild(log);
 
-  box.appendChild(H('div','mcq', o.q || 'Where did it go wrong?'));
+  box.appendChild(H('div','mcq', o.q || MF.t('miscut.q')));
   var out = E('div','qout');
   var opts = E('div','qopts');
   MF.spreadOptions('miscut|' + String(o.q || '') + String(o.lab || ''), o.options).forEach(function(op){
     var b = E('button','qopt'); b.type='button';
     b.innerHTML = op.label;
-    b.setAttribute('aria-label','Choose ' + (op.a11y || op.label.replace(/<[^>]+>/g,'')));
+    b.setAttribute('aria-label', MF.t('q.aria.choose', {label: op.a11y || op.label.replace(/<[^>]+>/g,'')}));
     on(b,'click',function(){
       Array.prototype.forEach.call(opts.children, function(n){ n.removeAttribute('data-chosen'); });
       b.setAttribute('data-chosen','yes');
       clear(out);
       out.appendChild(H('div','note' + (op.holds ? ' good' : ''),
-        '<b>You chose ' + op.label.replace(/<[^>]+>/g,'') + '.</b> ' + op.says));
+        MF.t('q.chose', {label: op.label.replace(/<[^>]+>/g,'')}) + op.says));
       if(op.holds && o.after) out.appendChild(H('div','mcafter', o.after));
     });
     opts.appendChild(b);
   });
   box.appendChild(opts);
   box.appendChild(out);
-  box.appendChild(H('div','hint','Nothing here is kept. Every answer describes the ' +
-    'working — including the ones that are not what went wrong.'));
+  box.appendChild(H('div','hint', MF.t('miscut.hint')));
   host.appendChild(box);
   return box;
 };
@@ -8254,7 +8342,7 @@ MF.shedArt = function(kind){
   /* ---------------- THE MOLD: metals in separate, one object out ---------- */
   if(kind === 'mold'){
     wrap.setAttribute('role','img');
-    wrap.setAttribute('aria-label','Two metals run down separate channels into one mold, which fills; a single formed bar is lifted out of it.');
+    wrap.setAttribute('aria-label', MF.t('art.mold.aria'));
     [[70,44,'x + 2'],[70,110,'x + 3']].forEach(function(ch, i){
       R(ch[0]-14, ch[1]-20, 172, 40, '#3E3328', {rx:'7', stroke:'#5A4938','stroke-width':'3'});
       L(ch[0]+72, ch[1], ch[2]);
@@ -8273,7 +8361,7 @@ MF.shedArt = function(kind){
     fill.appendChild(S('rect',{x:'0',y:'0',width:'142',height:'124',rx:'7',fill:'url(#sa'+kind+'m)'}));
     fillSeat.appendChild(fill);
     svg.appendChild(fillSeat);
-    L(375,150,'the mold','dim');
+    L(375,150, MF.t('art.mold.mold'),'dim');
     /* and one formed object leaving it */
     var outSeat = S('g',{transform:'translate(470,64)'});
     var outg = S('g',{class:'sa-lift'});
@@ -8281,21 +8369,21 @@ MF.shedArt = function(kind){
     outSeat.appendChild(outg);
     svg.appendChild(outSeat);
     L(534,91,'x&sup2; + 5x + 6','ongold');
-    L(534,142,'one formed object','dim');
+    L(534,142, MF.t('art.mold.out'),'dim');
   }
 
   /* ------------- THE WORDS: two columns that mean the same thing --------- */
   if(kind === 'words'){
     wrap.setAttribute('role','img');
-    wrap.setAttribute('aria-label','Two columns of words facing each other — mining words on the left, mathematical terms on the right — with a light travelling along the bar that joins each pair.');
-    L(150,26,'IN THE MINE','head lamp');
-    L(470,26,'IN THE MATHS','head veinlt');
-    [['ore','an expression'],['a seam','a factor'],['native metal','a prime']].forEach(function(pr, i){
+    wrap.setAttribute('aria-label', MF.t('art.words.aria'));
+    L(150,26, MF.t('art.words.mine'),'head lamp');
+    L(470,26, MF.t('art.words.maths'),'head veinlt');
+    [1,2,3].forEach(function(n, i){
       var y = 68 + i*44;
       R(30,y-21,240,38,'#3E3328',{rx:'7'});
       R(370,y-21,220,38,'#26332F',{rx:'7'});
-      L(150,y,pr[0]);
-      L(480,y,pr[1],'veinlt');
+      L(150,y, MF.t('art.words.' + n + '.mine'));
+      L(480,y, MF.t('art.words.' + n + '.real'),'veinlt');
       R(272,y-3,96,6,'#5A4938',{rx:'3'});
       var seat = S('g',{transform:'translate(274,'+y+')'});
       var spark = S('g',{class:'sa-join j'+i});
@@ -8304,13 +8392,13 @@ MF.shedArt = function(kind){
       seat.appendChild(spark);
       svg.appendChild(seat);
     });
-    L(310,190,'the same object, twice','dim');
+    L(310,190, MF.t('art.words.same'),'dim');
   }
 
   /* ------------- THE METHODS: seven rungs against harder ore ------------- */
   if(kind === 'methods'){
     wrap.setAttribute('role','img');
-    wrap.setAttribute('aria-label','A ladder of seven rungs climbing to the right against a row of lumps of ore that grow larger, with a lamp climbing the rungs.');
+    wrap.setAttribute('aria-label', MF.t('art.methods.aria'));
     for(var o=0; o<7; o++){
       var ox = 58 + o*80, sz = 15 + o*4;
       svg.appendChild(S('path',{d:'M'+(ox-sz)+' 178 l'+(sz*0.5)+' '+(-sz)+' l'+sz+' 0 l'+(sz*0.5)+' '+sz+' Z',
@@ -8328,7 +8416,7 @@ MF.shedArt = function(kind){
     climb.appendChild(S('rect',{x:'-7',y:'-20',width:'14',height:'8',rx:'2',fill:'#8A9AA6'}));
     lseat.appendChild(climb);
     svg.appendChild(lseat);
-    L(310,26,'one method a rung, and the ore gets harder in step','dim');
+    L(310,26, MF.t('art.methods.rung'),'dim');
   }
 
   svg.setAttribute('width','100%'); svg.removeAttribute('height');
@@ -8599,36 +8687,30 @@ MF.SCREENS['shed-mold'] = function(host){
 };
 
   /* WHAT DID THE MINER DO WRONG? */
+  /* every field a getter on `wmiscut.*`, so the card reads the current language */
   MF.WORDS_MISCUT = {
-    lab:'&#9935; WHAT DID THE MINER DO WRONG?',
-    lede:'A miner wrote this up in the log and racked the lump as finished metal. The arithmetic ' +
-      'on every line is right. The <b>word</b> at the end is not.',
-    work:[
-      {line:'x&sup2; &minus; 9', note:'the lump'},
-      {line:'1 and &minus;9 share nothing but 1', note:'checked for a common metal'},
-      {line:'so nothing comes out of it', note:'the step that is wrong'},
-      {line:'&rarr; native metal', note:'racked as finished'}
-    ],
-    q:'Where did it go wrong?',
-    options:[
-      {label:'"Nothing divides every term" is not the same claim as "nothing comes apart"', holds:true,
-       says:'That is exactly it. A <b>common factor</b> is something every term carries — this lump has none, and the miner checked that correctly. <b>Irreducible</b> means the whole thing will not come apart into two brackets, which is a different question and has a different answer here: x² − 9 is a <b>twin seam</b> and it runs at (x + 3)(x − 3).'},
-      {label:'The arithmetic is wrong &mdash; 1 and &minus;9 do share a factor',
-       says:'They do not. 1 and −9 share only 1, and the miner was right about that. The fault is not in the sum; it is in what the sum was taken to prove.'},
-      {label:'x&sup2; &minus; 9 has no middle term, so it cannot be factored',
-       says:'A missing middle term is what makes this one <em>easy</em>, not impossible. Two squares with a minus between them and nothing in the middle is the shape of a twin seam — (x + 3)(x − 3) multiplies back to x² − 9 with the middles cancelling, which is why there is no middle to see.'}
-    ],
-    after:'<b>The two words are not interchangeable.</b> A lump with no common metal in it can still come apart, ' +
-      'and a lump that comes apart can still have no common metal. That is the pair this whole table exists to keep separate.'
+    get lab(){ return MF.t('miscut.lab'); },
+    get lede(){ return MF.t('wmiscut.lede'); },
+    get work(){ return [
+      {line:'x&sup2; &minus; 9', note:MF.t('wmiscut.w1.note')},
+      {line:MF.t('wmiscut.w2.line'), note:MF.t('wmiscut.w2.note')},
+      {line:MF.t('wmiscut.w3.line'), note:MF.t('wmiscut.w3.note')},
+      {line:MF.t('wmiscut.w4.line'), note:MF.t('wmiscut.w4.note')}
+    ]; },
+    get q(){ return MF.t('miscut.q'); },
+    get options(){ return [
+      {label:MF.t('wmiscut.a.label'), holds:true, says:MF.t('wmiscut.a')},
+      {label:MF.t('wmiscut.b.label'), says:MF.t('wmiscut.b')},
+      {label:MF.t('wmiscut.c.label'), says:MF.t('wmiscut.c')}
+    ]; },
+    get after(){ return MF.t('wmiscut.after'); }
   };
 
 /* ---------------- WORKSHOP 2: THE WORDS ---------------- */
 MF.SCREENS['shed-words'] = function(host){
   MF.shedHead(host, 'shed-words');
   host.appendChild(MF.shedArt('words'));
-  host.appendChild(H('p','lede','A metaphor is a way in until it becomes a private language, and then it is a wall. ' +
-    'Everything on the left is what this place calls a thing. Everything on the right is what a textbook, a teacher and an exam paper call ' +
-    '<b>the same thing</b>. They are not similar. They are the same object under two names.'));
+  host.appendChild(H('p','lede', MF.t('words.lede')));
   MF.paintRosetta(host);
 
   /* AND THEN YOU PUT THEM TOGETHER YOURSELF */
@@ -8639,31 +8721,26 @@ MF.SCREENS['shed-words'] = function(host){
 
   MF.paintQuestions(host, {also:[wMiscut], list:[
     {kind:'pick',
-     q:'Which of these is <b>already native metal</b>?',
-     sub:'Native metal is the mine\'s word. The maths word is on the table above.',
+     q:MF.t('words.q1'),
+     sub:MF.t('words.q1.sub'),
      options:[
-       {label:'x&sup2; + 4', holds:true,
-        says:'Nothing whole comes out of it. It is an <b>irreducible polynomial</b> — the same kind of object as a prime, already an element, not a lump that failed to break.'},
-       {label:'x&sup2; &minus; 9',
-        says:'That one still comes apart. Two squares with a minus and no middle term is a <b>twin seam</b> — a difference of two squares — and it runs at (x + 3) and (x − 3).'},
-       {label:'2x + 6',
-        says:'Every term there is carrying a 2, so a seam runs through it. Pull the <b>common factor</b> out and you get 2(x + 3).'}
+       {label:'x&sup2; + 4', holds:true, says:MF.t('words.q1.a')},
+       {label:'x&sup2; &minus; 9', says:MF.t('words.q1.b')},
+       {label:'2x + 6', says:MF.t('words.q1.c')}
      ]},
     {kind:'type', plain:true,
-     q:'The table says <b>the common metal</b> is <b>the greatest common factor</b>. Type the common metal of <b>18x + 24</b>.',
-     sub:'Put the plain number in the box.',
-     cta:'Pull it out',
+     q:MF.t('words.q2'),
+     sub:MF.t('words.q2.sub'),
+     cta:MF.t('words.q2.cta'),
      check:function(m,k){
        var ore = {kind:'poly',a:0,b:18,c:24};
        var g = MF.commonMetal(ore);
        var got = MF.breakOff(ore, {m:0, k:k});
        if(got.ok && k === g)
-         return {ok:true, why:'<b>' + num(g) + ' is the greatest of them.</b> ' + MF.oreLabel(ore) + ' = ' + num(g) +
-           '(' + quad(0, 18/g, 24/g) + '), and nothing bigger divides both.'};
+         return {ok:true, why:MF.t('words.q2.ok', {g: num(g), ore: MF.oreLabel(ore), rest: quad(0, 18/g, 24/g)})};
        if(got.ok)
-         return {ok:false, why:'<b>' + num(k) + ' does run through both</b> — the seam is real and the hammer would land. But it is not the <em>greatest</em> one: ' +
-           num(g) + ' also divides both, and taking ' + num(k) + ' leaves ' + MF.oreLabel(got.right) + ' still carrying a seam.'};
-       return {ok:false, why:'<b>' + got.why + '</b> Look at what 18 and 24 both divide by.'};
+         return {ok:false, why:MF.t('words.q2.part', {k: num(k), g: num(g), right: MF.oreLabel(got.right)})};
+       return {ok:false, why:MF.t('words.q2.no', {why: got.why})};
      }}
   ]});
 
@@ -16213,7 +16290,10 @@ MF.validate = function(){
   });
   /* the row this whole site exists for has to be on the table */
   chk('rosetta');
-  if(!MF.ROSETTA.some(function(r){ return /irreducible/i.test(r.real) && /prime/i.test(r.real); }))
+  /* by its id in every language; by its English words only when English is
+     what is showing, because "prime" is not a word in the others */
+  var rsNative = MF.ROSETTA.filter(function(r){ return r.id === 'native'; })[0];
+  if(!rsNative || (MF.lang() === 'en' && !(/irreducible/i.test(rsNative.real) && /prime/i.test(rsNative.real))))
     errs.push('rosetta: nothing on the table says a prime and an irreducible polynomial are the same object');
   /* CONTROL: a row whose example contradicts its term must be caught */
   chk('rosetta');
