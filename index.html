@@ -2254,6 +2254,9 @@ function quadText(a,b,c){ return quad(a,b,c).replace(/<sup>2<\/sup>/g,'²').repl
 
 /* an INGOT is m·x + k. A plain number is {m:0,k:n}. */
 function ingotHtml(g){
+  /* A LABELLED INGOT (y + 2, x² + 4, a four-term element) keeps m and k at zero,
+     so reading them printed a chip in the mold that said "0". */
+  if(g.label) return g.label;
   if(g.m===0) return num(g.k);
   if(g.k===0) return (g.m===1?'x':(g.m===-1?'−x':num(g.m)+'x'));
   return linear(g.m,g.k);
@@ -3245,7 +3248,10 @@ MF.LANG = {
       outOf: /\b\d+\s*(?:of|\/)\s*\d+\b/i,
       swingInvite: /name one and swing|can be swung|still yours/i,
       xPrescribed: /Put the <?b?>?X\b|the <b>X<\/b>|\bX\b on it/,
-      dockCount: /(\d+\s*(?:%|percent))|(\b\d+\s*(?:of|out of|\/)\s*\d+\b)|\b(score|scored|complete[d]?|progress|streak)\b/i
+      dockCount: /(\d+\s*(?:%|percent))|(\b\d+\s*(?:of|out of|\/)\s*\d+\b)|\b(score|scored|complete[d]?|progress|streak)\b/i,
+      /* how the hint names the building - a pattern, because a language that
+         inflects a noun will not repeat the menu's word letter for letter */
+      shedName: /casting shed/i
     }}
 };
 MF.STR = {};
@@ -13895,6 +13901,42 @@ MF.validate = function(){
     errs.push('parts: the shelf counts what you have made, which is an X-out-of-Y');
   MF.state.parts = shSaved;
 
+  /* A DEEP METAL IN THE MOLD READS AS ITSELF. Its m and k are zero, and the chip
+     once printed "0" for y + 2 - no sweep ever put one in the mold to see. */
+  var chipSaved = MF.state.forge;
+  var chipsFor = function(key, mets){
+    MF.state.forge = {picked:key, slots:mets.map(function(g){ return {key:'chk', ingot:g}; })};
+    /* IN THE DOCUMENT: the forge paints its mold into the page, and a detached
+       box came back with no chips in it at all - which the control then passed. */
+    var h = document.createElement('div');
+    h.style.cssText = 'position:fixed; left:-9000px; top:0; width:1000px';
+    document.body.appendChild(h);
+    try { MF.SCREENS.forge(h); } catch(e){ h.remove(); return null; }
+    var chips = [].map.call(h.querySelectorAll('.crucible .ingot'), function(c){ return c.textContent.trim(); });
+    h.remove();
+    return chips;
+  };
+  MF.partOrder().forEach(function(key){
+    var mets = (MF.partMetals(key) || []).map(MF.oreToIngot);
+    chk('parts');
+    var got = chipsFor(key, mets);
+    var want = mets.map(function(g){ return MF.oreText(g.ore); });
+    if(!got || got.join('|') !== want.join('|'))
+      errs.push('parts: "' + MF.PARTS[key].nm + '" in the mold reads ' + (got ? got.join(', ') : 'nothing') +
+                ' for ' + want.join(', '));
+  });
+  /* CONTROL: the same metal with its label taken off must read wrong */
+  chk('parts');
+  var chipKey = MF.partOrder()[0];
+  var chipBare = (MF.partMetals(chipKey) || []).map(MF.oreToIngot).map(function(g){
+    var b = Object.assign({}, g); delete b.label; return b; });
+  var chipCtl = chipsFor(chipKey, chipBare);
+  /* and it only counts if chips were drawn - an empty mold "reads wrong" too */
+  if(!chipCtl || chipCtl.length !== chipBare.length ||
+     chipCtl.join('|') === chipBare.map(function(g){ return MF.oreText(g.ore); }).join('|'))
+    errs.push('CONTROL: the mold-chip check cannot tell a deep metal from its zeroes');
+  MF.state.forge = chipSaved;
+
   /* CONTROLS — every one of these must fail, or the group above is scenery */
   chk('parts');
   var ctlPart = {nm:'control', cast:MF.PARTS.frame.cast, slots:2, castOre:MF.groupOre(2,3,6)};
@@ -18181,7 +18223,7 @@ MF.validate = function(){
       errs.push('guide: a student who has never opened the Casting Shed is offered ' +
                 (a1 ? 'a "' + a1.rung + '" hint' : 'nothing') + ' instead of the building full of methods');
     chk('guide');
-    if(a1 && String(a1.text).toLowerCase().indexOf(MF.plainT('nav.shed').toLowerCase()) < 0)
+    if(a1 && !MF.langChecks().shedName.test(a1.text))
       errs.push('guide: the first rung does not name the Casting Shed, so it points nowhere');
     reset(true);
     for(var n2=0; n2<MF.CLANK_SPEAK; n2++) MF.clank(MF.stuckOre());
