@@ -106,6 +106,19 @@ window.MFHarvest = (function(){
     await loaded;
     try {
       var w = f.contentWindow, d = w.document;
+      if(opts.pseudo){
+        /* A STAND-IN LANGUAGE. Every English string comes back wrapped in ⟦ ⟧, so
+           anything a student sees with English outside the brackets was never
+           routed through MF.t. A {placeholder} is filled inside the brackets, and
+           whatever fills it carries brackets of its own. NOT 'zz': the lang
+           group's control builds and deletes a 'zz', and took this with it. */
+        var en = w.MF.STR.en, ps = {};
+        Object.keys(en).forEach(function(k){ ps[k] = '⟦' + en[k] + '⟧'; });
+        w.MF.LANG.xps = {nm:'pseudo', dir:'ltr', speech:'en', stop:'. '};
+        w.MF.STR.xps = ps;
+        w.MF.state.access.lang = 'xps';
+        w.MF.applyAccess();
+      }
       var btn = d.getElementById('enter-btn');
       for(var i = 0; i < 60 && btn && w.getComputedStyle(btn).display === 'none'; i++) await wait(250);
       if(btn) btn.click();
@@ -156,9 +169,40 @@ window.MFHarvest = (function(){
              onlyNew: b.strings.filter(function(s){ return !A.has(s); }) };
   }
 
+  /* What is left of a string once every bracketed stretch, tag, entity and
+     attribute prefix is taken out. Brackets nest when a template is filled with
+     other strings, so they are stripped from the inside out. A string whose
+     markup became several text nodes arrives in pieces, so once every pair is
+     gone what is left is unmatched: all of it before the last ⟧ and after the
+     first ⟦ was inside a bracket. */
+  function outside(s){
+    var t = String(s).replace(/^(aria-label|aria-description|title|placeholder|alt)=/, ''), prev;
+    do { prev = t; t = t.replace(/⟦[^⟦⟧]*⟧/g, ' '); } while(t !== prev);
+    t = t.replace(/^[\s\S]*⟧/, ' ').replace(/⟦[\s\S]*$/, ' ');
+    return t.replace(/<[^>]*>/g, ' ').replace(/&[#\w]+;/g, ' ');
+  }
+
   return {
     harvest: harvest,
     diff: diff,
+    outside: outside,
+    /* English still on screen with the stand-in language on: the strings with a
+       run of three or more letters outside every bracket. Not a proof of
+       absence - read the denominator in the header. */
+    english: async function(opts){
+      opts = Object.assign({}, opts || {}, {pseudo: true});
+      var h = await harvest(await current(), opts);
+      /* A text node wholly inside a <b> or <span> of a translated string has no
+         bracket of its own; it is not a leftover if a bracketed string holds it. */
+      var wrapped = h.strings.filter(function(s){ return s.indexOf('⟦') >= 0; });
+      var held = function(s){
+        var core = s.replace(/^(aria-label|aria-description|title|placeholder|alt)=/, '').trim();
+        return core.length > 0 && wrapped.some(function(x){ return x !== s && x.indexOf(core) >= 0; });
+      };
+      var left = h.strings.filter(function(s){ return /[A-Za-z]{3,}/.test(outside(s)) && !held(s); });
+      return { strings: h.strings.length, english: left.length, errors: h.errors,
+               sample: left.slice(0, opts.limit || 80) };
+    },
     saveBaseline: async function(){ var t = await current(); await put('baseline', t); return t.length; },
     baseline: function(){ return get('baseline'); },
     compare: async function(opts){

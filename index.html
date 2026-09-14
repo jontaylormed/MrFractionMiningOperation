@@ -4527,7 +4527,13 @@ MF.STR.en = {
   'plate.shed': 'Casting Shed',
   'plate.forge': 'The Forge',
   'plate.mine': 'The Mine',
-  'plate.yard': 'The Yard'
+  'plate.yard': 'The Yard',
+
+  /* the buildings on the surface are doors, and this is what each one is called */
+  'door.mill': 'The Stamp Mill',
+  'door.shed': 'The Casting Shed',
+  'door.forge': 'The Forge',
+  'door.mine': 'Into the Mine'
 };
 MF._missing = {};
 MF.lang = function(){
@@ -7188,6 +7194,12 @@ MF.applyAccess = function(){
   MF.accessRuler(a.ruler);
   if(MF.audio && MF.audio.apply) MF.audio.apply();
   MF.paintStatic();
+  /* A NEW LANGUAGE REBUILDS THE ROOM YOU ARE IN, and only a new language does:
+     a text-size or tint change must not tear down a half-worked lump. */
+  var lg = MF.lang();
+  if(MF._paintedLang && MF._paintedLang !== lg && MF.state.screen && MF.SCREENS && MF.SCREENS[MF.state.screen])
+    MF.go(MF.state.screen);
+  MF._paintedLang = lg;
   return a;
 };
 
@@ -8007,11 +8019,11 @@ MF.surfaceScene = function(){
     svg.appendChild(g);
   }
   /* targets only - each building carries its own nameplate now */
-  hot(222,220,152,132,'The Stamp Mill','workshop-ore');
-  hot(392,240,134,116,'The Casting Shed','workshop-mold');
-  hot(552,236,134,120,'The Forge','forge');
+  hot(222,220,152,132,MF.t('door.mill'),'workshop-ore');
+  hot(392,240,134,116,MF.t('door.shed'),'workshop-mold');
+  hot(552,236,134,120,MF.t('door.forge'),'forge');
   /* THE WHOLE BLUFF, NOT A BOX UNDER IT. */
-  hot(712,244,162,132,'Into the Mine','mine');
+  hot(712,244,162,132,MF.t('door.mine'),'mine');
 
   /* Mr Factor, standing on the surface - and the ONE instance whose helmet lamp
      answers the day/night clock, because this is the only scene MF.syncDay runs
