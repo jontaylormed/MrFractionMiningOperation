@@ -3996,7 +3996,36 @@ MF.STR.en = {
   'schema.auger.m4.cap': 'The split middle fills the other two corners. The edges are the factors.',
   'schema.auger.m4.a11y': 'A two by two box holding the four terms, with both pairs of edges unknown.',
   'schema.auger.m5': 'The same bracket comes off both groups. That repeat is the seam.',
-  'schema.auger.m5.key': 'A bracket that comes out <b>twice</b> runs through the whole lump.'
+  'schema.auger.m5.key': 'A bracket that comes out <b>twice</b> runs through the whole lump.',
+
+  /* the diagrams the lessons and the instruments draw with */
+  'dia.unknown': 'unknown',
+  'dia.x.top': '<b>top</b> — what they multiply to',
+  'dia.x.bottom': '<b>bottom</b> — what they add to',
+  'dia.x.sides': '<b>sides</b> — the pair you are hunting',
+  'dia.x.aria': 'An X diagram. Top: {top}, the number the pair multiplies to. Bottom: {bottom}, the number the pair adds to. Left: {left}. Right: {right}.',
+  'dia.split.aria': 'A split diagram. {whole} comes apart into {left} and {right}.',
+  'dia.split.lump': 'A lump',
+  'dia.split.unknown': 'an unknown piece',
+  'dia.kinds.lit': 'A shortlist of the kinds of ore, with {kind} picked out.',
+  'dia.kinds.none': 'A shortlist of the kinds of ore, none of them picked out yet.',
+  'dia.tick.on': 'A ruler marked at the whole numbers, with a seam standing on a mark.',
+  'dia.tick.off': 'A ruler marked at the whole numbers, with a seam falling between two marks, where no whole ingot can land.',
+  'dia.xbox.aria': 'A two by two box holding the four terms, with the factors along its edges.',
+  'dia.area.aria': 'area model',
+
+  /* the pour, written out, and the mold seen from above */
+  'pour.lab': 'THE POUR, WRITTEN OUT',
+  'pour.in': 'what went into the mold',
+  'pour.over': 'That is more metal than the mold holds.',
+  'pour.pairs': 'every part of one metal meets every part of the other',
+  'pour.terms': 'each pair multiplied out',
+  'pour.depth': 'the depth reaches every part',
+  'pour.merged': '{from} are the same kind of thing, so they are one term',
+  'pour.out': 'one object comes out',
+  'mold.casting': 'a casting',
+  'mold.aria.pour': 'Seen from above: metal running down a trough into a mold cut to the shape of {tool}, and the factors resolving into {single}',
+  'mold.aria.wait': 'Seen from above: a mold cut to the shape of {tool}, waiting for metal.'
 };
 MF._missing = {};
 MF.lang = function(){
@@ -4505,18 +4534,18 @@ MF.xDiagram = function(host, o){
   var box = E('div','xwrap');
   box.appendChild(wrap);
   var key = E('div','xkey');
-  key.appendChild(H('div','xk','<b>top</b> — what they multiply to' + (o.topWhy ? ' <span class="dim">' + o.topWhy + '</span>' : '')));
-  key.appendChild(H('div','xk','<b>bottom</b> — what they add to' + (o.botWhy ? ' <span class="dim">' + o.botWhy + '</span>' : '')));
-  key.appendChild(H('div','xk','<b>sides</b> — the pair you are hunting'));
+  key.appendChild(H('div','xk', MF.t('dia.x.top') + (o.topWhy ? ' <span class="dim">' + o.topWhy + '</span>' : '')));
+  key.appendChild(H('div','xk', MF.t('dia.x.bottom') + (o.botWhy ? ' <span class="dim">' + o.botWhy + '</span>' : '')));
+  key.appendChild(H('div','xk', MF.t('dia.x.sides')));
   box.appendChild(key);
   host.appendChild(box);
 
   /* an accessible reading of the same thing, because the numbers are the point */
+  var unknown = MF.t('dia.unknown');
   box.setAttribute('role','img');
-  box.setAttribute('aria-label','An X diagram. Top: ' + (o.top==null?'unknown':o.top) +
-    ', the number the pair multiplies to. Bottom: ' + (o.bottom==null?'unknown':o.bottom) +
-    ', the number the pair adds to. Left: ' + (o.left==null?'unknown':o.left) +
-    '. Right: ' + (o.right==null?'unknown':o.right) + '.');
+  box.setAttribute('aria-label', MF.t('dia.x.aria', {
+    top: o.top==null ? unknown : o.top, bottom: o.bottom==null ? unknown : o.bottom,
+    left: o.left==null ? unknown : o.left, right: o.right==null ? unknown : o.right}));
   return box;
 };
 
@@ -4557,9 +4586,10 @@ MF.splitDiagram = function(host, o){
     box.appendChild(k);
   }
   box.setAttribute('role','img');
-  box.setAttribute('aria-label','A split diagram. ' + (o.whole==null?'A lump':o.whole) +
-    ' comes apart into ' + (o.left==null?'an unknown piece':o.left) + ' and ' +
-    (o.right==null?'an unknown piece':o.right) + '.');
+  box.setAttribute('aria-label', MF.t('dia.split.aria', {
+    whole: o.whole==null ? MF.t('dia.split.lump') : o.whole,
+    left: o.left==null ? MF.t('dia.split.unknown') : o.left,
+    right: o.right==null ? MF.t('dia.split.unknown') : o.right}));
   host.appendChild(box);
   return box;
 };
@@ -4620,8 +4650,8 @@ MF.kindStrip = function(host, o){
   if(o.key) box.appendChild(H('div','xkey','<div class="xk">' + o.key + '</div>'));
   box.setAttribute('role','img');
   box.setAttribute('aria-label', o.lit
-    ? ('A shortlist of the kinds of ore, with ' + MF.ASSAY[o.lit].name + ' picked out.')
-    : 'A shortlist of the kinds of ore, none of them picked out yet.');
+    ? MF.t('dia.kinds.lit', {kind: MF.ASSAY[o.lit].name})
+    : MF.t('dia.kinds.none'));
   host.appendChild(box);
   return box;
 };
@@ -4657,8 +4687,7 @@ MF.tickLine = function(host, o){
   box.appendChild(wrap);
   if(o.key) box.appendChild(H('div','xkey','<div class="xk">' + o.key + '</div>'));
   box.setAttribute('role','img');
-  box.setAttribute('aria-label','A ruler marked at the whole numbers, with a seam ' +
-    (onTick ? 'standing on a mark.' : 'falling between two marks, where no whole ingot can land.'));
+  box.setAttribute('aria-label', MF.t(onTick ? 'dia.tick.on' : 'dia.tick.off'));
   host.appendChild(box);
   return box;
 };
@@ -4668,7 +4697,7 @@ MF.xBox = function(host, o){
   return MF.areaModel(host, {
     rows: o.rows, cols: o.cols, cells: o.cells,
     caption: o.caption,
-    a11y: o.a11y || 'A two by two box holding the four terms, with the factors along its edges.'
+    a11y: o.a11y || MF.t('dia.xbox.aria')
   });
 };
 
@@ -7838,7 +7867,7 @@ MF.areaModel = function(host, o){
     svg.appendChild(S('line',{x1:padL-8,y1:padT+ri*ch,x2:padL-8,y2:padT+ri*ch+ch-3,
       stroke:known?'var(--tan)':'var(--ore)','stroke-width':3,'stroke-dasharray':known?'':'5 4'}));
   });
-  svg.setAttribute('aria-label', o.a11y || o.caption || 'area model');
+  svg.setAttribute('aria-label', o.a11y || o.caption || MF.t('dia.area.aria'));
   svg.setAttribute('width','100%'); svg.removeAttribute('height');
   stage.appendChild(svg);
   if(o.caption) stage.appendChild(H('div','model-cap', o.caption));
@@ -9716,7 +9745,7 @@ MF.pourChain = function(host, ingots){
   var prod = ingotProduct(ingots);
   var m = MF.moldMaths(ingots, prod);
   var box = E('div','pourchain');
-  box.appendChild(H('div','pclab','THE POUR, WRITTEN OUT'));
+  box.appendChild(H('div','pclab', MF.t('pour.lab')));
 
   var row = function(cls, cells, note){
     var r = E('div','pcrow ' + cls);
@@ -9732,9 +9761,9 @@ MF.pourChain = function(host, ingots){
   };
 
   /* JOINED WITH ×, NOT WITH A SPACE. */
-  row('in', [{t: m.into.join(' × '), op:''}], 'what went into the mold');
+  row('in', [{t: m.into.join(' × '), op:''}], MF.t('pour.in'));
   if(m.single === 'over'){
-    box.appendChild(H('div','pcnote','That is more metal than the mold holds.'));
+    box.appendChild(H('div','pcnote', MF.t('pour.over')));
     host.appendChild(box);
     return box;
   }
@@ -9743,12 +9772,12 @@ MF.pourChain = function(host, ingots){
   var pairs = m.terms.filter(function(t){ return t.from; });
   if(pairs.length > 1)
     row('pairs', pairs.map(function(t){ return {t:t.from, mid:t.mid}; }),
-      'every part of one metal meets every part of the other');
+      MF.t('pour.pairs'));
 
   /* each pairing multiplied out */
   if(m.terms.length > 1)
     row('terms', m.terms.map(function(t){ return {t:t.t, mid:t.mid}; }),
-      pairs.length > 1 ? 'each pair multiplied out' : 'the depth reaches every part');
+      MF.t(pairs.length > 1 ? 'pour.terms' : 'pour.depth'));
 
   /* the two middles are the same kind of thing, so they collapse */
   if(m.merge){
@@ -9759,16 +9788,16 @@ MF.pourChain = function(host, ingots){
       else collapsed.push({t:t.t});
     });
     row('merged', collapsed,
-      m.mergeFrom + ' are the same kind of thing, so they are one term');
+      MF.t('pour.merged', {from: m.mergeFrom}));
   }
-  row('out', [{t:m.single, op:''}], 'one object comes out');
+  row('out', [{t:m.single, op:''}], MF.t('pour.out'));
   host.appendChild(box);
   return box;
 };
 
 /* `shape` (optional): cut the mold to an EXPRESSION instead of to a tool. */
 MF.moldScene = function(key, pour, shape){
-  var t = MF.orderOf(key) || {nm: shape || 'a casting', ic:''};
+  var t = MF.orderOf(key) || {nm: shape || MF.t('mold.casting'), ic:''};
   var wrap = E('div','moldwrap');
   if(pour) wrap.setAttribute('data-pour', pour.ok ? 'sound' : 'scrap');
   var W=470, VH=300, uid='md'+(key || 'sh')+(MF._moldSeq = (MF._moldSeq||0)+1);
@@ -9776,9 +9805,8 @@ MF.moldScene = function(key, pour, shape){
   var cav = {cx: 322, cy: 186, w: 214};
   var svg = S('svg',{viewBox:'0 0 '+W+' '+VH, role:'img',
     'aria-label': pour
-      ? ('Seen from above: metal running down a trough into a mold cut to the shape of ' +
-         t.nm + ', and the factors resolving into ' + (pour.maths ? pour.maths.single : ''))
-      : ('Seen from above: a mold cut to the shape of ' + t.nm + ', waiting for metal.')});
+      ? MF.t('mold.aria.pour', {tool: t.nm, single: pour.maths ? pour.maths.single : ''})
+      : MF.t('mold.aria.wait', {tool: t.nm})});
   var defs = S('defs',{});
   function grad(id, stops, horiz){
     var g = S('linearGradient',{id:id,x1:'0',y1:'0',x2:(horiz?'1':'0'),y2:(horiz?'0':'1')});
