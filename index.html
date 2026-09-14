@@ -3421,7 +3421,47 @@ MF.STR.en = {
   'guide.aria.next': 'The next thing he has to say',
   'guide.aria.tab.open': 'Open what Mr Factor has to say about {where}',
   'guide.aria.tab.close': 'Close what Mr Factor has to say about {where}',
-  'guide.aria.tab.fresh': '. He has not shown you this room yet.'
+  'guide.aria.tab.fresh': '. He has not shown you this room yet.',
+
+  /* the Casting Shed */
+  'shed.title': 'The Casting Shed',
+  'shed.lede1': '<b>This is the room where things are explained.</b> Nothing in here is dug, broken or spent — it is three short workshops and a place to come back to when a word in the mine stops making sense.',
+  'shed.lede2': 'The shed is named for what it does: molten metal goes into a mold and <b>one formed object</b> comes out. The shape is decided by what you poured — you never choose it. Cutting the mold in two does not change how much metal is in there; it only lets you describe the same object twice. That is the whole distributive property, and the mine runs it backwards all day.',
+  'shed.open': 'Nothing in here is timed or stored, and none of it is required. You can walk into the mine having read none of it — the `nogate` rule holds everywhere.',
+  'shed.aria.open': 'Open the workshop: {room}',
+  'shed.shed-words.nm': 'The Words',
+  'shed.shed-words.why': 'Every word this place uses is a real mathematical thing with a real name. <b>A seam is a factor.</b> Learn one column and you have learned half of it.',
+  'shed.shed-words.go': 'Into the Words',
+  'shed.shed-mold.nm': 'The Molds',
+  'shed.shed-mold.why': 'Pour two metals in and <b>one formed object</b> comes out. Every part of one meets every part of the other &mdash; and the mine runs that backwards all day.',
+  'shed.shed-mold.go': 'Into the Molds',
+  'shed.shed-methods.nm': 'The Tools',
+  'shed.shed-methods.why': 'Why each instrument works and how to use it, walked a slide at a time &mdash; and <b>ore on a bench to hold it to</b>, which is the part that is not reading.',
+  'shed.shed-methods.go': 'Into the Tools',
+
+  /* the Stamp Mill */
+  'mill.title': 'The Stamp Mill',
+  'mill.lede': 'The stamps <b>break ore apart</b>, and they keep going until what is left will not break. Some lumps come out of here unchanged — nothing came off them, because they are already an element. Those are <b>native metal</b>. In numbers we call them primes; further down the mine you will meet polynomial ones, and they are the same thing.',
+  'mill.why.whole': 'The stamp is cut to a whole number. Put one in the box and pull again.',
+  'mill.why.ingot': '{n} is already an ingot. Nothing comes off it, however hard the stamp falls.',
+  'mill.why.bounce': '<b>The stamp bounced.</b> {d} does not divide {n} — {n} ÷ {d} leaves {rest}. Nothing is lost; the lump is exactly as it was.',
+  'mill.why.remainder': 'a remainder of {r}',
+  'mill.why.nothing': 'nothing to work with',
+  'mill.why.split': '<b>{n} came apart into {a} and {b}.</b>',
+  'mill.why.prime': '<b>{n} is an ingot.</b> It is prime — nothing divides it but 1 and itself.',
+  'mill.done': '<b>Every piece is an ingot.</b> Nothing left on the bench will come apart — and that row is <b>every metal in {n}</b>, however you chose to cut it.',
+  'mill.under': 'UNDER THE STAMP',
+  'mill.hint.name': 'Name a whole number you think divides it, then pull the lever. Nothing here says whether it will — the stamp does.',
+  'mill.aria.input': 'A whole number you think divides {n}',
+  'mill.pull': 'Pull the lever',
+  'mill.aria.pull': 'Bring the stamp down on {n}',
+  'mill.every': 'EVERY METAL IN {n}',
+  'mill.bench': 'ON THE BENCH',
+  'mill.aria.ingot': '{n} — an ingot. Nothing in it comes apart.',
+  'mill.aria.ore': '{n} — still ore. Click to put it under the stamp.',
+  'mill.new': 'PUT A NEW LUMP ON THE BENCH',
+  'mill.aria.slider': 'Choose a number between {min} and {max}',
+  'mill.hint.range': 'Anything from {min} to {max}. Some of them come apart four times over and some will not move at all.'
 };
 MF._missing = {};
 MF.lang = function(){
@@ -8294,25 +8334,24 @@ MF.QUIZ_CLAIMS = [
 /* THE THREE MODULES, NAMED THE WAY THE USER NAMES THEM (2026-09-05): "The
    Casting Shed is where students will learn about The Words, The Molds, and The
    Tools." The screen keys are unchanged… */
+/* NO TAGS, matching the surface cards: the name and the line under it already
+   say what each workshop is. `nm` and `why` are getters on `shed.<key>`. */
+function shedRoom(key, ic){
+  return { key:key, ic:ic,
+           get nm(){ return MF.t('shed.' + key + '.nm'); },
+           get why(){ return MF.t('shed.' + key + '.why'); } };
+}
 MF.SHED = [
-  /* NO TAGS, matching the surface cards: the name and the line under it already
-     say what each workshop is. */
-  {key:'shed-words',   ic:'&#128220;', nm:'The Words',
-   why:'Every word this place uses is a real mathematical thing with a real name. <b>A seam is a factor.</b> Learn one column and you have learned half of it.'},
-  {key:'shed-mold',    ic:'&#127981;', nm:'The Molds',
-   why:'Pour two metals in and <b>one formed object</b> comes out. Every part of one meets every part of the other &mdash; and the mine runs that backwards all day.'},
-  {key:'shed-methods', ic:'&#128296;', nm:'The Tools',
-   why:'Why each instrument works and how to use it, walked a slide at a time &mdash; and <b>ore on a bench to hold it to</b>, which is the part that is not reading.'}
+  shedRoom('shed-words',   '&#128220;'),
+  shedRoom('shed-mold',    '&#127981;'),
+  shedRoom('shed-methods', '&#128296;')
 ];
 
 MF.SCREENS['workshop-mold'] = function(host){
   host.appendChild(MF.roomScene('foundry'));
-  host.appendChild(H('h2',null,'The Casting Shed'));
-  host.appendChild(H('p','lede','<b>This is the room where things are explained.</b> Nothing in here is dug, broken or spent — ' +
-    'it is three short workshops and a place to come back to when a word in the mine stops making sense.'));
-  host.appendChild(H('p','lede','The shed is named for what it does: molten metal goes into a mold and <b>one formed object</b> comes out. ' +
-    'The shape is decided by what you poured — you never choose it. Cutting the mold in two does not change how much metal is in there; ' +
-    'it only lets you describe the same object twice. That is the whole distributive property, and the mine runs it backwards all day.'));
+  host.appendChild(H('h2',null, MF.t('shed.title')));
+  host.appendChild(H('p','lede', MF.t('shed.lede1')));
+  host.appendChild(H('p','lede', MF.t('shed.lede2')));
 
   var cards = E('div','cards shedcards');
   MF.SHED.forEach(function(w){
@@ -8321,16 +8360,15 @@ MF.SCREENS['workshop-mold'] = function(host){
     c.appendChild(H('div','shedic', w.ic));
     c.appendChild(H('h3',null, w.nm));
     c.appendChild(H('div','why', w.why));
-    var b = E('button','btn primary go','Into ' + w.nm.replace(/^The /,'the ')); b.type='button';
-    b.setAttribute('aria-label','Open the workshop: ' + w.nm);
+    var b = E('button','btn primary go', MF.t('shed.' + w.key + '.go')); b.type='button';
+    b.setAttribute('aria-label', MF.t('shed.aria.open', {room: w.nm}));
     on(b,'click',function(){ MF.go(w.key); });
     c.appendChild(b);
     cards.appendChild(c);
   });
   host.appendChild(cards);
 
-  host.appendChild(H('p','hint doorhint','Nothing in here is timed or stored, and none of it is required. ' +
-    'You can walk into the mine having read none of it — the `nogate` rule holds everywhere.'));
+  host.appendChild(H('p','hint doorhint', MF.t('shed.open')));
 
   /* NO DOORS AT THE FOOT AT ALL */
 };
@@ -8755,26 +8793,23 @@ MF.millStamp = function(M, box){
   if(!piece) return;
   var d = parseInt(String(M.raw).trim(), 10);
   if(!isFinite(d) || isNaN(d)){
-    M.last = {ok:false, why:'The stamp is cut to a whole number. Put one in the box and pull again.'};
+    M.last = {ok:false, why:MF.t('mill.why.whole')};
     M.anim = 'miss'; MF.drawMill(box); return;
   }
   if(isPrime(piece.n)){
-    M.last = {ok:false, why:num(piece.n) + ' is already an ingot. Nothing comes off it, however hard the stamp falls.'};
+    M.last = {ok:false, why:MF.t('mill.why.ingot', {n: num(piece.n)})};
     M.anim = 'miss'; MF.drawMill(box); return;
   }
   if(d < 2 || d >= piece.n || piece.n % d !== 0){
     M.last = {ok:false,
-      why:'<b>The stamp bounced.</b> ' + num(d) + ' does not divide ' + num(piece.n) + ' — ' +
-          num(piece.n) + ' ÷ ' + num(d) + ' leaves ' +
-          (d >= 2 ? 'a remainder of ' + num(((piece.n % d) + d) % d) : 'nothing to work with') +
-          '. Nothing is lost; the lump is exactly as it was.'};
+      why:MF.t('mill.why.bounce', {d: num(d), n: num(piece.n),
+            rest: d >= 2 ? MF.t('mill.why.remainder', {r: num(((piece.n % d) + d) % d)}) : MF.t('mill.why.nothing')})};
     M.anim = 'miss'; MF.drawMill(box); return;
   }
   /* IT SPLITS. Both halves land on the bench and either can be stamped again. */
   var a = {n:d, id:++M.seq, fresh:true}, c = {n:piece.n/d, id:++M.seq, fresh:true};
   M.floor.splice(M.at, 1, a, c);
-  M.last = {ok:true, from:piece.n, why:'<b>' + num(piece.n) + ' came apart into ' + num(d) +
-    ' and ' + num(piece.n/d) + '.</b>'};
+  M.last = {ok:true, from:piece.n, why:MF.t('mill.why.split', {n: num(piece.n), a: num(d), b: num(piece.n/d)})};
   M.raw = '';
   /* the press moves itself to the next thing that is still ore */
   var nx = -1;
@@ -8803,26 +8838,23 @@ MF.drawMill = function(box){
   var piece = M.floor[M.at];
 
   if(done){
-    box.appendChild(H('div','note good','<b>Every piece is an ingot.</b> ' +
-      'Nothing left on the bench will come apart — and that row is <b>every metal in ' +
-      num(M.n) + '</b>, however you chose to cut it.'));
+    box.appendChild(H('div','note good', MF.t('mill.done', {n: num(M.n)})));
   } else {
     /* ---- NAME SOMETHING, AND PULL ---- */
     var ask = E('div','millask');
-    ask.appendChild(H('div','mlab','UNDER THE STAMP'));
+    ask.appendChild(H('div','mlab', MF.t('mill.under')));
     ask.appendChild(H('div','meq', num(piece.n)));
-    ask.appendChild(H('div','mhint','Name a whole number you think divides it, then pull the lever. ' +
-      'Nothing here says whether it will — the stamp does.'));
+    ask.appendChild(H('div','mhint', MF.t('mill.hint.name')));
     var row = E('div','row millrow');
     var inp = document.createElement('input');
     inp.type='text'; inp.inputMode='numeric'; inp.value = M.raw; inp.placeholder='2';
     inp.className = 'millin';
-    inp.setAttribute('aria-label','A whole number you think divides ' + piece.n);
+    inp.setAttribute('aria-label', MF.t('mill.aria.input', {n: piece.n}));
     on(inp,'input',function(){ M.raw = inp.value; });
     on(inp,'keydown',function(e){ if(e.key==='Enter'){ e.preventDefault(); MF.millStamp(M, box); } });
     row.appendChild(inp);
-    var pull = E('button','btn primary big leverbtn','Pull the lever'); pull.type='button';
-    pull.setAttribute('aria-label','Bring the stamp down on ' + piece.n);
+    var pull = E('button','btn primary big leverbtn', MF.t('mill.pull')); pull.type='button';
+    pull.setAttribute('aria-label', MF.t('mill.aria.pull', {n: piece.n}));
     on(pull,'click',function(){ MF.millStamp(M, box); });
     row.appendChild(pull);
     ask.appendChild(row);
@@ -8833,7 +8865,7 @@ MF.drawMill = function(box){
     box.appendChild(H('div','note' + (M.last.ok ? ' good' : ''), M.last.why));
 
   /* ---- WHAT IS ON THE BENCH ---- */
-  var lab = E('div','mlab'); lab.innerHTML = done ? 'EVERY METAL IN ' + num(M.n) : 'ON THE BENCH';
+  var lab = E('div','mlab'); lab.innerHTML = done ? MF.t('mill.every', {n: num(M.n)}) : MF.t('mill.bench');
   box.appendChild(lab);
   var row2 = E('div','millfloor');
   M.floor.forEach(function(p, i){
@@ -8843,12 +8875,10 @@ MF.drawMill = function(box){
     b.type='button';
     b.setAttribute('data-mp', p.id);
     b.textContent = num(p.n);
-    b.setAttribute('aria-label', prime
-      ? num(p.n) + ' — an ingot. Nothing in it comes apart.'
-      : num(p.n) + ' — still ore. Click to put it under the stamp.');
+    b.setAttribute('aria-label', MF.t(prime ? 'mill.aria.ingot' : 'mill.aria.ore', {n: num(p.n)}));
     on(b,'click',function(){
       if(prime){
-        M.last = {ok:false, why:'<b>' + num(p.n) + ' is an ingot.</b> It is prime — nothing divides it but 1 and itself.'};
+        M.last = {ok:false, why:MF.t('mill.why.prime', {n: num(p.n)})};
       } else { M.at = i; M.last = null; M.raw = ''; }
       MF.drawMill(box);
     });
@@ -8858,12 +8888,12 @@ MF.drawMill = function(box){
 
   /* ---- A NEW LUMP ON THE BENCH ---- */
   var pick = E('div','millpick');
-  pick.appendChild(H('div','mlab','PUT A NEW LUMP ON THE BENCH'));
+  pick.appendChild(H('div','mlab', MF.t('mill.new')));
   var prow = E('div','row');
   var sl = document.createElement('input');
   sl.type='range'; sl.min=MF.MILL_MIN; sl.max=MF.MILL_MAX; sl.step=1; sl.value=M.n;
   sl.className='millslide';
-  sl.setAttribute('aria-label','Choose a number between ' + MF.MILL_MIN + ' and ' + MF.MILL_MAX);
+  sl.setAttribute('aria-label', MF.t('mill.aria.slider', {min: MF.MILL_MIN, max: MF.MILL_MAX}));
   var shows = H('div','meq sm', num(M.n));
   on(sl,'input',function(){ shows.textContent = num(parseInt(sl.value,10)); });
   on(sl,'change',function(){
@@ -8873,8 +8903,7 @@ MF.drawMill = function(box){
   prow.appendChild(shows);
   prow.appendChild(sl);
   pick.appendChild(prow);
-  pick.appendChild(H('div','mhint','Anything from ' + MF.MILL_MIN + ' to ' + MF.MILL_MAX +
-    '. Some of them come apart four times over and some will not move at all.'));
+  pick.appendChild(H('div','mhint', MF.t('mill.hint.range', {min: MF.MILL_MIN, max: MF.MILL_MAX})));
   box.appendChild(pick);
 
   box.appendChild(MF.says(MF.saysLine(done ? 'mill-done' : 'mill-going'), null, 'left'));
@@ -8887,10 +8916,8 @@ MF.drawMill = function(box){
 
 MF.SCREENS['workshop-ore'] = function(host){
   host.appendChild(MF.roomScene('stamps'));
-  host.appendChild(H('h2',null,'The Stamp Mill'));
-  host.appendChild(H('p','lede','The stamps <b>break ore apart</b>, and they keep going until what is left will not break. ' +
-    'Some lumps come out of here unchanged — nothing came off them, because they are already an element. Those are <b>native metal</b>. ' +
-    'In numbers we call them primes; further down the mine you will meet polynomial ones, and they are the same thing.'));
+  host.appendChild(H('h2',null, MF.t('mill.title')));
+  host.appendChild(H('p','lede', MF.t('mill.lede')));
 
   /* NO "PLAY - NOTHING TO ANSWER" TAG. */
   var panel = E('div','panel light millpanel');
