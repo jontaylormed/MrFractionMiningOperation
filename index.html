@@ -3248,7 +3248,108 @@ MF.ACCESS_MUSIC = 0.30;
 MF.LANG = {
   en: {nm:'English', dir:'ltr', speech:'en', stop:'. '}
 };
-MF.STR = { en: {} };
+MF.STR = {};
+/* ===== LANGUAGE: en ===== */
+/* Every key a student can see, in English. A translation is a table with the
+   same keys, in the same order; a correction is one edit, found by searching
+   for the English. Values are exactly what the site used to pass inline,
+   entities and all, so English output does not change by a byte. */
+MF.STR.en = {
+  /* the markup around every screen */
+  'site.name': 'Mr Factor\'s Mining Operation',
+  'load.sub': 'Ore looks like rock. <b>x&sup2; &minus; 5x + 6</b> looks like a lump.<br> Down here they are the same problem.',
+  'load.enter': 'Enter the Operation',
+  'top.tagline': 'smelt it apart &middot; pour it back &middot; find out',
+  'top.access': '<span aria-hidden="true">&#9881;</span> Reading &amp; Access',
+  'top.access.aria': 'Reading and access settings, including music and sound volume. Also opens with Alt and A.',
+  'top.accesscap': 'Music/Sound Control Options',
+  'nav.aria': 'Main',
+  'nav.home': 'Surface',
+  'nav.mill': 'Stamp Mill',
+  'nav.shed': 'Casting Shed',
+  'nav.mine': 'The Mine',
+  'nav.forge': 'The Forge',
+  'load.tick.1': 'opening the shaft',
+  'load.tick.2': 'lighting the lamps',
+  'load.tick.3': 'starting the stamps',
+  'load.tick.4': 'warming the forge',
+  'load.tick.5': 'stacking the cart',
+  'load.tick.6': 'the rock is ready',
+
+  /* Reading & Access */
+  'access.label': 'Reading and access settings',
+  'access.title': 'Reading &amp; Access',
+  'access.sub': 'Change how this reads. <b>Nothing here is saved</b> — it lasts for this visit.',
+  'access.close': 'Done',
+  'access.foot': 'Press <b>Alt + A</b> any time to open this, and <b>Esc</b> to close it. Nothing here changes the mathematics.',
+  'access.lang': 'Language',
+  'access.off': 'Off',
+  'access.on': 'On',
+  'access.type': 'Typeface',
+  'access.type.hint': 'Pick whichever you find easiest. There is no correct one.',
+  'access.type.standard': 'Standard',
+  'access.type.rounded': 'Rounded',
+  'access.type.dys': 'Dyslexia-friendly',
+  'access.type.dysnote': 'This asks for <b>OpenDyslexic</b> first. If it is not installed on this machine you will get the closest face that is &mdash; the letters will still be wider and rounder than standard, but it will not be quite that font.',
+  'access.size': 'Text size',
+  'access.tint': 'Page tint',
+  'access.tint.hint': 'Some people read more easily off a colour than off white.',
+  'access.tint.none': 'None',
+  'access.tint.peach': 'Peach',
+  'access.tint.blue': 'Blue',
+  'access.tint.green': 'Green',
+  'access.tint.grey': 'Grey',
+  'access.ruler': 'Reading ruler',
+  'access.ruler.hint': 'A band that follows the pointer.',
+  'access.spacing': 'Extra line spacing',
+  'access.motion': 'Movement',
+  'access.motion.hint': 'The mine has a working day, smoke and a turning wheel.',
+  'access.motion.auto': 'As my device says',
+  'access.motion.reduce': 'Reduce it',
+  'access.sound': 'SOUND',
+  'access.fx.synth': 'The recorded cues are not loading from here, so these are the <b>made-up</b> ones &mdash; oscillators, not a real hammer. They still fire on everything.',
+  'access.fx.part': 'Some of the recorded cues are not loading from here; those ones are synthesised instead.',
+  'access.fx.loading': 'The recordings are still arriving. Synthesised cues until they do.',
+  'access.amb.synth': 'The recording is not loading from here, so this is a <b>synthesised</b> room tone.',
+  'access.amb.loading': 'The recording is still arriving.',
+  'access.music.none': '<b>There is no track to play from here.</b> A song cannot be synthesised, so this slider will stay silent until the file loads &mdash; which it will on the published site.',
+  'access.music.loading': 'The track is still arriving.',
+  'access.mute': 'Mute everything',
+  'access.level.off': 'off',
+  'access.fx': 'Sound effects',
+  'access.fx.hint': 'The hammer landing, a seam running, the pour.',
+  'access.amb': 'Mine ambience',
+  'access.amb.hint': 'The room tone of the place &mdash; machinery, a long way off. Comes up in the mine.',
+  'access.music': 'Music',
+  'access.music.hint': 'A track over the top of it.',
+  'access.quiet': 'Both of these are off just now. The music comes up on the surface and the room tone in the mine &mdash; and once you move either slider yourself, it stays exactly where you put it.',
+  'access.read': 'READ ALOUD',
+  'access.read.none': 'This browser has no built-in voice, so read aloud is not available here.',
+  'access.read.hint': 'Reads what Mr Factor says and the words of a lesson. It does not read the diagrams &mdash; those carry their own descriptions for a screen reader, and they say more than the numbers would.',
+  'access.read.play': '&#9654; Read this page',
+  'access.read.stop': '&#9632; Stop',
+  'access.speed': 'Speed',
+
+  /* the surface */
+  'home.doors': 'The buildings are the doors &mdash; click one. Or use the buttons below if you would rather.',
+  'home.h2': 'Ore looks like rock.',
+  'home.lede1': 'A vein <em>is</em> a factor — it was in the rock before you arrived. In the mine you <b>break</b>: name a factor, swing, and the rock tells you whether the seam ran. Whatever is left goes back under the hammer until nothing will come apart.',
+  'home.lede2': 'The <b>forge</b> runs it the other way — metals go into a mold and one object comes out. That is <b>distributing</b>, and it happens nowhere else.',
+  'home.lede3': '<b>72</b> and <b>x² − 5x + 6</b> are the same job. A prime and a polynomial nothing separates are the same thing: an <b>ingot</b> — already pure. That is what this whole operation is for.',
+  'home.open': 'Nothing here is timed or stored, and nothing is locked.<br>You can walk into the mine now, or spend a minute at a workshop first — both doors are open.',
+  'home.card.shed.title': 'The Casting Shed',
+  'home.card.shed.why': 'Pour metals into a mold and watch one formed object come out. This is the distributive property, and it is the move the mine runs backwards all day.',
+  'home.card.shed.go': 'Open the Mold',
+  'home.card.mill.title': 'The Stamp Mill',
+  'home.card.mill.why': 'Take any number apart. See why two miners cutting at different places reach the same metals, and what it means for a lump to be already pure.',
+  'home.card.mill.go': 'Into the Mill',
+  'home.card.mine.title': 'The Mine',
+  'home.card.mine.why': 'Dig as deep as you like and fill your cart — you never have to break anything to go deeper. Then work a lump when you feel like it.',
+  'home.card.mine.go': 'Enter the Mine',
+  'home.stat.shapes': 'shapes',
+  'home.stat.directions': 'directions',
+  'home.stat.idea': 'idea'
+};
 MF._missing = {};
 MF.lang = function(){
   var l = MF.state && MF.state.access && MF.state.access.lang;
@@ -3260,6 +3361,24 @@ MF.t = function(key, vars){
   if(s == null){ MF._missing[key] = 1; s = key; }
   if(vars) s = String(s).replace(/\{(\w+)\}/g, function(m, k){ return vars[k] != null ? String(vars[k]) : m; });
   return s;
+};
+
+/* THE MARKUP'S OWN WORDS. English is already written into the page, so this
+   writes nothing until a language has been chosen — and then writes English
+   back if the student returns to it. */
+MF.STATIC = [
+  ['#loadscreen h2', 'site.name'], ['#loadscreen .sub', 'load.sub'], ['#enter-btn', 'load.enter'],
+  ['.top h1', 'site.name'], ['.top .tagline', 'top.tagline'],
+  ['#accessbtn', 'top.access'], ['.accesscap', 'top.accesscap']
+];
+MF.STATIC_ARIA = [['#accessbtn', 'top.access.aria'], ['#nav', 'nav.aria']];
+MF.paintStatic = function(){
+  if(MF.lang() === 'en' && !MF._staticPainted) return false;
+  MF._staticPainted = true;
+  MF.STATIC.forEach(function(p){ var n = q(p[0]); if(n) n.innerHTML = MF.t(p[1]); });
+  MF.STATIC_ARIA.forEach(function(p){ var n = q(p[0]); if(n) n.setAttribute('aria-label', MF.t(p[1])); });
+  document.title = MF.voiceText ? MF.voiceText(MF.t('site.name')) : MF.t('site.name');
+  return true;
 };
 
 MF.state = {
@@ -6009,11 +6128,11 @@ MF.ACCESS_TYPE = {
 };
 /* THE TINTS ARE PAPER, NOT A FILM OVER EVERYTHING. */
 MF.ACCESS_TINT = {
-  none:  {nm:'None',  paper:null},
-  peach: {nm:'Peach', paper:['#FBEFE2','#F4E4D2','#EBD8C2'], sheet:['#FDF4EA','#FCF1E6']},
-  blue:  {nm:'Blue',  paper:['#EDF2F8','#E1E9F3','#D2DCEA'], sheet:['#F3F7FC','#F0F5FB']},
-  green: {nm:'Green', paper:['#EDF4EE','#E0EBE2','#D0DFD4'], sheet:['#F3F9F4','#F0F7F2']},
-  grey:  {nm:'Grey',  paper:['#F0EFED','#E4E2DF','#D6D3CF'], sheet:['#F6F5F3','#F3F2F0']}
+  none:  {paper:null},
+  peach: {paper:['#FBEFE2','#F4E4D2','#EBD8C2'], sheet:['#FDF4EA','#FCF1E6']},
+  blue:  {paper:['#EDF2F8','#E1E9F3','#D2DCEA'], sheet:['#F3F7FC','#F0F5FB']},
+  green: {paper:['#EDF4EE','#E0EBE2','#D0DFD4'], sheet:['#F3F9F4','#F0F7F2']},
+  grey:  {paper:['#F0EFED','#E4E2DF','#D6D3CF'], sheet:['#F6F5F3','#F3F2F0']}
 };
 
 /* apply the whole of it to the document. Cheap enough to call on any change. */
@@ -6041,6 +6160,7 @@ MF.applyAccess = function(){
   if(a.motion === 'reduce') r.setAttribute('data-motion','reduce'); else r.removeAttribute('data-motion');
   MF.accessRuler(a.ruler);
   if(MF.audio && MF.audio.apply) MF.audio.apply();
+  MF.paintStatic();
   return a;
 };
 
@@ -6108,108 +6228,90 @@ MF.openAccess = function(opener){
   }
   function toggle(host, label, hint, cur, set){
     return pick(host, label, hint,
-      [{nm:'Off', v:false},{nm:'On', v:true}], cur, set);
+      [{nm:MF.t('access.off'), v:false},{nm:MF.t('access.on'), v:true}], cur, set);
   }
 
   MF._openSheet({
-    label:'Reading and access settings',
-    icon:'&#9881;', title:'Reading &amp; Access',
-    sub:'Change how this reads. <b>Nothing here is saved</b> — it lasts for this visit.',
-    closeText:'Done', opener:opener, key:'__access',
-    foot:'Press <b>Alt + A</b> any time to open this, and <b>Esc</b> to close it. ' +
-         'Nothing here changes the mathematics.',
+    label:MF.t('access.label'),
+    icon:'&#9881;', title:MF.t('access.title'),
+    sub:MF.t('access.sub'),
+    closeText:MF.t('access.close'), opener:opener, key:'__access',
+    foot:MF.t('access.foot'),
     fill: function(b){
       /* LANGUAGE FIRST, and only once there is a second one to choose. A
          change redraws the room the student is standing in. */
       if(Object.keys(MF.LANG).length > 1)
-        pick(b, 'Language', null,
+        pick(b, MF.t('access.lang'), null,
           Object.keys(MF.LANG).map(function(k){ return {nm:MF.LANG[k].nm, v:k}; }),
           MF.lang(), function(v){ a.lang = v; MF.applyAccess(); MF.go(MF.state.screen); });
-      pick(b, 'Typeface', 'Pick whichever you find easiest. There is no correct one.',
-        [{nm:'Standard', v:'standard'},{nm:'Rounded', v:'rounded'},{nm:'Dyslexia-friendly', v:'dys'}],
+      pick(b, MF.t('access.type'), MF.t('access.type.hint'),
+        ['standard','rounded','dys'].map(function(k){ return {nm:MF.t('access.type.' + k), v:k}; }),
         a.type, function(v){ a.type = v; });
       if(a.type === 'dys')
-        b.appendChild(H('div','acnote','This asks for <b>OpenDyslexic</b> first. If it is not ' +
-          'installed on this machine you will get the closest face that is &mdash; the letters will ' +
-          'still be wider and rounder than standard, but it will not be quite that font.'));
+        b.appendChild(H('div','acnote', MF.t('access.type.dysnote')));
 
-      pick(b, 'Text size', null,
+      pick(b, MF.t('access.size'), null,
         [{nm:'100%', v:100},{nm:'125%', v:125},{nm:'150%', v:150}],
         a.size, function(v){ a.size = v; });
 
-      pick(b, 'Page tint', 'Some people read more easily off a colour than off white.',
-        Object.keys(MF.ACCESS_TINT).map(function(k){ return {nm:MF.ACCESS_TINT[k].nm, v:k}; }),
+      pick(b, MF.t('access.tint'), MF.t('access.tint.hint'),
+        Object.keys(MF.ACCESS_TINT).map(function(k){ return {nm:MF.t('access.tint.' + k), v:k}; }),
         a.tint, function(v){ a.tint = v; });
 
-      toggle(b, 'Reading ruler', 'A band that follows the pointer.',
+      toggle(b, MF.t('access.ruler'), MF.t('access.ruler.hint'),
         a.ruler, function(v){ a.ruler = v; });
-      toggle(b, 'Extra line spacing', null,
+      toggle(b, MF.t('access.spacing'), null,
         a.spacing, function(v){ a.spacing = v; });
 
-      pick(b, 'Movement', 'The mine has a working day, smoke and a turning wheel.',
-        [{nm:'As my device says', v:'auto'},{nm:'Reduce it', v:'reduce'}],
+      pick(b, MF.t('access.motion'), MF.t('access.motion.hint'),
+        [{nm:MF.t('access.motion.auto'), v:'auto'},{nm:MF.t('access.motion.reduce'), v:'reduce'}],
         a.motion, function(v){ a.motion = v; });
 
       /* ---- SOUND ---- */
-      b.appendChild(H('div','acsplit','SOUND'));
+      b.appendChild(H('div','acsplit', MF.t('access.sound')));
       /* SAY WHAT IS ACTUALLY PLAYING. See MF.audio.layerState — a layer that
          degrades in silence is indistinguishable from one that is broken. */
       var SAY = {
-        fx: {
-          synth:'The recorded cues are not loading from here, so these are the <b>made-up</b> ones &mdash; ' +
-                'oscillators, not a real hammer. They still fire on everything.',
-          part:'Some of the recorded cues are not loading from here; those ones are synthesised instead.',
-          loading:'The recordings are still arriving. Synthesised cues until they do.'
-        },
-        amb: {
-          synth:'The recording is not loading from here, so this is a <b>synthesised</b> room tone.',
-          loading:'The recording is still arriving.'
-        },
-        music: {
-          none:'<b>There is no track to play from here.</b> A song cannot be synthesised, so this ' +
-               'slider will stay silent until the file loads &mdash; which it will on the published site.',
-          loading:'The track is still arriving.'
-        }
+        fx: {synth:'access.fx.synth', part:'access.fx.part', loading:'access.fx.loading'},
+        amb: {synth:'access.amb.synth', loading:'access.amb.loading'},
+        music: {none:'access.music.none', loading:'access.music.loading'}
       };
       function saySo(row, kind){
         var st = MF.audio.layerState(kind), msg = SAY[kind] && SAY[kind][st];
-        if(msg) row.appendChild(H('div','acnote', msg));
+        if(msg) row.appendChild(H('div','acnote', MF.t(msg)));
       }
-      toggle(b, 'Mute everything', null, a.mute, function(v){ a.mute = v; });
-      saySo(slide(b, 'Sound effects', 'The hammer landing, a seam running, the pour.',
-        0, 1, 0.05, a.fx, function(n){ return n === 0 ? 'off' : Math.round(n*100) + '%'; },
+      var level = function(n){ return n === 0 ? MF.t('access.level.off') : Math.round(n*100) + '%'; };
+      toggle(b, MF.t('access.mute'), null, a.mute, function(v){ a.mute = v; });
+      saySo(slide(b, MF.t('access.fx'), MF.t('access.fx.hint'),
+        0, 1, 0.05, a.fx, level,
         function(n){ a.fx = n; }), 'fx');
       /* MOVING EITHER ONE TAKES IT OFF THE ROOMS FOR GOOD (see MF.roomSound). */
-      saySo(slide(b, 'Mine ambience', 'The room tone of the place &mdash; machinery, a long way off. Comes up in the mine.',
-        0, 1, 0.05, a.ambience, function(n){ return n === 0 ? 'off' : Math.round(n*100) + '%'; },
+      saySo(slide(b, MF.t('access.amb'), MF.t('access.amb.hint'),
+        0, 1, 0.05, a.ambience, level,
         function(n){ a.ambience = n; a._set_ambience = true; }), 'amb');
-      saySo(slide(b, 'Music', 'A track over the top of it.',
-        0, 1, 0.05, a.music, function(n){ return n === 0 ? 'off' : Math.round(n*100) + '%'; },
+      saySo(slide(b, MF.t('access.music'), MF.t('access.music.hint'),
+        0, 1, 0.05, a.music, level,
         function(n){ a.music = n; a._set_music = true; }), 'music');
       /* AND WHY IT IS QUIET WHEN NOTHING IS WRONG. */
       if(!a.music && !a.ambience)
-        b.appendChild(H('div','acnote','Both of these are off just now. The music comes up on ' +
-          'the surface and the room tone in the mine &mdash; and once you move either slider ' +
-          'yourself, it stays exactly where you put it.'));
+        b.appendChild(H('div','acnote', MF.t('access.quiet')));
 
       /* ---- READ ALOUD ---- */
-      b.appendChild(H('div','acsplit','READ ALOUD'));
+      b.appendChild(H('div','acsplit', MF.t('access.read')));
       if(!('speechSynthesis' in window)){
-        b.appendChild(H('div','acnote','This browser has no built-in voice, so read aloud is not available here.'));
+        b.appendChild(H('div','acnote', MF.t('access.read.none')));
       } else {
-        b.appendChild(H('div','achint','Reads what Mr Factor says and the words of a lesson. ' +
-          'It does not read the diagrams &mdash; those carry their own descriptions for a screen reader, ' +
-          'and they say more than the numbers would.'));
+        b.appendChild(H('div','achint', MF.t('access.read.hint')));
         var row = E('div','acopts');
-        var play = E('button','acopt','&#9654; Read this page'); play.type='button';
-        play.innerHTML = '&#9654; Read this page';
+        var play = E('button','acopt', MF.t('access.read.play')); play.type='button';
+        play.innerHTML = MF.t('access.read.play');
         on(play,'click',function(){ MF.readAloud(); });
-        var stop = E('button','acopt','&#9632; Stop'); stop.type='button';
-        stop.innerHTML = '&#9632; Stop';
+        var stop = E('button','acopt', MF.t('access.read.stop')); stop.type='button';
+        stop.innerHTML = MF.t('access.read.stop');
         on(stop,'click',function(){ MF.readStop(); });
         row.appendChild(play); row.appendChild(stop);
         b.appendChild(row);
-        slide(b, 'Speed', null, 0.6, 1.6, 0.1, a.speed,
+        slide(b, MF.t('access.speed'), null, 0.6, 1.6, 0.1, a.speed,
           function(n){ return n.toFixed(1) + '&times;'; }, function(n){ a.speed = n; });
       }
     }
@@ -6258,9 +6360,9 @@ MF.paintNav = function(){
   var nav = q('#nav'); clear(nav);
   /* the same names the buildings carry on the surface - a door, its room and
      its nav entry disagreeing is how a place stops feeling like one place */
-  [['home','Surface'],['workshop-ore','Stamp Mill'],['workshop-mold','Casting Shed'],['mine','The Mine'],['forge','The Forge']]
+  [['home','nav.home'],['workshop-ore','nav.mill'],['workshop-mold','nav.shed'],['mine','nav.mine'],['forge','nav.forge']]
   .forEach(function(item){
-    var b = E('button','navbtn', item[1]); b.type='button';
+    var b = E('button','navbtn', MF.t(item[1])); b.type='button';
     /* A WORKSHOP KEEPS ITS BUILDING LIT. */
     var here = MF.state.screen === item[0] ||
                (item[0]==='workshop-mold' && /^shed-/.test(MF.state.screen||''));
@@ -6282,7 +6384,7 @@ MF._accessKey = function(e){
 };
 
 /* ---------- LOAD SCREEN ---------- */
-MF.TICKER = ['opening the shaft','lighting the lamps','starting the stamps','warming the forge','stacking the cart','the rock is ready'];
+MF.TICKER = ['load.tick.1','load.tick.2','load.tick.3','load.tick.4','load.tick.5','load.tick.6'];
 MF.loadScreen = function(){
   /* THE SPLASH IS WHERE HE MOVES */
   q('#load-art').appendChild(MF.artIdle(88));
@@ -6292,12 +6394,12 @@ MF.loadScreen = function(){
     pct += 8 + Math.random()*11;
     if(pct >= 100){
       pct = 100; clearInterval(t);
-      tick.textContent = MF.TICKER[MF.TICKER.length-1];
+      tick.textContent = MF.t(MF.TICKER[MF.TICKER.length-1]);
       btn.style.display = '';
       btn.focus();
     } else {
       i = Math.min(MF.TICKER.length-2, Math.floor(pct/100*(MF.TICKER.length-1)));
-      tick.textContent = MF.TICKER[i];
+      tick.textContent = MF.t(MF.TICKER[i]);
     }
     fill.style.width = pct + '%';
   }, 210);
@@ -7111,44 +7213,36 @@ MF.roomScene = function(kind){
 /* ---------- HOME ---------- */
 MF.SCREENS.home = function(host){
   host.appendChild(MF.surfaceScene());
-  host.appendChild(H('p','hint doorhint','The buildings are the doors &mdash; click one. Or use the buttons below if you would rather.'));
+  host.appendChild(H('p','hint doorhint', MF.t('home.doors')));
   /* FOUR OF HIM ON ONE SCREEN WAS THREE TOO MANY */
   var hero = E('div','hero');
   var ht = E('div'); ht.style.flex='1 1 320px';
-  ht.appendChild(H('h2',null,'Ore looks like rock.'));
+  ht.appendChild(H('h2',null, MF.t('home.h2')));
   /* THE LOOP THIS PARAGRAPH DESCRIBES HAD NOT EXISTED FOR WEEKS */
-  ht.appendChild(H('p','lede','A vein <em>is</em> a factor — it was in the rock before you arrived. ' +
-    'In the mine you <b>break</b>: name a factor, swing, and the rock tells you whether the seam ran. ' +
-    'Whatever is left goes back under the hammer until nothing will come apart.'));
+  ht.appendChild(H('p','lede', MF.t('home.lede1')));
   /* THE INGOT IS THE NEXT PARAGRAPH'S JOB, so this one stops at the forge
      rather than defining it twice two lines apart. */
-  ht.appendChild(H('p','lede','The <b>forge</b> runs it the other way — metals go into a mold and one object comes out. ' +
-    'That is <b>distributing</b>, and it happens nowhere else.'));
-  ht.appendChild(H('p','lede','<b>72</b> and <b>x² − 5x + 6</b> are the same job. A prime and a polynomial nothing separates are the same thing: ' +
-    'an <b>ingot</b> — already pure. That is what this whole operation is for.'));
+  ht.appendChild(H('p','lede', MF.t('home.lede2')));
+  ht.appendChild(H('p','lede', MF.t('home.lede3')));
   hero.appendChild(ht);
   host.appendChild(hero);
 
   /* NOT "nothing here is scored" - that trips the no-grades check in
      MF.validate, and the right response to a rule firing on your own copy is to
      change the copy… */
-  host.appendChild(H('p','hint doorhint','Nothing here is timed or stored, and nothing is locked.<br>' +
-    'You can walk into the mine now, or spend a minute at a workshop first — both doors are open.'));
+  host.appendChild(H('p','hint doorhint', MF.t('home.open')));
 
   var cards = E('div','cards');
 
   /* ONE OF THESE TAGS WAS FALSE AND ONE WAS NOT, AND I CHANGED BOTH */
-  cards.appendChild(MF.card('The Casting Shed', null,
-    'Pour metals into a mold and watch one formed object come out. This is the distributive property, and it is the move the mine runs backwards all day.',
-    'Open the Mold', function(){ MF.go('workshop-mold'); }));
+  cards.appendChild(MF.card(MF.t('home.card.shed.title'), null, MF.t('home.card.shed.why'),
+    MF.t('home.card.shed.go'), function(){ MF.go('workshop-mold'); }));
 
-  cards.appendChild(MF.card('The Stamp Mill', null,
-    'Take any number apart. See why two miners cutting at different places reach the same metals, and what it means for a lump to be already pure.',
-    'Into the Mill', function(){ MF.go('workshop-ore'); }));
+  cards.appendChild(MF.card(MF.t('home.card.mill.title'), null, MF.t('home.card.mill.why'),
+    MF.t('home.card.mill.go'), function(){ MF.go('workshop-ore'); }));
 
-  cards.appendChild(MF.card('The Mine', null,
-    'Dig as deep as you like and fill your cart — you never have to break anything to go deeper. Then work a lump when you feel like it.',
-    'Enter the Mine', function(){ MF.go('mine'); }));
+  cards.appendChild(MF.card(MF.t('home.card.mine.title'), null, MF.t('home.card.mine.why'),
+    MF.t('home.card.mine.go'), function(){ MF.go('mine'); }));
 
   host.appendChild(cards);
 
@@ -7158,13 +7252,13 @@ MF.SCREENS.home = function(host){
   [
     /* THE NUMERAL IS READ OFF THE MINE, NOT TYPED. */
     /* NO EXPLANATIONS. The numeral and the noun, and nothing under them. */
-    {v:String(MF.LAYERS.length), l:'shapes'},
-    {v:'2', l:'directions'},
-    {v:'1', l:'idea'}
+    {v:String(MF.LAYERS.length), l:'home.stat.shapes'},
+    {v:'2', l:'home.stat.directions'},
+    {v:'1', l:'home.stat.idea'}
   ].forEach(function(it){
     var li = E('li','stat-item');
     li.appendChild(H('span','stat-value', it.v));
-    li.appendChild(H('span','stat-label', it.l));
+    li.appendChild(H('span','stat-label', MF.t(it.l)));
     strip.appendChild(li);
   });
   sell.appendChild(strip);
