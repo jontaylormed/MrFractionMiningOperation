@@ -1958,3 +1958,35 @@ repaint, the check fires, and nothing else does.
   new control's planted label.
 
 **What it did not look at:** whether the Portuguese is good Portuguese, and pixels in Portuguese.
+
+## Languages, phase 1 continued: French (2026-09-14)
+
+**Français is the fourth language, and it is a draft** — all **1,158 keys** in `MF.STR.fr`, same
+order, one block. No fluent speaker or teacher has read it. *Tu*, and typographic apostrophes
+(’) throughout, so no string needs escaping.
+
+**The words:** *filon* (seam), *métal natif*, *lingot*, *parenthèse* (bracket), *PGCD* (GCF),
+*le Bocard* (the Stamp Mill — the real French mining word), *l’Atelier de Coulée* (the Casting
+Shed), *la Forge*, and *le Carreau* for the yard — the real name for a mine's surface yard.
+Instruments: *le Pic du Prospecteur, la Lanterne, le Pic d’Acier, le Travers-Banc, le
+Sélecteur, la Foreuse, la Tarière Mécanique*.
+
+### What French needed that the others did not
+
+- **A word boundary is not a word boundary before an accent.** In a JavaScript regex, `é` is not a
+  word character, so `\bnoté\b` never matches *noté* followed by a space. French's no-grades and
+  marking patterns end on a lookahead (`(?![a-zà-ÿ])`) instead of `\b` wherever a word can end in
+  an accent.
+- **"7 sur 10" is how a French mark is written**, so *sur* between two numbers is banned — and the
+  question counter uses *de* (`{at} de {n}`) rather than a slash or *sur*, which the sweep would
+  have read as a grade. That was caught before it ran, not by it.
+- **Budgets are a fifth larger:** beat 260, lesson prose 1640, panel prose 760.
+
+### How it was proved
+
+- `MF.validate()` in French: **0 errors at 1250 and 380**, 30,169 checks, both controls failing
+  as required; `MF.playthrough(1…9)` clean; no key fell back to English; no English left on any
+  screen.
+- English: **0 errors**; the text harvest differs by exactly one string, *Français*.
+
+**What it did not look at:** whether the French is good French.
