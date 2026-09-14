@@ -3896,7 +3896,107 @@ MF.STR.en = {
   'schema.dial.s2': 'The middle term goes underneath it.',
   'schema.dial.s3': 'The pair that does both goes on the sides. Nothing fills those in for you.',
   'schema.dial.s4': 'And if no whole pair does both, there is none to find &mdash; nudge the end off a whole number and watch it go.',
-  'schema.dial.s4.key': 'Between two marks. That is the rock, not you.'
+  'schema.dial.s4.key': 'Between two marks. That is the rock, not you.',
+  'schema.is': '   is   ',
+
+  /* each method's name, the claim it rests on, and the lump to try */
+  'schema.pick.name': 'Testing the rock before you swing',
+  'schema.pick.why': 'Every other instrument works on a lump you have already dug. This one works at the wall, and it names the KIND rather than the answer — so choosing what to cut out is a decision instead of a lottery.',
+  'schema.pick.practice.ask': 'Name one whole number that runs through 12.',
+  'schema.lantern.name': 'One side lit, one side dark',
+  'schema.lantern.why': 'A factorisation has two sides, and once one is out the other is whatever is left. So one side is a foothold, not the answer &mdash; and the lantern lights the simpler one.',
+  'schema.lantern.practice.ask': 'x&sup2; &minus; 5x + 6 has ( x &minus; 2 ) in it. Name the other side.',
+  'schema.steel.name': 'Pulling out the common factor (the GCF)',
+  'schema.steel.why': 'If every term carries the same metal, it lifts out of all of them at once and stands in front of a bracket. That is the distributive property run backwards, and it is always the first thing to try.',
+  'schema.steel.practice.ask': '6x + 15 &mdash; what is the biggest thing that divides both terms? Put 0 in the x-box and that number on the end.',
+  'schema.dial.name': 'The X method',
+  'schema.dial.why': 'Two numbers must do two jobs at once: multiply to a&middot;c and add to the middle. Put both targets on an X and the pair you want is the one that satisfies both.',
+  'schema.dial.practice.ask': 'x&sup2; + 5xy + 6y&sup2; &mdash; the pair multiplies to 6 and adds to 5. Name one bracket, and remember the y.',
+  'schema.shifter.name': 'The box method',
+  'schema.shifter.why': 'An x&sup2; can only come from two x-parts multiplied, and the end only from the two numbers multiplied. Put those in opposite corners and the sides are forced. Change gear first and a fourth power goes in the same box.',
+  'schema.shifter.practice.ask': 'x&#8308; &minus; 5x&sup2; + 4 &mdash; read the x&sup2; as the unit and the pair multiplies to 4, adds to &minus;5. Name one half.',
+  'schema.drill.name': 'Two ends, read on sight',
+  'schema.drill.why': 'Some lumps need no hunting: the two ends give the brackets. Squares give a number and its own opposite; cubes give one bracket and a piece that never comes apart.',
+  'schema.drill.practice.ask': 'x&sup3; &minus; 8 &mdash; both ends are whole cubes. Name the bracket that comes off it.',
+  'schema.auger.name': 'Factoring by grouping',
+  'schema.auger.why': 'Four terms fall into two pairs, and if the same bracket comes out of both, it runs through the whole lump. Three terms have to be <b>made</b> into four first &mdash; that is what the X is for.',
+  'schema.auger.practice.ask': '3 &times; 2 is 6, so it groups. Pick a letter and name that bracket.',
+
+  /* the Shifter */
+  'schema.shifter.q1': 'x&sup2; multiplied by itself is x&#8308;. So read the x&sup2; as the unit.',
+  'schema.shifter.q2': 'Which is a trinomial, and it goes in the box like any other.',
+  'schema.shifter.q2.cap': 'Opposite corners, exactly as before &mdash; only the powers are one gear up.',
+  'schema.shifter.q2.a11y': 'A two by two box with x to the fourth in one corner and {c} opposite it.',
+  'schema.shifter.q3': 'The sides carry a single x&sup2;, and both are still yours.',
+  'schema.shifter.cap.mid': 'These two have to come to {mid}. That is the whole check.',
+  'schema.shifter.away': ', taken away',
+  'schema.shifter.q3.a11y': 'The same box one gear up, both sides unknown.',
+  'schema.shifter.q4': 'And then the part a trinomial never has: look at each half again.',
+  'schema.shifter.q4.key': 'A half like x<sup>2</sup> &minus; 4 is two squares with a minus between them, and comes apart again. That second look is where a lump like this finishes.',
+  'schema.shifter.q4.keyno': 'No whole pair does both, so it does not come apart this way &mdash; nor any other. This one is finished.',
+  'schema.shifter.none': 'The box needs an x&sup2; for its first corner, and there is none in this one.',
+  'schema.shifter.none.label': 'no x² to put in a corner',
+  'schema.shifter.m1': 'The x&sup2; goes in one corner, the number on the end in the opposite one.',
+  'schema.shifter.m1.cap': 'Opposite corners, because that is the only way an x² and a plain number can come out of the same two sides.',
+  'schema.shifter.m1.a11y': 'A two by two box with {sq} in one corner and {c} opposite it, the other two corners empty.',
+  'schema.shifter.m2': 'The sides of the box are the two pieces you are hunting. Neither one is known yet.',
+  'schema.shifter.m2.cap': 'Two corners are given. Both sides, and the other two corners, are not.',
+  'schema.shifter.m2.a11y': 'A two by two box with {sq} in one corner and {c} in the opposite corner, every side marked with a question mark.',
+  'schema.shifter.m3': 'Fill the other two corners so they add to the middle. Then the sides are the answer.',
+  'schema.shifter.m3.a11y': 'The same box, with the two remaining corners marked with question marks that must add to {mid}.',
+
+  /* the Drill */
+  'schema.drill.c1': 'Two ends, no middle. Are both whole cubes?',
+  'schema.drill.front': 'the front',
+  'schema.drill.end': 'the end',
+  'schema.drill.notcube': 'not a cube',
+  'schema.drill.c2': 'Both are, so one bracket is already known: the two roots, with the lump’s own sign.',
+  'schema.drill.c2.no': 'One is not, so there is no cube seam here.',
+  'schema.drill.c2.key': 'No hunting. The roots <b>are</b> the bracket.',
+  'schema.drill.c2.keyno': 'Nothing to read off.',
+  'schema.drill.c3': 'The piece behind it has three terms.',
+  'schema.drill.c4': 'That piece never comes apart. Not for any cube.',
+  'schema.drill.c4.label': '{right}  is',
+  'schema.drill.c4.labelno': 'the piece behind it is',
+  'schema.drill.c4.el': 'an element',
+  'schema.drill.c4.why': 'Its discriminant is always negative &mdash; so this finishes in <b>one</b> swing.',
+  'schema.drill.number': 'A twin seam is a shape, and a plain number has no shape to have.',
+  'schema.drill.number.label': 'nothing square about',
+  'schema.drill.linear': 'No x&sup2;, so there are not two squares to be the difference of.',
+  'schema.drill.linear.key': 'This one is the Steel Head’s lump.',
+  'schema.drill.not1': 'Two tests, and this lump fails one: is the middle nothing, and are both ends square?',
+  'schema.drill.not1.label': 'middle term',
+  'schema.drill.not2': 'So it is not a twin seam. Take the X to it instead.',
+  'schema.drill.t1': 'Two tests. Is the middle term nothing, and are both ends perfect squares?',
+  'schema.drill.t1.label': 'middle',
+  'schema.drill.t2': 'Both pass, so the pair has to add to nothing &mdash; a number and its own opposite.',
+  'schema.drill.t2.bot': 'nothing in the middle',
+  'schema.drill.t3': 'So take the square root of each end. That number, plus and minus, is the two brackets.',
+
+  /* the Powered Auger */
+  'schema.auger.g1': 'Four terms already. Nothing to split.',
+  'schema.auger.g1.label': 'count them',
+  'schema.auger.g2': 'Take them two at a time.',
+  'schema.auger.g3': 'Pull the common piece off each half.',
+  'schema.auger.g4': 'Did the <b>same</b> bracket come out of both?',
+  'schema.auger.g4.key': 'One that comes out <b>twice</b> runs through the lump. What stood in front of each half is the other side.',
+  'schema.auger.g5': 'So the end tells you before you start.',
+  'schema.auger.g5.label': '{b}  ×  {c}  is',
+  'schema.auger.g5.why': 'Here it is <b>{d}</b>. One multiplication is the whole test.',
+  'schema.auger.g6': 'A trinomial is this, one step later.',
+  'schema.auger.g6.why': '6x&sup2; + 7x &minus; 3 has three, so the X splits the middle and <b>makes</b> four.',
+  'schema.auger.number': 'Whatever comes out of a plain number has to divide it exactly. That is the only rule here.',
+  'schema.auger.number.key': 'Nothing to group — a number has no middle term to split.',
+  'schema.auger.linear': 'No x&sup2;, so there is nothing to group. Whatever comes out has to divide both terms.',
+  'schema.auger.linear.label': 'it has to divide both',
+  'schema.auger.m1': 'Multiply the x&sup2; by the end. That is the top of the X.',
+  'schema.auger.m2': 'Find the pair that does both. The auger will not choose it for you.',
+  'schema.auger.m3': 'Split the middle into those two pieces &mdash; four terms instead of three.',
+  'schema.auger.m4': 'The four go in a box. Pull the common metal off each row and column.',
+  'schema.auger.m4.cap': 'The split middle fills the other two corners. The edges are the factors.',
+  'schema.auger.m4.a11y': 'A two by two box holding the four terms, with both pairs of edges unknown.',
+  'schema.auger.m5': 'The same bracket comes off both groups. That repeat is the seam.',
+  'schema.auger.m5.key': 'A bracket that comes out <b>twice</b> runs through the whole lump.'
 };
 MF._missing = {};
 MF.lang = function(){
@@ -4011,9 +4111,8 @@ MF.SCHEMA = {
   /* rank 1. The prospector's pick has no factoring move - it names the SHAPE of
      a lump still in the wall and stops there. */
   pick: {
-    name: 'Testing the rock before you swing',
-    /* 493 characters, and it was the first thing on the slide. */
-    why: 'Every other instrument works on a lump you have already dug. This one works at the wall, and it names the KIND rather than the answer — so choosing what to cut out is a decision instead of a lottery.',
+    /* `name` and `why` are getters on schema.<key>, attached after the table.
+       493 characters, and it was the first thing on the slide. */
     steps: function(ore){
       var kind = MF.assayOf(ore);
       return [
@@ -4025,14 +4124,12 @@ MF.SCHEMA = {
          draw:function(li){ MF.workLine(li, MF.t('schema.pick.s3.label', {name: MF.ASSAY[kind].name}), [null], 'wbig'); }}
       ];
     },
-    practice: {ore:{kind:'number',n:12}, ask:'Name one whole number that runs through 12.', answer:{m:0,k:2}}
+    practice: {ore:{kind:'number',n:12}, answer:{m:0,k:2}}
   },
 
   /* rank 2. ONE SIDE LIT. */
   lantern: {
-    name: 'One side lit, one side dark',
     /* EVERY `why` IS ONE CLAIM NOW, because the steps under it draw. */
-    why: 'A factorisation has two sides, and once one is out the other is whatever is left. So one side is a foothold, not the answer &mdash; and the lantern lights the simpler one.',
     steps: function(ore){
       var one = MF.simplestFactor(ore);
       if(!one) return [{act:MF.t('schema.lantern.none'), shows:MF.oreLabel(ore),
@@ -4049,13 +4146,11 @@ MF.SCHEMA = {
          draw:function(li){ MF.workLine(li, MF.t('schema.lantern.s3.label'), [null], 'wbig'); }}
       ];
     },
-    practice: {ore:{kind:'poly',a:1,b:-5,c:6}, ask:'x&sup2; &minus; 5x + 6 has ( x &minus; 2 ) in it. Name the other side.', answer:{m:1,k:-3}}
+    practice: {ore:{kind:'poly',a:1,b:-5,c:6}, answer:{m:1,k:-3}}
   },
 
   /* rank 3. The GCF pull, by its real name. */
   steel: {
-    name: 'Pulling out the common factor (the GCF)',
-    why: 'If every term carries the same metal, it lifts out of all of them at once and stands in front of a bracket. That is the distributive property run backwards, and it is always the first thing to try.',
     steps: function(ore){
       var g = MF.commonMetal(ore);
       if(!g) return [
@@ -4075,13 +4170,11 @@ MF.SCHEMA = {
          draw:function(li){ MF.workLine(li, null, [num(g), ' × ( ', null, ' )  =  ', MF.oreLabel(ore)], 'wbig'); }}
       ];
     },
-    practice: {ore:{kind:'poly',a:0,b:6,c:15}, ask:'6x + 15 &mdash; what is the biggest thing that divides both terms? Put 0 in the x-box and that number on the end.', answer:{m:0,k:3}}
+    practice: {ore:{kind:'poly',a:0,b:6,c:15}, answer:{m:0,k:3}}
   },
 
   /* rank 4. THE X METHOD, which is the one a school actually teaches. */
   dial: {
-    name: 'The X method',
-    why: 'Two numbers must do two jobs at once: multiply to a&middot;c and add to the middle. Put both targets on an X and the pair you want is the one that satisfies both.',
     steps: function(ore){
       /* TWO ELEMENTS: THE SAME X, AND THE ANSWERS WEAR A y */
       if(MF.isTwo(ore)){
@@ -4133,92 +4226,86 @@ MF.SCHEMA = {
       ];
     },
     /* THE LESSON WALKS WHATEVER THIS LUMP IS. */
-    practice: {ore:MF.twoOre(5,6),
-               ask:'x&sup2; + 5xy + 6y&sup2; &mdash; the pair multiplies to 6 and adds to 5. Name one bracket, and remember the y.',
-               answer:{m:1,k:2}}
+    practice: {ore:MF.twoOre(5,6), answer:{m:1,k:2}}
   },
 
   /* rank 5. */
   shifter: {
-    name: 'The box method',
-    why: 'An x&sup2; can only come from two x-parts multiplied, and the end only from the two numbers multiplied. Put those in opposite corners and the sides are forced. Change gear first and a fourth power goes in the same box.',
     steps: function(ore){
       /* HIGHER GROUND: THE GEAR CHANGE, THEN THE SAME BOX */
       if(MF.isQuart(ore)){
         var qh = MF.quartSplit(ore);
         return [
-          {act:'x&sup2; multiplied by itself is x&#8308;. So read the x&sup2; as the unit.',
+          {act:MF.t('schema.shifter.q1'),
            draw:function(li){
-             MF.workLine(li, null, [MF.oreLabel(ore), '   is   ',
+             MF.workLine(li, null, [MF.oreLabel(ore), MF.t('schema.is'),
                '( x<sup>2</sup> )<sup>2</sup>' + signed2(ore.b) + '( x<sup>2</sup> )' + signed(ore.c)], 'wbig');
            }},
-          {act:'Which is a trinomial, and it goes in the box like any other.',
+          {act:MF.t('schema.shifter.q2'),
            draw:function(li){
              MF.areaModel(li, {
                rows:[{label:'?'},{label:'?'}], cols:[{label:'?'},{label:'?'}],
                cells:[[{kind:'sq',text:'x⁴'},{kind:'x',text:''}],
                       [{kind:'x',text:''},{kind:'k',text:num(ore.c)}]],
-               caption:'Opposite corners, exactly as before &mdash; only the powers are one gear up.',
-               a11y:'A two by two box with x to the fourth in one corner and ' + num(ore.c) + ' opposite it.'
+               caption:MF.t('schema.shifter.q2.cap'),
+               a11y:MF.t('schema.shifter.q2.a11y', {c: num(ore.c)})
              });
            }},
-          {act:'The sides carry a single x&sup2;, and both are still yours.', open:true,
+          {act:MF.t('schema.shifter.q3'), open:true,
            draw:function(li){
              MF.areaModel(li, {
                rows:[{label:'?'},{label:'?'}], cols:[{label:'?'},{label:'?'}],
                cells:[[{kind:'sq',text:'x⁴'},{kind:'x',text:'?'}],
                       [{kind:'x',text:'?'},{kind:'k',text:num(ore.c)}]],
-               caption:'These two have to come to ' + (Math.abs(ore.b)===1?'':num(Math.abs(ore.b))) +
-                       'x<sup>2</sup>' + (ore.b<0?', taken away':'') + '. That is the whole check.',
-               a11y:'The same box one gear up, both sides unknown.'
+               caption:MF.t('schema.shifter.cap.mid', {mid: (Math.abs(ore.b)===1?'':num(Math.abs(ore.b))) +
+                       'x<sup>2</sup>' + (ore.b<0 ? MF.t('schema.shifter.away') : '')}),
+               a11y:MF.t('schema.shifter.q3.a11y')
              });
            }},
-          {act:'And then the part a trinomial never has: look at each half again.', open:true,
+          {act:MF.t('schema.shifter.q4'), open:true,
            draw:function(li){
              MF.splitDiagram(li, {whole:MF.oreLabel(ore),
                left: qh ? '( x<sup>2</sup> ' + (qh.left.c<0?'&minus;':'+') + ' ? )' : null, right:null,
-               key: qh
-                 ? 'A half like x<sup>2</sup> &minus; 4 is two squares with a minus between them, and comes apart again. That second look is where a lump like this finishes.'
-                 : 'No whole pair does both, so it does not come apart this way &mdash; nor any other. This one is finished.'});
+               key: MF.t(qh ? 'schema.shifter.q4.key' : 'schema.shifter.q4.keyno')});
            }}
         ];
       }
       if(ore.kind==='number' || ore.a===0) return [
-        {act:'The box needs an x&sup2; for its first corner, and there is none in this one.', shows:MF.oreLabel(ore),
-         draw:function(li){ MF.workLine(li, 'no x² to put in a corner', [MF.oreLabel(ore)], 'wbig'); }}
+        {act:MF.t('schema.shifter.none'), shows:MF.oreLabel(ore),
+         draw:function(li){ MF.workLine(li, MF.t('schema.shifter.none.label'), [MF.oreLabel(ore)], 'wbig'); }}
       ];
       return [
-        {act:'The x&sup2; goes in one corner, the number on the end in the opposite one.',
+        {act:MF.t('schema.shifter.m1'),
          draw:function(li){
            MF.areaModel(li, {
              rows:[{label:'?'},{label:'?'}],
              cols:[{label:'?'},{label:'?'}],
              cells:[[{kind:'sq',text:quadText(ore.a,0,0)},{kind:'x',text:''}],
                     [{kind:'x',text:''},{kind:'k',text:num(ore.c)}]],
-             caption:'Opposite corners, because that is the only way an x² and a plain number can come out of the same two sides.',
-             a11y:'A two by two box with ' + quadText(ore.a,0,0) + ' in one corner and ' + num(ore.c) + ' opposite it, the other two corners empty.'
+             caption:MF.t('schema.shifter.m1.cap'),
+             a11y:MF.t('schema.shifter.m1.a11y', {sq: quadText(ore.a,0,0), c: num(ore.c)})
            });
          }},
-        {act:'The sides of the box are the two pieces you are hunting. Neither one is known yet.', open:true,
+        {act:MF.t('schema.shifter.m2'), open:true,
          draw: function(li){
            MF.areaModel(li, {
              rows:[{label:'?'},{label:'?'}],
              cols:[{label:'?'},{label:'?'}],
              cells:[[{kind:'sq',text:quadText(ore.a,0,0)},{kind:'x',text:'?'}],
                     [{kind:'x',text:'?'},{kind:'k',text:num(ore.c)}]],
-             caption:'Two corners are given. Both sides, and the other two corners, are not.',
-             a11y:'A two by two box with ' + quadText(ore.a,0,0) + ' in one corner and ' + num(ore.c) + ' in the opposite corner, every side marked with a question mark.'
+             caption:MF.t('schema.shifter.m2.cap'),
+             a11y:MF.t('schema.shifter.m2.a11y', {sq: quadText(ore.a,0,0), c: num(ore.c)})
            });
          }},
-        {act:'Fill the other two corners so they add to the middle. Then the sides are the answer.', open:true,
+        {act:MF.t('schema.shifter.m3'), open:true,
          draw:function(li){
            MF.areaModel(li, {
              rows:[{label:'?'},{label:'?'}],
              cols:[{label:'?'},{label:'?'}],
              cells:[[{kind:'sq',text:quadText(ore.a,0,0)},{kind:'x',text:'?'}],
                     [{kind:'x',text:'?'},{kind:'k',text:num(ore.c)}]],
-             caption:'These two have to come to ' + xt2(ore.b) + '. That is the whole check.',
-             a11y:'The same box, with the two remaining corners marked with question marks that must add to ' + xt2(ore.b) + '.'
+             caption:MF.t('schema.shifter.cap.mid', {mid: xt2(ore.b)}),
+             a11y:MF.t('schema.shifter.m3.a11y', {mid: xt2(ore.b)})
            });
          }}
       ];
@@ -4226,87 +4313,79 @@ MF.SCHEMA = {
     /* THE LESSON WALKS WHATEVER THIS LUMP IS — MF.drawLesson runs steps() on it
        — and it is the quartic now, because the gear change is the move a
        student has met nowhere else. */
-    practice: {ore:MF.quartOre(-5,4),
-               ask:'x&#8308; &minus; 5x&sup2; + 4 &mdash; read the x&sup2; as the unit and the pair multiplies to 4, adds to &minus;5. Name one half.',
-               answer:{m:1,k:-1,p:2}}
+    practice: {ore:MF.quartOre(-5,4), answer:{m:1,k:-1,p:2}}
   },
 
   /* rank 6. THE TWIN SEAM, AND ONLY THAT. */
   drill: {
-    name: 'Two ends, read on sight',
-    why: 'Some lumps need no hunting: the two ends give the brackets. Squares give a number and its own opposite; cubes give one bracket and a piece that never comes apart.',
     steps: function(ore){
       /* CUBES: THE SAME KIND OF MOVE, A DIFFERENT IDENTITY */
       if(MF.isCube(ore)){
         var csp = MF.cubeSplit(ore);
         var ra = cubeRoot(ore.a), rd = cubeRoot(ore.d);
         return [
-          {act:'Two ends, no middle. Are both whole cubes?',
+          {act:MF.t('schema.drill.c1'),
            draw:function(li){
-             MF.workLine(li, 'the front', [ra === null ? 'not a cube' : num(ra) + ' × ' + num(ra) + ' × ' + num(ra)], 'wbig');
-             MF.workLine(li, 'the end', [rd === null ? 'not a cube' : num(rd) + ' × ' + num(rd) + ' × ' + num(rd)], 'wbig');
+             MF.workLine(li, MF.t('schema.drill.front'), [ra === null ? MF.t('schema.drill.notcube') : num(ra) + ' × ' + num(ra) + ' × ' + num(ra)], 'wbig');
+             MF.workLine(li, MF.t('schema.drill.end'), [rd === null ? MF.t('schema.drill.notcube') : num(rd) + ' × ' + num(rd) + ' × ' + num(rd)], 'wbig');
            }},
-          {act: csp ? 'Both are, so one bracket is already known: the two roots, with the lump’s own sign.'
-                    : 'One is not, so there is no cube seam here.',
+          {act: MF.t(csp ? 'schema.drill.c2' : 'schema.drill.c2.no'),
            open:true,
            draw:function(li){
              MF.splitDiagram(li, {whole:MF.oreLabel(ore),
                left: csp ? '( ' + (Math.abs(ra)===1?'':num(ra)) + 'x ' + (rd<0?'&minus;':'+') + ' ? )' : null,
                right:null,
-               key: csp ? 'No hunting. The roots <b>are</b> the bracket.' : 'Nothing to read off.'});
+               key: MF.t(csp ? 'schema.drill.c2.key' : 'schema.drill.c2.keyno')});
            }},
-          {act:'The piece behind it has three terms.', open:true,
+          {act:MF.t('schema.drill.c3'), open:true,
            draw:function(li){
              MF.workLine(li, null, ['( ', null, ' )( ', null, 'x<sup>2</sup>', '  ', null, 'x  ', null, ' )'], 'wbig');
            }},
-          {act:'That piece never comes apart. Not for any cube.',
+          {act:MF.t('schema.drill.c4'),
            draw:function(li){
-             MF.workLine(li, csp ? MF.oreLabel(csp.right) + '  is' : 'the piece behind it is', ['an element'], 'wbig');
-             li.appendChild(H('div','swhy','Its discriminant is always negative &mdash; so this finishes in <b>one</b> swing.'));
+             MF.workLine(li, csp ? MF.t('schema.drill.c4.label', {right: MF.oreLabel(csp.right)}) : MF.t('schema.drill.c4.labelno'),
+               [MF.t('schema.drill.c4.el')], 'wbig');
+             li.appendChild(H('div','swhy', MF.t('schema.drill.c4.why')));
            }}
         ];
       }
       if(ore.kind==='number') return [
-        {act:'A twin seam is a shape, and a plain number has no shape to have.', shows:num(ore.n),
-         draw:function(li){ MF.workLine(li, 'nothing square about', [num(ore.n)], 'wbig'); }}
+        {act:MF.t('schema.drill.number'), shows:num(ore.n),
+         draw:function(li){ MF.workLine(li, MF.t('schema.drill.number.label'), [num(ore.n)], 'wbig'); }}
       ];
       if(ore.a===0) return [
-        {act:'No x&sup2;, so there are not two squares to be the difference of.', shows:MF.oreLabel(ore),
+        {act:MF.t('schema.drill.linear'), shows:MF.oreLabel(ore),
          draw:function(li){ MF.splitDiagram(li, {whole:MF.oreLabel(ore), left:null, right:null,
-           key:'This one is the Steel Head’s lump.'}); }}
+           key:MF.t('schema.drill.linear.key')}); }}
       ];
       var twin = (ore.b===0 && ore.c<0 && isSquare(ore.a) && isSquare(-ore.c));
       if(!twin) return [
-        {act:'Two tests, and this lump fails one: is the middle nothing, and are both ends square?',
+        {act:MF.t('schema.drill.not1'),
          shows:MF.oreLabel(ore),
-         draw:function(li){ MF.workLine(li, 'middle term', [xt2(ore.b) || '0'], 'wbig'); }},
-        {act:'So it is not a twin seam. Take the X to it instead.', open:true,
+         draw:function(li){ MF.workLine(li, MF.t('schema.drill.not1.label'), [xt2(ore.b) || '0'], 'wbig'); }},
+        {act:MF.t('schema.drill.not2'), open:true,
          draw:function(li){ MF.xDiagram(li, {top:num(ore.a===1?ore.c:ore.a*ore.c), bottom:num(ore.b),
            left:null, right:null}); }}
       ];
       /* BOTH SIDES STAY OPEN. */
       return [
-        {act:'Two tests. Is the middle term nothing, and are both ends perfect squares?',
+        {act:MF.t('schema.drill.t1'),
          shows:MF.oreLabel(ore),
-         draw:function(li){ MF.workLine(li, 'middle', ['0'], 'wbig'); }},
-        {act:'Both pass, so the pair has to add to nothing &mdash; a number and its own opposite.',
+         draw:function(li){ MF.workLine(li, MF.t('schema.drill.t1.label'), ['0'], 'wbig'); }},
+        {act:MF.t('schema.drill.t2'),
          draw:function(li){ MF.xDiagram(li, {top:num(ore.a*ore.c), bottom:'0', left:null, right:null,
-           botWhy:'nothing in the middle'}); }},
-        {act:'So take the square root of each end. That number, plus and minus, is the two brackets.', open:true,
+           botWhy:MF.t('schema.drill.t2.bot')}); }},
+        {act:MF.t('schema.drill.t3'), open:true,
          draw:function(li){ MF.workLine(li, MF.oreLabel(ore) + '  =  ',
            ['( ', null, ' ) × ( ', null, ' )'], 'wbig'); }}
       ];
     },
     /* THE CUBE IS THE PRACTICE NOW. */
-    practice: {ore:MF.cubeOre(1,-8),
-               ask:'x&sup3; &minus; 8 &mdash; both ends are whole cubes. Name the bracket that comes off it.',
-               answer:{m:1,k:-2}}
+    practice: {ore:MF.cubeOre(1,-8), answer:{m:1,k:-2}}
   },
 
   /* rank 7. FACTORING BY GROUPING, in full, on the loaded ore it exists for. */
   auger: {
-    name: 'Factoring by grouping',
-    why: 'Four terms fall into two pairs, and if the same bracket comes out of both, it runs through the whole lump. Three terms have to be <b>made</b> into four first &mdash; that is what the X is for.',
     steps: function(ore){
       /* THE FOUR-TERM LUMP, WHICH IS THE PURE CASE */
       if(MF.isGroup(ore)){
@@ -4315,78 +4394,80 @@ MF.SCHEMA = {
         var t3 = (ore.c<0?'− ':'+ ') + (Math.abs(ore.c)===1?'y':num(Math.abs(ore.c))+'y');
         var t4 = (ore.d<0?'− ':'+ ') + num(Math.abs(ore.d));
         return [
-          {act:'Four terms already. Nothing to split.',
-           draw:function(li){ MF.workLine(li, 'count them', [t1,'   ',t2,'   ',t3,'   ',t4], 'wbig'); }},
-          {act:'Take them two at a time.',
+          {act:MF.t('schema.auger.g1'),
+           draw:function(li){ MF.workLine(li, MF.t('schema.auger.g1.label'), [t1,'   ',t2,'   ',t3,'   ',t4], 'wbig'); }},
+          {act:MF.t('schema.auger.g2'),
            draw:function(li){ MF.workLine(li, null, [gh.first, '        ', gh.second], 'wbig'); }},
-          {act:'Pull the common piece off each half.', open:true,
+          {act:MF.t('schema.auger.g3'), open:true,
            draw:function(li){
              MF.workLine(li, null, ['x ( y' + signed(ore.b) + ' )', '        ',
                                     num(ore.c) + ' ( y', '  ', null, ' )'], 'wbig');
            }},
-          {act:'Did the <b>same</b> bracket come out of both?', open:true,
+          {act:MF.t('schema.auger.g4'), open:true,
            draw:function(li){
              MF.splitDiagram(li, {whole:MF.oreLabel(ore), left:null, right:null,
-               key:'One that comes out <b>twice</b> runs through the lump. What stood in front of each half is the other side.'});
+               key:MF.t('schema.auger.g4.key')});
            }},
-          {act:'So the end tells you before you start.', open:true,
+          {act:MF.t('schema.auger.g5'), open:true,
            draw:function(li){
-             MF.workLine(li, num(ore.b) + '  ×  ' + num(ore.c) + '  is', [null], 'wbig');
-             li.appendChild(H('div','swhy','Here it is <b>' + num(ore.d) + '</b>. One multiplication is the whole test.'));
+             MF.workLine(li, MF.t('schema.auger.g5.label', {b: num(ore.b), c: num(ore.c)}), [null], 'wbig');
+             li.appendChild(H('div','swhy', MF.t('schema.auger.g5.why', {d: num(ore.d)})));
            }},
-          {act:'A trinomial is this, one step later.',
+          {act:MF.t('schema.auger.g6'),
            draw:function(li){
              MF.termLine(li, null, [sqTerm(6), null, null, num(-3)], 'wbig');
-             li.appendChild(H('div','swhy','6x&sup2; + 7x &minus; 3 has three, so the X splits the middle and <b>makes</b> four.'));
+             li.appendChild(H('div','swhy', MF.t('schema.auger.g6.why')));
            }}
         ];
       }
       if(ore.kind==='number') return [
-        {act:'Whatever comes out of a plain number has to divide it exactly. That is the only rule here.', shows:num(ore.n),
+        {act:MF.t('schema.auger.number'), shows:num(ore.n),
          draw:function(li){ MF.splitDiagram(li, {whole:num(ore.n), left:null, right:null,
-           key:'Nothing to group — a number has no middle term to split.'}); }}
+           key:MF.t('schema.auger.number.key')}); }}
       ];
       if(ore.a===0) return [
-        {act:'No x&sup2;, so there is nothing to group. Whatever comes out has to divide both terms.',
-         draw:function(li){ MF.workLine(li, 'it has to divide both', [num(ore.b), '  and  ', num(ore.c)], 'wbig'); }}
+        {act:MF.t('schema.auger.linear'),
+         draw:function(li){ MF.workLine(li, MF.t('schema.auger.linear.label'), [num(ore.b), MF.t('schema.and'), num(ore.c)], 'wbig'); }}
       ];
       var ac = ore.a * ore.c;
       /* THE FULL X-BOX, WHICH IS THE POINT OF THIS INSTRUMENT: the X finds the
          pair, the pair splits the middle, the four terms go in the 2×2, and the
          factors come off the edges. */
       return [
-        {act:'Multiply the x&sup2; by the end. That is the top of the X.',
+        {act:MF.t('schema.auger.m1'),
          draw:function(li){ MF.xDiagram(li, {top:num(ac), bottom:num(ore.b), left:null, right:null,
            topWhy:num(ore.a) + ' × ' + num(ore.c)}); }},
-        {act:'Find the pair that does both. The auger will not choose it for you.', open:true,
-         draw:function(li){ MF.workLine(li, 'multiply to ' + num(ac) + ', add to ' + num(ore.b),
-           [null, '  and  ', null], 'wbig'); }},
-        {act:'Split the middle into those two pieces &mdash; four terms instead of three.', open:true,
+        {act:MF.t('schema.auger.m2'), open:true,
+         draw:function(li){ MF.workLine(li, MF.t('schema.hunt', {m: num(ac), a: num(ore.b)}),
+           [null, MF.t('schema.and'), null], 'wbig'); }},
+        {act:MF.t('schema.auger.m3'), open:true,
          draw:function(li){ MF.termLine(li, null,
            [sqTerm(ore.a), null, null, num(ore.c)], 'wbig'); }},
-        {act:'The four go in a box. Pull the common metal off each row and column.', open:true,
+        {act:MF.t('schema.auger.m4'), open:true,
          draw:function(li){
            MF.xBox(li, {
              rows:[{label:'?'},{label:'?'}],
              cols:[{label:'?'},{label:'?'}],
              cells:[[{kind:'sq',text:quadText(ore.a,0,0)},{kind:'x',text:'?'}],
                     [{kind:'x',text:'?'},{kind:'k',text:num(ore.c)}]],
-             caption:'The split middle fills the other two corners. The edges are the factors.',
-             a11y:'A two by two box holding the four terms, with both pairs of edges unknown.'
+             caption:MF.t('schema.auger.m4.cap'),
+             a11y:MF.t('schema.auger.m4.a11y')
            });
          }},
-        {act:'The same bracket comes off both groups. That repeat is the seam.', open:true,
+        {act:MF.t('schema.auger.m5'), open:true,
          draw:function(li){ MF.splitDiagram(li, {whole:MF.oreLabel(ore), left:null, right:null,
-           key:'A bracket that comes out <b>twice</b> runs through the whole lump.'}); }}
+           key:MF.t('schema.auger.m5.key')}); }}
       ];
     },
     /* THE PRACTICE LUMP IS NOW THE FOUR-TERM ONE, and the walkthrough above is
        written from it. `MF.drawLesson` runs `steps(practice.ore)`… */
-    practice: {ore:MF.groupOre(3,2,6),
-               ask:'3 &times; 2 is 6, so it groups. Pick a letter and name that bracket.',
-               answer:{m:1,k:2,v:'x'}}
+    practice: {ore:MF.groupOre(3,2,6), answer:{m:1,k:2,v:'x'}}
   }
 };
+Object.keys(MF.SCHEMA).forEach(function(k){
+  tFields(MF.SCHEMA[k], 'schema.' + k, ['name','why']);
+  tFields(MF.SCHEMA[k].practice, 'schema.' + k + '.practice', ['ask']);
+});
 
 /* ===== THE X, AND THE BOX IT FEEDS. The diagram school actually teaches. ===== */
 MF.xDiagram = function(host, o){
