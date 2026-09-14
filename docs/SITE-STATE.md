@@ -1921,3 +1921,40 @@ la Barrena Mecánica*. The mining wordplay is where a draft is most likely to re
   no-grades control, the Drill's prime reading, and the quiz slot seeded from the Spanish text.
 
 **What it did not look at:** whether the Spanish is good Spanish, and pixels at 560 and 994.
+
+## Languages, phase 1 continued: Brazilian Portuguese (2026-09-13)
+
+**Português (Brasil) is the third language, and it is a draft** — all **1,158 keys** in
+`MF.STR['pt-BR']`, same order, one block. No fluent speaker or teacher has read it. *Você*.
+
+**The words:** *veio* (seam), *metal nativo*, *lingote*, *parêntese* (bracket), *MDC* (GCF),
+*o Engenho de Pilões* (the Stamp Mill), *o Galpão de Fundição* (the Casting Shed), *a Forja*.
+Instruments: *a Picareta de Garimpeiro, a Lanterna, a Picareta de Aço, a Travessa, o Câmbio,
+a Broca, a Perfuratriz*.
+
+**It needed no new check machinery** — every English-shaped check was already per-language after
+Spanish, so Portuguese only had to supply its own words for all 22 of them.
+
+### It found a bug Spanish had too
+
+**Mr Factor in the header is drawn once, at startup, before any language is chosen**, so his
+screen-reader label stayed *"a miner with a helmet lamp and a pick"* under a Portuguese or Spanish
+page. The Spanish sweep had missed it because it skipped anything containing "Mr Factor".
+`MF.paintStatic` now relabels the header and splash portraits on every change of language.
+
+**The `lang` group checks it, with a control** — and the first attempt to prove the check was
+wrong: planting the English label and running validate passed, because validate repaints the
+page's static text before the `lang` group reads it. **The fault is the relabel missing, not the
+label being stale.** With `paintStatic` wrapped to leave the English label behind on every
+repaint, the check fires, and nothing else does.
+
+### How it was proved
+
+- `MF.validate()` in Portuguese: **0 errors at 1250 and 380**, 28,982 checks, both controls failing
+  as required; `MF.playthrough(1…9)` clean; no key fell back to English; **no English left on any
+  screen**, the header label included.
+- Spanish, re-run: **0 errors**.
+- English: **0 errors at 1250 and 380**; the harvest differs only by *Português (Brasil)* and the
+  new control's planted label.
+
+**What it did not look at:** whether the Portuguese is good Portuguese, and pixels in Portuguese.
