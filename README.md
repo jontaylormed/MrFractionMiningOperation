@@ -3,71 +3,57 @@
 [![Built with Claude](https://img.shields.io/badge/built%20with-Claude%20AI-D97757?style=flat-square&logo=anthropic&logoColor=white)](https://claude.com/claude-code)
 [![Audio: Epidemic Sound](https://img.shields.io/badge/audio-Epidemic%20Sound-1D1D1D?style=flat-square)](https://www.epidemicsound.com)
 [![One file](https://img.shields.io/badge/one%20file-no%20build%20step-2E7D64?style=flat-square)](index.html)
-[![Checks](https://img.shields.io/badge/MF.validate()-26%2C600%20checks-4A6FA5?style=flat-square)](docs/VERIFICATION.md)
+[![Checks](https://img.shields.io/badge/MF.validate()-42%2C000%20checks-4A6FA5?style=flat-square)](docs/VERIFICATION.md)
 
-> **Built with [Claude AI](https://claude.com/claude-code)** (Anthropic) in collaboration with the
-> author. Every commit in this repository is co-authored by Claude, and the trailer is on each
-> one — `git log` is the full record of the collaboration.
->
-> **Music and sound effects © [Epidemic Sound](https://www.epidemicsound.com)**, used under the
-> author's active subscription. See [Credits and attribution](#credits-and-attribution).
+A single-file, zero-dependency website for learning to factor, built on one idea: **a prime and an irreducible polynomial are the same object.** Factoring 72 and factoring `x² − 5x + 6` are the same act, taught here with the same tools.
 
-A single-file, zero-dependency site for learning to factor — built on one idea: **a prime and an irreducible polynomial are the same object.** Factoring 72 and factoring `x² − 5x + 6` are not two topics taught years apart. They are the same act, and down here they use the same three tools.
-
-**Ore looks like rock.** `x² − 5x + 6` looks like a lump.
+The site is a working mine. Expressions are ore, factoring is breaking rock, and distributing is pouring metal into a mold.
 
 ## Run it
 
-Open `index.html`. That is the whole instruction — no build step, no server, no dependencies, no storage. **≈2.77 MB, one file, and it runs from `file://`.**
+Open `index.html`. There is no build step, no server, no package to install, and nothing is stored.
 
-**It reads in English, Spanish, Brazilian Portuguese, French, German, Italian, Indonesian, Turkish, Vietnamese, Russian, Simplified Chinese, Japanese, Korean and Hindi** (Reading & Access → Language). Every string a student sees is in
-one table per language; a missing string falls back to English, never to a blank.
+**≈2.77 MB, one file, and it runs from `file://`.**
 
-The only thing it ever fetches is **sound**, out of `sfx/` beside it — and every one of those fetches is allowed to fail. Without the folder the cues fall back to synthesised oscillators, the music bed stays silent, and the site behaves exactly as it did before there was any audio at all. **Adding sound files can never take sound away, and removing them can never break the page.**
+Available in **English, Spanish, Brazilian Portuguese, French, German, Italian, Indonesian, Turkish, Vietnamese, Russian, Simplified Chinese, Japanese, Korean and Hindi** — under Reading & Access → Language. Every student-facing string lives in one table per language, and a missing string falls back to English rather than to a blank.
 
-## The metaphor, and it is load-bearing
+The only files it ever fetches are the sounds in `sfx/`, and every one of those fetches is allowed to fail. Without the folder, cues fall back to synthesised tones and the music stays silent.
+
+## The model
 
 | | |
 |---|---|
 | **ore** | any expression — a number, a monomial, a binomial, a trinomial |
-| **smelting** | **factoring.** Ore goes in and separates into what was always in it |
-| **an ingot** | an **irreducible** — a prime, or a polynomial no whole-number seam runs through. *The same thing.* |
+| **smelting** | **factoring.** Ore separates into what was always inside it |
+| **an ingot** | an **irreducible** — a prime, or a polynomial no whole-number factor divides |
 | **the mold** | **distributing.** Metals go in, one formed object comes out |
-| **the pour** | the check — and the only correctness signal in the build |
+| **the pour** | the check, and the only correctness signal in the build |
 
-An ingot is not a failure. It is not a lump that refused to break. **It is already pure** — the most refined thing in the mine. That reframing is the whole point: `x² + 4` is an element, exactly as 97 is.
+An ingot is not a lump that failed to break; it is already pure. `x² + 4` is an element in exactly the way 97 is.
 
-## The loop
+## How a student works
 
-**ASSAY** → **SMELT** → **POUR**. Three verbs, everywhere, at every layer.
+**Assay → smelt → pour.**
 
-- **Assay** is a gate. Name what kind of rock you are holding; nothing else on the bench opens until you have called it. A call you made is the only thing you can later catch yourself out on.
-- **Smelt** is where you say what metals are in there. **Nothing here tells you whether you are right.**
-- **Pour** is where you find out. The mold forms around whatever you poured — you never choose the shape, because distribution's result is determined — and the casting comes out **clean, or visibly deformed**, naming which term disagrees.
+- **Assay.** Name the kind of rock you are holding.
+- **Smelt.** Say which factors are in it. Nothing at this stage tells you whether you are right.
+- **Pour.** The mold forms around what you poured, and the casting comes out clean or visibly deformed, naming the term that disagrees.
 
-Correctness lives in the physics of the world, not in a mark.
+Correctness is a physical result, not a mark.
 
-## Digging is decoupled from smelting
+**Digging is separate from smelting.** You can descend as deep as you like and fill your cart without processing anything, so depth is a choice rather than a reward. The shaft has **nine layers**, ordered by what the ore demands: plain numbers → shared factors → two-term ore and primes → `x² + bx + c` → `ax² + bx + c` → four terms in two letters → `x⁴ + bx² + c` → `x² + bxy + cy²` → `x³ ± a cube`. All nine are open from the start.
 
-You can descend as deep as you like and fill your cart **without processing anything**. Depth is where you chose to go, never what you earned. There is no performance gate anywhere in the shaft.
+## Tools, and how they are earned
 
-**Nine layers**, by ore richness: plain numbers → shared metal → two-term ore and pure ingots → `x² + bx + c` → `ax² + bx + c` → **four terms in two letters, `xy + 3x + 2y + 6`** → **`x⁴ + bx² + c`, a trinomial one gear up** → **`x² + bxy + cy²`, the same hunt in two letters** → **`x³ ± a cube`, one bracket on sight. All nine are open**; every family the spec named is cut and timbered.
+Tools are forged at the forge by demonstrating the move they later assist with: three primes cast the Lantern, two x-ingots cast the Shifter, a matched pair casts the Drill. Metals are spent when forging, so needing a factor you do not have is what sends you back down the shaft.
 
-## The forge, and tools that are instruments
-
-The yard has a **sink**: metals are spent at the forge, so needing a factor you have not got is what sends you back down the shaft.
-
-**Forging is distributing, and every tool is forged by demonstrating the move it then assists with.** Three primes cast the **Lantern**, which lights the mold — a live area model of what you are holding. Two x-ingots cast the **Shifter**, the exponent rail, and you watch `x·x` become `x²` while making it. A matched pair casts the **Drill** — you forge it *by making a twin seam on purpose*.
-
-The casting preview is not free: it is the Lantern's power. Before you forge one, you pour and the casting teaches you.
-
-> **Tools assist; they never gate.** A student who has forged nothing can still reach and work the deepest layer.
+**Tools assist; they never gate.** A student who has forged nothing can still reach and work the deepest layer.
 
 ## Scoring, not grading
 
-The yard counts what you own, and unlike a mark you can **spend** it. There are **no percentages, no accuracy rates, no X-out-of-Y, no ranks, and nothing that goes down** — enforced mechanically, with a control that must fail. Order requirements are drawn as **slots, filled or empty**, never counted.
+The yard counts what you own, and unlike a mark you can spend it. There are **no percentages, no accuracy rates, no X-out-of-Y, no ranks, and nothing that goes down** — a rule enforced mechanically, with a control that must fail. Order requirements are drawn as slots, filled or empty, never counted.
 
-The line between a score and a grade is drawn in `docs/MR-FRACTION-PHILOSOPHY.md` §2.5a.
+The distinction is set out in `docs/MR-FRACTION-PHILOSOPHY.md` §2.5a.
 
 ## Checking it
 
@@ -76,17 +62,13 @@ The line between a score and a grade is drawn in `docs/MR-FRACTION-PHILOSOPHY.md
 MF.validate()
 ```
 
-**26,600 checks across 49 groups, 0 errors, and two controls that must fail — and do.** It sweeps the factor engine, seam classification, **hundreds of generated lumps across the nine layers** (the ore is generated, not authored, so nobody has ever seen most of it), the printer, the pour, the forge, the Casting Shed's three workshops, every tool's reading and lesson, colour contrast on every rendered surface, the reading-and-access panel, the sound layer, the seam's whole length, the doors on the surface, the three claims the front page makes to a stranger, the four deep castings and the multiplications they draw, the no-gate rule, and the no-grades rule.
+**About 42,000 checks across 49 groups, 0 errors, and two controls that must fail — and do.** The sweep covers the factor engine, seam classification, hundreds of generated lumps across all nine layers, the printer, the pour, the forge, every tool's reading and lesson, colour contrast on every rendered surface, the reading-and-access panel, the sound layer, the no-gate rule and the no-grades rule.
 
-**Every check carries a control that must fail**, and a new one is proved by reintroducing the fault it exists to catch — not by watching it pass. `docs/VERIFICATION.md` is 103 rules, each written after a real failure.
+Every check carries a control that must fail, and a new check is proved by reintroducing the fault it exists to catch. `docs/VERIFICATION.md` records 103 such rules, each written after a real failure.
 
-Run it at **380×780, 560×760, 994×700 and 1250×900**; a group green at one width has only ever proved itself at that width.
-
-`MF.playthrough(layer)` drives a whole lump end to end — dig, assay, break, pour — and reports what it did.
+Run it at **380×780, 560×760, 994×700 and 1250×900**; a group green at one width has only proved itself at that width. `MF.playthrough(layer)` drives a whole lump end to end and reports what it did.
 
 ## Publishing to GitHub Pages
-
-Everything is committed and self-contained; publishing is three steps.
 
 1. Create an empty repository on GitHub, then from this folder:
 
@@ -94,13 +76,11 @@ Everything is committed and self-contained; publishing is three steps.
 git remote add origin https://github.com/YOUR-USERNAME/YOUR-REPO.git && git push -u origin HEAD
 ```
 
-2. **Settings → Pages → Deploy from a branch**, pick your branch and `/ (root)`.
+2. **Settings → Pages → Deploy from a branch**, then pick your branch and `/ (root)`.
 
 3. **Open the published URL, open the browser console, and paste in the whole of `tools/verify-published.js`.**
 
-Step 3 is not optional, and it is the only check that examines what a student actually opens. It re-runs the site's own 2,000+ checks *on the published copy*, confirms nothing is fetched over the network, builds all five screens, and re-asserts the no-grades rule — reporting a denominator for each and carrying two controls that must fail.
-
-On the sister project this step was skipped: 67 asset paths had been verified twice, both passes sound, and the site still went live completely broken because two directories had never been committed. Nothing pointed at a local machine could have caught it.
+Step 3 is the only check that examines what a student actually opens. It re-runs the site's own checks on the published copy, confirms nothing is fetched over the network, builds all five screens, and re-asserts the no-grades rule. On a sister project this step was skipped and the site went live broken, because two directories had never been committed — something no local check could have caught.
 
 ## Layout
 
@@ -112,23 +92,25 @@ docs/MINE-SPEC.md                what v1 is, and what is deliberately out
 docs/MR-FRACTION-PHILOSOPHY.md   what makes it a Mr Fraction site (incl. §2.5a)
 docs/SITE-STATE.md               the only document that states what exists
 docs/VERIFICATION.md             103 rules, each written after a real failure
-docs/VOICE.md                    the recording script for Mr Factor — generated, not typed
+docs/VOICE.md                    the recording script for Mr Factor
 .claude/agents/                  five review charters, deliberately disjoint
-tools/verify-published.js        run this ON THE LIVE URL — see above
-tools/text-harvest.js            every string a student sees, before vs after — proves an extraction changed none
+tools/verify-published.js        run this on the live URL — see above
+tools/text-harvest.js            every student-facing string, before vs after
 tools/                           serve.ps1, zz-drive.js — scaffolding, never shipped
 ```
+
+## Status and limitations
+
+v1 is **the Ore Cart**: scan the seam, inspect a lump, break it, assay, smelt, pour, then spend the metals at the forge. The guided route and the fully open face are planned as modes on the same bench rather than rebuilds.
+
+- **The 13 non-English translations are drafts by Claude that no fluent speaker or teacher has read.** The language picker says so, and corrections are welcome one string at a time.
+- **No student has used this, and no independent reviewer has assessed it.** Everything here was checked by the person who wrote it, which `docs/VERIFICATION.md` §16 names as the weakest form of check.
 
 ## Credits and attribution
 
 ### Music and sound — © Epidemic Sound
 
-**All music and all sound effects on this site are the copyright of
-[Epidemic Sound AB](https://www.epidemicsound.com)** and are used under the site author's
-**active Epidemic Sound subscription**. They are not original to this project, they are not
-in the public domain, and no licence to them passes to anyone who clones this repository.
-
-Everything in `sfx/` is Epidemic Sound material:
+**All music and sound effects are the copyright of [Epidemic Sound AB](https://www.epidemicsound.com)** and are used under the author's active subscription. They are not original to this project, they are not in the public domain, and no licence to them passes to anyone who clones this repository.
 
 | | |
 |---|---|
@@ -136,54 +118,23 @@ Everything in `sfx/` is Epidemic Sound material:
 | `bed.m4a` | the mine's room tone — a 40 s loop |
 | `thud` `clang` `stamp` `tick` `pour` | the five cues |
 
-`sfx/SOURCES.md` names the specific track each one was cut from, where in it, and why.
+`sfx/SOURCES.md` names the track each one was cut from, where in it, and why.
 
-> **If you fork this, the audio does not come with you.** Delete `sfx/` and the site runs
-> exactly as it always has — every cue falls back to a synthesised one and the beds go quiet.
-> That fallback is not a convenience; it is the reason the licence can be honoured by simply
-> removing a folder.
+**If you fork this, the audio does not come with you.** Delete `sfx/` and the site runs as it always has, with synthesised cues and silent beds.
 
-**One caution for the author, repeated from `sfx/SOURCES.md`:** on GitHub Pages every file in
-`sfx/` is directly fetchable at a public URL, and a subscription library's terms generally
-cover *use in content* rather than *redistribution as standalone files*. A subscription
-covers the use; it may not cover the hosting. Worth confirming with Epidemic Sound before the
-site is published, rather than after.
+**One caution before publishing:** on GitHub Pages every file in `sfx/` is directly fetchable at a public URL, and a subscription library's terms generally cover *use in content* rather than *redistribution as standalone files*. Worth confirming with Epidemic Sound first.
 
 ### Built with Claude AI
 
-This site was **designed, written and verified in collaboration with
-[Claude](https://claude.com/claude-code)** (Claude Code, Anthropic). That is not a footnote
-about a tool that autocompleted a few lines — the metaphor, the `MF.validate()` harness, the
-99 verification rules and most of the prose were worked out in conversation and are
-attributed as such:
+This site was designed, written and verified in collaboration with [Claude](https://claude.com/claude-code) (Claude Code, Anthropic). The metaphor, the `MF.validate()` harness, the verification rules and most of the prose were worked out in conversation.
 
-- **Every commit carries a `Co-Authored-By: Claude` trailer.** `git log` is the complete,
-  unedited record — including the commits that record what was broken and why.
-- `docs/VERIFICATION.md` is the collaboration's actual output: 103 rules, each one written
-  immediately after a real failure, most of them failures Claude introduced.
+- **Every commit carries a `Co-Authored-By: Claude` trailer**, so `git log` is the complete record.
+- `docs/VERIFICATION.md` is the collaboration's clearest output: 103 rules, most written immediately after a failure Claude introduced.
 
 Mathematical content, pedagogy and every decision about what this teaches are the author's.
 
-### The rest
+### Everything else
 
-Everything else — the code, the mine, the mathematics and Mr Factor himself — is original to this
-project. There are no third-party libraries and no fonts fetched over the network.
+The code, the mine, the mathematics and Mr Factor himself are original to this project. There are no third-party libraries and no fonts fetched over the network.
 
-**The scenery is drawn in SVG at runtime**: the surface, the seam, the cart, the anvil, the molds,
-every building and all nine layers of rock are code, not pictures. **Mr Factor is four supplied
-illustrations**, embedded in the file as WebP data URIs — cropped to a shared box, scaled to 256px
-and squeezed from 1,051 KB to about 90 KB of the page. He is the only bitmap in the build.
-
-> **Still nothing is fetched.** `sfx/` remains the one thing this page ever reaches for, and it is
-> still allowed to fail. The illustrations are *inside* `index.html`, so opening the file from
-> `file://` gets you the whole site, art included — which is the reason they were embedded rather
-> than shipped in a folder beside it, and a check fails the build if any pose stops being a data URI.
-
-## Status
-
-v1 is **the Ore Cart**: scan the seam, look a lump over, break it, assay, smelt, pour, then spend the metals at the forge. The guided route and the fully open face are v2 and v3 — modes on the same bench rather than rebuilds — and the challenge shafts open one at a time, grouping first.
-
-**The Spanish, Portuguese, French, German, Italian, Indonesian, Turkish, Vietnamese, Russian, Chinese, Japanese, Korean and Hindi are drafts by Claude that no fluent speaker or teacher has read** — the picker says so,
-and corrections are welcome one string at a time.
-
-**No student has used this yet**, and neither has any independent reviewer: the lived-experience and generated-ore review passes have been dispatched repeatedly and killed by session limits every time. Everything here has been checked by the person who wrote it, which `docs/VERIFICATION.md` §16 names as the weakest kind of check there is.
+**The scenery is drawn in SVG at runtime** — the surface, the seam, the cart, the anvil, the molds, every building and all nine layers of rock are code, not pictures. **Mr Factor is four supplied illustrations**, embedded as WebP data URIs and squeezed from 1,051 KB to about 90 KB. He is the only bitmap in the build, and a check fails if any pose stops being a data URI.

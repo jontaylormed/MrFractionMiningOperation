@@ -2486,3 +2486,41 @@ Mill), *ढलाई घर* (the Casting Shed), *भट्ठी* (the Forge), 
 
 **What it did not look at:** whether the Hindi is good Hindi, and how the headings look on a Mac or
 Android, where *Kohinoor Devanagari* or *Noto Sans Devanagari* would be chosen.
+
+## Languages, phase 5 groundwork: the stylesheet learns left from start (2026-09-15)
+
+Arabic needs the page to mirror, and **this step changes nothing for anybody reading left to
+right.** 63 CSS declarations that named a physical side now name a logical one — `border-left`
+became `border-inline-start`, `padding:7px 11px 7px 26px` became `padding-block` plus
+`padding-inline`, `text-align:left` became `start`, `margin-left:auto` became
+`margin-inline-start:auto`, and `.guide`'s `right` became `inset-inline-end`, so Mr Factor's dock
+moves to the other corner on its own. The uneven corner radii (`0 11px 11px 0`) became
+`border-start-start-radius` and `border-end-start-radius`.
+
+**What deliberately stays physical:** the pictures. The shaft and its cage, the cart, the anvil,
+the thud star, the belt, the X diagram's arms and the lump labels are drawings, not prose — a
+drawing does not mirror when the language does. Mr Factor's own illustration stays as it is too.
+
+### How it was proved not to move the English page
+
+- **Computed physical styles, element by element, on all eight screens** — 1,300 elements
+  compared against the committed page. **142 differ, and every one of them is `text-align`**
+  (139 *left → start*, 3 *right → end*), which renders identically left to right. **Zero**
+  differences in margin, padding, border width, corner radius, float or clear on any element.
+- **Rendered geometry** (position and size of all 1,093 visible elements across the eight
+  screens) against the committed page: **0 differences at 1250, 994, 560 and 380.**
+- **The geometry check carries a control that must fail:** a planted 1px start-margin and a
+  widened note stripe moved 15 elements at 1250 and 651 at 994, so the comparison can see a move.
+- `MF.validate()` in English: **0 errors at 1250 (41,999 checks), 994 (41,999), 560 (41,990) and
+  380 (41,989)**, both controls failing as required; `MF.playthrough(1…9)` clean at 1250 and 380.
+
+**Two false alarms, both the instrument rather than the page**, recorded because each cost real
+time. A page captured mid-`MAIN.arriving` sits 9px lower than a settled one, so *the committed
+page compared against itself* at two different delays showed 618 differences; only a matched
+settle reads 0. And a run of 52 validation errors came from the very first load in a freshly
+reopened browser pane — the same file re-validated at 0, and the committed page reported the same
+52. **A cage that appeared to stop moving was caused by a variable named `H` in the measuring
+script**, which shadowed the page's own element builder and broke screen rendering in that tab.
+
+**What it did not look at:** anything in right-to-left. Nothing yet sets `dir="rtl"`, no Arabic
+text exists, and the maths has not been wrapped for bidirectional text — those are the next step.

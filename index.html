@@ -172,10 +172,10 @@ input::placeholder, textarea::placeholder{color:#6B5B48; opacity:1}
 .stage svg{display:block; width:100%; max-width:520px; height:auto; margin:0 auto}
 .model-cap{font-size:14px; color:var(--ink-soft); text-align:center; max-width:60ch; margin:6px auto 2px}
 /* A NOTE PAINTS ITS OWN BACKGROUND, SO IT MUST PAINT ITS OWN INK. */
-.note{border-left:6px solid var(--tan); background:var(--sheet-2); color:var(--ink); padding:12px 15px; border-radius:0 11px 11px 0; margin:12px 0; font-size:15px}
-.note.good{border-left-color:var(--vein); background:#F1F8F5}
-.note.warn{border-left-color:var(--lamp); background:#FFF9EC}
-.note.bad{border-left-color:var(--molten); background:#FDF0E7}
+.note{border-inline-start:6px solid var(--tan); background:var(--sheet-2); color:var(--ink); padding:12px 15px; border-radius:11px; border-start-start-radius:0; border-end-start-radius:0; margin:12px 0; font-size:15px}
+.note.good{border-inline-start-color:var(--vein); background:#F1F8F5}
+.note.warn{border-inline-start-color:var(--lamp); background:#FFF9EC}
+.note.bad{border-inline-start-color:var(--molten); background:#FDF0E7}
 .note b{font-family:var(--display); font-weight:400}
 .sr{position:absolute; width:1px; height:1px; overflow:hidden; clip:rect(0 0 0 0); white-space:nowrap}
 
@@ -277,7 +277,7 @@ input::placeholder, textarea::placeholder{color:#6B5B48; opacity:1}
 .orderboard h3{font-size:14px; letter-spacing:.09em; text-transform:uppercase; color:var(--lamp); margin-bottom:4px}
 .orderboard > .hint{color:#D9C39C; margin-bottom:9px}
 /* an order is a card hung on the board, not a row in a table */
-.order{position:relative; display:flex; gap:10px; align-items:center; width:100%; text-align:left;
+.order{position:relative; display:flex; gap:10px; align-items:center; width:100%; text-align:start;
   cursor:pointer; border:2px solid #6B5B48; border-radius:10px; padding:9px 11px; margin:0 0 7px;
   min-height:44px; font-family:var(--body); color:#F0E2C8;
   background:linear-gradient(180deg,#463A2E,#3A3129)}
@@ -294,7 +294,7 @@ input::placeholder, textarea::placeholder{color:#6B5B48; opacity:1}
 .order.short .ost{color:#E8B87A}
 .order.made{background:linear-gradient(180deg,#2E3B34,#25302B); border-color:#3F6B58}
 .order.made .ost{color:#8FE0C0}
-.order.made:after{content:"\2713"; position:absolute; right:11px; top:50%; transform:translateY(-50%);
+.order.made:after{content:"\2713"; position:absolute; inset-inline-end:11px; top:50%; transform:translateY(-50%);
   color:#8FE0C0; font-size:17px}
 .order[aria-current=true]{border-color:var(--lamp); box-shadow:0 0 0 2px rgba(232,163,61,.5)}
 /* THE SHELF */
@@ -515,14 +515,14 @@ input::placeholder, textarea::placeholder{color:#6B5B48; opacity:1}
    only burns on the level you are actually working */
 /* The timber is a separate strip, NOT a stop in the button's own gradient. */
 /* TIGHTER GALLERIES. */
-.layer{position:relative; display:block; width:100%; text-align:left; cursor:pointer;
-  border:0; border-radius:0 8px 8px 0; padding:7px 11px 7px 26px; margin:0 0 4px;
+.layer{position:relative; display:block; width:100%; text-align:start; cursor:pointer;
+  border:0; border-radius:8px; border-start-start-radius:0; border-end-start-radius:0; padding-block:7px; padding-inline:26px 11px; margin:0 0 4px;
   font-family:var(--body); font-size:14px; color:#F0E2C8; min-height:44px;
   background:linear-gradient(180deg,#3A3129,#332B24);
   box-shadow:inset 0 1px 0 rgba(255,255,255,.06), 0 2px 0 rgba(0,0,0,.35)}
-.layer:after{content:""; position:absolute; left:0; top:0; bottom:0; width:11px;
+.layer:after{content:""; position:absolute; inset-inline-start:0; top:0; bottom:0; width:11px;
   background:linear-gradient(90deg,#6B5335 0 7px,#4A3B2C 7px 11px)}
-.layer:before{content:""; position:absolute; left:15px; top:11px; width:7px; height:7px; border-radius:50%;
+.layer:before{content:""; position:absolute; inset-inline-start:15px; top:11px; width:7px; height:7px; border-radius:50%;
   background:#5A4B3C; z-index:1; transition:background .3s ease, box-shadow .3s ease}
 .layer:hover{background:linear-gradient(180deg,#46392E,#3C3227)}
 .layer[aria-current=true]{color:#FFF3DE; background:linear-gradient(180deg,#55432F,#4A3A28)}
@@ -631,7 +631,7 @@ input::placeholder, textarea::placeholder{color:#6B5B48; opacity:1}
 .cartrail{height:6px; margin:2px 0 0; border-radius:3px; flex:0 0 auto;
   background:repeating-linear-gradient(90deg,#5A4B3C 0 12px, #3A3129 12px 18px)}
 .lump .txt{font-family:var(--display); font-size:17px}
-.lump .lay{font-size:11px; color:var(--ink-soft); margin-left:auto; letter-spacing:.06em}
+.lump .lay{font-size:11px; color:var(--ink-soft); margin-inline-start:auto; letter-spacing:.06em}
 
 /* THE BENCH IS A PLACE, not a card: sawn timber with the grain running along
    it, iron banding at the edge, and a rack on the wall above holding whatever
@@ -656,7 +656,7 @@ input::placeholder, textarea::placeholder{color:#6B5B48; opacity:1}
 .toolrack{display:flex; gap:8px; flex-wrap:wrap; align-items:center;
   background:linear-gradient(180deg,#5A4432,#42301F); border:2px solid #332416;
   border-radius:10px; padding:8px 10px; margin:2px 0 12px}
-.toolrack .rk{font-size:11px; letter-spacing:.1em; text-transform:uppercase; color:#FFCB7A; margin-right:2px}
+.toolrack .rk{font-size:11px; letter-spacing:.1em; text-transform:uppercase; color:#FFCB7A; margin-inline-end:2px}
 .toolrack .tl{display:inline-flex; align-items:center; gap:6px; background:#2E2620; border:2px solid #6B5B48;
   border-radius:8px; padding:5px 10px; color:#F0E2C8; font-size:13px}
 .toolrack .tl .ic{font-size:15px}
@@ -671,10 +671,10 @@ input::placeholder, textarea::placeholder{color:#6B5B48; opacity:1}
 .stepstrip .st.done b{color:var(--vein)}
 
 .choices{display:grid; gap:9px; margin:10px 0}
-.choice{position:relative; text-align:left; padding:13px 15px 13px 46px; min-height:44px; border:2px solid var(--tan);
+.choice{position:relative; text-align:start; padding-block:13px; padding-inline:46px 15px; min-height:44px; border:2px solid var(--tan);
   border-radius:11px; background:#fff; cursor:pointer; font-family:var(--body); font-size:16px; color:var(--ink)}
 .choice:hover{border-color:var(--ore)}
-.choice:before{content:""; position:absolute; left:13px; top:50%; transform:translateY(-50%); width:22px; height:22px;
+.choice:before{content:""; position:absolute; inset-inline-start:13px; top:50%; transform:translateY(-50%); width:22px; height:22px;
   border-radius:50%; border:2px solid var(--tan); font-family:var(--display); font-size:14px; line-height:19px; text-align:center}
 .choice[data-result=yes]{border-color:var(--vein); background:#F1F8F5}
 .choice[data-result=yes]:before{content:"\2713"; background:var(--vein); border-color:var(--vein); color:#fff}
@@ -793,7 +793,7 @@ input::placeholder, textarea::placeholder{color:#6B5B48; opacity:1}
 .lensed .lnone{opacity:.5}
 /* the owning instrument's own belt glyph, small and set after the ore — a mark,
    not a caption, because nothing may be written beside a lump (§21) */
-.lensed .lnobite{font-size:.78em; opacity:.85; padding-left:.4em;
+.lensed .lnobite{font-size:.78em; opacity:.85; padding-inline-start:.4em;
   color:var(--ore-t); align-self:center}
 .lump .lensed .lnobite,.piece.rock .lensed .lnobite{color:var(--lamp)}
 /* on the DARK chips of the cart and the breaking floor the ink has to invert:
@@ -1065,7 +1065,7 @@ input::placeholder, textarea::placeholder{color:#6B5B48; opacity:1}
    with a clip-path and an ore fleck in its `:before`; putting a second line
    inside it would have had to fight both. */
 .metalcell{display:flex; flex-direction:column; align-items:flex-start; max-width:190px}
-.mfrom{font-size:11px; line-height:1.25; color:#E4D5BB; margin:1px 0 0 4px;
+.mfrom{font-size:11px; line-height:1.25; color:#E4D5BB; margin:1px 0 0; margin-inline-start:4px;
   font-family:var(--body)}
 .mfrom .mmore{color:#C9B695; font-style:italic}
 /* the yard is a RACK of bars, not a list of chips: each metal is a cast bar
@@ -1184,13 +1184,13 @@ input::placeholder, textarea::placeholder{color:#6B5B48; opacity:1}
 /* PADDING IS 6px, NOT 11px, AND THAT IS A MEASUREMENT. */
 .tsguide{border-top:2px solid var(--rule); background:var(--sheet-2);
   padding:6px 14px 8px}
-.tsgname{display:flex; align-items:center; gap:8px; width:100%; text-align:left;
+.tsgname{display:flex; align-items:center; gap:8px; width:100%; text-align:start;
   min-height:44px; padding:2px 0; cursor:pointer;
   background:none; border:0; font-family:var(--display); color:var(--ore-t)}
 .tsgname svg{display:block; width:28px; height:auto; flex:0 0 auto}
 .tsgwho{font-size:12px; letter-spacing:.08em; text-transform:uppercase}
 .tsgcue{font-family:var(--body); font-size:13px; color:var(--ink-soft); text-transform:none; letter-spacing:0}
-.tsgname:after{content:"\25BE"; margin-left:auto; color:var(--ore-t); font-size:13px}
+.tsgname:after{content:"\25BE"; margin-inline-start:auto; color:var(--ore-t); font-size:13px}
 .tsgname[aria-expanded=true]:after{content:"\25B4"}
 .tsgname:focus-visible{outline:3px solid var(--ore-t); outline-offset:2px}
 .tsgsay{margin:6px 0 0; font-size:14px; line-height:1.5; color:var(--ink)}
@@ -1203,7 +1203,7 @@ input::placeholder, textarea::placeholder{color:#6B5B48; opacity:1}
 .tshead .ic{font-size:26px; line-height:1}
 .tshead .tsname{font-family:var(--display); font-size:19px; color:#FFE9C4}
 .tshead .tsore{font-size:13px; color:#E4D5BB}
-.tsclose{margin-left:auto; font-family:var(--body); font-size:13px; padding:9px 13px; min-height:44px;
+.tsclose{margin-inline-start:auto; font-family:var(--body); font-size:13px; padding:9px 13px; min-height:44px;
   cursor:pointer; border-radius:8px; border:2px solid #8A6A45; background:#241D18; color:#F0E2C8}
 .tsclose:hover{border-color:var(--lamp); color:#FFF3DE}
 .tsbody{padding:15px}
@@ -1223,13 +1223,13 @@ input::placeholder, textarea::placeholder{color:#6B5B48; opacity:1}
 .pickbtn:hover{border-color:var(--ore); background:#FFF6EA}
 
 /* ===== THE SCHEMAS. ===== */
-.schema{background:#FFFCF6; border:2px solid var(--tan); border-left:6px solid var(--ore);
-  border-radius:0 12px 12px 0; padding:13px 16px; margin:13px 0}
+.schema{background:#FFFCF6; border:2px solid var(--tan); border-inline-start:6px solid var(--ore);
+  border-radius:12px; border-start-start-radius:0; border-end-start-radius:0; padding:13px 16px; margin:13px 0}
 .schema .slab{font-family:var(--display); font-size:11px; letter-spacing:.12em; color:var(--ore-t)}
 .schema .snm{font-family:var(--display); font-size:clamp(18px,2.7vw,22px); line-height:1.2; color:var(--ink); margin:1px 0 5px}
 .schema .swhy{font-size:15px; color:var(--ink-soft); max-width:66ch}
-ol.ssteps{margin:11px 0 0; padding-left:22px}
-ol.ssteps li{margin-bottom:10px; padding-left:4px}
+ol.ssteps{margin:11px 0 0; padding-inline-start:22px}
+ol.ssteps li{margin-bottom:10px; padding-inline-start:4px}
 ol.ssteps li::marker{font-family:var(--display); color:var(--ore-t)}
 ol.ssteps li.open::marker{color:var(--vein)}
 .ssteps .sact{font-size:15px; color:var(--ink)}
@@ -1238,7 +1238,7 @@ ol.ssteps li.open::marker{color:var(--vein)}
   margin-top:5px; display:inline-block; max-width:100%; overflow-x:auto}
 /* an open step is the student's, and it says so in the colour the mine uses for
    a seam that has not been driven yet */
-.ssteps li.open{border-left:4px dashed var(--vein); margin-left:-14px; padding-left:14px}
+.ssteps li.open{border-inline-start:4px dashed var(--vein); margin-inline-start:-14px; padding-inline-start:14px}
 .ssteps li.open .sact{color:var(--vein)}
 .schema .sfoot{font-size:13px; color:var(--ink-soft); margin-top:9px; font-style:italic}
 /* THE ?. It is the one mark on this page that means "and this part is yours",
@@ -1284,7 +1284,7 @@ ol.ssteps li.open::marker{color:var(--vein)}
 /* the step just opened, so the eye lands on the new one and not on step one */
 .ssteps li.now .sact{font-weight:600}
 .ssteps li.now{position:relative}
-.ssteps li.now:after{content:""; position:absolute; left:-20px; top:6px; width:7px; height:7px;
+.ssteps li.now:after{content:""; position:absolute; inset-inline-start:-20px; top:6px; width:7px; height:7px;
   border-radius:50%; background:var(--ore)}
 .lsnav{display:flex; gap:9px; align-items:center; flex-wrap:wrap; margin-top:12px}
 .lsnav .hint{flex:1 1 200px; min-width:0}
@@ -1294,14 +1294,14 @@ ol.ssteps li.open::marker{color:var(--vein)}
   line-height:1.25; margin:-3px 0 6px}
 .lstool{font-size:14px; color:var(--ink-soft); max-width:60ch; margin-top:2px}
 /* THE WHY IS SLIDE ONE, not a fold. */
-.ssteps li.whyslide{list-style:none; margin-left:-22px; padding-left:0;
+.ssteps li.whyslide{list-style:none; margin-inline-start:-22px; padding-inline-start:0;
   background:#FFF6EA; border:2px solid var(--tan); border-radius:11px; padding:11px 13px}
 .ssteps li.whyslide .swhylab{font-family:var(--display); font-size:11px; letter-spacing:.12em;
   color:var(--ore-t); margin-bottom:4px}
 .ssteps li.whyslide .sact{font-size:15px; color:var(--ink); max-width:66ch}
 .ssteps li.whyslide.now:after{display:none}
 /* THE CLOSING SLIDE, and it is deliberately the only green panel in a lesson. */
-.ssteps li.revealslide{list-style:none; margin-left:-22px; padding-left:0;
+.ssteps li.revealslide{list-style:none; margin-inline-start:-22px; padding-inline-start:0;
   background:#F1FAF3; border:2px solid var(--vein); border-radius:11px; padding:11px 13px}
 .ssteps li.revealslide .swhylab{font-family:var(--display); font-size:11px; letter-spacing:.12em;
   color:var(--vein); margin-bottom:4px}
@@ -1333,7 +1333,7 @@ ol.ssteps li.open::marker{color:var(--vein)}
 .lbfound.plain{color:#C9B695; font-style:italic}
 
 /* ---- THE SAME MOVE, OUTSIDE A MINE ---- */
-.realworld{background:#F1F8F5; border:2px solid var(--vein); border-left:6px solid var(--vein);
+.realworld{background:#F1F8F5; border:2px solid var(--vein); border-inline-start:6px solid var(--vein);
   border-radius:12px; padding:12px 15px; margin-top:14px}
 .realworld .rwlab{font-family:var(--display); font-size:11px; letter-spacing:.12em; color:var(--vein)}
 .realworld .rwwhere{font-family:var(--display); font-size:clamp(17px,2.5vw,20px); color:var(--ink); margin:2px 0 5px}
@@ -1349,7 +1349,7 @@ ol.ssteps li.open::marker{color:var(--vein)}
   border-top:1px dashed var(--rule); padding-top:7px}
 
 /* ---- WHAT DID THE MINER DO WRONG: a worked attempt with the fault in it ---- */
-.miscut{background:#FFFCF6; border:2px solid var(--tan); border-left:6px solid var(--molten);
+.miscut{background:#FFFCF6; border:2px solid var(--tan); border-inline-start:6px solid var(--molten);
   border-radius:12px; padding:13px 15px; margin-top:16px}
 .miscut .mclab{font-family:var(--display); font-size:11px; letter-spacing:.12em; color:#A33E0B}
 .miscut .mclede{font-size:15px; color:var(--ink); max-width:64ch; margin:3px 0 10px}
@@ -1379,7 +1379,7 @@ ol.ssteps li.open::marker{color:var(--vein)}
   color:var(--ink); resize:vertical; min-height:88px}
 .reflect .rfbox:focus-visible{outline:3px solid var(--lamp); outline-offset:2px}
 .reflect .rfnote{font-size:12.5px; color:var(--ink-soft); margin-top:7px; max-width:64ch}
-.reflect .rfprompts{margin:8px 0 0; padding-left:20px; font-size:14px; color:var(--ink-soft)}
+.reflect .rfprompts{margin:8px 0 0; padding-inline-start:20px; font-size:14px; color:var(--ink-soft)}
 .reflect .rfprompts li{margin-bottom:4px; max-width:62ch}
 
 @media (max-width:560px){
@@ -1438,7 +1438,7 @@ ol.ssteps li.open::marker{color:var(--vein)}
 .millstage[data-stamp=miss] .millrock{transform-box:fill-box; transform-origin:center bottom;
   animation:pieceknock 420ms cubic-bezier(.3,1.4,.4,1) .55s 1}
 
-.millask{background:#FFFCF6; border:2px solid var(--tan); border-left:6px solid var(--ore);
+.millask{background:#FFFCF6; border:2px solid var(--tan); border-inline-start:6px solid var(--ore);
   border-radius:12px; padding:12px 14px}
 .millask .mlab,.millpanel .mlab{font-family:var(--display); font-size:11px; letter-spacing:.12em;
   color:var(--ore-t); margin-bottom:3px}
@@ -1470,7 +1470,7 @@ ol.ssteps li.open::marker{color:var(--vein)}
 
 /* THE POUR, WRITTEN OUT. Every part of one metal meets every part of the other,
    a line at a time, ending in one object (MINE-SPEC §30). */
-.pourchain{background:#FFFCF6; border:2px solid var(--tan); border-left:6px solid var(--vein);
+.pourchain{background:#FFFCF6; border:2px solid var(--tan); border-inline-start:6px solid var(--vein);
   border-radius:12px; padding:12px 14px; margin-top:12px; overflow-x:auto}
 .pourchain .pclab{font-family:var(--display); font-size:11px; letter-spacing:.12em;
   color:var(--vein); margin-bottom:7px}
@@ -1491,8 +1491,8 @@ ol.ssteps li.open::marker{color:var(--vein)}
 .tablescroll{overflow-x:auto; margin-top:10px; max-width:100%}
 table.rosetta{border-collapse:collapse; width:100%; min-width:440px; font-size:15px}
 table.rosetta th{font-family:var(--display); font-weight:400; font-size:12px; letter-spacing:.06em; text-transform:uppercase;
-  color:var(--ore-t); text-align:left; padding:6px 16px 6px 0; border-bottom:2px solid var(--rule); white-space:nowrap}
-table.rosetta td{padding:9px 16px 9px 0; border-bottom:1px solid var(--rule); vertical-align:top}
+  color:var(--ore-t); text-align:start; padding-block:6px; padding-inline:0 16px; border-bottom:2px solid var(--rule); white-space:nowrap}
+table.rosetta td{padding-block:9px; padding-inline:0 16px; border-bottom:1px solid var(--rule); vertical-align:top}
 table.rosetta td.rm{min-width:150px}
 table.rosetta td.rm b{font-family:var(--display); font-weight:400; font-size:17px}
 table.rosetta .rn{font-size:13px; color:var(--ink-soft); margin-top:3px; max-width:38ch}
@@ -1532,7 +1532,7 @@ table.rosetta td.rx{font-family:var(--display); font-size:16px; color:var(--ink)
 
 /* the three things you can pour: a column, hard right, so they read as one list
    of alternatives rather than the 2 + 1 a wrapping row broke them into */
-.moldmode{display:flex; flex-direction:column; align-items:flex-end; text-align:right}
+.moldmode{display:flex; flex-direction:column; align-items:flex-end; text-align:end}
 .moldseg{display:flex; flex-direction:column; align-items:stretch; gap:6px; width:100%; max-width:210px}
 .moldseg .btn{width:100%; text-align:center}
 
@@ -1612,11 +1612,11 @@ table.rosetta td.rx{font-family:var(--display); font-size:16px; color:var(--ink)
   font-size:clamp(40px,7.4vw,76px); line-height:1.06; letter-spacing:-.01em}
 /* THE CORNER: the two asides on this bench, stacked hard into the top right. */
 .benchcorner{flex:0 0 auto; display:flex; flex-direction:column; align-items:flex-end;
-  text-align:right; gap:9px; max-width:214px; margin:-6px -6px 0 0}
+  text-align:end; gap:9px; max-width:214px; margin:0; margin-block-start:-6px; margin-inline-end:-6px}
 .benchcorner > *{margin:0}
 /* the signpost: button first, its line under it, both hard against the right */
 .millpoint{flex:0 0 auto; display:flex; flex-direction:column; align-items:flex-end;
-  text-align:right; gap:4px; max-width:100%}
+  text-align:end; gap:4px; max-width:100%}
 /* --ink-soft on the bench's timber is 3.85:1, the same failure .assayhint above already carries. */
 .millpoint .mpt{font-size:12px; color:var(--ink); line-height:1.3}
 /* DARK INK ON THE ORANGE, not cream: #FFF7EA on --ore is 3.55:1 and this button
@@ -1626,7 +1626,7 @@ table.rosetta td.rx{font-family:var(--display); font-size:16px; color:var(--ink)
 .mpbtn:hover{background:var(--lamp); border-color:#FFE9C4; color:#1A120B}
 /* the assay, offered in the corner under the signpost and in the same shape */
 .benchcorner .assayoffer{display:flex; flex-direction:column; align-items:flex-end;
-  text-align:right; gap:4px; margin:0; max-width:100%}
+  text-align:end; gap:4px; margin:0; max-width:100%}
 .benchcorner .assaybtn{font-size:12px; padding:7px 12px; min-height:38px}
 .benchcorner .assayhint{font-size:12px; line-height:1.3; color:var(--ink)}
 /* `.endbar` is gone with the second anvil it drew. */
@@ -1649,8 +1649,8 @@ table.rosetta td.rx{font-family:var(--display); font-size:16px; color:var(--ink)
   .benchhead{flex-direction:column}
   /* FLEX-BASIS IS A HEIGHT ONCE THE AXIS TURNS. */
   .benchore{flex:0 0 auto}
-  .benchcorner{align-items:flex-start; text-align:left; max-width:100%; margin:0}
-  .millpoint,.benchcorner .assayoffer{align-items:flex-start; text-align:left; max-width:100%}
+  .benchcorner{align-items:flex-start; text-align:start; max-width:100%; margin:0}
+  .millpoint,.benchcorner .assayoffer{align-items:flex-start; text-align:start; max-width:100%}
 }
 .splitdia{width:min(300px,100%)}
 
@@ -1658,7 +1658,7 @@ table.rosetta td.rx{font-family:var(--display); font-size:16px; color:var(--ink)
 .shedcards{margin-top:16px}
 .shedcard{display:flex; flex-direction:column}
 .shedic{font-size:38px; line-height:1; margin:6px 0 2px}
-.shedic.sm{font-size:26px; margin:0 9px 0 0; display:inline-block; vertical-align:-2px}
+.shedic.sm{font-size:26px; margin:0; margin-inline-end:9px; display:inline-block; vertical-align:-2px}
 .shedcard .why{flex:1 1 auto}
 .shedfoot{border-top:2px solid var(--rule); padding-top:14px; justify-content:center}
 
@@ -1670,7 +1670,7 @@ table.rosetta td.rx{font-family:var(--display); font-size:16px; color:var(--ink)
 .mtgrid{display:grid; grid-template-columns:1fr 1fr; gap:10px; align-items:start}
 .mtcol{display:flex; flex-direction:column; gap:7px; min-width:0}
 .mtch{font-family:var(--display); font-size:12px; letter-spacing:.06em; color:var(--ink-soft); margin-bottom:2px}
-.mtchip{font:inherit; font-size:14px; text-align:left; padding:9px 11px; border-radius:10px;
+.mtchip{font:inherit; font-size:14px; text-align:start; padding:9px 11px; border-radius:10px;
   border:2px solid var(--tan); background:#fff; color:var(--ink); cursor:pointer; min-width:0}
 .mtchip:hover{border-color:var(--ore-t)}
 .mtchip[data-held]{border-color:var(--ore-t); background:#FDF1DF; box-shadow:0 0 0 2px rgba(176,106,32,.22)}
@@ -1745,17 +1745,17 @@ table.rosetta td.rx{font-family:var(--display); font-size:16px; color:var(--ink)
 .ask .qt{flex:1 1 auto; min-width:0}
 .ask .qi{flex:0 0 auto; font-family:var(--display); font-size:13px; color:#FFF7EA;
   background:var(--ore-t); border-radius:50%; width:24px; height:24px; line-height:24px; text-align:center}
-.ask .qsub{font-size:13px; color:var(--ink-soft); margin:5px 0 0 33px}
-.qopts{display:flex; gap:9px; flex-wrap:wrap; margin:11px 0 0 33px}
+.ask .qsub{font-size:13px; color:var(--ink-soft); margin:5px 0 0; margin-inline-start:33px}
+.qopts{display:flex; gap:9px; flex-wrap:wrap; margin:11px 0 0; margin-inline-start:33px}
 .qopt{cursor:pointer; background:#FFFCF6; border:2px solid var(--tan); border-radius:11px;
   padding:11px 15px; min-height:44px; font-family:var(--display); font-size:17px; color:var(--ink)}
 .qopt:hover{border-color:var(--ore); background:#FFF6EA}
 /* CHOSEN, NOT CORRECT. The only thing this says is which one you picked. */
 .qopt[data-chosen=yes]{border-color:var(--ore-t); background:#FFF1DF; box-shadow:inset 0 0 0 2px var(--ore-t)}
-.ask .qout{margin-left:33px}
-.ask .nsrow{margin:11px 0 0 33px}
+.ask .qout{margin-inline-start:33px}
+.ask .nsrow{margin:11px 0 0; margin-inline-start:33px}
 @media (max-width:560px){
-  .ask .qsub, .qopts, .ask .qout, .ask .nsrow{margin-left:0}
+  .ask .qsub, .qopts, .ask .qout, .ask .nsrow{margin-inline-start:0}
 }
 
 /* ===== THE WORLD. Everything below exists to make the page feel like a PLACE. ===== */
@@ -2040,20 +2040,20 @@ table.rosetta td.rx{font-family:var(--display); font-size:16px; color:var(--ink)
 
 table.scan{border-collapse:collapse; font-size:15px; margin-top:8px}
 table.scan th{font-family:var(--display); font-weight:400; font-size:12px; letter-spacing:.06em; text-transform:uppercase;
-  color:var(--ore-t); text-align:left; padding:5px 14px 5px 0; border-bottom:2px solid var(--rule)}
-table.scan td{padding:5px 14px 5px 0; border-bottom:1px solid var(--rule); font-variant-numeric:tabular-nums}
+  color:var(--ore-t); text-align:start; padding-block:5px; padding-inline:0 14px; border-bottom:2px solid var(--rule)}
+table.scan td{padding-block:5px; padding-inline:0 14px; border-bottom:1px solid var(--rule); font-variant-numeric:tabular-nums}
 table.scan tr.hit td{background:#F1F8F5; color:var(--vein); font-weight:700}
 
 .mf{display:flex; gap:14px; align-items:flex-start; margin:14px 0 0}
 .mf svg{flex:0 0 auto}
 .bubble{position:relative; background:#fff; border:2px solid var(--tan); border-radius:14px; padding:12px 15px; font-size:15px; max-width:64ch}
-.bubble:before{content:""; position:absolute; left:-11px; top:20px; width:0; height:0; border:9px solid transparent; border-right-color:var(--tan)}
+.bubble:before{content:""; position:absolute; inset-inline-start:-11px; top:20px; width:0; height:0; border:9px solid transparent; border-inline-end-color:var(--tan)}
 .bubble b{font-family:var(--display); font-weight:400; color:var(--ore-t)}
 /* MR FACTOR'S DOCK. He sits in the corner of every room and speaks when you
    arrive somewhere for the first time. */
 /* z-index 40: ABOVE the page, BELOW the load screen (50) and below a dialog (.scrim, 70). */
 /* RIGHT:22 BECAUSE THE CONTENT COLUMN'S PADDING IS 18. */
-.guide{position:fixed; right:22px; bottom:14px; z-index:40;
+.guide{position:fixed; inset-inline-end:22px; bottom:14px; z-index:40;
   display:flex; flex-direction:column; align-items:flex-end; gap:8px;
   /* the DOCK does not take clicks — only the things in it do, so it can never
      swallow a click meant for the room behind it (the fault class the `overlay`
@@ -2083,9 +2083,9 @@ table.scan tr.hit td{background:#F1F8F5; color:var(--vein); font-weight:700}
 .gbubble{position:relative; background:#fff; border:3px solid var(--tan); border-radius:14px;
   padding:13px 15px 11px; width:min(264px, calc(100vw - 34px)); box-shadow:0 5px 18px rgba(0,0,0,.20)}
 /* THE TAIL POINTS AT HIM, AND IT HAS TO BE TOLD WHERE HE IS */
-.gbubble:after{content:""; position:absolute; right:29px; bottom:-11px; width:0; height:0;
+.gbubble:after{content:""; position:absolute; inset-inline-end:29px; bottom:-11px; width:0; height:0;
   border:9px solid transparent; border-top-color:var(--tan)}
-@media (min-width:721px){ .gbubble:after{right:47px} }
+@media (min-width:721px){ .gbubble:after{inset-inline-end:47px} }
 .gwhere{font-family:var(--display); font-size:11px; letter-spacing:.11em; color:var(--ore-t)}
 .gtext{font-size:15px; color:var(--ink); margin:4px 0 9px}
 .gtext b{font-family:var(--display); font-weight:400; color:var(--ore-t)}
@@ -2100,12 +2100,12 @@ table.scan tr.hit td{background:#F1F8F5; color:var(--vein); font-weight:700}
   border:2px solid var(--tan); background:var(--paper); color:var(--ink); cursor:pointer}
 .gbtn.gnext{background:var(--ore-t); border-color:var(--ore-t); color:#FFF7EA}
 .gbtn:disabled{opacity:.45; cursor:default}
-.gshut{position:absolute; top:5px; right:8px; border:0; background:none; font-size:19px;
+.gshut{position:absolute; top:5px; inset-inline-end:8px; border:0; background:none; font-size:19px;
   line-height:1; color:var(--ink-soft); cursor:pointer; padding:2px 4px}
 .gshut:hover{color:var(--ink)}
 /* THE PHONE SIZE IS THE SISTER'S PHONE SIZE. */
 @media(max-width:430px){
-  .guide{right:20px; bottom:10px}
+  .guide{inset-inline-end:20px; bottom:10px}
   .gtab{width:76px; height:76px}
   .gtab svg{width:74px}
 }
@@ -2115,9 +2115,11 @@ table.scan tr.hit td{background:#F1F8F5; color:var(--vein); font-weight:700}
    new, when he is talking, and when a keyboard or a pointer reaches him. AFTER
    the phone block, which set him back in the corner when it came first. */
 @media (max-width:560px){
-  .guide{right:0}
+  .guide{inset-inline-end:0}
   .gtab{transform:translateX(46px); transition:transform .22s ease}
-  .guide[data-open]{right:8px}
+  /* in a right-to-left language he sits in the other corner, so he peeks from that edge */
+  :root[dir=rtl] .gtab{transform:translateX(-46px)}
+  .guide[data-open]{inset-inline-end:8px}
   .guide[data-open] .gtab, .gtab[data-new], .gtab:focus-visible, .gtab:hover{transform:none}
 }
 @media print{ .guide{display:none} }
@@ -2134,14 +2136,14 @@ table.scan tr.hit td{background:#F1F8F5; color:var(--vein); font-weight:700}
   box-shadow:0 2px 0 rgba(0,0,0,.28)}
 /* THE WRAPPER CARRIES THE `margin-left:auto` NOW, not the button, or the
    caption would be pushed right on its own and the two would come apart. */
-.accessbtnwrap{flex:0 0 auto; margin-left:auto; display:flex;
+.accessbtnwrap{flex:0 0 auto; margin-inline-start:auto; display:flex;
   flex-direction:column; align-items:stretch}
 .accesscap{font-family:var(--body); font-size:calc(11px * var(--access-scale,1));
   line-height:1.25; color:#FFFFFF; opacity:.82; text-align:center;
   margin-top:4px; letter-spacing:.02em}
 .accessbtn:hover{background:#F2B457; border-color:#F2B457}
 .accessbtn:active{transform:translateY(1px); box-shadow:0 1px 0 rgba(0,0,0,.28)}
-@media(max-width:560px){ .accessbtnwrap{margin-left:0; width:100%}
+@media(max-width:560px){ .accessbtnwrap{margin-inline-start:0; width:100%}
   .accessbtn{width:100%; justify-content:center} }
 /* THE THREE BOXES THAT CLOSE THE SURFACE */
 .sellpanel{margin-top:16px}
@@ -2165,12 +2167,12 @@ table.scan tr.hit td{background:#F1F8F5; color:var(--vein); font-weight:700}
 .acopt[data-on]{background:var(--ore-t); border-color:var(--ore-t); color:#FFF7EA}
 .acslide{display:flex; align-items:center; gap:11px}
 .acslide input[type=range]{flex:1 1 auto; min-width:0}
-.acval{flex:0 0 auto; min-width:4.5ch; text-align:right; font-family:var(--display);
+.acval{flex:0 0 auto; min-width:4.5ch; text-align:end; font-family:var(--display);
   font-size:14px; color:var(--ore-t)}
 .acsplit{font-family:var(--display); font-size:11px; letter-spacing:.12em; color:var(--ore-t);
   border-top:2px solid var(--rule); padding-top:11px; margin:16px 0 10px}
 .acnote{font-size:13px; color:var(--ink-soft); background:var(--paper-2);
-  border-left:4px solid var(--tan); border-radius:0 8px 8px 0; padding:8px 11px; margin:0 0 12px; max-width:64ch}
+  border-inline-start:4px solid var(--tan); border-radius:8px; border-start-start-radius:0; border-end-start-radius:0; padding:8px 11px; margin:0 0 12px; max-width:64ch}
 
 .chips{display:flex; flex-wrap:wrap; gap:8px; margin:8px 0}
 .chip{border:2px solid var(--tan); background:var(--sheet-2); border-radius:999px; padding:6px 13px; font-size:14px; color:var(--ink)}
