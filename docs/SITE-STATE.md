@@ -2148,3 +2148,56 @@ Vites Kolu, Matkap, Motorlu Burgu*. The costing example is in lira.
 **What it did not look at:** whether the Turkish is good Turkish — and one known rough edge:
 the dock's screen-reader label lower-cases the room name, and JavaScript lower-cases *İ* to
 *i̇* (with a combining dot) rather than *i*.
+
+## Languages, phase 1 continued: Vietnamese (2026-09-14)
+
+**Tiếng Việt is the ninth language, and it is a draft** — all **1,158 keys** in `MF.STR.vi`, same
+order, one block. No fluent speaker or teacher has read it. *Bạn* for the student, *tôi* for Mr
+Factor, *ông ấy* when the page speaks about him.
+
+**The words:** *vỉa* (seam), *kim loại tự sinh* (native metal — the mineralogists' term),
+*thỏi* (ingot), *ngoặc* (bracket), *ƯCLN* (GCF), *phân tích thành nhân tử*, *nhóm hạng tử*,
+*hiệu hai bình phương*, *tính chất phân phối*, *đa thức bất khả quy*; *Xưởng Nghiền* (the Stamp
+Mill), *Xưởng Đúc* (the Casting Shed), *Lò Rèn* (the Forge), *bãi chứa* (the yard). Instruments:
+*Cuốc Thăm Dò, Đèn Mỏ, Cuốc Thép, Lò Xuyên Vỉa, Cần Số, Máy Khoan, Khoan Xoắn Máy*. The costing
+example is in đồng. One gift from the language: *nguyên tố* is "element", and a prime is *số
+nguyên tố* — an element number — which is the site's thesis already in the textbook's word.
+
+### A defect only pixels showed: the heading face had no Vietnamese in it
+
+- **Every heading, label and button that uses `--display` rendered its marked vowels in a
+  different face from the rest of the word.** The stack is *Black Han Sans, Arial Black,
+  Impact*; none is embedded, and Arial Black and Impact carry Latin-1 and Latin Extended-A —
+  enough for French, German and Turkish — but not the Latin Extended Additional block where
+  *ư ờ ỏ ủ ặ* live. So *Công Trường Mỏ của* came out in two faces at once. No DOM read could see
+  it; the first 380 screenshot did.
+- **Fix: `:root:lang(vi){--display:…}`** with a stack that has the whole range (*Segoe UI Black,
+  Noto Sans Display, Helvetica Neue, Noto Sans*). `MF.applyAccess` already puts `lang="vi"` on
+  `<html>`, so nothing in the script changed. **Control:** with English on, the computed heading
+  family is still *Black Han Sans, Arial Black…*; with Vietnamese on it is the new stack.
+- **Every later script will need the same thing** — Cyrillic, CJK, Devanagari and Arabic are not
+  in that stack either. The plan already said so for CJK; it is true for all of them.
+
+### What is different about Vietnamese's checks
+
+- **Nearly every syllable carries a mark**, so no pattern uses `\b` at all, and the English
+  stop-word sweep matches only at spaces and punctuation.
+- **A mark is "7 trên 10" or "7/10"**, so the counters read *Câu 2 (tổng 5)*, *Trang 2 (tổng 5)*.
+- ***Điểm* is a grade and also a geometric point**, so the drafts avoid the word; *chấm điểm* and
+  *điểm số* are what is banned.
+- **"Still yours" is *vẫn là việc của bạn* only where English says it**; a plain "yours" is *tùy
+  bạn*.
+- **Budgets:** beat 260, lesson prose 1650, panel prose 780.
+
+### How it was proved
+
+- Entered first (the lesson from Turkish), `MF.validate()` in Vietnamese: **0 errors at 1250
+  (36,080 checks) and 380 (36,070)** after the font fix, both controls failing as required;
+  `MF.playthrough(1…9)` clean at both; no key fell back to English.
+- **The stop-word sweep found only** *the rock is ready*, the loading tick no student sees.
+- **At 380, on all eight screens: nothing scrolls sideways, and no button or heading clips** —
+  including vertically, which is the risk with stacked marks.
+- English: **0 errors**; the text harvest differs by exactly one string, *Tiếng Việt*.
+
+**What it did not look at:** whether the Vietnamese is good Vietnamese, and how the new heading
+stack looks on a Mac or an Android phone — only Windows was rendered.
