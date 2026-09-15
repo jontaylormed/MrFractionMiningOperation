@@ -2066,3 +2066,43 @@ Italian was the first language drafted with every lesson so far applied up front
 - English: **0 errors**; the text harvest differs by exactly one string, *Italiano*.
 
 **What it did not look at:** whether the Italian is good Italian.
+
+## Languages, phase 1 continued: Indonesian (2026-09-14)
+
+**Bahasa Indonesia is the seventh language, and it is a draft** — all **1,158 keys** in
+`MF.STR.id`, same order, one block. No fluent speaker or teacher has read it. *Kamu* for the
+student, *aku* for Mr Factor. No accents and no apostrophes, so nothing in it needs escaping.
+
+**The words:** *urat* (seam), *logam asli* (native metal), *batangan* (ingot), *kurung* (bracket),
+*FPB* (GCF), *pemfaktoran dengan pengelompokan*, *Pabrik Penumbuk* (the Stamp Mill), *Bengkel
+Pengecoran* (the Casting Shed — *Pengecoran* alone on the nav and the nameplate), *Tempa* (the
+Forge), *pelataran* (the yard). Instruments: *Beliung Pencari, Lentera, Beliung Baja, Potong
+Silang, Pemindah Gigi, Bor, Bor Ulir Mesin*. The costing example is in rupiah.
+
+### What is different about Indonesian's checks
+
+- **No accents, so `\b` is safe** — the first language since English where it is.
+- **"7 dari 10" is also how a slide counter is written** (*salindia 2 dari 5*), so the no-grades
+  pattern asks for a grade word behind the pair (*poin*, *benar*), the way German asks for
+  *Punkt*. The shelf and the dock still refuse any pair at all.
+- ***Nilai* means "a mark" and also an ordinary "value"**, so the drafts avoid the word rather
+  than ban it; *dinilai* and *penilaian* are the marking words.
+- **"Still yours" is *masih milikmu* only where English says "still yours"**; a plain "yours"
+  (the Auger's hint, the lesson footers) is *urusanmu*. That keeps the swing-invite pattern off
+  every native-metal reading, which is what German got wrong.
+- **Budgets:** beat 260, lesson prose 1650, panel prose 780.
+
+### How it was proved
+
+- `MF.validate()` in Indonesian: **0 errors at 1250 (33,710 checks) and 380 (33,787)**, both
+  controls failing as required; `MF.playthrough(1…9)` clean at both; no key fell back to English.
+  It passed **first time, with no correction**.
+- **The English stop-word sweep, over all eight screens, found one string:** *the rock is ready*,
+  the last tick of the loading screen, which was built in English before the language changed
+  and is never on screen again. Every language so far has had it, and no student can see it: the
+  picker is inside the operation.
+- **At 380, on all eight screens: nothing scrolls sideways**, and the only element past the edge
+  is Mr Factor's dock tab, which peeks by design.
+- English: **0 errors**; the text harvest differs by exactly one string, *Bahasa Indonesia*.
+
+**What it did not look at:** whether the Indonesian is good Indonesian.
