@@ -2269,3 +2269,70 @@ computes the new stack; the 380 screenshot shows *Рудник Mr Factor* and *�
 **What it did not look at:** whether the Russian is good Russian, and whether *форм* /
 *направления* / *идея* agree with the numbers the surface puts in front of them — the stat
 labels were drafted without seeing those numbers.
+
+## Languages, phase 3: Simplified Chinese, the first script with no spaces (2026-09-14)
+
+**简体中文 is the eleventh language, and it is a draft** — all **1,158 keys** in `MF.STR.zh`,
+same order, one block. No fluent speaker or teacher has read it. *你* for the student, *我* for
+Mr Factor, *他* when the page speaks about him. Full-width punctuation; the maths keeps its
+ASCII spacing.
+
+**The words:** *矿脉* (seam), *自然金属* (native metal — the mineralogists' term), *锭* (ingot),
+*括号*, *最大公因数*, *因式分解*, *分组分解法*, *十字相乘法* for the X, *方框法*, *平方差*,
+*乘法分配律*, *不可约多项式*, *质数*; *捣矿厂* (the Stamp Mill), *铸造车间* (the Casting Shed),
+*锻造坊* (the Forge), *堆场* (the yard). Instruments: *勘探镐、矿灯、钢镐、横巷、换挡杆、钻机、
+动力螺旋钻*. The costing example is in yuan.
+
+### The page, for a script with no Latin in it
+
+- **`:root:lang(zh)` sets `--display` from the system CJK faces** (*Microsoft YaHei UI, PingFang
+  SC, Hiragino Sans GB, Noto Sans CJK SC*), and **headings go to weight 700** — a Han heading in
+  a text face at 400 reads as body copy. **Control:** English computes *Black Han Sans, Arial
+  Black…* at 400; Chinese computes the CJK stack at 700.
+- **Letter-spacing is a Latin caps device**; between Han characters it only opens gaps, so it is
+  `0 !important` under Chinese. **Control:** the same `.panel-tag` computes *1.44px* in English
+  and *normal* in Chinese.
+- **Body text is left alone on purpose.** `MF.applyAccess` writes `--body` inline from the
+  reading-typeface choice, so a stylesheet cannot override it without taking that choice away;
+  the browser's own CJK fallback sets the Han characters.
+
+### Three checks that were measuring English, not the thing they meant
+
+- **The repeat-sentence sweep split on ". " and counted words by spaces.** Chinese has neither,
+  so every line would have been one "sentence" of one "word". It now also splits at 。！？；
+  and counts two Han characters as a word where there are no spaces; text with no CJK is
+  counted exactly as before. **Control:** a copy of Mr Factor's first surface line planted in
+  Chinese was reported as the same sentence.
+- **Seven errors were English character minimums** — a real-world tie-back of at least 60
+  characters, an assay reason of at least 40, a lesson's "why" of at least 20. Chinese says the
+  same in about half. **`MF.langLen(n)`** scales a minimum by the ratio the language already
+  declares (its lesson budget over English's), **capped at 1** — so English and every language
+  that runs longer keep the old minimum exactly (`langLen(60)` is 60 in all ten), and Chinese's
+  are 31, 21 and 10. **Control:** a Chinese tie-back cut to seven characters was caught.
+- **One of the eight was real, and the translation was fixed, not the threshold.** The Shifter's
+  tie-back was 29 characters and never said what the two sides *are*; it now ends *而这两条边，
+  就是那两个因式* (49 characters).
+- **Every other language was re-validated with both changes: 0 errors in each** — English,
+  Spanish, Brazilian Portuguese, French, German, Italian, Indonesian, Turkish, Vietnamese and
+  Russian.
+
+### What is different about Chinese's checks
+
+- **Budgets in characters of Chinese:** beat 110, lesson prose 700, panel prose 330.
+- **A mark is "7/10", 得分, 打分 or 成绩**, and ***分数* is both a score and a fraction**, so the
+  drafts never use it. Counters read *第 2 题（共 5 题）*; the shelf and the dock refuse the *共*.
+- **"Still yours" is *仍然由你* only where English says it**; a plain "yours" is *交给你*.
+
+### How it was proved
+
+- Entered first, `MF.validate()` in Chinese: **0 errors at 1250 (38,360 checks) and 380
+  (38,351)** after the fixes,
+  both controls failing as required; `MF.playthrough(1…9)` clean; no key fell back to English;
+  the only Latin run left in the table is *bxy*, which is mathematics.
+- **The English stop-word sweep found only** *the rock is ready*, the loading tick.
+- **At 380, on all eight screens: nothing scrolls sideways, and no button or heading clips.**
+- English: **0 errors**; the text harvest differs by exactly one string, *简体中文*.
+
+**What it did not look at:** whether the Chinese is good Chinese; how the heading stack looks on a
+Mac, where *PingFang SC* would be chosen, or on Android — only Windows was rendered; and whether
+screen-reader software reads the mixed Han-and-maths aria labels sensibly.
