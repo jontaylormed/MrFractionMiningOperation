@@ -18,9 +18,9 @@ A single-file, zero-dependency site for learning to factor — built on one idea
 
 ## Run it
 
-Open `index.html`. That is the whole instruction — no build step, no server, no dependencies, no storage. **≈1.61 MB, one file, and it runs from `file://`.**
+Open `index.html`. That is the whole instruction — no build step, no server, no dependencies, no storage. **≈1.72 MB, one file, and it runs from `file://`.**
 
-**It reads in English, Spanish, Brazilian Portuguese, French and German** (Reading & Access → Language). Every string a student sees is in
+**It reads in English, Spanish, Brazilian Portuguese, French, German and Italian** (Reading & Access → Language). Every string a student sees is in
 one table per language; a missing string falls back to English, never to a blank.
 
 The only thing it ever fetches is **sound**, out of `sfx/` beside it — and every one of those fetches is allowed to fail. Without the folder the cues fall back to synthesised oscillators, the music bed stays silent, and the site behaves exactly as it did before there was any audio at all. **Adding sound files can never take sound away, and removing them can never break the page.**
@@ -183,7 +183,7 @@ and squeezed from 1,051 KB to about 90 KB of the page. He is the only bitmap in 
 
 v1 is **the Ore Cart**: scan the seam, look a lump over, break it, assay, smelt, pour, then spend the metals at the forge. The guided route and the fully open face are v2 and v3 — modes on the same bench rather than rebuilds — and the challenge shafts open one at a time, grouping first.
 
-**The Spanish, Portuguese, French and German are drafts by Claude that no fluent speaker or teacher has read** — the picker says so,
+**The Spanish, Portuguese, French, German and Italian are drafts by Claude that no fluent speaker or teacher has read** — the picker says so,
 and corrections are welcome one string at a time.
 
 **No student has used this yet**, and neither has any independent reviewer: the lived-experience and generated-ore review passes have been dispatched repeatedly and killed by session limits every time. Everything here has been checked by the person who wrote it, which `docs/VERIFICATION.md` §16 names as the weakest kind of check there is.

@@ -2029,3 +2029,40 @@ matches the English. 4 errors at both widths, then 0.
 - English: **0 errors**; the text harvest differs by exactly one string, *Deutsch*.
 
 **What it did not look at:** whether the German is good German.
+
+## Languages, phase 1 continued: Italian (2026-09-14)
+
+**Italiano is the sixth language, and it is a draft** — all **1,158 keys** in `MF.STR.it`, same
+order, one block. No fluent speaker or teacher has read it. *Tu*, and typographic apostrophes (’)
+throughout — Italian elides constantly (*l’*, *dell’*), so no string needs escaping.
+
+**The words:** *filone* (seam), *metallo nativo*, *lingotto*, *parentesi* (bracket), *MCD* (GCF),
+*raccoglimento parziale* for factoring by grouping — the name Italian schools actually use —
+*il Frantoio* (the Stamp Mill), *la Fonderia* (the Casting Shed), *la Fucina* (the Forge), *il
+Piazzale* (the yard). Instruments: *il Piccone del Cercatore, la Lanterna, il Piccone d’Acciaio,
+il Traverso, il Cambio, la Carotatrice, la Trivella a Motore*.
+
+### What the earlier languages had already taught
+
+Italian was the first language drafted with every lesson so far applied up front, and it passed
+**first time, with no correction**:
+
+- **Words ending on an accent** (*è*, *più*, *perché*) — like French — so no pattern leans on
+  `\b` next to one.
+- **"7 su 10" is how a mark is written**, so *su* between numbers is banned, and the counters use
+  *di*.
+- **The Auger's "Both sides are yours" is *sono tuoi*,** not *restano a te* — the swing-invite
+  phrase is kept for "still yours" only, which is the mistake German made.
+- ***Corretto* is an ordinary word** ("correct") in Italian, so it is not in the marking pattern.
+- **Budgets are a little under a fifth larger:** beat 250, lesson prose 1580, panel prose 740.
+
+### How it was proved
+
+- `MF.validate()` in Italian: **0 errors at 1250 and 380**, 32,530 checks, both controls failing
+  as required; `MF.playthrough(1…9)` clean; no key fell back to English; no English left on any
+  screen.
+- **At 380, on the surface, forge and mine: nothing scrolls sideways, and no button or heading
+  clips its text.**
+- English: **0 errors**; the text harvest differs by exactly one string, *Italiano*.
+
+**What it did not look at:** whether the Italian is good Italian.
