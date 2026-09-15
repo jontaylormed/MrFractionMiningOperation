@@ -2435,3 +2435,54 @@ The costing example is in won.
 
 **What it did not look at:** whether the Korean is good Korean, and how the headings look on a Mac
 or Android, where *Apple SD Gothic Neo* or *Noto Sans KR* would be chosen.
+
+## Languages, phase 4: Hindi (2026-09-15)
+
+**हिन्दी is the fourteenth language, and it is a draft** — all **1,158 keys** in `MF.STR.hi`, same
+order, one block. No fluent speaker or teacher has read it. Polite *आप* imperatives throughout
+(*कीजिए*, *बताइए*); Mr Factor is *वे*. Everyday Hindi where a schoolroom word would be stiff, and
+the NCERT terms where the maths needs them.
+
+**The words:** *शिरा* (seam), *प्राकृतिक धातु* (native metal), *सिल्ली* (ingot), *कोष्ठक*,
+*महत्तम समापवर्तक*, *गुणनखंड*, *अभाज्य संख्या*, *पद*, *त्रिपद*, *वर्गों का अंतर*, *बंटन नियम*,
+*अखंडनीय बहुपद*, *पूर्णांक*, *क्षेत्रफल मॉडल*, *समूह बनाकर गुणनखंडन*; *कुटाई मिल* (the Stamp
+Mill), *ढलाई घर* (the Casting Shed), *भट्ठी* (the Forge), *आँगन* (the yard); *खरा / कबाड़* (sound
+/ scrap). Instruments: *खोजी गैंती, लालटेन, स्टील गैंती, आड़ी सुरंग, गियर लीवर, ड्रिल, मशीनी
+बरमा*. The costing example is in rupees.
+
+### What Hindi needed of its own
+
+- **अंक is a mark and also a digit.** It is banned as a grade word, so a digit or a number is always
+  *संख्या*, and *नंबर* is never used. A mark is *10 में से 7 अंक*, *स्कोर*, *ग्रेड* or *मूल्यांकन*.
+  Counters read *प्रश्न 2 (कुल 5)*, which the shelf and the dock refuse.
+- **The repeat-sentence sweep had to keep vowel signs.** Its key kept letters and digits
+  (`\p{L}\p{N}`), and Devanagari matras are marks, not letters — so *करता* and *कटा* would have
+  keyed alike, and two different sentences could read as one. The key now keeps `\p{M}` as well,
+  and sentences also end at the danda *।* and double danda *॥*. **Control:** a planted copy of Mr
+  Factor's first Hindi surface line was reported as the same sentence.
+- **Its own heading faces:** `:root:lang(hi)` sets `--display` from *Nirmala UI, Noto Sans
+  Devanagari, Kohinoor Devanagari, Mangal*, headings at 700, letter-spacing 0 (spacing breaks the
+  headstroke). **Controls:** English keeps its stack at 400 and `.panel-tag` at *1.44px*; Hindi
+  computes the Devanagari stack at 700 and *normal*.
+- **Matras make lines taller**, so the pieces with a fixed height were measured against English at
+  380: nav buttons 44px in both, `.panel-tag` 25px in both, lump labels 17 and 13px in both, with
+  content within a pixel of English. Nothing overflows that English does not.
+- **"Still yours" is *अब भी आपके ज़िम्मे* only where English says it**; a plain "yours" is
+  *आपकी बारी* or *आप पर है*.
+- **Budgets:** beat 230, lesson prose 1,450, panel prose 680. Hindi prose runs about as long as
+  English, so `MF.langLen` gives the English 60, 40 and 20.
+
+### How it was proved
+
+- `MF.validate()` in Hindi **0 errors at 1250 (41,925 checks) and 380 (41,925)**, both controls
+  failing as required; `MF.playthrough(1…9)` clean at both; no key fell back to English; the only
+  Latin runs left are placeholders, *Mr Factor* and *OpenDyslexic*.
+- **Both controls re-proved in Hindi:** the planted Devanagari duplicate above, and a real-world
+  tie-back cut to *यही।* was caught.
+- **At 380, on all eight screens: nothing scrolls sideways, and no button, heading, tag or lump
+  label clips.**
+- **Every earlier language re-validated at 1250 after the sweep change: 0 errors each.**
+- English: **0 errors**; the text harvest differs by exactly one string, *हिन्दी*.
+
+**What it did not look at:** whether the Hindi is good Hindi, and how the headings look on a Mac or
+Android, where *Kohinoor Devanagari* or *Noto Sans Devanagari* would be chosen.
