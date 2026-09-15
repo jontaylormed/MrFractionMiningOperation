@@ -2106,3 +2106,45 @@ Silang, Pemindah Gigi, Bor, Bor Ulir Mesin*. The costing example is in rupiah.
 - English: **0 errors**; the text harvest differs by exactly one string, *Bahasa Indonesia*.
 
 **What it did not look at:** whether the Indonesian is good Indonesian.
+
+## Languages, phase 1 continued: Turkish (2026-09-14)
+
+**Türkçe is the eighth language, and it is a draft** — all **1,158 keys** in `MF.STR.tr`, same
+order, one block. No fluent speaker or teacher has read it. *Sen*, and typographic apostrophes
+(’) for the suffixes Turkish hangs on names and numbers (*Mr Factor’un*, *x&sup2;’yi*).
+
+**The words:** *damar* (seam), *doğal metal* (native metal), *külçe* (ingot), *parantez*, *EBOB*
+(GCF), *gruplandırarak çarpanlara ayırma*, *iki kare farkı*, *dağılma özelliği*, *indirgenemez
+polinom*; *Kırma Değirmeni* (the Stamp Mill), *Dökümhane* (the Casting Shed), *Demirhane* (the
+Forge), *saha* (the yard). Instruments: *Arayıcı Kazması, Fener, Çelik Kazma, Çapraz Galeri,
+Vites Kolu, Matkap, Motorlu Burgu*. The costing example is in lira.
+
+### What is different about Turkish's checks
+
+- **ç ğ ı ö ş ü are not word characters to `\b`**, so patterns end on lookaheads — and the
+  English stop-word sweep is unreliable here in the other direction too: *eşit* matched *it*,
+  and *metal* is a Turkish word. Its hits were read one by one; none was English.
+- **A mark is "10 üzerinden 7" or "7/10"**, so the counters never put two numbers side by side:
+  *2. slayt (toplam 5)*, *3. soru (toplam 4)*.
+- **A percentage is written in front** (*%70*), so the pattern looks on both sides of the sign.
+- ***Not* is a mark and also a note**, so a notebook is *defter* throughout and the word is
+  never used.
+- **"Still yours" is *hâlâ senin* only where English says it**; a plain "yours" is *sana
+  kalmış*.
+- **Budgets:** beat 250, lesson prose 1550, panel prose 730.
+
+### How it was proved — and a run that measured the test instead
+
+- **The first validate reported 6 errors, all about Mr Factor's dock** ("the dock will not open",
+  "coming off the loading screen did not greet the student"). **The tab had never pressed
+  Enter.** `MF.guideArrive()` refuses to greet anyone while the loading screen is up — which is
+  correct — and the same tab then gave Indonesian the same 6. Nothing was changed in the page.
+  **A validate run has to enter the operation first**; the earlier languages' runs happened to.
+- Entered, `MF.validate()` in Turkish: **0 errors at 1250 (34,971 checks) and 380 (34,878)**, both
+  controls failing as required; `MF.playthrough(1…9)` clean at both; no key fell back to English.
+- **At 380, on all eight screens: nothing scrolls sideways, and no button or heading clips.**
+- English: **0 errors**; the text harvest differs by exactly one string, *Türkçe*.
+
+**What it did not look at:** whether the Turkish is good Turkish — and one known rough edge:
+the dock's screen-reader label lower-cases the room name, and JavaScript lower-cases *İ* to
+*i̇* (with a combining dot) rather than *i*.
