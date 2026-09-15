@@ -2336,3 +2336,51 @@ ASCII spacing.
 **What it did not look at:** whether the Chinese is good Chinese; how the heading stack looks on a
 Mac, where *PingFang SC* would be chosen, or on Android — only Windows was rendered; and whether
 screen-reader software reads the mixed Han-and-maths aria labels sensibly.
+
+## Languages, phase 3 continued: Japanese (2026-09-14)
+
+**日本語 is the twelfth language, and it is a draft** — all **1,158 keys** in `MF.STR.ja`, same
+order, one block. No fluent speaker or teacher has read it. Polite *です・ます* throughout, *彼*
+when the page speaks about Mr Factor. Full-width punctuation; the maths keeps its ASCII spacing.
+
+**The words:** *鉱脈* (seam), *自然金属* (native metal), *インゴット* (ingot), *かっこ*,
+*最大公約数*, *因数分解*, *共通因数*, *平方の差*, *分配法則*, *既約多項式*, *素数*;
+**たすきがけ** for the X — the name Japanese textbooks already give that exact method — and
+*面積図* for the box. *砕鉱所* (the Stamp Mill), *鋳造所* (the Casting Shed), *鍛冶場* (the Forge),
+*置き場* (the yard). Instruments: *探鉱つるはし、カンテラ、鋼のつるはし、横坑、シフトレバー、
+ドリル、動力オーガー*. The costing example is in yen.
+
+### What Chinese had already built, and what Japanese needed of its own
+
+- **Nothing in the checks had to change.** The repeat-sentence sweep already splits at 。and
+  counts kana and kanji; `MF.langLen` already scales the three English minimums (34, 23 and 11
+  characters for Japanese, from its declared lesson ratio 760/1340).
+- **Its own heading faces:** `:root:lang(ja)` sets `--display` from *Yu Gothic UI, Yu Gothic,
+  Meiryo, Hiragino Sans, Noto Sans CJK JP* — a Chinese face draws several shared kanji in their
+  Chinese forms — with headings at 700 and letter-spacing 0. **Controls:** English computes its
+  old stack at 400 and `.panel-tag` at *1.44px*; Japanese computes the Japanese stack at 700 and
+  *normal*.
+- **Its own grade words.** A mark is *10点中7点*, *得点*, *採点* or *成績*; *点* alone is an ordinary
+  "point" and is not banned. Counters read *第2問（全5問）*, which the shelf and the dock refuse.
+- **"Still yours" is *まだあなたの番* only where English says it**; a plain "yours" is
+  *あなたに任せます*.
+- **Budgets:** beat 120, lesson prose 760, panel prose 360.
+
+### How it was proved
+
+- **The first run found one real error, and the site's own `lang` group caught it:** *why.number*
+  carried `{n}` twice where English carries it once. The second became *これ*.
+- Entered first, `MF.validate()` in Japanese after the fix: **0 errors at 1250 (39,555 checks) and
+  380 (39,546)**, both controls failing as required; `MF.playthrough(1…9)` clean at both; no key
+  fell back to English; the only Latin run left is *bxy*, which is mathematics. English at 1250:
+  **0 errors (39,717)**.
+- **Both new-machinery controls were re-proved in Japanese:** a planted copy of Mr Factor's first
+  surface line was reported as the same sentence, and a real-world tie-back cut to five
+  characters was caught.
+- **The English stop-word sweep found only** *the rock is ready*, the loading tick.
+- **At 380, on all eight screens: nothing scrolls sideways, and no button or heading clips.**
+- English: the text harvest differs by exactly one string, *日本語*.
+
+**What it did not look at:** whether the Japanese is good Japanese — the kanji level has not been
+checked against any school grade — and how the headings look on a Mac, where *Hiragino Sans* would
+be chosen, or on Android.
