@@ -2201,3 +2201,71 @@ nguyên tố* — an element number — which is the site's thesis already in th
 
 **What it did not look at:** whether the Vietnamese is good Vietnamese, and how the new heading
 stack looks on a Mac or an Android phone — only Windows was rendered.
+
+## Languages, phase 2: Russian, the first non-Latin script (2026-09-14)
+
+**Русский is the tenth language, and it is a draft** — all **1,158 keys** in `MF.STR.ru`, same
+order, one block. No fluent speaker or teacher has read it. *Ты*, in the present tense and the
+imperative, so no past-tense verb ever has to guess the student's gender; Mr Factor is *он*.
+Placeholders sit where Russian needs no case ending on them (*Снять: {tool}*, *установлено:
+{fits}*), because a tool's name dropped into the middle of a sentence would need declining.
+
+**The words:** *жила* (seam), *самородный металл* (native metal), *слиток*, *скобка*, *НОД*,
+*разложение на множители*, *способ группировки*, *разность квадратов*, *распределительный закон*,
+*неприводимый многочлен*; *Толчея* (the Stamp Mill — the old mining word for exactly that),
+*Литейная* (the Casting Shed), *Кузница* (the Forge), *рудный двор* (the yard), *горизонт* (a
+layer). Instruments: *Кайло старателя, Лампа, Стальное кайло, Квершлаг* (a crosscut, in Russian
+mining), *Рычаг передач, Бур, Моторный шнек*. The costing example is in roubles.
+
+### The heading face, before it could go wrong
+
+Vietnamese taught that `--display` has no coverage outside Latin. **`:root:lang(ru)` starts the
+stack from faces that carry Cyrillic** (*Arial Black, Segoe UI Black, Impact, Noto Sans*), so a
+machine that has Black Han Sans installed does not set "Mr Factor" in one face and every Russian
+word in another. **Control:** English still computes *Black Han Sans, Arial Black…*; Russian
+computes the new stack; the 380 screenshot shows *Рудник Mr Factor* and *Кузница* in one face.
+
+### A check that had never read a non-Latin letter
+
+- **Russian's first validate reported one error at both widths:** *the duplicate-line sweep only
+  found 0 sentences to compare*. The sweep that stops Mr Factor saying the same sentence twice
+  built each comparison key with `replace(/[^a-z0-9 ]+/g,'')` — **it deleted every letter
+  outside ASCII.** Every Russian sentence became an empty string, and nothing was compared.
+- **It had been partly blind since Spanish.** Vietnamese and Turkish passed, but they were
+  compared with half their letters stripped, so two different sentences could collide and a
+  real repeat could hide. The count guard only fired when the result fell to nothing.
+- **Fix: `/[^\p{L}\p{N} ]+/gu`** — letters and digits of any script. **Control, proved rather
+  than watched:** with Russian on, a copy of Mr Factor's first surface line was planted under a
+  second id, and validate reported *Mr Factor says the same sentence in room-home-1 and
+  PLANTED-DUPLICATE — "здания в которые можно войти…"*. Removed, the error went.
+- **Every language that shipped before the fix was re-validated with it, at 1250: 0 errors in
+  each** — Spanish, Brazilian Portuguese, French, German, Italian, Indonesian, Turkish,
+  Vietnamese and English. The letters the old key threw away were not hiding a repeat.
+
+### What is different about Russian's checks
+
+- **Cyrillic letters are not word characters to `\b`**, so no pattern leans on it.
+- **A mark is "7 из 10"**, so the counters read *Вопрос 2 (всего 5)*, *Слайд 2 (всего 5)*.
+- ***Оценка* is a mark and also an estimate**, so the drafts avoid the word; *балл*, *рейтинг*
+  and *точность* are banned.
+- **"Still yours" is *по-прежнему за тобой* only where English says it**; a plain "yours" is
+  *на тебе*.
+- **Budgets:** beat 260, lesson prose 1650, panel prose 780.
+
+### How it was proved
+
+- Entered first, `MF.validate()` in Russian: **0 errors at 1250 (37,189 checks) and 380
+  (37,179)** after the sweep fix, both controls failing as required; `MF.playthrough(1…9)` clean
+  at both; no key fell back to English; the only Latin run left in the table is *bxy*, which is
+  mathematics.
+- **The English stop-word sweep found only** *the rock is ready*, the loading tick.
+- **At 380, on all eight screens: nothing scrolls sideways, and no button or heading clips.**
+- **The browser pane restarted mid-run and took the stored text-harvest baseline with it**
+  (IndexedDB went with the profile), and the local server had stopped. The server was restarted
+  from `tools/serve.ps1`, and the English comparison was made directly against `HEAD:index.html`
+  written to an untracked file for the run. English: **0 errors**; the text harvest differs by
+  exactly one string, *Русский*.
+
+**What it did not look at:** whether the Russian is good Russian, and whether *форм* /
+*направления* / *идея* agree with the numbers the surface puts in front of them — the stat
+labels were drafted without seeing those numbers.
