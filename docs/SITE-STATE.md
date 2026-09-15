@@ -2384,3 +2384,54 @@ when the page speaks about Mr Factor. Full-width punctuation; the maths keeps it
 **What it did not look at:** whether the Japanese is good Japanese — the kanji level has not been
 checked against any school grade — and how the headings look on a Mac, where *Hiragino Sans* would
 be chosen, or on Android.
+
+## Languages, phase 3 continued: Korean (2026-09-15)
+
+**한국어 is the thirteenth language, and it is a draft** — all **1,158 keys** in `MF.STR.ko`, same
+order, one block. No fluent speaker or teacher has read it. Friendly polite *해요체* throughout;
+the student is rarely named, and Mr Factor is "Mr Factor" rather than a pronoun. Particles after a
+placeholder are written both ways — *{n}은(는)*, *{ore}을(를)* — because the page cannot know
+whether the value ends in a consonant.
+
+**The words:** *광맥* (seam), *자연금속* (native metal), *주괴* (ingot), *괄호*, *최대공약수*,
+*인수분해*, *공통인수*, *제곱의 차*, *분배법칙*, *기약다항식*, *소수*, *넓이 모형*, *묶어서
+인수분해하기*; *쇄광소* (the Stamp Mill), *주조장* (the Casting Shed), *대장간* (the Forge),
+*야적장* (the yard). Instruments: *탐광 곡괭이, 랜턴, 강철 곡괭이, 횡갱, 기어 레버, 드릴, 동력 오거*.
+The costing example is in won.
+
+### What Korean needed of its own
+
+- **소수 is a prime and also a decimal.** Primes are *소수* throughout, and a decimal is always said
+  with *소수점* — the dial is *소수점 다이얼*.
+- **Its own heading faces:** `:root:lang(ko)` sets `--display` from *Malgun Gothic, Apple SD Gothic
+  Neo, Noto Sans KR* (Black Han Sans is a Hangul face, but rarely installed and single-weight),
+  headings at 700, letter-spacing 0. **Controls:** English keeps its stack at 400 and `.panel-tag`
+  at *1.44px*; Korean computes the Hangul stack at 700 and *normal*.
+- **Words must not break in the middle.** Korean has spaces, but by default a line may break
+  inside a word — the first 380 screenshot showed *자 / 연금속* and *도 / 구*. `:root:lang(ko) body
+  {word-break:keep-all}` breaks only at spaces. **Control:** English computes *normal*, Korean
+  *keep-all*; and because a rule that stops breaking can push content wider, *The Words* table was
+  measured at 380 in English, in Korean with keep-all and in Korean without it — **0 overflowing
+  cells in all three**, the table scrolling inside its own container as designed.
+- **Grade words:** a mark is *10점 만점에 7점*, *점수*, *채점* or *성적*; *점* alone is an ordinary
+  "point" and is not banned. Counters read *2번째 질문 (총 5문제)*, which the shelf and the dock
+  refuse.
+- **"Still yours" is *여전히 스스로 할 몫* only where English says it**; a plain "yours" is
+  *스스로 정해요*.
+- **Budgets:** beat 150, lesson prose 880, panel prose 420 — so `MF.langLen` gives 39, 26 and 13.
+- **No check had to change.** The repeat-sentence sweep counts Hangul syllables two to a word,
+  which is close to a Korean word's length.
+
+### How it was proved
+
+- Entered first, with keep-all in place: `MF.validate()` in Korean **0 errors at 1250 (40,739
+  checks) and 380 (40,730)**, both controls failing as required; `MF.playthrough(1…9)` clean at
+  both; no key fell back to English; the only Latin run left is *bxy*. English at 1250: **0 errors**.
+- **Both controls re-proved in Korean:** a planted copy of Mr Factor's first surface line was
+  reported as the same sentence, and a real-world tie-back cut to eight characters was caught.
+- **The English stop-word sweep found only** *the rock is ready*, the loading tick.
+- **At 380, on all eight screens: nothing scrolls sideways, and no button or heading clips.**
+- English: **0 errors**; the text harvest differs by exactly one string, *한국어*.
+
+**What it did not look at:** whether the Korean is good Korean, and how the headings look on a Mac
+or Android, where *Apple SD Gothic Neo* or *Noto Sans KR* would be chosen.
