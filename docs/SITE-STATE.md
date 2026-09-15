@@ -2578,3 +2578,46 @@ checks existed), both standing controls failing, `MF.playthrough(1…9)` clean.
 **What it did not look at:** whether a student reads the box the way it intends, and the tiles are
 drawn as a plain grid rather than sized to their areas — a true tile picture was considered and set
 aside as needing a larger stone.
+
+## The fit test: an instrument that does not fit still teaches (2026-09-15)
+
+**The quietest moment on the site was the one where the rock had most to say.** Holding an
+instrument to a lump it cannot read produced one grey 14px line of hint text. Measured against the
+same instrument on a lump it *does* read: the **Gear Lever gives 4,440 characters on a trinomial
+and 340 on a plain number**; the Crosscut, 2,724 against 380. A tool that does not fit has just
+told the student the shape is wrong — and the shape is the one skill the whole mine turns on.
+
+**It now draws the fit test**, in a panel the size of a reading rather than a footnote:
+
+- **❌ the condition that failed**, in the instrument's own words — *"No x² here to put in the first
+  corner of a box."*
+- **✅ what the rock actually is** — *"What this rock is: Grouped Vein"*, which is the assay, the
+  half a student can carry to the next lump.
+- **the redirect** — whose lump it is and why — and then the method line as before.
+
+**The marks describe the stone and never the student.** The subject of every line is the ore, no
+count or score appears, and `nogrades` sweeps this panel like everything else. This is the closest
+the site comes to a tick on screen, and it was a deliberate choice rather than an oversight.
+
+**It needed almost no new prose.** The failing condition is each instrument's own `read.*.not`, the
+redirect is `lens.notmy.*`, and the shape's name is the assay's — all already written in every
+language. **Only two keys are new** (`misfit.lab`, `misfit.is`), and they are in all fourteen
+written tables, so no language falls back to English. *Arabic takes them with its section 3.*
+
+### How it was proved
+
+- **Nine misfit readings checked across five instruments** — every one produces the panel, with no
+  duplicated sentence and no empty markup where the old hint's lead-in used to be.
+- `MF.validate()`: **0 errors at 1250 (42,394 checks) and 380 (42,385)**, both standing controls
+  failing, `MF.playthrough(1…9)` clean.
+- **The new check carries a control:** reverting the panel to a single hint line was caught five
+  times, once per instrument — *"shifter does not fit xy + 3x + 2y + 6 and says so without the fit
+  test — that is the footnote it used to be."*
+- **Sizes:** 505×185 on a 560px screen and 325×226 at 380, with the marks at 20px, the body at 15px,
+  and no sideways scroll at either width.
+
+**What it did not look at:** whether a student reads ✅ and ❌ as marking *them* rather than the
+rock — the one judgement call here, and the reason the wording puts the rock first in every line.
+The Steel Pick's cube reading also lands as a fragment (*"So there is nothing to stand in front of a
+bracket"*) because that sentence was written as a continuation of a line that no longer precedes it;
+fixing it means re-translating it fourteen times.

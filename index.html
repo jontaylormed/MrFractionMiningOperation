@@ -105,6 +105,30 @@ html[data-motion=reduce] #ruler{transition:none}
 :root:lang(hi){--display:'Nirmala UI','Noto Sans Devanagari','Kohinoor Devanagari','Mangal',sans-serif}
 :root:lang(hi) h1,:root:lang(hi) h2,:root:lang(hi) h3,:root:lang(hi) h4{font-weight:700}
 :root:lang(hi) *{letter-spacing:0 !important}
+/* ARABIC. The faces are the ones Windows, macOS and Android actually ship. */
+:root:lang(ar){--display:'Segoe UI','Noto Naskh Arabic','Geeza Pro','Traditional Arabic',Tahoma,sans-serif}
+:root:lang(ar) h1,:root:lang(ar) h2,:root:lang(ar) h3,:root:lang(ar) h4{font-weight:700}
+/* LETTER-SPACING IS NOT A DECORATION IN ARABIC — the script is cursive, and
+   spacing the letters of a word pulls the joins apart into loose shapes. */
+:root:lang(ar) *{letter-spacing:0 !important}
+/* MATHS READS LEFT TO RIGHT INSIDE A PAGE THAT DOES NOT. Every element below
+   holds an expression rather than a sentence: a label cut into a stone, a cell
+   of a diagram, the echo under the hammer. `isolate` keeps each one a run of
+   its own, so a bracket or a minus cannot migrate to the wrong end. Sentences
+   with maths dropped into them are handled in `MF.t` instead, which can reach
+   an aria-label and a spoken line where a stylesheet cannot. */
+:root[dir=rtl] .orelab,
+:root[dir=rtl] .lensed,
+:root[dir=rtl] .lensx b,
+:root[dir=rtl] .lensbox b,
+:root[dir=rtl] .xcell,
+:root[dir=rtl] .benchore,
+:root[dir=rtl] .askrock,
+:root[dir=rtl] .hecho,
+:root[dir=rtl] .metal,
+:root[dir=rtl] .metalbtn,
+:root[dir=rtl] .shedlab,
+:root[dir=rtl] table.scan td{direction:ltr; unicode-bidi:isolate}
 h1,h2,h3,h4{font-family:var(--display); font-weight:400; margin:0}
 p{margin:0 0 .7em}
 sup{font-size:.62em}
@@ -1228,6 +1252,26 @@ input::placeholder, textarea::placeholder{color:#6B5B48; opacity:1}
 .tsbody{padding:15px}
 .tsfoot{padding:0 15px 14px}
 /* the lantern's reading, which is the one a student sees most */
+/* THE FIT TEST, when an instrument does not fit the rock.
+   IT IS THE SIZE OF A READING, NOT THE SIZE OF A FOOTNOTE. The old version was
+   one 14px grey line, which is why a student could hold a tool to a lump, get
+   nothing, and learn nothing. */
+.misfit{border:3px solid var(--ore); border-radius:12px; background:#FFF6E3;
+  padding:14px 16px; margin:10px 0 0; color:#4A3410}
+.misfit .mfhead{font-family:var(--display); font-size:12px; letter-spacing:.11em;
+  text-transform:uppercase; color:var(--ore-t); margin-bottom:9px}
+.misfit .mfrows{display:flex; flex-direction:column; gap:9px}
+.misfit .mfrow{display:flex; gap:10px; align-items:flex-start}
+/* the mark is a fact about the stone, and it is big enough to read as one */
+.misfit .mfmark{flex:0 0 auto; font-size:20px; line-height:1.25}
+.misfit .mftext{font-size:16px; line-height:1.4}
+.misfit .mfrow.good .mftext b{font-family:var(--display); font-weight:400; color:#123F35}
+.misfit .mfto{font-size:15px; margin:11px 0 0; padding-top:10px;
+  border-top:2px solid rgba(176,106,32,.35)}
+@media (max-width:560px){
+  .misfit{padding:12px 13px}
+  .misfit .mftext{font-size:15px}
+}
 .lampread{border-radius:11px; padding:14px 16px; border:3px solid}
 .lampread .big{font-family:var(--display); font-size:clamp(19px,3.2vw,25px); line-height:1.15}
 .lampread .sm{font-size:15px; margin-top:5px}
@@ -3743,6 +3787,34 @@ MF.LANG = {
       markyControl: 'यहाँ किसी चीज़ का मूल्यांकन नहीं होता',
       bannedControl: 'आपको 10 में से 7 अंक मिले',
       drillPrime: /अभाज्य संख्या है/
+    }},
+  /* THE ONE THAT READS THE OTHER WAY. `dir` is what turns the page around, and
+     everything the stylesheet says about a side is logical, so it follows. */
+  ar: {nm:'العربية', dir:'rtl', speech:'ar', stop:'. ',
+    checks: {
+      beat: 200,
+      banned: /(\d+\s*(?:%|بالمئة|بالمائة))|(\d+\s*\/\s*\d+)|(\d+\s*من\s*(?:أصل\s*)?\d+)|(درجة|درجات|علامات|نتيجة|تقييم|ترتيب|دقة|إجابات صحيحة)/,
+      marky: /(تقييم|تصحيح|وضع الدرجات|بلا درجات)/,
+      outOf: /(\d+\s*\/\s*\d+)|(\d+\s*من\s*(?:أصل\s*)?\d+)|(من\s*أصل\s*\d+)/,
+      swingInvite: /سمِّ واحدًا واضرب|يمكن ضربها|ما زال الأمر لك/,
+      xPrescribed: /<b>X<\/b>|ارسم X/,
+      dockCount: /(\d+\s*(?:%|بالمئة))|(\d+\s*\/\s*\d+)|(\d+\s*من\s*(?:أصل\s*)?\d+)|(نقاط|درجات|تقدم|أكملت|سلسلة)/,
+      shedName: /الصب/,
+      doorOre: /الدق|المطحنة|المدقات/,
+      doorMold: /الصب|القالب/,
+      routeBreak: /كسر|الأرضية|الطاولة/,
+      routeYard: /الساحة/,
+      popSwing: /ضرب/,
+      popScan: /مسح/,
+      lessonProse: 1250,
+      panelProse: 580,
+      cubeWord: 'مكعب',
+      squareWord: 'مربع',
+      finishedSteel: /لا شيء يُقتطع|عدد أولي|لا يمر به عِرق صحيح/,
+      finishedLantern: /لا شيء يتحرك|عدد أولي|لا يمر به عِرق صحيح/,
+      markyControl: 'لا شيء هنا يخضع للتقييم',
+      bannedControl: 'لقد حصلت على 7 من 10',
+      drillPrime: /عدد أولي/
     }}
 };
 MF.STR = {};
@@ -4555,6 +4627,9 @@ MF.STR.en = {
   'lens.notmy.cube': '<b>{line}</b> An x cubed is the <b>Drill</b>&rsquo;s lump &mdash; it reads the two ends and takes one bracket off on sight.',
   'lens.notmy.pair': '<b>{line}</b> Two letters all the way through is the <b>Crosscut</b>&rsquo;s lump &mdash; the hunt is the same, only the brackets look different.',
   'lens.notmy.gear': '<b>{line}</b> An x to the fourth is the <b>Shifter</b>&rsquo;s lump &mdash; it drops the whole thing a gear first.',
+  /* the fit test, when an instrument does not fit the rock */
+  'misfit.lab': 'DOES IT FIT?',
+  'misfit.is': 'What this rock is: {kind}',
   'lens.bracket.big': 'Nothing moves in there.',
   'lens.bracket.sm': 'A single x, a single y, and nothing dividing both. {ore} is an element &mdash; the same kind of object as a prime.',
 
@@ -5863,6 +5938,8 @@ MF.STR.es = {
   'lens.notmy.cube': '<b>{line}</b> Una x al cubo es trozo del <b>Taladro</b> &mdash; lee los dos extremos y saca un paréntesis a simple vista.',
   'lens.notmy.pair': '<b>{line}</b> Dos letras de principio a fin es trozo del <b>Crucero</b> &mdash; la búsqueda es la misma, solo cambia el aspecto de los paréntesis.',
   'lens.notmy.gear': '<b>{line}</b> Una x a la cuarta es trozo del <b>Cambiador</b> &mdash; primero baja todo una marcha.',
+  'misfit.lab': '¿ENCAJA?',
+  'misfit.is': 'Lo que es esta roca: {kind}',
   'lens.bracket.big': 'Ahí dentro no se mueve nada.',
   'lens.bracket.sm': 'Una sola x, una sola y, y nada que divida a las dos. {ore} es un elemento &mdash; el mismo tipo de objeto que un número primo.',
 
@@ -7169,6 +7246,8 @@ MF.STR['pt-BR'] = {
   'lens.notmy.cube': '<b>{line}</b> Um x ao cubo é pedaço da <b>Broca</b> &mdash; ela lê as duas pontas e tira um parêntese de cara.',
   'lens.notmy.pair': '<b>{line}</b> Duas letras do começo ao fim é pedaço da <b>Travessa</b> &mdash; a caça é a mesma, só os parênteses parecem diferentes.',
   'lens.notmy.gear': '<b>{line}</b> Um x à quarta é pedaço do <b>Câmbio</b> &mdash; ele desce tudo uma marcha primeiro.',
+  'misfit.lab': 'SERVE?',
+  'misfit.is': 'O que esta rocha é: {kind}',
   'lens.bracket.big': 'Nada se mexe ali dentro.',
   'lens.bracket.sm': 'Um único x, um único y, e nada que divida os dois. {ore} é um elemento &mdash; o mesmo tipo de objeto que um número primo.',
 
@@ -8475,6 +8554,8 @@ MF.STR.fr = {
   'lens.notmy.cube': '<b>{line}</b> Un x au cube, c’est un bloc pour la <b>Foreuse</b> &mdash; elle lit les deux bouts et sort une parenthèse au premier coup d’œil.',
   'lens.notmy.pair': '<b>{line}</b> Deux lettres d’un bout à l’autre, c’est un bloc pour le <b>Travers-Banc</b> &mdash; la recherche est la même, seules les parenthèses ont l’air différentes.',
   'lens.notmy.gear': '<b>{line}</b> Un x puissance quatre, c’est un bloc pour le <b>Sélecteur</b> &mdash; il descend d’abord tout d’un rapport.',
+  'misfit.lab': 'EST-CE QU’IL CONVIENT ?',
+  'misfit.is': 'Ce qu’est cette roche : {kind}',
   'lens.bracket.big': 'Rien ne bouge là-dedans.',
   'lens.bracket.sm': 'Un seul x, un seul y, et rien qui divise les deux. {ore} est un élément &mdash; le même genre d’objet qu’un nombre premier.',
 
@@ -9781,6 +9862,8 @@ MF.STR.de = {
   'lens.notmy.cube': '<b>{line}</b> Ein x hoch drei ist ein Brocken für den <b>Kernbohrer</b> &mdash; er liest die beiden Enden und nimmt eine Klammer auf den ersten Blick ab.',
   'lens.notmy.pair': '<b>{line}</b> Zwei Buchstaben von vorn bis hinten sind ein Brocken für den <b>Querschlag</b> &mdash; die Suche ist dieselbe, nur die Klammern sehen anders aus.',
   'lens.notmy.gear': '<b>{line}</b> Ein x hoch vier ist ein Brocken für den <b>Schalthebel</b> &mdash; er schaltet das Ganze erst einen Gang herunter.',
+  'misfit.lab': 'PASST ES?',
+  'misfit.is': 'Was dieser Brocken ist: {kind}',
   'lens.bracket.big': 'Da drin rührt sich nichts.',
   'lens.bracket.sm': 'Ein einzelnes x, ein einzelnes y, und nichts, was beide teilt. {ore} ist ein Element &mdash; dieselbe Art von Gegenstand wie eine Primzahl.',
 
@@ -11088,6 +11171,8 @@ MF.STR.it = {
   'lens.notmy.cube': '<b>{line}</b> Una x al cubo è un blocco per la <b>Carotatrice</b> &mdash; legge i due estremi e toglie una parentesi a colpo d’occhio.',
   'lens.notmy.pair': '<b>{line}</b> Due lettere dall’inizio alla fine sono un blocco per il <b>Traverso</b> &mdash; la ricerca è la stessa, cambia solo l’aspetto delle parentesi.',
   'lens.notmy.gear': '<b>{line}</b> Una x alla quarta è un blocco per il <b>Cambio</b> &mdash; prima scala tutto di una marcia.',
+  'misfit.lab': 'SI ADATTA?',
+  'misfit.is': 'Che cos’è questa roccia: {kind}',
   'lens.bracket.big': 'Lì dentro non si muove niente.',
   'lens.bracket.sm': 'Una sola x, una sola y, e niente che divida tutte e due. {ore} è un elemento &mdash; lo stesso tipo di oggetto di un numero primo.',
 
@@ -12396,6 +12481,8 @@ MF.STR.id = {
   'lens.notmy.cube': '<b>{line}</b> x pangkat tiga adalah bongkahan milik <b>Bor</b> &mdash; ia membaca kedua ujungnya dan melepas satu kurung begitu terlihat.',
   'lens.notmy.pair': '<b>{line}</b> Dua huruf dari awal sampai akhir adalah bongkahan milik <b>Potong Silang</b> &mdash; perburuannya sama, hanya kurungnya yang tampak berbeda.',
   'lens.notmy.gear': '<b>{line}</b> x pangkat empat adalah bongkahan milik <b>Pemindah Gigi</b> &mdash; ia menurunkan semuanya satu gigi dulu.',
+  'misfit.lab': 'APAKAH COCOK?',
+  'misfit.is': 'Batu ini sebenarnya: {kind}',
   'lens.bracket.big': 'Tidak ada yang bergerak di sana.',
   'lens.bracket.sm': 'Satu x, satu y, dan tidak ada yang membagi keduanya. {ore} adalah unsur &mdash; jenis benda yang sama dengan bilangan prima.',
 
@@ -13705,6 +13792,8 @@ MF.STR.tr = {
   'lens.notmy.cube': '<b>{line}</b> x’in küpü <b>Matkap</b>’ın topağıdır &mdash; iki ucu okur ve görür görmez bir parantez çıkarır.',
   'lens.notmy.pair': '<b>{line}</b> Baştan sona iki harf <b>Çapraz Galeri</b>’nin topağıdır &mdash; av aynı, yalnızca parantezler farklı görünür.',
   'lens.notmy.gear': '<b>{line}</b> x’in dördüncü kuvveti <b>Vites Kolu</b>’nun topağıdır &mdash; önce her şeyi bir vites düşürür.',
+  'misfit.lab': 'UYUYOR MU?',
+  'misfit.is': 'Bu taş aslında: {kind}',
   'lens.bracket.big': 'İçeride hiçbir şey kıpırdamıyor.',
   'lens.bracket.sm': 'Tek bir x, tek bir y ve ikisini birden bölen hiçbir şey yok. {ore} bir element &mdash; asal sayıyla aynı türden bir nesne.',
 
@@ -15014,6 +15103,8 @@ MF.STR.vi = {
   'lens.notmy.cube': '<b>{line}</b> Một x lập phương là cục của <b>Máy Khoan</b> &mdash; nó đọc hai đầu và bật một ngoặc ra ngay khi nhìn thấy.',
   'lens.notmy.pair': '<b>{line}</b> Hai chữ từ đầu đến cuối là cục của <b>Lò Xuyên Vỉa</b> &mdash; cách tìm vẫn thế, chỉ các ngoặc trông khác đi.',
   'lens.notmy.gear': '<b>{line}</b> Một x mũ bốn là cục của <b>Cần Số</b> &mdash; nó hạ cả cục xuống một số trước.',
+  'misfit.lab': 'CÓ HỢP KHÔNG?',
+  'misfit.is': 'Cục đá này là: {kind}',
   'lens.bracket.big': 'Không có gì chuyển động ở trong đó.',
   'lens.bracket.sm': 'Một x, một y, và không có gì là ước của cả hai. {ore} là một nguyên tố &mdash; cùng loại vật với số nguyên tố.',
 
@@ -16324,6 +16415,8 @@ MF.STR.ru = {
   'lens.notmy.cube': '<b>{line}</b> x в кубе — кусок для <b>Бура</b> &mdash; он читает два конца и сразу снимает одну скобку.',
   'lens.notmy.pair': '<b>{line}</b> Две буквы от начала до конца — кусок для <b>Квершлага</b> &mdash; поиск тот же, только скобки выглядят иначе.',
   'lens.notmy.gear': '<b>{line}</b> x в четвёртой степени — кусок для <b>Рычага передач</b> &mdash; сначала он опускает всё на передачу ниже.',
+  'misfit.lab': 'ПОДХОДИТ ЛИ?',
+  'misfit.is': 'Что это за камень: {kind}',
   'lens.bracket.big': 'Там ничего не шевелится.',
   'lens.bracket.sm': 'Один x, один y, и ничто не делит оба. {ore} — элемент &mdash; объект того же рода, что и простое число.',
 
@@ -17634,6 +17727,8 @@ MF.STR.zh = {
   'lens.notmy.cube': '<b>{line}</b>x 的立方，归<b>钻机</b> &mdash; 它读两端，一眼取下一个括号。',
   'lens.notmy.pair': '<b>{line}</b>从头到尾两个字母，归<b>横巷</b> &mdash; 找法一样，只是括号看起来不同。',
   'lens.notmy.gear': '<b>{line}</b>x 的四次方，归<b>换挡杆</b> &mdash; 它先把整块降一挡。',
+  'misfit.lab': '合适吗？',
+  'misfit.is': '这块石头是：{kind}',
   'lens.bracket.big': '里面纹丝不动。',
   'lens.bracket.sm': '一个 x、一个 y，没有能同时整除两者的数。{ore} 是元素 &mdash; 和质数是同一类对象。',
 
@@ -18944,6 +19039,8 @@ MF.STR.ja = {
   'lens.notmy.cube': '<b>{line}</b>x の3乗は<b>ドリル</b>の塊です &mdash; 両端を読んで、かっこをひとつ見ただけで外します。',
   'lens.notmy.pair': '<b>{line}</b>最初から最後まで文字が二つなのは<b>横坑</b>の塊です &mdash; さがし方は同じで、かっこの見た目がちがうだけです。',
   'lens.notmy.gear': '<b>{line}</b>x の4乗は<b>シフトレバー</b>の塊です &mdash; まず全体のギアを一段下げます。',
+  'misfit.lab': 'これで合うか',
+  'misfit.is': 'この石の正体：{kind}',
   'lens.bracket.big': '中では何も動きません。',
   'lens.bracket.sm': 'x がひとつ、y がひとつで、両方を割り切るものはありません。{ore} は元素です &mdash; 素数と同じ種類のものです。',
 
@@ -20253,6 +20350,8 @@ MF.STR.ko = {
   'lens.notmy.cube': '<b>{line}</b> x의 세제곱은 <b>드릴</b>의 덩어리예요 &mdash; 양 끝을 읽고 괄호 하나를 보자마자 떼어 내요.',
   'lens.notmy.pair': '<b>{line}</b> 처음부터 끝까지 문자가 둘인 건 <b>횡갱</b>의 덩어리예요 &mdash; 찾는 법은 같고, 괄호 모양만 달라요.',
   'lens.notmy.gear': '<b>{line}</b> x의 네제곱은 <b>기어 레버</b>의 덩어리예요 &mdash; 먼저 전체를 한 단 내려요.',
+  'misfit.lab': '이 도구가 맞을까요?',
+  'misfit.is': '이 돌의 정체: {kind}',
   'lens.bracket.big': '안에서는 아무것도 움직이지 않아요.',
   'lens.bracket.sm': 'x 하나, y 하나, 그리고 둘을 모두 나누어떨어지게 하는 건 없어요. {ore}은(는) 원소예요 &mdash; 소수와 같은 종류예요.',
 
@@ -21563,6 +21662,8 @@ MF.STR.hi = {
   'lens.notmy.cube': '<b>{line}</b> x का घन <b>ड्रिल</b> का ढेला है &mdash; वह दोनों सिरे पढ़कर देखते ही एक कोष्ठक निकाल देती है।',
   'lens.notmy.pair': '<b>{line}</b> शुरू से आख़िर तक दो अक्षर <b>आड़ी सुरंग</b> का ढेला है &mdash; खोज वही है, बस कोष्ठक अलग दिखते हैं।',
   'lens.notmy.gear': '<b>{line}</b> x की चौथी घात <b>गियर लीवर</b> का ढेला है &mdash; वह पहले पूरा ढेला एक गियर नीचे लाता है।',
+  'misfit.lab': 'क्या यह बैठता है?',
+  'misfit.is': 'यह चट्टान है: {kind}',
   'lens.bracket.big': 'भीतर कुछ भी नहीं हिलता।',
   'lens.bracket.sm': 'एक x, एक y, और दोनों को बाँटने वाला कुछ नहीं। {ore} एक तत्व है &mdash; अभाज्य संख्या जैसी ही वस्तु।',
 
@@ -22059,6 +22160,342 @@ MF.STR.hi = {
   'part.sheet.up': 'अब यह सतह पर {fits} में लगा है &mdash; गहरी सुरंगों से लाई गई धातु से बना।'
 };
 /* ===== END LANGUAGE: hi ===== */
+/* ===== LANGUAGE: ar ===== */
+/* Modern Standard Arabic, addressing the student directly the way the English
+   does. The maths itself never changes: expressions print left to right inside
+   these sentences because `MF.t` isolates every value it fills in. */
+MF.STR.ar = {
+  /* the markup around every screen */
+  'site.name': 'منجم Mr Factor',
+  'load.sub': 'الخام يبدو صخرًا. <b>x&sup2; &minus; 5x + 6</b> يبدو كتلة.<br> هنا في الأسفل هما المسألة نفسها.',
+  'load.enter': 'ادخل المنجم',
+  'top.tagline': 'افصله &middot; أعِده صبًّا &middot; واعرف',
+  'top.access': '<span aria-hidden="true">&#9881;</span> القراءة والوصول',
+  'top.access.aria': 'إعدادات القراءة والوصول، ومنها مستوى الموسيقى والصوت. تُفتح أيضًا بـ Alt و A.',
+  'top.accesscap': 'خيارات التحكم بالموسيقى والصوت',
+  'nav.aria': 'الرئيسية',
+  'nav.home': 'السطح',
+  'nav.mill': 'مطحنة الدق',
+  'nav.shed': 'سقيفة الصب',
+  'nav.mine': 'المنجم',
+  'nav.forge': 'الكور',
+  'load.tick.1': 'فتح البئر',
+  'load.tick.2': 'إشعال المصابيح',
+  'load.tick.3': 'تشغيل المدقات',
+  'load.tick.4': 'تسخين الكور',
+  'load.tick.5': 'تحميل العربة',
+  'load.tick.6': 'الصخر جاهز',
+
+  /* Reading & Access */
+  'access.label': 'إعدادات القراءة والوصول',
+  'access.title': 'القراءة والوصول',
+  'access.sub': 'غيّر طريقة قراءة هذه الصفحة. <b>لا يُحفظ شيء هنا</b> &mdash; يبقى لهذه الزيارة وحدها.',
+  'access.close': 'تمّ',
+  'access.foot': 'اضغط <b>Alt + A</b> في أي وقت لفتح هذا، و<b>Esc</b> لإغلاقه. لا شيء هنا يغيّر الرياضيات.',
+  'access.lang': 'اللغة',
+  'access.lang.hint': 'الترجمات مسوّدات &mdash; التصويبات مُرحَّب بها.',
+  'access.off': 'مغلق',
+  'access.on': 'مفتوح',
+  'access.type': 'الخط',
+  'access.type.hint': 'اختر ما تجده أسهل. لا يوجد خيار صحيح.',
+  'access.type.standard': 'قياسي',
+  'access.type.rounded': 'مستدير',
+  'access.type.dys': 'مناسب لعسر القراءة',
+  'access.type.dysnote': 'هذا يطلب <b>OpenDyslexic</b> أولًا. إن لم يكن مثبتًا على هذا الجهاز فستحصل على أقرب خط موجود &mdash; ستبقى الحروف أعرض وأكثر استدارة من القياسي، لكنه لن يكون ذلك الخط تمامًا.',
+  'access.size': 'حجم النص',
+  'access.tint': 'لون الصفحة',
+  'access.tint.hint': 'بعض الناس يقرؤون من فوق لون أسهل مما يقرؤون من فوق الأبيض.',
+  'access.tint.none': 'بلا لون',
+  'access.tint.peach': 'خوخي',
+  'access.tint.blue': 'أزرق',
+  'access.tint.green': 'أخضر',
+  'access.tint.grey': 'رمادي',
+  'access.ruler': 'مسطرة القراءة',
+  'access.ruler.hint': 'شريط يتبع المؤشر.',
+  'access.spacing': 'تباعد أسطر إضافي',
+  'access.motion': 'الحركة',
+  'access.motion.hint': 'في المنجم يوم عمل، ودخان، وعجلة تدور.',
+  'access.motion.auto': 'كما يقول جهازي',
+  'access.motion.reduce': 'قلّلها',
+  'access.sound': 'الصوت',
+  'access.fx.synth': 'الأصوات المسجّلة لا تصل من هنا، لذا هذه هي الأصوات <b>المصنوعة</b> &mdash; مذبذبات، لا مطرقة حقيقية. وهي تعمل على كل شيء رغم ذلك.',
+  'access.fx.part': 'بعض الأصوات المسجّلة لا تصل من هنا؛ تلك وحدها مصنوعة بدلًا منها.',
+  'access.fx.loading': 'التسجيلات ما زالت في الطريق. أصوات مصنوعة حتى تصل.',
+  'access.amb.synth': 'التسجيل لا يصل من هنا، لذا هذه أجواء غرفة <b>مصنوعة</b>.',
+  'access.amb.loading': 'التسجيل ما زال في الطريق.',
+  'access.music.none': '<b>لا يوجد مقطع يُشغَّل من هنا.</b> الأغنية لا تُصنع، لذا سيبقى هذا المؤشر صامتًا حتى يصل الملف &mdash; وسيصل على الموقع المنشور.',
+  'access.music.loading': 'المقطع ما زال في الطريق.',
+  'access.mute': 'أسكِت كل شيء',
+  'access.level.off': 'مغلق',
+  'access.fx': 'المؤثرات الصوتية',
+  'access.fx.hint': 'وقع المطرقة، وجريان العِرق، والصبّ.',
+  'access.amb': 'أجواء المنجم',
+  'access.amb.hint': 'صوت المكان نفسه &mdash; آلات على بُعد. يعلو داخل المنجم.',
+  'access.music': 'الموسيقى',
+  'access.music.hint': 'مقطع يعلو فوق كل ذلك.',
+  'access.quiet': 'كلاهما مغلق الآن. الموسيقى تعلو على السطح وصوت الغرفة داخل المنجم &mdash; وما إن تحرّك أيًّا منهما بنفسك حتى يبقى حيث وضعته تمامًا.',
+  'access.read': 'القراءة بصوت مسموع',
+  'access.read.none': 'لا صوت مدمجًا في هذا المتصفح، لذا القراءة بصوت مسموع غير متاحة هنا.',
+  'access.read.hint': 'يقرأ ما يقوله Mr Factor وكلام الدرس. ولا يقرأ الرسوم &mdash; فتلك تحمل أوصافها الخاصة لقارئ الشاشة، وهي تقول أكثر مما تقوله الأرقام.',
+  'access.read.play': '&#9654; اقرأ هذه الصفحة',
+  'access.read.stop': '&#9632; قف',
+  'access.speed': 'السرعة',
+
+  /* the surface */
+  'home.doors': 'المباني هي الأبواب &mdash; انقر واحدًا. أو استعمل الأزرار في الأسفل إن كنت تفضّل ذلك.',
+  'home.h2': 'الخام يبدو صخرًا.',
+  'home.lede1': 'العِرق <em>هو</em> عامل — كان في الصخر قبل وصولك. في المنجم أنت <b>تكسر</b>: سمِّ عاملًا، واضرب، والصخر يخبرك هل جرى العِرق. وما يتبقّى يعود تحت المطرقة حتى لا ينفصل منه شيء.',
+  'home.lede2': '<b>الكور</b> يجري في الاتجاه الآخر — المعادن تدخل قالبًا ويخرج منه شيء واحد. ذلك هو <b>التوزيع</b>، ولا يحدث في أي مكان آخر.',
+  'home.lede3': '<b>72</b> و<b>x² − 5x + 6</b> عمل واحد. العدد الأولي وكثير الحدود الذي لا يفصله شيء ليسا شبيهين: هما الشيء نفسه، <b>سبيكة</b> — نقية أصلًا. ولأجل ذلك وُجد هذا المنجم كله.',
+  'home.open': 'لا شيء هنا موقوت ولا محفوظ، ولا شيء مقفل.<br>تستطيع دخول المنجم الآن، أو قضاء دقيقة في ورشة أولًا — البابان مفتوحان.',
+  'home.card.shed.title': 'سقيفة الصب',
+  'home.card.shed.why': 'صبّ المعادن في قالب وشاهد شيئًا واحدًا مصوغًا يخرج. هذه هي خاصية التوزيع، وهي الحركة التي يجريها المنجم عكسًا طوال اليوم.',
+  'home.card.shed.go': 'افتح القالب',
+  'home.card.mill.title': 'مطحنة الدق',
+  'home.card.mill.why': 'فكّك أي عدد. وانظر لماذا يصل عاملان يقطعان عند مواضع مختلفة إلى المعادن نفسها، وماذا يعني أن تكون الكتلة نقية أصلًا.',
+  'home.card.mill.go': 'إلى المطحنة',
+  'home.card.mine.title': 'المنجم',
+  'home.card.mine.why': 'انزل إلى العمق الذي تريده واملأ عربتك — لست مضطرًا لكسر شيء لتنزل أعمق. ثم اعمل على كتلة حين يحلو لك.',
+  'home.card.mine.go': 'ادخل المنجم',
+  'home.stat.shapes': 'أشكال',
+  'home.stat.directions': 'اتجاهان',
+  'home.stat.idea': 'فكرة',
+
+  /* Mr Factor: the rooms, in the order he says them */
+  'guide.home.where': 'السطح',
+  'guide.home.1': 'كل شيء هنا مبنى تستطيع الدخول إليه، والشريط في الأعلى يوصلك إليها جميعًا.',
+  'guide.home.2': 'ابدأ من <b>المنجم</b> إن أردت أن تكسر شيئًا، أو من <b>مطحنة الدق</b> إن كنت تفضّل البدء بأعداد سادة، أو من <b>سقيفة الصب</b> إن كنت تفضّل القراءة أولًا. لا شيء منها مطلوب ولا شيء منها يُقفل.',
+  'guide.home.3': 'الساحة في الزاوية هي حيث ينتهي معدنك. وهي الشيء الوحيد هناك الذي لا تدخله &mdash; فساحة العمل شريط داخل المنجم.',
+  'guide.mine.where': 'المنجم',
+  'guide.mine.1': 'اقتطع كتلة من الجدار فتذهب إلى عربتك. انزل إلى العمق الذي تريده — لا شيء يجب العمل عليه قبل أن تمضي أعمق.',
+  'guide.mine.2': 'ضع واحدة على الطاولة و<b>سمِّ عاملًا</b>، ثم اضرب. إما أن يجري العِرق أو ينزلق المعول، والصخر يخبرك أيّهما.',
+  'guide.mine.3': 'وما يتبقّى يعود تحت المطرقة. واصل حتى لا ينفصل منه شيء — ذلك <b>معدن أصلي</b>، وقد انتهى أمره.',
+  'guide.mine.4': 'لا شيء هنا موقوت. والضربة التي تخطئ تكلّفك الضربة وحدها.',
+  'guide.forge.where': 'الكور',
+  'guide.forge.1': 'هنا <b>تضرب</b> بدل أن تكسر، وهو المكان الوحيد الذي تفعل ذلك فيه <b>حسب الطلب</b>. المعدن يدخل قالبًا ويخرج شيء واحد.',
+  'guide.forge.2': 'خذ طلبًا عن اللوح وأفتح لك القالب. وأنت تنفق معدنًا من الساحة لتملأه.',
+  'guide.forge.3': 'إن كانت الصبّة سليمة احتفظت بما صنعت. السبعة على لوح الطلبات أدوات &mdash; كل واحدة تقرأ لك كتلة، ولا واحدة منها تقفل شيئًا. والصبّات العميقة الأربع أشياء، ولا تقرأ شيئًا.',
+  'guide.workshop-mold.where': 'سقيفة الصب',
+  'guide.workshop-mold.1': 'ثلاث ورشات قصيرة. <b>الكلمات</b> هي المفردات، و<b>القوالب</b> هي ما يفعله الصبّ فعلًا، و<b>الأدوات</b> هي كيف تعمل كل أداة.',
+  'guide.workshop-mold.2': 'لا واحدة منها مطلوبة. عُد إلى هنا حين تتوقف كلمة في المنجم عن أن تكون مفهومة.',
+  'guide.shed-mold.where': 'القوالب',
+  'guide.shed-mold.1': 'حرّك المؤشرات وراقب الصبّ. ما تضعه هو ما يقرّر ما يخرج — أنت لا تختار الشكل أبدًا.',
+  'guide.shed-mold.2': 'والعمل المكتوب تحته هو الضرب نفسه سطرًا سطرًا &mdash; كل جزء من معدن يلاقي كل جزء من الآخر.',
+  'guide.shed-words.where': 'الكلمات',
+  'guide.shed-words.1': 'كل اسم تعديني هنا شيء رياضي حقيقي له اسم حقيقي. والجدول يحمل العمودين.',
+  'guide.shed-words.2': 'ثم اجمعها بنفسك في نشاط المطابقة. والزوج الذي لا يجتمع يخبرك بمعنى كل كلمة ثم يُفلت.',
+  'guide.shed-methods.where': 'الأدوات',
+  'guide.shed-methods.1': 'درس واحد لكل أداة صببتها، فتمتلئ هذه الغرفة كلما صببت. وكل درس يمشي في طريقته شريحة شريحة، وعلى كل شريحة صورتها.',
+  'guide.shed-methods.2': 'وتحت كل شرح طاولة عليها ثلاث كتل. <b>أنزل الأداة عن الخطّاف وألصقها بواحدة</b> &mdash; ذلك هو الجزء الذي ليس قراءة.',
+  'guide.workshop-ore.where': 'مطحنة الدق',
+  'guide.workshop-ore.1': 'أعداد سادة، وعوامل كل شيء حتى المئة.',
+  'guide.workshop-ore.2': 'ضع كتلة على الطاولة واسحب الذراع. المكبس يجد ما يقسمها — وما لا ينفصل هو <b>عدد أولي</b>، وهو الشيء نفسه الذي نسمّيه معدنًا أصليًّا.',
+
+  /* Mr Factor on the breaking floor */
+  'guide.floor.where': 'أرضية الكسر',
+  'guide.room.where': 'في الغرفة',
+  'guide.shed.1': 'عدة طَرَقات متتالية تعني عادةً الطريقة، لا الحساب.',
+  'guide.shed.2': 'لم تدخل <b>سقيفة الصب</b> بعد. ابدأ من <b>القوالب</b> &mdash; فهي تكتب الصبّة سطرًا سطرًا، والكسر هو ذلك معكوسًا.',
+  'guide.give.1': 'تلك تقاومك، لذا سأقولها مباشرة: <b>{factor}</b> يجري فيها. اقطع المطرقة على ذلك واضرب.',
+  'guide.give.2': 'وما يبقى حين تخرج هو الطرف الآخر، وذلك الجزء ما زال الأمر لك أن تسمّيه.',
+  'guide.native.1': 'لا يمر بتلك عِرق <b>صحيح</b>. إنها <b>معدن أصلي</b> — عنصر أصلًا، وما كانت لتنفصل تحت مطرقة صحيحة.',
+  'guide.native.2': 'وليس ذلك تقصيرًا منك. ضعها على الرف وخذ القطعة التالية.',
+  'guide.hint.group.1': 'أربعة حدود، فهذه ليست مطاردة زوج. خذها <b>اثنين اثنين</b> واسحب الجزء المشترك من كل نصف &mdash; فإن خرج القوس نفسه من النصفين، فهو يجري في الكتلة كلها.',
+  'guide.hint.group.2': 'والنهاية تخبرك قبل أن تبدأ: <b>{b} × {c}</b> يجب أن يساوي العدد في النهاية، وهو هنا <b>{d}</b>.',
+  'guide.hint.cube': 'طرفان ولا وسط. اسأل هل <b>الطرفان مكعبان كاملان</b> &mdash; فإن كانا كذلك خرج قوس واحد من النظرة الأولى، والقطعة التي خلفه لا تنكسر أبدًا.',
+  'guide.hint.bi': 'تلك قوس واحد بحرفين. لا شيء فيها للمطاردة — إنها <b>معدن أصلي</b>، وقد انتهى أمرها.',
+  'guide.hint.quart.1': 'اقرأ <b>x&sup2; على أنها الوحدة</b> — x&sup2; مضروبة في نفسها هي مصدر x&#8308; — فإذا هي ثلاثي حدود من جديد.',
+  'guide.hint.quart.2': 'ثم <b>X</b> على ذلك: الزوج يجب أن يضرب فيعطي <b>{c}</b> ويجمع فيعطي <b>{b}</b>. والمطرقة مقطوعة على <b>x&sup2;</b>، لا على x.',
+  'guide.hint.two.1': 'نفس <b>X</b> كالعادة، والحرف الثاني يركب معها: الزوج يجب أن يضرب فيعطي <b>{c}</b> ويجمع فيعطي <b>{b}</b>.',
+  'guide.hint.two.2': 'وكل قوس يخرج على صورة <b>x + ?y</b> &mdash; والعدد الذي تجده هو ما يحمله الـ y.',
+  'guide.hint.number': 'على عدد سادة، ما تضرب به يجب أن <b>يقسمه تمامًا</b>. اصعد في الأعداد الأولية الصغيرة — 2، ثم 3، ثم 5، ثم 7.',
+  'guide.hint.linear': 'لا x&sup2; في هذه. ابحث عمّا <b>يحمله كل حد</b> وضعه أمام قوس &mdash; وإن لم يحملا شيئًا مشتركًا فتلك إجابة أيضًا: هي عنصر أصلًا.',
+  'guide.hint.pair.1': 'ضع <b>X</b> عليها: الزوج يجب أن يضرب فيعطي <b>{ac}</b> ويجمع فيعطي <b>{b}</b>. الاثنان معًا، وإلا فليس هو الزوج.',
+  'guide.hint.pair.2': 'والمطرقة مقطوعة على شكل صحيح. فإن لم يحقق زوج صحيح الأمرين، فلا زوج أقواس هناك &mdash; بعد أن تكون قد أخرجت ما <b>يحمله كل حد</b>.',
+  'guide.hint.any': 'خذ القطع واحدة واحدة، وسمِّ ما تظنه يجري في التي تحت المعول.',
+  'voice.hint.dyn': '(يختلف باختلاف الكتلة) ضع X عليها: الزوج يجب أن يضرب فيعطي … ويجمع فيعطي ….',
+  'voice.give.dyn': '(يختلف باختلاف الكتلة) تلك تقاومك، لذا سأقولها مباشرة: … يجري فيها.',
+
+  /* Mr Factor inside a room */
+  'says.prefix': '<b>Mr Factor:</b> ',
+  'says.mold-after-pour': 'تذكّر هذا الشكل. في المنجم ستجريه <b>عكسًا</b> — ستكون معك الصبّة وتطارد المعادن التي صنعتها.',
+  'says.mill-done': 'ذلك الصف هو كل شيء. وعاملان قطعا بترتيب مختلف ينتهيان إلى السبائك نفسها — ولهذا للعدد مجموعة معادن واحدة.',
+  'says.mill-going': 'واصل الدق حتى تصير كل قطعة سبيكة. هذا كل ما في الأمر، وهو تمامًا ما ستفعله بثلاثي الحدود في المنجم.',
+  'says.forge-cold': 'كل ما تُلقيه يُستهلك &mdash; فإن أنفقت الـ (x + 3) الوحيدة عندك، فستنزل من أجل واحدة أخرى.',
+
+  /* his dock */
+  'guide.aria.bubble': 'Mr Factor، عن {where}',
+  'guide.aria.shut': 'أغلق ما يقوله Mr Factor',
+  'guide.aria.back': 'ما قاله قبل هذا',
+  'guide.gotit': 'فهمت',
+  'guide.next': 'التالي →',
+  'guide.aria.next': 'الشيء التالي الذي عنده ليقوله',
+  'guide.aria.tab.open': 'افتح ما عند Mr Factor ليقوله عن {where}',
+  'guide.aria.tab.close': 'أغلق ما عند Mr Factor ليقوله عن {where}',
+  'guide.aria.tab.fresh': '. لم يعرض عليك هذه الغرفة بعد.',
+
+  /* the Casting Shed */
+  'shed.title': 'سقيفة الصب',
+  'shed.lede1': '<b>هذه هي الغرفة التي تُشرح فيها الأشياء.</b> لا شيء هنا يُحفر أو يُكسر أو يُنفق &mdash; إنها ثلاث ورشات قصيرة ومكان تعود إليه حين تتوقف كلمة في المنجم عن أن تكون مفهومة.',
+  'shed.lede2': 'سُمّيت السقيفة بما تفعله: المعدن المنصهر يدخل قالبًا فيخرج <b>شيء واحد مصوغ</b>. والشكل يقرّره ما صببته — أنت لا تختاره أبدًا. وقطع القالب إلى نصفين لا يغيّر كمية المعدن فيه؛ إنما يتيح لك وصف الشيء نفسه مرتين. تلك هي خاصية التوزيع كاملة، والمنجم يجريها عكسًا طوال اليوم.',
+  'shed.open': 'لا شيء هنا موقوت ولا محفوظ، ولا شيء منه مطلوب. تستطيع دخول المنجم دون أن تقرأ منه حرفًا &mdash; وقاعدة عدم الإقفال سارية في كل مكان.',
+  'shed.aria.open': 'افتح الورشة: {room}',
+  'shed.shed-words.nm': 'الكلمات',
+  'shed.shed-words.why': 'كل كلمة يستعملها هذا المكان شيء رياضي حقيقي له اسم حقيقي. <b>العِرق عامل.</b> تعلّم عمودًا واحدًا تكن قد تعلّمت نصف الأمر.',
+  'shed.shed-words.go': 'إلى الكلمات',
+  'shed.shed-mold.nm': 'القوالب',
+  'shed.shed-mold.why': 'صبّ معدنين فيخرج <b>شيء واحد مصوغ</b>. كل جزء من أحدهما يلاقي كل جزء من الآخر &mdash; والمنجم يجري ذلك عكسًا طوال اليوم.',
+  'shed.shed-mold.go': 'إلى القوالب',
+  'shed.shed-methods.nm': 'الأدوات',
+  'shed.shed-methods.why': 'لماذا تعمل كل أداة وكيف تستعملها، ممشيًّا شريحة شريحة &mdash; و<b>خام على طاولة تلصقها به</b>، وذلك هو الجزء الذي ليس قراءة.',
+  'shed.shed-methods.go': 'إلى الأدوات',
+
+  /* the Stamp Mill */
+  'mill.title': 'مطحنة الدق',
+  'mill.lede': 'المدقات <b>تفكّك الخام</b>، وتواصل حتى لا ينكسر ما تبقّى. وبعض الكتل تخرج من هنا كما دخلت — لم ينفصل عنها شيء، لأنها عنصر أصلًا. تلك <b>معدن أصلي</b>. في الأعداد نسمّيها أولية؛ وأعمق في المنجم ستلقى نظائرها من كثيرات الحدود، وهي الشيء نفسه.',
+  'mill.why.whole': 'المدق مقطوع على عدد صحيح. ضع واحدًا في الصندوق واسحب مرة أخرى.',
+  'mill.why.ingot': '{n} سبيكة أصلًا. لا ينفصل عنها شيء مهما اشتدّ وقع المدق.',
+  'mill.why.bounce': '<b>ارتدّ المدق.</b> {d} لا يقسم {n} — {n} ÷ {d} يترك {rest}. ولم يُفقد شيء؛ الكتلة كما كانت تمامًا.',
+  'mill.why.remainder': 'باقيًا مقداره {r}',
+  'mill.why.nothing': 'لا شيء للعمل عليه',
+  'mill.why.split': '<b>{n} انفصلت إلى {a} و{b}.</b>',
+  'mill.why.prime': '<b>{n} سبيكة.</b> إنها أولية — لا يقسمها إلا 1 ونفسها.',
+  'mill.done': '<b>كل قطعة سبيكة.</b> لا شيء بقي على الطاولة ينفصل &mdash; وذلك الصف هو <b>كل معدن في {n}</b>، مهما اخترت أن تقطع.',
+  'mill.under': 'تحت المدق',
+  'mill.hint.name': 'سمِّ عددًا صحيحًا تظنه يقسمها، ثم اسحب الذراع. لا شيء هنا يقول هل سيفعل — المدق هو الذي يقول.',
+  'mill.aria.input': 'عدد صحيح تظنه يقسم {n}',
+  'mill.pull': 'اسحب الذراع',
+  'mill.aria.pull': 'أنزل المدق على {n}',
+  'mill.every': 'كل معدن في {n}',
+  'mill.bench': 'على الطاولة',
+  'mill.aria.ingot': '{n} — سبيكة. لا ينفصل فيها شيء.',
+  'mill.aria.ore': '{n} — ما زال خامًا. انقر لوضعه تحت المدق.',
+  'mill.new': 'ضع كتلة جديدة على الطاولة',
+  'mill.aria.slider': 'اختر عددًا بين {min} و{max}',
+  'mill.hint.range': 'أي شيء من {min} إلى {max}. بعضها ينفصل أربع مرات وبعضها لا يتحرك أبدًا.',
+
+  /* the questions at the foot of a workshop */
+  'q.lab': 'قبل أن تمضي',
+  'q.lede': 'لا شيء هنا يُحفظ. وهي موجودة لأن الإجابة عن واحدة هي كيف تعرف أنك تابعت.',
+  'q.aria.m': 'كم x — اتركه فارغًا لـ x واحدة، أو ضع 0 لعدد سادة',
+  'q.aria.num': 'العدد',
+  'q.aria.k': 'العدد في النهاية',
+  'q.try': 'جرّبها',
+  'q.notwhole': 'ذاك ليس عددًا صحيحًا، فليس هناك ما يُجرَّب بعد.',
+  'q.aria.choose': 'اختر {label}',
+  'q.chose': '<b>اخترت {label}.</b> ',
+  'q.aria.prev': 'السؤال الذي قبل هذا',
+  'q.aria.next': 'السؤال التالي',
+  'q.aria.goto': 'اذهب إلى السؤال {n}',
+  'q.count': 'السؤال {at} · المجموع {n}',
+
+  /* The Molds */
+  'molds.lede': 'معدنان يدخلان <b>منفصلين</b> ويخرج شيء واحد <b>موحَّد</b>. القالب لا يختار الشكل — المعادن تختاره. ولأن النتيجة محتومة، فإن إجراءها عكسًا له جواب محدّد، وذلك هو سبب إمكان المنجم من أساسه.',
+  'molds.slide.a': 'عمق القالب (a)',
+  'molds.slide.b': 'الجزء الأول (b)',
+  'molds.slide.c': 'الجزء الثاني (c)',
+  'molds.slide.a2': 'القوس الأول، وعدده (a)',
+  'molds.slide.d2': 'العمق على القوس الأول (d)',
+  'molds.slide.c2': 'القوس الثاني، وعدده (c)',
+  'molds.mode': 'ما في القالب',
+  'molds.mode.num': 'جزآن سادان',
+  'molds.mode.x': 'جزء فيه x',
+  'molds.mode.two': 'قوسان',
+  'molds.cap.two': 'أربع زوايا، لأن كل جزء من قوس يلاقي كل جزء من الآخر. وزاويتا x من النوع نفسه.',
+  'molds.a11y.two': 'قالب مقطوع بمقاس ( {bx} + {a} ) في ( x + {c} )، ويُظهر أربعة حواصل ضرب.',
+  'molds.cap.one': 'جانبا القالب مضبوطان، فكل جزء من الصبّة يتبعهما.',
+  'molds.a11y.one': 'قالب عمقه {a} مقسوم إلى جزء عرضه {b} وجزء عرضه {c}.',
+  'molds.q1': 'قالب عمقه <b>4</b> مقطوع إلى جزء عرضه <b>x</b> وجزء عرضه <b>3</b>. ماذا يخرج منه؟',
+  'molds.q1.sub': 'الجزآن ما زالا صبّة واحدة. ولا يضيف قطع القالب شيئًا.',
+  'molds.q1.a': 'كلا الجزأين ينال العمق كاملًا. 4 × x هو 4x و4 × 3 هو 12، والصبّة هي الاثنان معًا.',
+  'molds.q1.b': 'ذلك يعطي العمق للجزء الأول دون الثاني. القالب عمقه 4 <em>على امتداده كله</em> — فالـ 3 تجلس في معدن عمقه 4 أيضًا، فتخرج 12.',
+  'molds.q1.c': 'ذلك يجمع العمق إلى العرض بدل أن يضربهما. 4 وx ضلعان لمستطيل واحد، لا شيئان موضوعان طرفًا إلى طرف.',
+  'molds.q2': 'لماذا لا تستطيع أبدًا أن <b>تختار</b> الشكل الذي يخرج من القالب؟',
+  'molds.q2.a.label': 'لأن المعادن هي التي تقرّره',
+  'molds.q2.a': 'للتوزيع نتيجة محتومة. ما إن تعرف ما دخل حتى يصير هناك شيء واحد بالضبط يمكن أن يخرج — ولذلك فإن إجراءه عكسًا له جواب محدّد تطارده.',
+  'molds.q2.b.label': 'لأن الكور لا يملك إلا قالبًا واحدًا',
+  'molds.q2.b': 'على اللوح سبعة قوالب، واحد لكل طلب. والقيد ليس عدد القوالب الموجودة — بل أن ما يخرج يتبع ما دخل.',
+  'molds.q2.c.label': 'لأنك لم تصبّ الأداة المناسبة بعد',
+  'molds.q2.c': 'لا أداة في هذا الموقع كله تغيّر ما تؤول إليه الصبّة. الأداة تساعد؛ ولا تقفل شيئًا ولا تبدّل الحساب.',
+  'molds.q3': 'أجرِها الآن <b>عكسًا</b>، وذلك اتجاه المنجم. <b>2x&sup2; + 10x + 12</b> خرجت من قالب. سمِّ <b>واحدًا</b> من المعادن التي دخلت.',
+  'molds.q3.sub': 'خانة x الفارغة تعني x واحدة. ضع 0 فيها لتسمّي معدنًا سادة بدلًا من ذلك.',
+  'molds.q3.cta': 'أعِدها صبًّا',
+  'molds.q3.ok': '<b>ذاك دخل.</b> <b>{left}</b> و<b>{right}</b> يضربان فيعودان إليها — وهنا أكثر من جواب أول صحيح، لأن 2 · (x + 2) · (x + 3) فيها ثلاثة معادن.',
+  'molds.q3.no': '<b>{why}</b> لم يُفقد شيء. المحرّك نفسه الذي يضرب به السندان أجاب عن ذلك للتو، وهو يصف الصخر لا يصفك.',
+
+  /* the translation table — the mine's word, the textbook's, and why */
+  'rosetta.ore.mine': 'خام',
+  'rosetta.ore.real': 'عبارة',
+  'rosetta.ore.note': 'أي عبارة كانت — عدد، أو حد واحد، أو ذو حدين، أو ثلاثي الحدود.',
+  'rosetta.ore.show': '{ore} كتلة خام',
+  'rosetta.seam.mine': 'عِرق',
+  'rosetta.seam.real': 'عامل',
+  'rosetta.seam.note': 'كان في الصخر قبل وصولك. والعثور عليه لا يضعه فيه.',
+  'rosetta.seam.show': '( {g} ) يجري في {ore}',
+  'rosetta.break.mine': 'كسره',
+  'rosetta.break.real': 'التحليل إلى عوامل',
+  'rosetta.break.note': 'الضربة الواحدة تُخرج عاملًا واحدًا. وما يتبقّى يعود تحت المطرقة، ويتكرر ذلك حتى لا ينفصل شيء.',
+  'rosetta.native.mine': 'معدن أصلي',
+  'rosetta.native.real': 'عدد أولي، أو كثير حدود غير قابل للتحليل',
+  'rosetta.native.note': 'هذا ما وُجد هذا المكان لأجله. ليسا شيئين متشابهين — هما الشيء نفسه، عنصر لا يستطيع الكسر أن يفصله أكثر.',
+  'rosetta.native.show': '{p} و{ore} من النوع نفسه',
+  'rosetta.twin.mine': 'عِرق توأم',
+  'rosetta.twin.real': 'فرق بين مربعين',
+  'rosetta.twin.note': 'لا حدّ أوسط، والطرفان مربعان. والوسطان يلغي أحدهما الآخر.',
+  'rosetta.common.mine': 'المعدن المشترك',
+  'rosetta.common.real': 'القاسم المشترك الأكبر',
+  'rosetta.common.note': 'الشيء الوحيد الذي يحمله كل حد. وهو أول ما يُبحث عنه دائمًا.',
+  'rosetta.loaded.mine': 'خام محمَّل',
+  'rosetta.loaded.real': 'ax² + bx + c حيث a ≠ 1',
+  'rosetta.loaded.note': 'الطرفان مثبّتان، فأجزاء x يجب أن تضرب فتعطي a والأعداد تعطي c. ولذلك وُجد التحليل بالتجميع.',
+  'rosetta.assay.mine': 'الفحص',
+  'rosetta.assay.real': 'تمييز الصورة قبل العمل عليها',
+  'rosetta.assay.note': 'تسمية نوع الشيء الذي أمامك، وهي الخطوة التي تقرّر أي طريقة تمدّ يدك إليها.',
+  'rosetta.assay.show': '{ore} هي {kind}',
+  'rosetta.pour.mine': 'الصبّ، والقالب',
+  'rosetta.pour.real': 'خاصية التوزيع',
+  'rosetta.pour.note': 'حركة الكور، والمكان الوحيد الذي تحدث فيه. المعادن تدخل منفصلة ويخرج شيء واحد.',
+  'rosetta.sound.mine': 'سليم، أو خردة',
+  'rosetta.sound.real': 'التحقق بالضرب عكسًا',
+  'rosetta.sound.note': 'إن ضُربت القطع فعادت إلى الصخرة التي خرجت منها، فهي القطع. ولا شيء آخر يُتحقق منه.',
+  'rosetta.sound.show': 'اضرب القطع وانظر هل تعود {ore}',
+  'rosetta.tag': 'ماذا تعني كل كلمة هنا',
+  'rosetta.lede': 'هذا المكان يسمّي الأشياء بأسماء تعدينية، وكل واحد منها شيء رياضي حقيقي له اسم حقيقي. وإن لم تتعلم إلا عمودًا واحدًا فقد تعلّمت نصف الأمر.',
+  'rosetta.th.mine': 'في المنجم',
+  'rosetta.th.real': 'في الرياضيات',
+  'rosetta.th.ex': 'محلولًا',
+  'rosetta.matters': '<b>أهم صف هو «معدن أصلي».</b> العدد الأولي وكثير الحدود الذي لا يفصله شيء ليسا <em>شبيهين</em>. هما الشيء نفسه: شيء مصفّى أصلًا، لا يستطيع الكسر أن يمضي به أبعد. ولهذا فإن <b>72</b> و<b>x² − 5x + 6</b> عمل واحد لا عملان.',
+
+  /* matching the two columns */
+  'match.lab': '&#128279; ضع كل واحدة مع اسمها الحقيقي',
+  'match.hint': 'انقر كلمة على جانب، ثم الاسم الذي تقابله على الجانب الآخر. والزوج الذي لا يجتمع يخبرك بمعنى كل واحدة ثم يُفلت.',
+  'match.col.mine': 'ما يقوله هذا المكان',
+  'match.col.real': 'ما يُسمّى به',
+  'match.aria.mine': 'كلمة المنجم: {w}',
+  'match.aria.real': 'الاسم الحقيقي: {w}',
+  'match.good': '<b>{mine} هو {real}.</b> ',
+  'match.all': 'تلك كلها. العمودان عمود واحد.',
+  'match.bad': '<b>هذان شيئان مختلفان.</b> {m1} هو <b>{r1}</b>، و{r2} هو ما يسمّيه هذا المكان <b>{m2}</b>.',
+
+  /* The Words */
+  'words.lede': 'الاستعارة طريق للدخول حتى تصير لغة خاصة، فتصير جدارًا. كل ما على جانب هو ما يسمّيه هذا المكان. وكل ما على الجانب الآخر هو ما يسمّيه الكتاب والمعلّم وورقة الامتحان <b>للشيء نفسه</b>. وليسا متشابهين. هما الشيء نفسه باسمين.',
+  'words.q1': 'أي هذه <b>معدن أصلي أصلًا</b>؟',
+  'words.q1.sub': 'المعدن الأصلي كلمة المنجم. وكلمة الرياضيات في الجدول أعلاه.',
+  'words.q1.a': 'لا يخرج منها شيء صحيح. إنها <b>كثير حدود غير قابل للتحليل</b> — النوع نفسه من الأشياء الذي هو العدد الأولي، عنصر أصلًا، لا كتلة أخفقت في الانكسار.',
+  'words.q1.b': 'تلك ما زالت تنفصل. مربعان بينهما ناقص ولا حدّ أوسط هما <b>عِرق توأم</b> — فرق بين مربعين — ويجري عند (x + 3) و(x − 3).',
+  'words.q1.c': 'كل حد هناك يحمل 2، فيجري فيه عِرق. أخرج <b>العامل المشترك</b> فتحصل على 2(x + 3).',
+  'words.q2': 'يقول الجدول إن <b>المعدن المشترك</b> هو <b>القاسم المشترك الأكبر</b>. اكتب المعدن المشترك لـ <b>18x + 24</b>.',
+  'words.q2.sub': 'ضع العدد السادة في الخانة.',
+  'words.q2.cta': 'أخرجه',
+  'words.q2.ok': '<b>{g} هو الأكبر بينها.</b> {ore} = {g}({rest})، ولا شيء أكبر منه يقسم الاثنين.',
+  'words.q2.part': '<b>{k} يجري في الاثنين فعلًا</b> &mdash; العِرق حقيقي والمطرقة ستقع. لكنه ليس <em>الأكبر</em>: {g} يقسم الاثنين أيضًا، وأخذ {k} يترك {right} وفيه عِرق بعد.',
+  'words.q2.no': '<b>{why}</b> انظر بماذا ينقسم 18 و24 معًا.',
+
+  /* ----- ar: section 2 goes here ----- */
+  /* ----- ar: section 3 goes here ----- */
+  /* ----- ar: section 4 goes here ----- */
+};
+/* ===== END LANGUAGE: ar ===== */
 MF._missing = {};
 MF.lang = function(){
   var l = MF.state && MF.state.access && MF.state.access.lang;
@@ -23372,22 +23809,68 @@ MF.oreDisplayText = function(o){
   return MF.oreText(o);
 };
 
-/* A LUMP AN INSTRUMENT IS NOT CUT FOR */
-MF.notMyLump = function(host, tool, line){
-  host.appendChild(H('p','hint', MF.t('lens.notmy.group', {line: line})));
+/* A LUMP AN INSTRUMENT IS NOT CUT FOR.
+   THIS USED TO BE ONE GREY LINE OF HINT TEXT, and it was the quietest moment on
+   the site at the moment the rock has most to say: a tool that does not fit has
+   just told you the shape is wrong, which is the assay — the one skill the whole
+   mine turns on. The panel below is the fit test written out: what the
+   instrument requires, ticked against this rock, then what the rock actually is
+   and whose lump it therefore is.
+   THE TICKS DESCRIBE THE STONE AND NEVER THE STUDENT. Nothing here is scored,
+   and the subject of every line is the ore — `nogrades` still sweeps this panel
+   like everything else.
+   IT REUSES SENTENCES THAT ARE ALREADY WRITTEN IN EVERY LANGUAGE: the failing
+   condition is the instrument's own `read.*.not`, the redirect is `lens.notmy.*`,
+   and the shape's name is the assay's. Only the two labels are new. */
+MF.misfitPanel = function(host, tool, ore, failLine, redirectKey){
+  var box = E('div','misfit');
+  box.appendChild(H('div','mfhead', MF.t('misfit.lab')));
+
+  var rows = E('div','mfrows');
+  /* WHAT IT NEEDED, AND DID NOT GET */
+  var bad = E('div','mfrow bad');
+  bad.appendChild(H('span','mfmark', '❌'));
+  bad.appendChild(H('span','mftext', failLine));
+  rows.appendChild(bad);
+
+  /* WHAT THE ROCK IS INSTEAD — the assay, which is the thing worth learning */
+  var kind = null;
+  try { kind = MF.assayOf(ore); } catch(e){ kind = null; }
+  if(kind && MF.ASSAY[kind]){
+    var good = E('div','mfrow good');
+    good.appendChild(H('span','mfmark', '✅'));
+    /* THE SHAPE'S NAME ONLY. Its `tell` is the sentence the redirect below
+       already says, and printing both said the same thing twice. */
+    good.appendChild(H('span','mftext',
+      MF.t('misfit.is', {kind: '<b>' + MF.ASSAY[kind].name + '</b>'})));
+    rows.appendChild(good);
+  }
+  box.appendChild(rows);
+
+  /* AND WHOSE LUMP IT IS. The arrow is a signpost, not a verdict. */
+  /* the redirect sentence leads with the failing line in its own voice, which
+     this panel has already given its own row — so the empty bold comes off */
+  if(redirectKey)
+    box.appendChild(H('p','mfto',
+      MF.t(redirectKey, {line: ''}).replace(/^\s*<b>\s*<\/b>\s*/, '')));
+  host.appendChild(box);
   MF.methodLine(host, tool);
+  return box;
+};
+/* Each of these takes the ore as well, because the panel says what the rock IS
+   and not only what it is not — and the ore is in scope at every call site. */
+MF.notMyLump = function(host, tool, line, ore){
+  MF.misfitPanel(host, tool, ore, line, 'lens.notmy.group');
 };
 /* AND THE SAME FOR AN x⁴ LUMP. */
 /* AND FOR A LUMP WITH A y THROUGH EVERY TERM. */
 /* AND FOR AN x³ LUMP. The Drill is the instrument that reads an identity off
    the shape without hunting anything, which is exactly what a cube seam is. */
-MF.notMyCube = function(host, tool, line){
-  host.appendChild(H('p','hint', MF.t('lens.notmy.cube', {line: line})));
-  MF.methodLine(host, tool);
+MF.notMyCube = function(host, tool, line, ore){
+  MF.misfitPanel(host, tool, ore, line, 'lens.notmy.cube');
 };
-MF.notMyPair = function(host, tool, line){
-  host.appendChild(H('p','hint', MF.t('lens.notmy.pair', {line: line})));
-  MF.methodLine(host, tool);
+MF.notMyPair = function(host, tool, line, ore){
+  MF.misfitPanel(host, tool, ore, line, 'lens.notmy.pair');
 };
 /* a single bracket like `x + 2y` is finished, and every instrument should say
    so the same way rather than each inventing a reason */
@@ -23398,9 +23881,8 @@ MF.readBracket = function(host, tool, ore){
   host.appendChild(lit);
   MF.methodLine(host, tool);
 };
-MF.notMyGear = function(host, tool, line){
-  host.appendChild(H('p','hint', MF.t('lens.notmy.gear', {line: line})));
-  MF.methodLine(host, tool);
+MF.notMyGear = function(host, tool, line, ore){
+  MF.misfitPanel(host, tool, ore, line, 'lens.notmy.gear');
 };
 /* the two halves a grouping lump is read in: xy + bx, then cy + d */
 MF.groupHalves = function(o){
@@ -23544,7 +24026,7 @@ MF.TOOL_READ = {
         MF.paintNameSide(host, ore, pieceId);
         return;
       }
-      MF.notMyPair(host, 'drill', MF.t('read.drill.two.not'));
+      MF.notMyPair(host, 'drill', MF.t('read.drill.two.not'), ore);
       return;
     }
     if(MF.isQuart(ore)){
@@ -23566,11 +24048,11 @@ MF.TOOL_READ = {
         MF.paintNameSide(host, ore, pieceId);
         return;
       }
-      MF.notMyGear(host, 'drill', MF.t('read.drill.quart.not'));
+      MF.notMyGear(host, 'drill', MF.t('read.drill.quart.not'), ore);
       return;
     }
     if(MF.isGroup(ore)){
-      MF.notMyLump(host, 'drill', MF.t('read.drill.group.not'));
+      MF.notMyLump(host, 'drill', MF.t('read.drill.group.not'), ore);
       return;
     }
     if(ore.kind==='number'){
@@ -23622,14 +24104,14 @@ MF.TOOL_READ = {
 
   /* THE EXPONENT RAIL: the X carried into the box. */
   shifter: function(host, ore, pieceId){
-    if(MF.isCube(ore)){ MF.notMyCube(host, 'shifter', MF.t('read.shifter.cube.not')); return; }
+    if(MF.isCube(ore)){ MF.notMyCube(host, 'shifter', MF.t('read.shifter.cube.not'), ore); return; }
     if(MF.isBi(ore)){ MF.readBracket(host, 'shifter', ore); return; }
     if(MF.isTwo(ore)){
-      MF.notMyPair(host, 'shifter', MF.t('read.shifter.two.not'));
+      MF.notMyPair(host, 'shifter', MF.t('read.shifter.two.not'), ore);
       return;
     }
     if(MF.isGroup(ore)){
-      MF.notMyLump(host, 'shifter', MF.t('read.shifter.group.not'));
+      MF.notMyLump(host, 'shifter', MF.t('read.shifter.group.not'), ore);
       return;
     }
     /* THE GEAR CHANGE, WHICH IS WHAT THIS INSTRUMENT IS */
@@ -23676,7 +24158,7 @@ MF.TOOL_READ = {
   /* THE DECIMAL DIAL: why nothing will come out, when nothing will. */
   /* THE CROSSCUT: the X first, and the dial under it. */
   dial: function(host, ore, pieceId){
-    if(MF.isCube(ore)){ MF.notMyCube(host, 'dial', MF.t('read.dial.cube.not')); return; }
+    if(MF.isCube(ore)){ MF.notMyCube(host, 'dial', MF.t('read.dial.cube.not'), ore); return; }
     if(MF.isBi(ore)){ MF.readBracket(host, 'dial', ore); return; }
     /* THE PAIR HUNT, UNCHANGED, WITH A y ON THE ANSWERS */
     if(MF.isTwo(ore)){
@@ -23697,11 +24179,11 @@ MF.TOOL_READ = {
       return;
     }
     if(MF.isQuart(ore)){
-      MF.notMyGear(host, 'dial', MF.t('read.dial.quart.not'));
+      MF.notMyGear(host, 'dial', MF.t('read.dial.quart.not'), ore);
       return;
     }
     if(MF.isGroup(ore)){
-      MF.notMyLump(host, 'dial', MF.t('read.dial.group.not'));
+      MF.notMyLump(host, 'dial', MF.t('read.dial.group.not'), ore);
       return;
     }
     if(ore.kind==='number'){
@@ -23743,7 +24225,7 @@ MF.TOOL_READ = {
       host.appendChild(H('div','diaglab', MF.t('read.steel.divides')));
       MF.workLine(host, null, [MF.oreLabel(ore)], 'wbig');
       MF.workLine(host, MF.t('read.steel.both'), ['1'], 'wbig');
-      MF.notMyCube(host, 'steel', MF.t('read.steel.nothing'));
+      MF.notMyCube(host, 'steel', MF.t('read.steel.nothing'), ore);
       return;
     }
     if(MF.isBi(ore)){ MF.readBracket(host, 'steel', ore); return; }
@@ -23751,7 +24233,7 @@ MF.TOOL_READ = {
       host.appendChild(H('div','diaglab', MF.t('read.steel.divides')));
       MF.workLine(host, null, [MF.oreLabel(ore)], 'wbig');
       MF.workLine(host, MF.t('read.steel.three'), ['1'], 'wbig');
-      MF.notMyPair(host, 'steel', MF.t('read.steel.two.not'));
+      MF.notMyPair(host, 'steel', MF.t('read.steel.two.not'), ore);
       return;
     }
     if(MF.isQuart(ore)){
@@ -23761,7 +24243,7 @@ MF.TOOL_READ = {
       host.appendChild(H('div','diaglab', MF.t('read.steel.divides')));
       MF.workLine(host, null, [MF.oreLabel(ore)], 'wbig');
       MF.workLine(host, MF.t('schema.steel.s1.label'), ['1'], 'wbig');
-      MF.notMyGear(host, 'steel', MF.t('read.steel.nothing'));
+      MF.notMyGear(host, 'steel', MF.t('read.steel.nothing'), ore);
       return;
     }
     if(MF.isGroup(ore)){
@@ -23771,7 +24253,7 @@ MF.TOOL_READ = {
       host.appendChild(H('div','diaglab', MF.t('read.steel.divides')));
       MF.workLine(host, null, [MF.oreLabel(ore)], 'wbig');
       MF.workLine(host, MF.t('read.steel.four'), ['1'], 'wbig');
-      MF.notMyLump(host, 'steel', MF.t('read.steel.nothing'));
+      MF.notMyLump(host, 'steel', MF.t('read.steel.nothing'), ore);
       return;
     }
     var g = MF.commonMetal(ore);
@@ -23821,14 +24303,14 @@ MF.TOOL_READ = {
   /* THE POWERED AUGER: the full X-box on loaded ore — and the whole method on a
      four-term one, which is the shaft it was really always for. */
   auger: function(host, ore, pieceId){
-    if(MF.isCube(ore)){ MF.notMyCube(host, 'auger', MF.t('read.auger.cube.not')); return; }
+    if(MF.isCube(ore)){ MF.notMyCube(host, 'auger', MF.t('read.auger.cube.not'), ore); return; }
     if(MF.isBi(ore)){ MF.readBracket(host, 'auger', ore); return; }
     if(MF.isTwo(ore)){
-      MF.notMyPair(host, 'auger', MF.t('read.auger.two.not'));
+      MF.notMyPair(host, 'auger', MF.t('read.auger.two.not'), ore);
       return;
     }
     if(MF.isQuart(ore)){
-      MF.notMyGear(host, 'auger', MF.t('read.auger.quart.not'));
+      MF.notMyGear(host, 'auger', MF.t('read.auger.quart.not'), ore);
       return;
     }
     if(MF.isGroup(ore)){
@@ -33728,6 +34210,45 @@ MF.validate = function(){
       if(txt.length < 25)
         errs.push('sheet: ' + tk + ' held to ' + MF.oreText(so) + ' said almost nothing (' + txt.length + ' chars)');
     });
+  });
+
+  /* AN INSTRUMENT THAT DOES NOT FIT STILL TEACHES SOMETHING.
+     This was one grey line of hint text, which made the quietest moment on the
+     site the one where the rock has most to say — a tool that does not fit has
+     just told you the shape is wrong, and the shape is the whole skill. The
+     panel is the fit test: the condition that failed, what the rock actually
+     is, and whose lump it therefore is. The marks describe the stone and never
+     the student, so `nogrades` sweeps this like everything else. */
+  var mfCases = [['shifter', {kind:'group', b:3, c:2, d:6}],
+                 ['dial',    {kind:'cube',  a:1, c:-8}],
+                 ['drill',   {kind:'group', b:3, c:2, d:6}],
+                 ['auger',   {kind:'cube',  a:1, c:-8}],
+                 ['steel',   {kind:'cube',  a:1, c:-8}]];
+  mfCases.forEach(function(mc){
+    var mh = document.createElement('div');
+    mh.style.cssText = 'position:fixed; left:-15000px; top:0; width:420px';
+    document.body.appendChild(mh);
+    try { MF.TOOL_READ[mc[0]](mh, mc[1], null); } catch(e){}
+    var mp = mh.querySelector('.misfit');
+    chk('sheet');
+    if(!mp){
+      errs.push('sheet: ' + mc[0] + ' does not fit ' + MF.oreText(mc[1]) +
+                ' and says so without the fit test — that is the footnote it used to be');
+    } else {
+      chk('sheet');
+      if(mp.querySelectorAll('.mfrow.bad').length !== 1)
+        errs.push('sheet: the fit test on ' + mc[0] + ' does not name exactly one condition that failed');
+      chk('sheet');
+      if(mp.querySelectorAll('.mfrow.good').length !== 1)
+        errs.push('sheet: the fit test on ' + mc[0] + ' never names what the rock actually is, ' +
+                  'which is the half a student can use');
+      chk('sheet');
+      var mfTxt = (mp.textContent || '').replace(/\s+/g,' ').trim();
+      if(mfTxt.length < 90)
+        errs.push('sheet: the fit test on ' + mc[0] + ' is ' + mfTxt.length +
+                  ' characters — that is a footnote again');
+    }
+    mh.remove();
   });
 
   /* PART OF A FACTORISATION, NEVER ALL OF IT. */
