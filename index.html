@@ -764,6 +764,25 @@ input::placeholder, textarea::placeholder{color:#6B5B48; opacity:1}
    a lump in the cart, so 14px would crowd its X the way the box did */
 .anvilrock .lensx b{font-size:11px}
 .anvilrock .lensx path{stroke-width:6}
+/* THE GEAR LEVER'S BOX, cut into the stone the way the Crosscut cuts its X.
+   Wider than the X (62% against 46%) because a box carries labels INSIDE it as
+   well as around it, and four cells in an 88px square crowd on a phone.
+   The edge labels live in a reserved strip inside the span — a top band and a
+   left band — so nothing hangs off the stone into the sand. */
+.lensbox{display:block; position:relative; width:min(120px,62%); aspect-ratio:120/84;
+  margin:3px auto 0}
+.lensbox svg{display:block; width:100%; height:100%; overflow:visible}
+.lensbox path{stroke:currentColor; stroke-width:3; fill:none; stroke-linecap:round; opacity:.55}
+.lensbox b{position:absolute; transform:translate(-50%,-50%); font-family:var(--display);
+  font-weight:400; font-size:12px; line-height:1; white-space:nowrap}
+/* the two corners that are forced — x² can only come from x·x, and the end from
+   the two numbers, so writing them gives nothing away */
+.lensbox .lbgiven{color:var(--ore-t)}
+/* and everything still to be found */
+.lensbox .lbopen{color:var(--ink-soft)}
+.orerock.native .lensbox .lbopen{color:#5A4620}
+.anvilrock .lensbox b{font-size:10px}
+.anvilrock .lensbox path{stroke-width:4}
 /* AND THE EXPRESSION ABOVE IT IS CAPPED ON A SMALL STONE. `.orelab` is
    clamp(15px,2.4vw,21px) — it grows with the WINDOW while the piece it is
    written on does not… */
@@ -1864,7 +1883,12 @@ table.rosetta td.rx{font-family:var(--display); font-size:16px; color:var(--ink)
 }
 .sc-cartout{animation:cartout 16s ease-in-out infinite}
 @keyframes smokepuff{0%{transform:translate(0,0) scale(.6); opacity:.55}100%{transform:translate(16px,-58px) scale(1.7); opacity:0}}
-@keyframes clouddrift{from{transform:translateX(-70px)}to{transform:translateX(660px)}}
+/* A CLOUD CROSSES THE WHOLE SKY AND LEAVES BY THE OTHER SIDE. It used to stop
+   at 660, which put its trailing edge around x=660 of a 900-wide sky — so it
+   blinked out in open blue, two thirds of the way over, three times a minute.
+   The distance is per cloud (`--cdrift`) because each one is a different size
+   and has to clear the edge by its own width. */
+@keyframes clouddrift{from{transform:translateX(-70px)}to{transform:translateX(var(--cdrift,1140px))}}
 @keyframes lampflicker{0%,100%{opacity:.85}45%{opacity:1}70%{opacity:.7}}
 @keyframes birdbob{0%,100%{transform:translateY(0)}50%{transform:translateY(-6px)}}
 .sc-wheel{transform-origin:center; animation:wheelspin 9s linear infinite}
@@ -22077,8 +22101,21 @@ MF.t = function(key, vars){
      replaced were concatenation, and 'LAYER ' + undefined is "LAYER undefined";
      leaving "{n}" instead changed what a validator-built lump with no layer
      printed, and the text harvest caught it. Only a name nobody passed stays. */
+  /* A VALUE DROPPED INTO A RIGHT-TO-LEFT SENTENCE IS ISOLATED. Almost every
+     placeholder holds maths — `x² − 9`, `( x + 3 )`, `2/3` — which reads left to
+     right inside an Arabic sentence that reads right to left. Without an isolate
+     the bracket and the minus migrate to the wrong end of the run, so `x² − 9`
+     can print as `9 − ²x`. U+2066 LEFT-TO-RIGHT ISOLATE and U+2069 POP
+     DIRECTIONAL ISOLATE do it in PLAIN TEXT, which `<bdi dir="ltr">` cannot:
+     the same string is also an aria-label and a line the voice reads aloud, and
+     a tag there is read out as a tag. They are invisible characters, not markup.
+     ONLY IN A RIGHT-TO-LEFT LANGUAGE, so every other language — English
+     included — keeps the byte it had, and the text harvest cannot move. */
+  var iso = MF.LANG[MF.lang()].dir === 'rtl';
   if(vars) s = String(s).replace(/\{(\w+)\}/g, function(m, k){
-    return Object.prototype.hasOwnProperty.call(vars, k) ? String(vars[k]) : m;
+    if(!Object.prototype.hasOwnProperty.call(vars, k)) return m;
+    var v = String(vars[k]);
+    return iso && v !== '' ? '⁦' + v + '⁩' : v;
   });
   return s;
 };
@@ -23109,12 +23146,13 @@ MF.LENS.shifter = function(ore){
   if(ore.kind === 'number' || ore.a === 0 || !ore.c) return null;
   var pr = MF.xPair(ore);
   if(!pr) return null;
-  var head = sqTerm(ore.a);
-  var mid = ore.b ? (ore.b < 0 ? lensMark('lop',' − ') + xt2(Math.abs(ore.b))
-                               : lensMark('lop',' + ') + xt2(ore.b)) : '';
+  /* THE BOX, NOT A REWRITE OF THE LINE. This used to print the lump back with
+     its end term split as ( p · ? ), which told the student one of the two
+     numbers — the Crosscut's job, done worse. The area model is what this
+     instrument actually is, so it draws one. */
+  var sqPlain = (ore.a === 1 ? 'x²' : ore.a === -1 ? '−x²' : num(ore.a) + 'x²');
   return {
-    html: head + mid + lensMark('lop',' + ') +
-          lensMark('lsplit','( ' + num(pr.p) + ' · ' + lensMark('lqm','?') + ' )'),
+    html: MF.oreLabel(ore) + lensBox(sqTerm(ore.a), sqPlain, num(ore.c)),
     found: MF.t('lens.shifter.product')
   };
 };
@@ -23163,6 +23201,33 @@ function lensX(top, bot, left){
       '<b class="lxbot">' + bot + '</b>' +
       '<b class="lxside lxl">' + (one ? left : '?') + '</b>' +
       '<b class="lxside lxr">?</b>' +
+    '</span>';
+}
+/* THE GEAR LEVER'S BOX, scribed on the stone the way the Crosscut scribes its X.
+   TWO CORNERS ARE WRITTEN AND NOTHING ELSE, because those two are the only ones
+   that are forced: x² can come from nothing but x·x, and the end from nothing
+   but the two numbers. The other two corners have to add to the middle, and the
+   four edges ARE the answer — so the box shows the shape of the work without
+   doing any of it, which is the rule every instrument here follows.
+   The label is the lesson's own description of this same box, so it is already
+   written in all fourteen languages and none of them falls back to English. */
+function lensBox(sqHtml, sqPlain, cLabel){
+  var qm = '<span class="qm">?</span>';
+  function cell(x, y, cls, s){
+    return '<b class="' + cls + '" style="left:' + x + '%; top:' + y + '%">' + s + '</b>';
+  }
+  return '<span class="lensbox" role="img" aria-label="' +
+      MF.t('schema.shifter.m2.a11y', {sq: sqPlain, c: cLabel}) + '">' +
+      '<svg viewBox="0 0 120 84" aria-hidden="true" focusable="false">' +
+        '<path d="M24 18 H120 M24 51 H120 M24 84 H120"/>' +
+        '<path d="M24 18 V84 M72 18 V84 M120 18 V84"/>' +
+      '</svg>' +
+      /* the two edges along the top, and the two down the side */
+      cell(40, 10, 'lbopen', qm) + cell(80, 10, 'lbopen', qm) +
+      cell(10, 41, 'lbopen', qm) + cell(10, 80, 'lbopen', qm) +
+      /* the four cells: x² and the end given, the two middles open */
+      cell(40, 41, 'lbgiven', sqHtml) + cell(80, 41, 'lbopen', qm) +
+      cell(40, 80, 'lbopen', qm)      + cell(80, 80, 'lbgiven', cLabel) +
     '</span>';
 }
 MF.LENS.dial = function(ore){
@@ -25175,8 +25240,14 @@ MF.surfaceScene = function(){
   /* clouds */
   [[0,58,1],[0,112,.75],[0,40,.6]].forEach(function(c,i){
     var g = S('g',{class:'sc-cloud',opacity:String(.55+i*.12)});
-    g.style.animationDuration = (52 + i*18) + 's';
-    g.style.animationDelay = (-i*17) + 's';
+    /* THE TRAVEL IS THE SKY PLUS THE CLOUD. The group sits at x=-120 and the
+       shape runs to about +84 of its own origin, so it is clear of a 900-wide
+       sky once it has moved 1020 + its width — 1140 leaves room at every size.
+       The durations are longer to match: the crossing is half as far again, and
+       a cloud that kept its old 52s would visibly speed up. */
+    g.style.setProperty('--cdrift', (1140 + i*40) + 'px');
+    g.style.animationDuration = (84 + i*28) + 's';
+    g.style.animationDelay = (-i*31) + 's';
     var cl = S('g',{transform:'translate(-120,'+c[1]+') scale('+c[2]+')'});
     [[0,0,26],[30,-10,20],[58,2,17],[26,10,20]].forEach(function(b){
       cl.appendChild(S('ellipse',{cx:b[0],cy:b[1],rx:b[2],ry:b[2]*0.66,fill:'#FFFFFF'}));
@@ -34323,6 +34394,102 @@ MF.validate = function(){
     lxHost.remove();
     MF.state.tools = lxSaved.tools; MF.state.cart = lxSaved.cart;
     MF.state.selected = lxSaved.sel; MF.state.anvil = lxSaved.anvil; MF._mine = lxSaved.mine;
+  })();
+
+  /* THE GEAR LEVER SCRIBES A BOX ON THE STONE, AND IT STAYS ON IT.
+     Written the day the box replaced a line of text that had been quietly
+     handing over one of the two numbers. */
+  (function(){
+    var sbSaved = {tools:MF.state.tools, cart:MF.state.cart, sel:MF.state.selected,
+                   anvil:MF.state.anvil, mine:MF._mine};
+    MF.state.tools = {shifter:{forged:true}};
+    var sbOre = {kind:'poly', a:1, b:-5, c:6, id:'sb', tool:'shifter'};
+    MF.state.cart = [sbOre]; MF.state.selected = sbOre;
+    MF.state.anvil = MF.anvilInit(sbOre); MF.state.anvil.step = 'break';
+    if(MF.state.anvil.floor[0]) MF.state.anvil.floor[0].ore.tool = 'shifter';
+    MF._mine = null;
+    var sbHost = document.createElement('div');
+    sbHost.style.cssText = 'position:fixed; left:-13000px; top:0; width:360px';
+    document.body.appendChild(sbHost);
+    try { MF.SCREENS.mine(sbHost); MF.paintMine(); } catch(e){}
+    var sbSeen = 0;
+    [].forEach.call(sbHost.querySelectorAll('.orerock'), function(rk){
+      var bx = rk.querySelector('.lensbox');
+      if(!bx) return;
+      sbSeen++;
+      var rb = rk.getBoundingClientRect();
+      /* EVERY LABEL, not just the box — the cells sit inside it but the edge
+         labels live in its margins, which is where a box runs off a stone. */
+      [].forEach.call(bx.querySelectorAll('b'), function(lb){
+        var bb = lb.getBoundingClientRect();
+        chk('schema');
+        if(bb.left < rb.left - 1 || bb.right > rb.right + 1 ||
+           bb.top < rb.top - 1 || bb.bottom > rb.bottom + 1)
+          errs.push('schema: "' + lb.textContent.trim() + '" on the Gear Lever\'s box sits off the ' +
+            Math.round(rb.width) + 'px stone it is cut into, so it hangs in the sand beside the rock');
+      });
+    });
+    chk('schema');
+    if(sbSeen < 2)
+      errs.push('schema: only ' + sbSeen + ' lump carried the Gear Lever\'s box, so it was measured at ' +
+                'one size — the cart lump and the breaking-floor piece are half an order apart');
+    /* TWO CORNERS GIVEN, SIX THINGS OPEN, AND NOT ONE MORE */
+    chk('schema');
+    var sbRead = MF.LENS.shifter({kind:'poly', a:1, b:7, c:12});
+    if(!sbRead || !/lensbox/.test(sbRead.html))
+      errs.push('schema: the Gear Lever does not scribe a box on the ore at all');
+    else {
+      var sbEl = document.createElement('div');
+      sbEl.innerHTML = sbRead.html;
+      var sbGiven = sbEl.querySelectorAll('.lensbox .lbgiven');
+      var sbOpen  = sbEl.querySelectorAll('.lensbox .lbopen');
+      chk('schema');
+      if(sbGiven.length !== 2)
+        errs.push('schema: the Gear Lever writes ' + sbGiven.length + ' cells of its box — exactly two are ' +
+                  'forced, and anything past them is the factorisation rather than a method');
+      chk('schema');
+      if(sbOpen.length !== 6)
+        errs.push('schema: the Gear Lever leaves ' + sbOpen.length + ' parts of its box open, and there are ' +
+                  'six: two middle cells and four edges');
+      chk('schema');
+      var sbTxt = [].map.call(sbGiven, function(g){ return g.textContent.trim(); }).join(' ');
+      if(sbTxt.indexOf('12') < 0 || sbTxt.indexOf('x2') < 0)
+        errs.push('schema: the box on x² + 7x + 12 does not carry x² and 12 in opposite corners — ' +
+                  'it reads "' + sbTxt + '"');
+      chk('schema');
+      var sbFilled = [].filter.call(sbOpen, function(o){ return o.textContent.trim() !== '?'; });
+      if(sbFilled.length)
+        errs.push('schema: the Gear Lever fills ' + sbFilled.length + ' of the parts it has to leave open');
+    }
+    sbHost.remove();
+    MF.state.tools = sbSaved.tools; MF.state.cart = sbSaved.cart;
+    MF.state.selected = sbSaved.sel; MF.state.anvil = sbSaved.anvil; MF._mine = sbSaved.mine;
+  })();
+
+  /* A CLOUD LEAVES THE SKY BY THE FAR EDGE.
+     It used to stop at x=600 of a 900-wide sky and blink out in open blue,
+     which a student watching the surface sees three times a minute. */
+  (function(){
+    var cdSky = document.createElement('div');
+    cdSky.style.cssText = 'position:fixed; left:-15000px; top:0; width:900px';
+    document.body.appendChild(cdSky);
+    try { cdSky.appendChild(MF.surfaceScene()); } catch(e){}
+    var cdClouds = cdSky.querySelectorAll('.sc-cloud');
+    chk('surface');
+    if(cdClouds.length < 2)
+      errs.push('surface: the sky drew ' + cdClouds.length + ' clouds, so the drift was measured at one size');
+    [].forEach.call(cdClouds, function(g){
+      var drift = parseFloat(getComputedStyle(g).getPropertyValue('--cdrift'));
+      var inner = g.querySelector('g');
+      var sc = /scale\(([\d.]+)\)/.exec(inner ? (inner.getAttribute('transform') || '') : '');
+      /* the group starts at x=-120 and its shape runs ~84 units past its origin */
+      var ends = -120 + drift + 84 * (sc ? parseFloat(sc[1]) : 1);
+      chk('surface');
+      if(!isFinite(drift) || ends <= 900)
+        errs.push('surface: a cloud finishes at x=' + (isFinite(ends) ? Math.round(ends) : '?') +
+                  ' of a 900-wide sky, so it vanishes in open blue instead of leaving by the far edge');
+    });
+    cdSky.remove();
   })();
 
   /* THE LANTERN LIGHTS A SHAPE, NOT A BRACKET */

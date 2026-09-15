@@ -2522,5 +2522,59 @@ reopened browser pane — the same file re-validated at 0, and the committed pag
 52. **A cage that appeared to stop moving was caused by a variable named `H` in the measuring
 script**, which shadowed the page's own element builder and broke screen rendering in that tab.
 
+**The maths is isolated in a right-to-left sentence, and nowhere else.** Almost every placeholder
+holds maths — `x² − 9`, `( x + 3 )` — which reads left to right inside an Arabic sentence that does
+not, so without an isolate `x² − 9` can print as `9 − ²x`. `MF.t` now wraps each value it fills into
+a string in U+2066 LEFT-TO-RIGHT ISOLATE and U+2069 POP DIRECTIONAL ISOLATE, **only when the
+language is right-to-left**. They are invisible characters rather than markup, which `<bdi
+dir="ltr">` could not be here: the same strings are also aria-labels and lines the voice reads
+aloud, and a tag in those is read out as a tag. Every other language keeps the byte it had.
+
 **What it did not look at:** anything in right-to-left. Nothing yet sets `dir="rtl"`, no Arabic
-text exists, and the maths has not been wrapped for bidirectional text — those are the next step.
+text exists, and the isolate above has therefore never run — those are the next step.
+
+## The sky, and the Gear Lever's box (2026-09-15)
+
+Both of these came from the author watching the site rather than testing it.
+
+### Clouds crossed two thirds of the sky and blinked out
+
+All three clouds shared one keyframe that ended at `translateX(660px)`, and each cloud's group
+starts at x = −120, so a cloud **stopped with its trailing edge at x = 590–624 of a 900-wide sky**
+and vanished in open blue, three times a minute, on the first screen a student sees. Each cloud now
+carries its own `--cdrift` (1140, 1180, 1220) so it leaves by the far edge before re-entering from
+the near one — the distance is per cloud because each is a different size and has to clear the edge
+by its own width. Durations went from 52/70/88s to 84/112/140s, because the crossing is half as far
+again and a cloud on its old timing would visibly speed up.
+
+**The check:** every cloud's finishing position must be past the far edge of the sky.
+**Its control:** putting the old 660px drift back reported all three — *"a cloud finishes at x=624
+of a 900-wide sky, so it vanishes in open blue instead of leaving by the far edge"*.
+
+### The Gear Lever now draws the area model it has always been
+
+Held to a lump it used to **rewrite the line** as `ax² + bx + ( p · ? )` — which handed over one of
+the two numbers, the Crosscut's job done worse. It now scribes a **box into the stone**, the way the
+Crosscut scribes its X: a 2×2 grid with **x² in one corner and the end term in the opposite one**,
+and the two middle cells and all four edges left as `?`. Those two corners are the only ones that
+are forced — x² can come from nothing but x·x, and the end from nothing but the two numbers — so
+writing them gives nothing away, while the middles (which must add to b) and the edges (which are
+the factorisation) stay the student's.
+
+The box is wider than the X, `min(120px, 62%)` against `min(88px, 46%)`, because it carries labels
+inside as well as around it; the stone itself did not change size. The edge labels sit in a reserved
+strip **inside** the box's own span, so nothing hangs off the rock into the sand. It needed **no new
+strings**: the label is `schema.shifter.m2.a11y`, the lesson's own description of this same box,
+already written in all fourteen languages.
+
+**The check:** every label stays on the stone at both sizes it is drawn at; the box is seen on at
+least two stones; and it carries exactly two given cells and six open ones, with x² and the end term
+in them. **Its control:** filling a single part that must stay open reported *"the Gear Lever fills
+1 of the parts it has to leave open"*.
+
+**Proved at:** `MF.validate()` 0 errors at 1250 over **42,025 checks** (41,999 before these two
+checks existed), both standing controls failing, `MF.playthrough(1…9)` clean.
+
+**What it did not look at:** whether a student reads the box the way it intends, and the tiles are
+drawn as a plain grid rather than sized to their areas — a true tile picture was considered and set
+aside as needing a larger stone.
