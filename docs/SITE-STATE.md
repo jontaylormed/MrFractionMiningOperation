@@ -2719,8 +2719,8 @@ The nameplate on the surface says **Windmill**; the part strings called the same
 building "the winding house", so a finished deep casting offered to "Send it to
 the winding house". Renamed in **all fifteen languages** across `part.frame.fits`,
 `part.frame.order` and `tool.shifter.order`, each to that language's own windmill
-word. *`surface.aria` still says "a winding house with a turning wheel" in all
-fifteen — the screen-reader description of the whole scene, still to do.*
+word — and then `surface.aria` too, the screen-reader description of the whole
+scene, which had called it "a winding house with a turning wheel". It is **"a windmill with turning sails"** now, in all fifteen: the building has sails, and the people who most needed the name to match the nameplate are the ones who cannot see it. **The phrase no longer appears anywhere in the file.**
 
 ### The Fourth Stamp looked like nothing in particular
 
@@ -2736,3 +2736,32 @@ from a cable. 11 shapes in a 28×76 box against the counterweight's 7 in 30×44.
 (43,268)**, both controls failing, `MF.playthrough(1…9)` clean — covering the
 `lens` group (the mark is a mark), `surface` (the redrawn stamp) and `schema`
 (the box now gives four).
+
+## A check of mine was measuring English again, and the front page turns around (2026-09-15)
+
+### The fit test was judged in English characters
+
+The check that keeps the misfit panel from shrinking back into a footnote
+required **90 characters** — and Chinese says the same thing in 55 to 63, and
+Japanese in 85. Adding Arabic surfaced it: a sweep of all fifteen languages came
+back with **5 errors in Chinese and 2 in Japanese**, every one of them
+*"the fit test on … is 62 characters — that is a footnote again"*, on a panel
+that was perfectly complete.
+
+This is the same fault the `langLen` helper already exists for, written the day
+three other checks stopped measuring English — and I reintroduced it in a check
+written a few hours earlier. It now reads `MF.langLen(90)`, which scales the
+minimum by the language's own prose budget and never rises above the English
+number.
+
+**The lesson is about denominators, again:** the misfit panel had been proved at
+1250 and 380 in *English*, and green at two widths in one language says nothing
+about fifteen.
+
+### The words come before the picture
+
+On the Surface the illustration was drawn first and the three claims the front
+page makes to a stranger sat underneath it, so arriving meant scrolling past a
+picture to find out what any of this was. The heading and the three lede
+paragraphs now open the screen; the scene follows, with its own line under it,
+because the buildings are the way **in** rather than the explanation.
