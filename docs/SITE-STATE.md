@@ -2621,3 +2621,118 @@ rock — the one judgement call here, and the reason the wording puts the rock f
 The Steel Pick's cube reading also lands as a fragment (*"So there is nothing to stand in front of a
 bracket"*) because that sentence was written as a continuation of a line that no longer precedes it;
 fixing it means re-translating it fourteen times.
+
+## Languages, phase 5: Arabic, and the page turns around (2026-09-15)
+
+**العربية is the fifteenth language and the first that reads right to left** — all **1,160 keys** in
+`MF.STR.ar`, same order, one block, and a draft no fluent speaker or teacher has read. Modern
+Standard Arabic, addressing the student directly as the English does.
+
+**The words:** *عِرق* (seam), *معدن أصلي* (native metal), *سبيكة* (ingot), *قوس* (bracket), *القاسم
+المشترك الأكبر* (GCF), *عدد أولي* (prime), *ثلاثي الحدود*, *فرق بين مربعين*, *خاصية التوزيع*, *كثير
+حدود غير قابل للتحليل*; *مطحنة الدق* (the Stamp Mill), *سقيفة الصب* (the Casting Shed), *الكور* (the
+Forge), *الساحة* (the yard). Instruments: *معول التنقيب، الفانوس، المعول الفولاذي، النفق العرضي،
+ذراع التروس، المثقاب، البريمة الآلية*. The costing example is in riyals.
+
+### What only Arabic could find
+
+Fourteen languages had all read left to right, so **every assumption about direction had gone
+unchallenged until this one**. Arabic reported nine errors on its first run, and only two of them
+were the translation.
+
+- **`MF.t` isolates the maths.** Almost every placeholder holds an expression, and inside an Arabic
+  sentence `x² − 9` can print as `9 − ²x`. Values are wrapped in U+2066/U+2069 **only when the
+  language is right-to-left**, which works in an aria-label and a spoken line where `<bdi>` cannot.
+- **The seam scrolled the wrong way, and then not at all.** `scrollLeft` counts from where reading
+  starts, so in Arabic it runs *negative*, and every `Math.max(0, …)` clamped the seam to a dead
+  stop. Worse, a lump's position is a distance from the **content's** left edge while the scan is a
+  distance from where **reading** starts — the same number in English, a whole screen apart in
+  Arabic. `MF.seamScan`/`seamScanTo` and `seamViewLeft`/`seamViewTo` now keep those two coordinates
+  apart. Before: *21 of 24 lumps off the side of the window with their own reading on screen, and a
+  reading standing 992px from its stone.*
+- **Two checks and three controls were reasoning in left and right.** `beside` asked whether the
+  Shelf starts where Deep Castings ends and meant "to its right"; the layout control watched only
+  the right edge for text that cannot wrap, and in Arabic such text overflows left; the click sweep
+  parked the seam at its far end, where a re-centred lump has nowhere left to move. **All three
+  reported themselves on the first Arabic run**, which is exactly what a control is for.
+- **Three of my own Arabic words tripped the no-grades sweep**: *نتيجة* (result), *درجة* (rung, but
+  also grade) and *ترتيب* (sequence, but also rank). The regex was right and the prose was wrong —
+  the rungs are *مراقٍ* now.
+
+### What Arabic needed of its own
+
+- **Its own faces:** `:root:lang(ar)` sets `--display` from *Segoe UI, Noto Naskh Arabic, Geeza Pro,
+  Traditional Arabic*, headings at 700. **Letter-spacing is forced to 0**, because Arabic is cursive
+  and spacing the letters of a word pulls its joins apart.
+- **Maths elements are isolated in the stylesheet** — a label cut into a stone, a diagram cell, the
+  echo under the hammer: `direction:ltr; unicode-bidi:isolate` under `:root[dir=rtl]`.
+- **Nothing is mirrored that is a picture.** The buildings, the cart and the X keep their handedness;
+  only the reading order turns around.
+- **Budgets:** beat 200, lesson prose 1,250, panel prose 580 — so `MF.langLen` gives 56, 37 and 19.
+
+### How it was proved
+
+- Coverage: **1,160 of 1,160 keys**, no missing and no extra, placeholders matching English, no
+  empty strings, no short tie-backs, no over-long tool descriptions; the only Latin run left is
+  *bxy* in a formula.
+- `MF.validate()` in Arabic: **0 errors at 1250 (43,180 checks) and 380 (43,171)**, both standing
+  controls failing, `MF.playthrough(1…9)` clean at both.
+- **`dir="rtl"` on the page, and the dock mirrors** — Mr Factor sits at 0–76px in Arabic against
+  304–380px in English, from the same `inset-inline-end` rule.
+- **At 380, on all eight screens: nothing scrolls sideways and nothing clips.**
+- English after the seam rewrite: **0 errors at 1250**, playthroughs clean.
+
+**What it did not look at:** whether the Arabic is good Arabic — and it is the language in this
+build where a draft is most likely to read oddly, because the metaphor is doing more work than the
+vocabulary.
+
+## Four things a reader found, and one rule that stopped a fix (2026-09-15)
+
+All four came from the author using the site rather than testing it.
+
+### A tool that does not fit was still invisible where it matters
+
+The fit test had been built into the panel an instrument opens — and **a student
+does not open that panel**. Dropping a tool on a rock in the cart left the stone
+reading `xy + 3x + 2y + 6` followed by a dimmed grey glyph, which is why the
+report was that none of the work appeared to have been done at all. It had; it
+was one click away, with nothing saying so.
+
+**The rock may not be captioned.** The `lens` group fails any instrument that
+"found nothing and wrote words beside the lump" — the stone carries numbers and
+the prose lives in the panel. So the mark got louder instead: **❌ and the owning
+tool's glyph, at full size and full opacity** (it was 0.78em at 85%). A symbol is
+not a sentence, so the rule holds and the moment is now visible.
+
+### The Gear Lever's box gives four things, not two
+
+Two forced corners left six question marks, which read as stingy. The two edges
+touching the x² are **also** forced when nothing sits in front of it — x² can
+only be x · x — so both are now written. That leaves four open: the two middle
+cells and the two number edges, which are the actual work. **On a loaded lump the
+x-parts multiply to a and the split is a real choice, so those stay open** — the
+box gives 4 on a plain trinomial and 2 on a loaded one.
+
+### The building had two names
+
+The nameplate on the surface says **Windmill**; the part strings called the same
+building "the winding house", so a finished deep casting offered to "Send it to
+the winding house". Renamed in **all fifteen languages** across `part.frame.fits`,
+`part.frame.order` and `tool.shifter.order`, each to that language's own windmill
+word. *`surface.aria` still says "a winding house with a turning wheel" in all
+fifteen — the screen-reader description of the whole scene, still to do.*
+
+### The Fourth Stamp looked like nothing in particular
+
+Beside the Cube Counterweight — a solid three-quarter cube on a cable, which
+works — the Fourth Stamp was a thin grey shaft with a small block, saying nothing
+about what it teaches. **Its head is now a square cut into four squares, each
+quarter carrying its own square**: x² × x² is where an x⁴ comes from, which is
+the whole of that casting's lesson. Flat, square and gridded against the
+counterweight's solid cube, on a driven shaft over a wide die rather than hung
+from a cable. 11 shapes in a 28×76 box against the counterweight's 7 in 30×44.
+
+**Proved:** `MF.validate()` **0 errors in English (43,256 checks) and Arabic
+(43,268)**, both controls failing, `MF.playthrough(1…9)` clean — covering the
+`lens` group (the mark is a mark), `surface` (the redrawn stamp) and `schema`
+(the box now gives four).

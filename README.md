@@ -13,9 +13,9 @@ The site is a working mine. Expressions are ore, factoring is breaking rock, and
 
 Open `index.html`. There is no build step, no server, no package to install, and nothing is stored.
 
-**≈2.77 MB, one file, and it runs from `file://`.**
+**≈2.91 MB, one file, and it runs from `file://`.**
 
-Available in **English, Spanish, Brazilian Portuguese, French, German, Italian, Indonesian, Turkish, Vietnamese, Russian, Simplified Chinese, Japanese, Korean and Hindi** — under Reading & Access → Language. Every student-facing string lives in one table per language, and a missing string falls back to English rather than to a blank.
+Available in **English, Spanish, Brazilian Portuguese, French, German, Italian, Indonesian, Turkish, Vietnamese, Russian, Simplified Chinese, Japanese, Korean, Hindi and Arabic** — under Reading & Access → Language. Every student-facing string lives in one table per language, and a missing string falls back to English rather than to a blank. **Arabic reads right to left**: the page turns around, and the mathematics stays left to right inside it.
 
 The only files it ever fetches are the sounds in `sfx/`, and every one of those fetches is allowed to fail. Without the folder, cues fall back to synthesised tones and the music stays silent.
 
@@ -103,7 +103,7 @@ tools/                           serve.ps1, zz-drive.js — scaffolding, never s
 
 v1 is **the Ore Cart**: scan the seam, inspect a lump, break it, assay, smelt, pour, then spend the metals at the forge. The guided route and the fully open face are planned as modes on the same bench rather than rebuilds.
 
-- **The 13 non-English translations are drafts by Claude that no fluent speaker or teacher has read.** The language picker says so, and corrections are welcome one string at a time.
+- **The 14 non-English translations are drafts by Claude that no fluent speaker or teacher has read.** The language picker says so, and corrections are welcome one string at a time.
 - **No student has used this, and no independent reviewer has assessed it.** Everything here was checked by the person who wrote it, which `docs/VERIFICATION.md` §16 names as the weakest form of check.
 
 ## Credits and attribution

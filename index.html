@@ -834,10 +834,14 @@ input::placeholder, textarea::placeholder{color:#6B5B48; opacity:1}
 .lensed .lfinal{color:var(--ore-t)}
 /* AN INSTRUMENT THAT DID NOT BITE */
 .lensed .lnone{opacity:.5}
-/* the owning instrument's own belt glyph, small and set after the ore — a mark,
-   not a caption, because nothing may be written beside a lump (§21) */
-.lensed .lnobite{font-size:.78em; opacity:.85; padding-inline-start:.4em;
-  color:var(--ore-t); align-self:center}
+/* the no-bite mark and the owning instrument's belt glyph, set after the ore —
+   a mark, not a caption, because nothing may be written beside a lump (§21).
+   FULL SIZE AND FULL STRENGTH: at .78em and 85% this was a grey smudge after a
+   dimmed expression, and a student reported holding a tool to a lump and seeing
+   nothing happen at all. The words are still in the panel; this only has to say
+   THAT it did not bite, loudly enough to be worth opening. */
+.lensed .lnobite{font-size:1.05em; opacity:1; padding-inline-start:.45em;
+  color:var(--ore-t); align-self:center; white-space:nowrap}
 .lump .lensed .lnobite,.piece.rock .lensed .lnobite{color:var(--lamp)}
 /* on the DARK chips of the cart and the breaking floor the ink has to invert:
    --ore-t is #8F4712 and reads 1.6:1 on #4A3F34. */
@@ -4374,7 +4378,7 @@ MF.STR.en = {
   'tool.dial.does': 'the X: multiply to a·c, add to b',
   'tool.shifter.nm': 'The Shifter',
   'tool.shifter.short': 'Shifter',
-  'tool.shifter.order': 'a gear shifter for the winding house',
+  'tool.shifter.order': 'a gear shifter for the windmill',
   'tool.shifter.ds': 'Held to a lump it shows where its x² can have come from — the two x-parts multiplied, which is the only place an x² ever comes from.',
   'tool.shifter.forge': 'Cast <b>x² + 8x + 16</b>. The same bracket twice, so there is no doubt at all where the x² came from.',
   'tool.shifter.does': 'the area model — four products in a box',
@@ -4394,11 +4398,11 @@ MF.STR.en = {
   /* the four deep castings */
   'part.frame.nm': 'The Winding Frame',
   'part.frame.short': 'Winding Frame',
-  'part.frame.order': 'a cross-frame for the winding house',
+  'part.frame.order': 'a cross-frame for the windmill',
   'part.frame.ds': 'Two brackets in two different letters. Nothing in it can be collected with anything else, so all four products stay.',
   'part.frame.forge': 'Cast <b>xy + 2x + 3y + 6</b> out of <b>x + 3</b> and <b>y + 2</b>. Four products and not one pair of them is the same kind of term — which is why a four-term lump is where grouping starts.',
   'part.frame.does': 'four terms, and none of them merge',
-  'part.frame.fits': 'the winding house',
+  'part.frame.fits': 'the windmill',
   'part.stamp4.nm': 'The Fourth Stamp',
   'part.stamp4.short': 'Fourth Stamp',
   'part.stamp4.order': 'a fourth stamp for the mill battery',
@@ -5687,7 +5691,7 @@ MF.STR.es = {
   'tool.dial.does': 'la X: multiplica a·c, suma b',
   'tool.shifter.nm': 'El Cambiador',
   'tool.shifter.short': 'Cambiador',
-  'tool.shifter.order': 'un cambio de marchas para la casa de máquinas',
+  'tool.shifter.order': 'un cambio de marchas para el molino',
   'tool.shifter.ds': 'Acercado a un trozo, muestra de dónde puede haber salido su x² — de las dos partes con x multiplicadas, que es el único sitio del que sale un x².',
   'tool.shifter.forge': 'Funde <b>x² + 8x + 16</b>. El mismo paréntesis dos veces, así que no hay ninguna duda de dónde salió el x².',
   'tool.shifter.does': 'el modelo de área — cuatro productos en una caja',
@@ -5707,11 +5711,11 @@ MF.STR.es = {
   /* the four deep castings */
   'part.frame.nm': 'El Bastidor de Extracción',
   'part.frame.short': 'Bastidor de Extracción',
-  'part.frame.order': 'un bastidor cruzado para la casa de máquinas',
+  'part.frame.order': 'un bastidor cruzado para el molino',
   'part.frame.ds': 'Dos paréntesis con dos letras distintas. Nada se puede agrupar con nada, así que se quedan los cuatro productos.',
   'part.frame.forge': 'Funde <b>xy + 2x + 3y + 6</b> con <b>x + 3</b> e <b>y + 2</b>. Cuatro productos y ni una pareja de ellos es del mismo tipo de término — y por eso un trozo de cuatro términos es donde empieza la agrupación.',
   'part.frame.does': 'cuatro términos, y ninguno se junta',
-  'part.frame.fits': 'la casa de máquinas',
+  'part.frame.fits': 'el molino',
   'part.stamp4.nm': 'El Cuarto Mazo',
   'part.stamp4.short': 'Cuarto Mazo',
   'part.stamp4.order': 'un cuarto mazo para la batería del bocarte',
@@ -6995,7 +6999,7 @@ MF.STR['pt-BR'] = {
   'tool.dial.does': 'o X: multiplica a·c, soma b',
   'tool.shifter.nm': 'O Câmbio',
   'tool.shifter.short': 'Câmbio',
-  'tool.shifter.order': 'um câmbio de marchas para a casa do guincho',
+  'tool.shifter.order': 'um câmbio de marchas para o moinho',
   'tool.shifter.ds': 'Encostado num pedaço, mostra de onde o x² dele pode ter vindo — das duas partes com x multiplicadas, que é o único lugar de onde um x² vem.',
   'tool.shifter.forge': 'Funda <b>x² + 8x + 16</b>. O mesmo parêntese duas vezes, então não há dúvida nenhuma de onde veio o x².',
   'tool.shifter.does': 'o modelo de área — quatro produtos numa caixa',
@@ -7015,11 +7019,11 @@ MF.STR['pt-BR'] = {
   /* the four deep castings */
   'part.frame.nm': 'A Armação do Guincho',
   'part.frame.short': 'Armação do Guincho',
-  'part.frame.order': 'uma armação cruzada para a casa do guincho',
+  'part.frame.order': 'uma armação cruzada para o moinho',
   'part.frame.ds': 'Dois parênteses com duas letras diferentes. Nada nele pode ser juntado com nada, então os quatro produtos ficam.',
   'part.frame.forge': 'Funda <b>xy + 2x + 3y + 6</b> com <b>x + 3</b> e <b>y + 2</b>. Quatro produtos e nenhum par deles é do mesmo tipo de termo — e é por isso que um pedaço de quatro termos é onde o agrupamento começa.',
   'part.frame.does': 'quatro termos, e nenhum se junta',
-  'part.frame.fits': 'a casa do guincho',
+  'part.frame.fits': 'o moinho',
   'part.stamp4.nm': 'O Quarto Pilão',
   'part.stamp4.short': 'Quarto Pilão',
   'part.stamp4.order': 'um quarto pilão para a bateria do engenho',
@@ -8303,7 +8307,7 @@ MF.STR.fr = {
   'tool.dial.does': 'le X : produit a·c, somme b',
   'tool.shifter.nm': 'Le Sélecteur',
   'tool.shifter.short': 'Sélecteur',
-  'tool.shifter.order': 'un sélecteur de vitesses pour la salle du treuil',
+  'tool.shifter.order': 'un sélecteur de vitesses pour le moulin',
   'tool.shifter.ds': 'Approché d’un bloc, il montre d’où son x² peut venir — des deux parties en x multipliées, le seul endroit d’où vient un x².',
   'tool.shifter.forge': 'Coule <b>x² + 8x + 16</b>. La même parenthèse deux fois, donc aucun doute sur l’origine du x².',
   'tool.shifter.does': 'le modèle d’aire — quatre produits dans une boîte',
@@ -8323,11 +8327,11 @@ MF.STR.fr = {
   /* the four deep castings */
   'part.frame.nm': 'Le Cadre du Treuil',
   'part.frame.short': 'Cadre du Treuil',
-  'part.frame.order': 'un cadre croisé pour la salle du treuil',
+  'part.frame.order': 'un cadre croisé pour le moulin',
   'part.frame.ds': 'Deux parenthèses à deux lettres différentes. Rien ne peut se réunir avec rien, donc les quatre produits restent.',
   'part.frame.forge': 'Coule <b>xy + 2x + 3y + 6</b> avec <b>x + 3</b> et <b>y + 2</b>. Quatre produits et pas une paire du même genre de terme — c’est pour ça qu’un bloc à quatre termes, c’est là que commence le regroupement.',
   'part.frame.does': 'quatre termes, et aucun ne se réunit',
-  'part.frame.fits': 'la salle du treuil',
+  'part.frame.fits': 'le moulin',
   'part.stamp4.nm': 'Le Quatrième Pilon',
   'part.stamp4.short': 'Quatrième Pilon',
   'part.stamp4.order': 'un quatrième pilon pour la batterie du bocard',
@@ -9611,7 +9615,7 @@ MF.STR.de = {
   'tool.dial.does': 'das X: Produkt a·c, Summe b',
   'tool.shifter.nm': 'Der Schalthebel',
   'tool.shifter.short': 'Schalthebel',
-  'tool.shifter.order': 'ein Schalthebel für das Haspelhaus',
+  'tool.shifter.order': 'ein Schalthebel für die Windmühle',
   'tool.shifter.ds': 'An einen Brocken gehalten, zeigt er, woher sein x² kommen kann — aus den beiden multiplizierten x-Teilen, dem einzigen Ort, von dem ein x² je kommt.',
   'tool.shifter.forge': 'Gieß <b>x² + 8x + 16</b>. Zweimal dieselbe Klammer, also gibt es gar keinen Zweifel, woher das x² kam.',
   'tool.shifter.does': 'das Flächenmodell — vier Produkte in einem Kasten',
@@ -9631,11 +9635,11 @@ MF.STR.de = {
   /* the four deep castings */
   'part.frame.nm': 'Der Haspelrahmen',
   'part.frame.short': 'Haspelrahmen',
-  'part.frame.order': 'ein Kreuzrahmen für das Haspelhaus',
+  'part.frame.order': 'ein Kreuzrahmen für die Windmühle',
   'part.frame.ds': 'Zwei Klammern mit zwei verschiedenen Buchstaben. Nichts darin lässt sich mit etwas anderem zusammenfassen, also bleiben alle vier Produkte stehen.',
   'part.frame.forge': 'Gieß <b>xy + 2x + 3y + 6</b> aus <b>x + 3</b> und <b>y + 2</b>. Vier Produkte, und kein Paar davon ist dieselbe Art von Term — deshalb fängt bei einem viergliedrigen Brocken das Gruppieren an.',
   'part.frame.does': 'vier Terme, und keiner fasst sich zusammen',
-  'part.frame.fits': 'das Haspelhaus',
+  'part.frame.fits': 'die Windmühle',
   'part.stamp4.nm': 'Der Vierte Stempel',
   'part.stamp4.short': 'Vierter Stempel',
   'part.stamp4.order': 'ein vierter Stempel für die Pochwerksbatterie',
@@ -10920,7 +10924,7 @@ MF.STR.it = {
   'tool.dial.does': 'la X: prodotto a·c, somma b',
   'tool.shifter.nm': 'Il Cambio',
   'tool.shifter.short': 'Cambio',
-  'tool.shifter.order': 'un cambio di marcia per la casa dell’argano',
+  'tool.shifter.order': 'un cambio di marcia per il mulino',
   'tool.shifter.ds': 'Avvicinato a un blocco, mostra da dove può venire il suo x² — dalle due parti con la x moltiplicate, l’unico posto da cui viene un x².',
   'tool.shifter.forge': 'Cola <b>x² + 8x + 16</b>. La stessa parentesi due volte, quindi non c’è nessun dubbio su da dove venga l’x².',
   'tool.shifter.does': 'il modello dell’area — quattro prodotti in un riquadro',
@@ -10940,11 +10944,11 @@ MF.STR.it = {
   /* the four deep castings */
   'part.frame.nm': 'Il Telaio dell’Argano',
   'part.frame.short': 'Telaio dell’Argano',
-  'part.frame.order': 'un telaio a croce per la casa dell’argano',
+  'part.frame.order': 'un telaio a croce per il mulino',
   'part.frame.ds': 'Due parentesi con due lettere diverse. Niente si può raccogliere con niente, quindi restano tutti e quattro i prodotti.',
   'part.frame.forge': 'Cola <b>xy + 2x + 3y + 6</b> con <b>x + 3</b> e <b>y + 2</b>. Quattro prodotti e nessuna coppia dello stesso tipo di termine — ed è per questo che un blocco a quattro termini è dove comincia il raccoglimento.',
   'part.frame.does': 'quattro termini, e nessuno si unisce',
-  'part.frame.fits': 'la casa dell’argano',
+  'part.frame.fits': 'il mulino',
   'part.stamp4.nm': 'Il Quarto Pestello',
   'part.stamp4.short': 'Quarto Pestello',
   'part.stamp4.order': 'un quarto pestello per la batteria del frantoio',
@@ -12230,7 +12234,7 @@ MF.STR.id = {
   'tool.dial.does': 'X: hasil kali a·c, jumlah b',
   'tool.shifter.nm': 'Pemindah Gigi',
   'tool.shifter.short': 'Pemindah Gigi',
-  'tool.shifter.order': 'tuas pemindah gigi untuk rumah derek',
+  'tool.shifter.order': 'tuas pemindah gigi untuk kincir angin',
   'tool.shifter.ds': 'Didekatkan ke sebongkah, ia menunjukkan dari mana x²-nya bisa berasal — dua bagian x yang dikalikan, satu-satunya asal x².',
   'tool.shifter.forge': 'Cor <b>x² + 8x + 16</b>. Kurung yang sama dua kali, jadi sama sekali tidak ada keraguan dari mana x² berasal.',
   'tool.shifter.does': 'model luas — empat hasil kali dalam kotak',
@@ -12250,11 +12254,11 @@ MF.STR.id = {
   /* the four deep castings */
   'part.frame.nm': 'Rangka Derek',
   'part.frame.short': 'Rangka Derek',
-  'part.frame.order': 'rangka silang untuk rumah derek',
+  'part.frame.order': 'rangka silang untuk kincir angin',
   'part.frame.ds': 'Dua kurung dengan dua huruf berbeda. Tidak ada di dalamnya yang bisa digabung dengan yang lain, jadi keempat hasil kali tetap ada.',
   'part.frame.forge': 'Cor <b>xy + 2x + 3y + 6</b> dari <b>x + 3</b> dan <b>y + 2</b>. Empat hasil kali dan tidak ada sepasang pun yang sejenis — itulah sebabnya bongkahan empat suku adalah tempat pengelompokan dimulai.',
   'part.frame.does': 'empat suku, dan tidak ada yang menyatu',
-  'part.frame.fits': 'rumah derek',
+  'part.frame.fits': 'kincir angin',
   'part.stamp4.nm': 'Penumbuk Keempat',
   'part.stamp4.short': 'Penumbuk Keempat',
   'part.stamp4.order': 'penumbuk keempat untuk deret penumbuk',
@@ -13541,7 +13545,7 @@ MF.STR.tr = {
   'tool.dial.does': 'X: çarpımı a·c, toplamı b',
   'tool.shifter.nm': 'Vites Kolu',
   'tool.shifter.short': 'Vites Kolu',
-  'tool.shifter.order': 'vinç dairesi için bir vites kolu',
+  'tool.shifter.order': 'yel değirmeni için bir vites kolu',
   'tool.shifter.ds': 'Bir topağa tutulduğunda x²’sinin nereden gelmiş olabileceğini gösterir — iki x kısmının çarpımı; bir x²’nin gelebileceği tek yer.',
   'tool.shifter.forge': '<b>x² + 8x + 16</b> dök. Aynı parantez iki kez, yani x²’nin nereden geldiğine dair hiç şüphe yok.',
   'tool.shifter.does': 'alan modeli — bir kutuda dört çarpım',
@@ -13561,11 +13565,11 @@ MF.STR.tr = {
   /* the four deep castings */
   'part.frame.nm': 'Vinç Çerçevesi',
   'part.frame.short': 'Vinç Çerçevesi',
-  'part.frame.order': 'vinç dairesi için bir çapraz çerçeve',
+  'part.frame.order': 'yel değirmeni için bir çapraz çerçeve',
   'part.frame.ds': 'İki farklı harfle iki parantez. İçindeki hiçbir şey başka bir şeyle birleştirilemez, bu yüzden dört çarpım da kalır.',
   'part.frame.forge': '<b>x + 3</b> ve <b>y + 2</b>’den <b>xy + 2x + 3y + 6</b> dök. Dört çarpım ve hiçbir çifti aynı türden terim değil — gruplandırmanın dört terimli bir topakta başlamasının nedeni bu.',
   'part.frame.does': 'dört terim ve hiçbiri birleşmez',
-  'part.frame.fits': 'vinç dairesi',
+  'part.frame.fits': 'yel değirmeni',
   'part.stamp4.nm': 'Dördüncü Tokmak',
   'part.stamp4.short': 'Dördüncü Tokmak',
   'part.stamp4.order': 'değirmen bataryası için dördüncü bir tokmak',
@@ -14852,7 +14856,7 @@ MF.STR.vi = {
   'tool.dial.does': 'X: tích bằng a·c, tổng bằng b',
   'tool.shifter.nm': 'Cần Số',
   'tool.shifter.short': 'Cần Số',
-  'tool.shifter.order': 'một cần số cho nhà tời',
+  'tool.shifter.order': 'một cần số cho cối xay gió',
   'tool.shifter.ds': 'Áp vào một cục, nó cho thấy x² của cục đó có thể sinh ra từ đâu — hai phần chứa x nhân với nhau, nơi duy nhất một x² có thể sinh ra.',
   'tool.shifter.forge': 'Đúc <b>x² + 8x + 16</b>. Cùng một ngoặc hai lần, nên chẳng còn nghi ngờ gì x² sinh ra từ đâu.',
   'tool.shifter.does': 'mô hình diện tích — bốn tích trong một ô',
@@ -14872,11 +14876,11 @@ MF.STR.vi = {
   /* the four deep castings */
   'part.frame.nm': 'Khung Tời',
   'part.frame.short': 'Khung Tời',
-  'part.frame.order': 'một khung chéo cho nhà tời',
+  'part.frame.order': 'một khung chéo cho cối xay gió',
   'part.frame.ds': 'Hai ngoặc với hai chữ khác nhau. Không gì trong đó gộp được với thứ khác, nên cả bốn tích đều ở lại.',
   'part.frame.forge': 'Đúc <b>xy + 2x + 3y + 6</b> từ <b>x + 3</b> và <b>y + 2</b>. Bốn tích và không cặp nào là hạng tử cùng loại — vì thế một cục bốn hạng tử là nơi việc nhóm bắt đầu.',
   'part.frame.does': 'bốn hạng tử, không cái nào gộp lại',
-  'part.frame.fits': 'nhà tời',
+  'part.frame.fits': 'cối xay gió',
   'part.stamp4.nm': 'Chày Thứ Tư',
   'part.stamp4.short': 'Chày Thứ Tư',
   'part.stamp4.order': 'chiếc chày thứ tư cho dàn chày nghiền',
@@ -16164,7 +16168,7 @@ MF.STR.ru = {
   'tool.dial.does': 'X: произведение a·c, сумма b',
   'tool.shifter.nm': 'Рычаг передач',
   'tool.shifter.short': 'Рычаг передач',
-  'tool.shifter.order': 'рычаг передач для подъёмной машины',
+  'tool.shifter.order': 'рычаг передач для ветряка',
   'tool.shifter.ds': 'Приложенный к куску, показывает, откуда мог взяться его x², — из двух перемноженных частей с x, единственного места, откуда x² вообще берётся.',
   'tool.shifter.forge': 'Отлей <b>x² + 8x + 16</b>. Одна и та же скобка дважды, так что сомнений, откуда взялся x², нет вовсе.',
   'tool.shifter.does': 'модель площади — четыре произведения в таблице',
@@ -16184,11 +16188,11 @@ MF.STR.ru = {
   /* the four deep castings */
   'part.frame.nm': 'Рама подъёмника',
   'part.frame.short': 'Рама подъёмника',
-  'part.frame.order': 'поперечная рама для здания подъёмника',
+  'part.frame.order': 'поперечная рама для ветряка',
   'part.frame.ds': 'Две скобки с разными буквами. Ничто в них не приводится ни с чем другим, поэтому все четыре произведения остаются.',
   'part.frame.forge': 'Отлей <b>xy + 2x + 3y + 6</b> из <b>x + 3</b> и <b>y + 2</b>. Четыре произведения, и ни одна пара из них не подобные члены — поэтому с четырёхчленного куска и начинается группировка.',
   'part.frame.does': 'четыре члена, и ни один не сливается',
-  'part.frame.fits': 'здание подъёмника',
+  'part.frame.fits': 'ветряк',
   'part.stamp4.nm': 'Четвёртый пест',
   'part.stamp4.short': 'Четвёртый пест',
   'part.stamp4.order': 'четвёртый пест для батареи толчеи',
@@ -17476,7 +17480,7 @@ MF.STR.zh = {
   'tool.dial.does': 'X：乘出 a·c，加出 b',
   'tool.shifter.nm': '换挡杆',
   'tool.shifter.short': '换挡杆',
-  'tool.shifter.order': '一根绞车房用的换挡杆',
+  'tool.shifter.order': '一根风车用的换挡杆',
   'tool.shifter.ds': '贴到一块矿石上，它会显示这块的 x² 可能从哪里来 — 两个含 x 的部分相乘，这是 x² 唯一的来处。',
   'tool.shifter.forge': '铸出 <b>x² + 8x + 16</b>。同一个括号出现两次，所以 x² 从哪里来毫无疑问。',
   'tool.shifter.does': '面积模型 — 方框里的四个乘积',
@@ -17496,11 +17500,11 @@ MF.STR.zh = {
   /* the four deep castings */
   'part.frame.nm': '绞车架',
   'part.frame.short': '绞车架',
-  'part.frame.order': '一副绞车房用的十字架',
+  'part.frame.order': '一副风车用的十字架',
   'part.frame.ds': '两个括号，字母各不相同。里面没有能和别的项合并的东西，所以四个乘积全都留下。',
   'part.frame.forge': '用 <b>x + 3</b> 和 <b>y + 2</b> 铸出 <b>xy + 2x + 3y + 6</b>。四个乘积，没有任何两个是同类项 — 所以分组分解正是从四项的矿石开始的。',
   'part.frame.does': '四项，而且没有一项能合并',
-  'part.frame.fits': '绞车房',
+  'part.frame.fits': '风车',
   'part.stamp4.nm': '第四根捣杵',
   'part.stamp4.short': '第四根捣杵',
   'part.stamp4.order': '捣矿机组的第四根捣杵',
@@ -18788,7 +18792,7 @@ MF.STR.ja = {
   'tool.dial.does': 'X（たすきがけ）：積が a·c、和が b',
   'tool.shifter.nm': 'シフトレバー',
   'tool.shifter.short': 'シフトレバー',
-  'tool.shifter.order': '巻上げ小屋のシフトレバー',
+  'tool.shifter.order': '風車のシフトレバー',
   'tool.shifter.ds': '塊に当てると、その x² がどこから来うるかを見せます — x の部分どうしのかけ算、x² が出てくるただひとつの場所です。',
   'tool.shifter.forge': '<b>x² + 8x + 16</b> を鋳造します。同じかっこが二回なので、x² がどこから来たかにまったく迷いがありません。',
   'tool.shifter.does': '面積図 — 四角の中の四つの積',
@@ -18808,11 +18812,11 @@ MF.STR.ja = {
   /* the four deep castings */
   'part.frame.nm': '巻上げ機の枠',
   'part.frame.short': '巻上げ機の枠',
-  'part.frame.order': '巻上げ小屋の十字枠',
+  'part.frame.order': '風車の十字枠',
   'part.frame.ds': 'ちがう文字の二つのかっこ。中のものは、ほかのものとまとめられないので、四つの積がすべて残ります。',
   'part.frame.forge': '<b>x + 3</b> と <b>y + 2</b> から <b>xy + 2x + 3y + 6</b> を鋳造します。四つの積のうち、同類項になる組はひとつもありません — だから組分けは、四つの項の塊から始まるのです。',
   'part.frame.does': '四つの項、そしてどれもまとまらない',
-  'part.frame.fits': '巻上げ小屋',
+  'part.frame.fits': '風車',
   'part.stamp4.nm': '4本目のスタンプ',
   'part.stamp4.short': '4本目のスタンプ',
   'part.stamp4.order': '砕鉱機に加える4本目のスタンプ',
@@ -20099,7 +20103,7 @@ MF.STR.ko = {
   'tool.dial.does': 'X: 곱은 a·c, 합은 b',
   'tool.shifter.nm': '기어 레버',
   'tool.shifter.short': '기어 레버',
-  'tool.shifter.order': '권양기실의 기어 레버',
+  'tool.shifter.order': '풍차의 기어 레버',
   'tool.shifter.ds': '덩어리에 대면 그 x²이 어디서 올 수 있는지 보여 줘요 — x 부분끼리의 곱, x²이 나오는 유일한 곳이에요.',
   'tool.shifter.forge': '<b>x² + 8x + 16</b>을 주조하세요. 같은 괄호가 두 번이라, x²이 어디서 왔는지 전혀 헷갈릴 게 없어요.',
   'tool.shifter.does': '넓이 모형 — 상자 안의 네 곱',
@@ -20119,11 +20123,11 @@ MF.STR.ko = {
   /* the four deep castings */
   'part.frame.nm': '권양기 틀',
   'part.frame.short': '권양기 틀',
-  'part.frame.order': '권양기실의 십자 틀',
+  'part.frame.order': '풍차의 십자 틀',
   'part.frame.ds': '서로 다른 문자의 괄호 두 개. 안의 어떤 것도 다른 것과 합칠 수 없어서, 네 곱이 모두 남아요.',
   'part.frame.forge': '<b>x + 3</b>과 <b>y + 2</b>로 <b>xy + 2x + 3y + 6</b>을 주조하세요. 네 곱 중 동류항인 짝이 하나도 없어요 — 그래서 묶기는 항이 네 개인 덩어리에서 시작하는 거예요.',
   'part.frame.does': '항 네 개, 그리고 어느 것도 합쳐지지 않음',
-  'part.frame.fits': '권양기실',
+  'part.frame.fits': '풍차',
   'part.stamp4.nm': '네 번째 스탬프',
   'part.stamp4.short': '네 번째 스탬프',
   'part.stamp4.order': '쇄광기에 더할 네 번째 스탬프',
@@ -21411,7 +21415,7 @@ MF.STR.hi = {
   'tool.dial.does': 'X: गुणनफल a·c, योग b',
   'tool.shifter.nm': 'गियर लीवर',
   'tool.shifter.short': 'गियर लीवर',
-  'tool.shifter.order': 'चरखी घर के लिए एक गियर लीवर',
+  'tool.shifter.order': 'पवनचक्की के लिए एक गियर लीवर',
   'tool.shifter.ds': 'किसी ढेले से लगाने पर दिखाता है कि उसका x² कहाँ से आ सकता है — दो x वाले हिस्सों के गुणा से, जो x² के आने की अकेली जगह है।',
   'tool.shifter.forge': '<b>x² + 8x + 16</b> ढालिए। वही कोष्ठक दो बार, इसलिए x² कहाँ से आया इसमें कोई शक नहीं।',
   'tool.shifter.does': 'क्षेत्रफल मॉडल — डिब्बे में चार गुणनफल',
@@ -21431,11 +21435,11 @@ MF.STR.hi = {
   /* the four deep castings */
   'part.frame.nm': 'चरखी का ढाँचा',
   'part.frame.short': 'चरखी का ढाँचा',
-  'part.frame.order': 'चरखी घर के लिए आड़ा ढाँचा',
+  'part.frame.order': 'पवनचक्की के लिए आड़ा ढाँचा',
   'part.frame.ds': 'दो अलग-अलग अक्षरों वाले दो कोष्ठक। इनमें कुछ भी किसी और से नहीं मिलाया जा सकता, इसलिए चारों गुणनफल बने रहते हैं।',
   'part.frame.forge': '<b>x + 3</b> और <b>y + 2</b> से <b>xy + 2x + 3y + 6</b> ढालिए। चार गुणनफल और उनमें एक भी जोड़ी समान पद नहीं — इसीलिए समूहन चार पदों वाले ढेले से शुरू होता है।',
   'part.frame.does': 'चार पद, और कोई भी नहीं मिलता',
-  'part.frame.fits': 'चरखी घर',
+  'part.frame.fits': 'पवनचक्की',
   'part.stamp4.nm': 'चौथा मूसल',
   'part.stamp4.short': 'चौथा मूसल',
   'part.stamp4.order': 'मिल की कतार के लिए चौथा मूसल',
@@ -22319,7 +22323,7 @@ MF.STR.ar = {
   /* Mr Factor inside a room */
   'says.prefix': '<b>Mr Factor:</b> ',
   'says.mold-after-pour': 'تذكّر هذا الشكل. في المنجم ستجريه <b>عكسًا</b> — ستكون معك الصبّة وتطارد المعادن التي صنعتها.',
-  'says.mill-done': 'ذلك الصف هو كل شيء. وعاملان قطعا بترتيب مختلف ينتهيان إلى السبائك نفسها — ولهذا للعدد مجموعة معادن واحدة.',
+  'says.mill-done': 'ذلك الصف هو كل شيء. وعاملان قطعا على نسق مختلف ينتهيان إلى السبائك نفسها — ولهذا للعدد مجموعة معادن واحدة.',
   'says.mill-going': 'واصل الدق حتى تصير كل قطعة سبيكة. هذا كل ما في الأمر، وهو تمامًا ما ستفعله بثلاثي الحدود في المنجم.',
   'says.forge-cold': 'كل ما تُلقيه يُستهلك &mdash; فإن أنفقت الـ (x + 3) الوحيدة عندك، فستنزل من أجل واحدة أخرى.',
 
@@ -22390,7 +22394,7 @@ MF.STR.ar = {
   'q.count': 'السؤال {at} · المجموع {n}',
 
   /* The Molds */
-  'molds.lede': 'معدنان يدخلان <b>منفصلين</b> ويخرج شيء واحد <b>موحَّد</b>. القالب لا يختار الشكل — المعادن تختاره. ولأن النتيجة محتومة، فإن إجراءها عكسًا له جواب محدّد، وذلك هو سبب إمكان المنجم من أساسه.',
+  'molds.lede': 'معدنان يدخلان <b>منفصلين</b> ويخرج شيء واحد <b>موحَّد</b>. القالب لا يختار الشكل — المعادن تختاره. ولأن المآل محتوم، فإن إجراءها عكسًا له جواب محدّد، وذلك هو سبب إمكان المنجم من أساسه.',
   'molds.slide.a': 'عمق القالب (a)',
   'molds.slide.b': 'الجزء الأول (b)',
   'molds.slide.c': 'الجزء الثاني (c)',
@@ -22412,7 +22416,7 @@ MF.STR.ar = {
   'molds.q1.c': 'ذلك يجمع العمق إلى العرض بدل أن يضربهما. 4 وx ضلعان لمستطيل واحد، لا شيئان موضوعان طرفًا إلى طرف.',
   'molds.q2': 'لماذا لا تستطيع أبدًا أن <b>تختار</b> الشكل الذي يخرج من القالب؟',
   'molds.q2.a.label': 'لأن المعادن هي التي تقرّره',
-  'molds.q2.a': 'للتوزيع نتيجة محتومة. ما إن تعرف ما دخل حتى يصير هناك شيء واحد بالضبط يمكن أن يخرج — ولذلك فإن إجراءه عكسًا له جواب محدّد تطارده.',
+  'molds.q2.a': 'للتوزيع مآل محتوم. ما إن تعرف ما دخل حتى يصير هناك شيء واحد بالضبط يمكن أن يخرج — ولذلك فإن إجراءه عكسًا له جواب محدّد تطارده.',
   'molds.q2.b.label': 'لأن الكور لا يملك إلا قالبًا واحدًا',
   'molds.q2.b': 'على اللوح سبعة قوالب، واحد لكل طلب. والقيد ليس عدد القوالب الموجودة — بل أن ما يخرج يتبع ما دخل.',
   'molds.q2.c.label': 'لأنك لم تصبّ الأداة المناسبة بعد',
@@ -22491,9 +22495,978 @@ MF.STR.ar = {
   'words.q2.part': '<b>{k} يجري في الاثنين فعلًا</b> &mdash; العِرق حقيقي والمطرقة ستقع. لكنه ليس <em>الأكبر</em>: {g} يقسم الاثنين أيضًا، وأخذ {k} يترك {right} وفيه عِرق بعد.',
   'words.q2.no': '<b>{why}</b> انظر بماذا ينقسم 18 و24 معًا.',
 
-  /* ----- ar: section 2 goes here ----- */
-  /* ----- ar: section 3 goes here ----- */
-  /* ----- ar: section 4 goes here ----- */
+  /* what went wrong */
+  'miscut.lab': '&#9935; أين أخطأ عامل المنجم؟',
+  'miscut.q': 'أين وقع الخطأ؟',
+  'miscut.hint': 'لا شيء هنا يُحفظ. وكل إجابة تصف العمل &mdash; بما فيها الإجابات التي ليست موضع الخطأ.',
+  'wmiscut.lede': 'كتب عامل هذا في السجل ووضع الكتلة على الرف كأنها معدن تام. الحساب في كل سطر صحيح. و<b>الكلمة</b> في النهاية ليست كذلك.',
+  'wmiscut.w1.note': 'الكتلة',
+  'wmiscut.w2.line': '1 و&minus;9 لا يشتركان في شيء غير 1',
+  'wmiscut.w2.note': 'فُحصت للمعدن المشترك',
+  'wmiscut.w3.line': 'إذن لا يخرج منها شيء',
+  'wmiscut.w3.note': 'الخطوة الخاطئة',
+  'wmiscut.w4.line': '&rarr; معدن أصلي',
+  'wmiscut.w4.note': 'وُضعت على الرف كتامّة',
+  'wmiscut.a.label': '«لا شيء يقسم كل حد» ليست الدعوى نفسها التي هي «لا شيء ينفصل»',
+  'wmiscut.a': 'هذا هو بالضبط. <b>العامل المشترك</b> شيء يحمله كل حد &mdash; وهذه الكتلة لا تحمل شيئًا، وقد فحص العامل ذلك فحصًا صحيحًا. أما <b>غير القابل للتحليل</b> فمعناه أن الكل لا ينفصل إلى قوسين، وذلك سؤال آخر وله هنا جواب آخر: x² − 9 <b>عِرق توأم</b> ويجري عند (x + 3)(x − 3).',
+  'wmiscut.b.label': 'الحساب خاطئ &mdash; 1 و&minus;9 يشتركان في عامل',
+  'wmiscut.b': 'لا يشتركان. 1 و−9 لا يشتركان إلا في 1، وقد كان العامل مصيبًا في ذلك. الخطأ ليس في الجمع؛ الخطأ في ما ظُنّ أن الجمع أثبته.',
+  'wmiscut.c.label': 'x&sup2; &minus; 9 بلا حدّ أوسط، فلا يمكن تحليله',
+  'wmiscut.c': 'غياب الحدّ الأوسط هو ما يجعل هذه <em>سهلة</em>، لا مستحيلة. مربعان بينهما ناقص ولا شيء في الوسط هو شكل العِرق التوأم &mdash; (x + 3)(x − 3) تضرب فتعود x² − 9 مع إلغاء الوسطين، ولذلك لا وسط يُرى.',
+  'wmiscut.after': '<b>الكلمتان لا تحل إحداهما محل الأخرى.</b> الكتلة التي لا معدن مشترك فيها قد تنفصل مع ذلك، والكتلة التي تنفصل قد لا يكون فيها معدن مشترك. وهذا هو الزوج الذي وُجد هذا الجدول كله ليبقيه مفترقًا.',
+
+  /* the three workshop illustrations */
+  'art.mold.aria': 'معدنان يجريان في قناتين منفصلتين إلى قالب واحد فيمتلئ؛ ثم تُرفع منه قضيب واحد مصوغ.',
+  'art.mold.mold': 'القالب',
+  'art.mold.out': 'شيء واحد مصوغ',
+  'art.words.aria': 'عمودان من الكلمات متقابلان &mdash; كلمات التعدين على جانب والمصطلحات الرياضية على الجانب الآخر &mdash; وضوء يسري على القضيب الذي يصل كل زوج.',
+  'art.words.mine': 'في المنجم',
+  'art.words.maths': 'في الرياضيات',
+  'art.words.1.mine': 'خام',
+  'art.words.1.real': 'عبارة',
+  'art.words.2.mine': 'عِرق',
+  'art.words.2.real': 'عامل',
+  'art.words.3.mine': 'معدن أصلي',
+  'art.words.3.real': 'عدد أولي',
+  'art.words.same': 'الشيء نفسه، مرتين',
+  'art.methods.aria': 'سُلَّم من سبع مراقٍ يصعد أمام صف من كتل الخام تكبر واحدة بعد أخرى، ومصباح يتسلق المراقي.',
+  'art.methods.rung': 'طريقة في كل مرقاة، والخام يشتدّ معها',
+
+  /* The Tools */
+  'methods.lede': 'سبع أدوات معلَّقة في الكور، وكل واحدة تحمل <b>طريقة</b> &mdash; طريقة الصندوق، والتحليل بالتجميع، وإخراج القاسم المشترك الأكبر. الأداة تسهيل. <b>الطريقة هي ما يستحق الاقتناء</b>، وهي تعمل في دفتر بلا أداة البتة. وهذه هي الأرضية التي تُدرَّس فيها الأدوات التي <b>صببتها</b>.',
+  'methods.note': '<b>الأداة تُظهر جزءًا من التحليل ولا تُظهره كله أبدًا.</b> الفانوس يضيء طرفًا ويطبع <span class="qm">؟</span> للآخر؛ والمثقاب يسرد كل زوج ولا يختار منها زوجًا. وما تسمّيه يذهب إلى المطرقة، والصخر هو الذي يجيب.',
+  'methods.q1': 'في يدك <b>6x&sup2; + 7x &minus; 3</b>. أي طريقة مقطوعة لها؟',
+  'methods.q1.a.label': 'التحليل بالتجميع',
+  'methods.q1.a': 'أمام x² شيء، فالطرفان مثبّتان. اضرب a·c فتحصل على −18، وابحث عن الزوج الذي يضرب فيعطي −18 ويجمع فيعطي 7، وقسّم الوسط إلى هذين، ثم جمّع.',
+  'methods.q1.b.label': 'فرق بين مربعين',
+  'methods.q1.b': 'تلك تحتاج إلى غياب الحدّ الأوسط وإلى طرفين مربعين. وهذه الكتلة وسطها 7x، فليس هناك وسطان يلغي أحدهما الآخر.',
+  'methods.q1.c.label': 'إخراج العامل المشترك',
+  'methods.q1.c': 'يستحق أن يُجرَّب أولًا دائمًا &mdash; لكن 6 و7 و−3 لا تشترك في شيء غير 1، فلا معدن مشترك هنا يُرفع. ويبقى مع ذلك أول سؤال صحيح يُسأل.',
+  'methods.q2': 'في <b>طريقة الصندوق</b>، لماذا يتحدّد الضلعان بمجرد وضع x&sup2; والعدد في النهاية؟',
+  'methods.q2.a.label': 'لأن x&sup2; لا يأتي إلا من ضرب جزأين فيهما x',
+  'methods.q2.a': 'والعدد السادة في النهاية لا يأتي إلا من ضرب العددين. فزاويتان متقابلتان تثبّتان الضلعين، وعلى الزاويتين الأخريين أن تجمعا إلى الوسط &mdash; وذلك هو الفحص كله.',
+  'methods.q2.b.label': 'لأن للصندوق أربع زوايا متساوية دائمًا',
+  'methods.q2.b': 'الزوايا الأربع أربعة حواصل ضرب مختلفة، وقلّما تتساوى. الذي يجعل الصندوق يعمل هو <em>من أين يمكن أن يكون كل حاصل قد جاء</em>، لا أنها متطابقة.',
+  'methods.q2.c.label': 'لأن الحدّ الأوسط مجموع الضلعين دائمًا',
+  'methods.q2.c': 'الوسط مجموع الزاويتين <em>المتقاطعتين</em>، لا مجموع الضلعين. وجمع الضلعين يخلط طولًا بمساحة.',
+  'methods.q3': 'الفانوس يضيء طرفًا <b>واحدًا</b> ويطبع <span class="qm">؟</span> للآخر. فلماذا لا يضيء الاثنين؟',
+  'methods.q3.a.label': 'لأن الطرف الثاني هو العمل نفسه',
+  'methods.q3.a': 'متى خرج طرف صار الآخر هو ما تبقّى بالضبط &mdash; فإضاءة واحد موطئ قدم، وإضاءة الاثنين أداء العمل الذي جئت لأجله. الأداة تُظهر جزءًا، لا الكل.',
+  'methods.q3.b.label': 'لأن الفانوس ليس قويًا بما يكفي بعد',
+  'methods.q3.b': 'لا شيء في هذا الموقع يقوى بالاستعمال، ولا توجد ترقية تضيء الطرف الثاني. الحد مقصود، وليس مرحلة.',
+  'methods.q3.c.label': 'كي تشتري أداة أفضل',
+  'methods.q3.c': 'لا شيء يُشترى ولا شيء مقفل. كل طبقة تعمل بحزام فارغ &mdash; والأدوات لا تفعل إلا أن تسهّل رؤية ما هو موجود أصلًا.',
+  'methods.q4': 'أجرِ <b>X</b> بنفسك. <b>x&sup2; &minus; 5x + 6</b>: ابحث عن العددين اللذين يضربان فيعطيان 6 ويجمعان فيعطيان &minus;5، ثم سمِّ قوسًا <b>واحدًا</b>.',
+  'methods.q4.sub': 'خانة x الفارغة تعني x واحدة.',
+  'methods.q4.cta': 'سمِّ طرفًا',
+  'methods.q4.ok': '<b>الزوج كان −2 و−3.</b> يضربان فيعطيان 6 ويجمعان فيعطيان −5، فالقوسان هما (x − 2) و(x − 3) &mdash; و<b>{left}</b> أحدهما.',
+  'methods.q4.no': '<b>{why}</b> عددان يضربان فيعطيان <b>6</b>: 1 و6، 2 و3، −1 و−6، −2 و−3. أي زوج يجمع فيعطي <b>−5</b>؟',
+
+  /* the working floor */
+  'school.tag': 'أرضية العمل',
+  'school.empty.lede': '<b>لا شيء على حزامك بعد، فليس هنا ما يُدرَّس.</b> يظهر على هذه الأرضية درس لكل أداة <b>صببتها</b> &mdash; الطريقة التي تحملها، ممشيّة خطوة خطوة على كتلة اختيرت لها، ثم كتلة تجرّبها بنفسك.',
+  'school.empty.note': 'الأدوات لا تُوزَّع. أنت تصنعها في الكور من معدن كسرته من الصخر بيدك &mdash; فأول درس هنا درس تكسبه بالتحليل. <b>ولا شيء في المنجم ينتظره:</b> كل طبقة تعمل بحزام فارغ، والغرف في الأعلى تعلّم الرياضيات بلا أداة البتة.',
+  'school.to.forge': 'إلى الكور &rarr;',
+  'school.to.mill': 'مطحنة الدق &rarr;',
+  'school.lede': 'درس واحد لكل أداة صببتها. وكل درس هو الطريقة التي تحملها تلك الأداة، <b>ممشيّة خطوة خطوة</b> على كتلة اختيرت لها &mdash; وفي النهاية الكتلة نفسها تجرّبها بنفسك. والذي يجيبك هو المحرّك نفسه الذي يضرب به السندان.',
+
+  /* a lesson */
+  'lesson.reveal': 'لم يُحجب شيء.',
+  'lesson.reveal.hint': 'في المنجم تقف الأداة قبل هذا. وهنا لا تقف.',
+  'lesson.lab': 'الطريقة',
+  'lesson.tool': '<b>{tool}</b> تحملها &mdash; لكن الطريقة تعمل في دفتر.',
+  'lesson.alldone': 'كل الشرائح {n} ظهرت',
+  'lesson.at': 'الشريحة {at} · المجموع {n}',
+  'lesson.why': 'لماذا يعمل هذا',
+  'lesson.through': 'من أوله إلى آخره',
+  'lesson.back': '&larr; شريحة إلى الوراء',
+  'lesson.aria.back': 'ارجع شريحة واحدة في هذه الطريقة',
+  'lesson.how': 'والآن كيف →',
+  'lesson.yours': 'ثم تصير لك →',
+  'lesson.next': 'الشريحة التالية →',
+  'lesson.aria.next': 'اعرض الشريحة التالية من {name}',
+  'lesson.again': 'ابدأها من جديد',
+  'lesson.inmine': '<b>في المنجم:</b> هذه الأداة على حزامك، ثم صخرة.',
+
+  /* where the numbers came from */
+  'why.native': 'لا يخرج منها شيء. وتلك قراءة، لا إخفاق في العثور على شيء.',
+  'why.number': 'تلك هي الأعداد الأولية التي بُني منها {n} &mdash; ولا شيء غيرها يقسمه.',
+  'why.group': '{b} &times; {c} هو {d}، وذلك بالضبط سبب خروج القوس نفسه من النصفين.',
+  'why.cube': 'الطرفان مكعبان كاملان، فالقوس هو جذراهما &mdash; و{right} مميّزه سالب، فيقف الأمر عند ذلك.',
+  'why.two': '{p} و{q} يضربان فيعطيان {c} ويجمعان فيعطيان {b} &mdash; ومع كل منهما الـ y التي كانت هناك دائمًا.',
+  'why.quart': '{p} و{q} يضربان فيعطيان {c} ويجمعان فيعطيان {b}، بقراءة x&sup2; على أنها الوحدة &mdash; ثم يُنظر في كل نصف من جديد.',
+  'why.common': '{g} يقسم كل حد، فيخرج إلى الأمام قبل أي شيء آخر.',
+  'why.twin': 'عدد ومقابله &mdash; وهو الزوج الوحيد الذي يجمع فيعطي صفرًا، ولذلك يلغي الحدّ الأوسط نفسه.',
+  'why.pair': '{p} و{q} يضربان فيعطيان {ac} ويجمعان فيعطيان {b}. وذلك هو البحث كله، منتهيًا.',
+  'why.any': 'القطع في الأعلى تضرب فتعود إليها، وذلك هو الاختبار الوحيد.',
+
+  /* now you */
+  'practice.lab': 'والآن أنت',
+  'practice.aria.m2': 'كم x مربعة — اتركه فارغًا لـ x مربعة واحدة',
+  'practice.aria.take': 'العدد الذي تُخرجه',
+  'practice.aria.y': 'كم y في هذا القوس',
+  'practice.ok': '<b>جرى العِرق.</b> خرج منها <b>{left}</b>، وبقي خلفه <b>{right}</b>. تلك هي الحركة &mdash; وهي نفسها التي يصنعها السندان.',
+  'practice.no': '<b>{why}</b> لم يُفقد شيء &mdash; الكتلة كما كانت تمامًا، وتستطيع المحاولة من جديد.',
+  'practice.hint': 'لا يُحفظ &mdash; المحرّك نفسه الذي يضرب به السندان.',
+
+  /* the bench in a lesson */
+  'bench.lab': '&#128296; ألصقها بالخام &mdash; هذا هو الجزء الذي ليس قراءة',
+  'bench.armed': '<b>{tool} في يدك.</b> انقر كتلة لتُلصقها بها. وانقر الكتلة نفسها ثانية فتُرفع عنها.',
+  'bench.idle': 'أنزل <b>{tool}</b> عن الخطّاف، ثم انقر كتلة. تتغيّر الأعداد المحفورة في الصخر &mdash; وذلك كل ما تفعله الأداة.',
+  'bench.aria.armed': '{tool}. في يدك — انقر كتلة لتُلصقها بها، أو انقر ثانية لتعيدها.',
+  'bench.aria.idle': '{tool}. انقر لتلتقطها، ثم انقر كتلة.',
+  'bench.aria.on': '{ore}. عليها {tool} — انقر لرفعها.',
+  'bench.aria.off': '{ore}. انقر لتُلصق بها {tool}.',
+  'bench.found': '<b>{tool}:</b> {found}',
+  'bench.nothing': '<b>لا شيء يتحرك في الداخل.</b>',
+  'bench.plain': 'صخر سادة — لا شيء عليه بعد',
+  'bench.hint': 'جرّب الثلاث &mdash; ومنها الكتلة التي لا تستطيع أن تقول عنها شيئًا.',
+
+  /* outside a mine, and a reflection */
+  'rw.summary': '&#127758; الحركة نفسها، خارج المنجم &mdash; <b>{where}</b>',
+  'rw.pick.where': 'فرز الخردة قبل صهرها',
+  'rw.pick.body': 'الساحة التي تشتري الخردة تفحص القطعة قبل أن تقترب من الفرن &mdash; مغناطيس، واختبار شرر، وخدش. ولا شيء من ذلك يقول <b>كم تساوي</b> القطعة. إنما يقول <b>أي نوع</b> من الأشياء هي، ليُتّخذ القرار التالي عن قصد لا عن تخمين.',
+  'rw.pick.tie': 'وهذه هي الطريقة بعينها: سمِّ الشكل قبل أن تلتزم بحركة، واقبل أن تسميته لا تخبرك شيئًا عن الجواب نفسه.',
+  'rw.lantern.where': 'قراءة وصفة بالمقلوب',
+  'rw.lantern.body': 'تعرف أن قِدر الحساء أطعمت اثني عشر، وتعرف أنك استعملت ثلاث علب. ولست بحاجة إلى استخراج الوصفة كلها من جديد لتعرف كم كانت تغطي كل علبة &mdash; فجزء معلوم واحد يفرض الآخر، لأن المجموع هو ضربهما.',
+  'rw.lantern.tie': 'طرف مضاء يفرض الطرف الآخر. ولذلك لا يضيء الفانوس الاثنين: متى صار عندك واحد لم يعد الثاني سؤالًا ثانيًا.',
+  'rw.steel.where': 'تسعير عمل',
+  'rw.steel.body': 'تأتي ثلاثة بنود من عرض سعر بـ 600 و1500 و900 ريال. والبنّاء لا يقرأ ذلك ثلاثة أعداد لا رابط بينها &mdash; بل يرى فيها 300، ويقولها «ثلاث حصص من 300: اثنتان وخمس وثلاث». وإخراج المقدار المشترك هو كيف يُراجَع عرض السعر ذهنيًا على عتبة الباب.',
+  'rw.steel.tie': 'وذلك هو القاسم المشترك الأكبر، وهو أول ما يُجرَّب على أي كتلة للسبب نفسه: يجعل كل ما بعده أصغر.',
+  'rw.dial.where': 'تركيب زوج تروس',
+  'rw.dial.body': 'تحتاج إلى ترسين يضرب عدد أسنانهما فيعطي نسبة ثابتة، ويجمع حجمهما فيسع المساحة داخل الغلاف. وهناك قائمة قصيرة من الأزواج التي تضرب على الوجه الصحيح، وبعضها فقط يسع أيضًا &mdash; فتكتب الأزواج التي تصيب الهدف الأول ثم تفحصها بالهدف الثاني.',
+  'rw.dial.tie': 'اضرب فتحصل على عدد، واجمع فتحصل على آخر: تلك هي X، وهي البحث نفسه الذي يجريه مصمّم علبة التروس. وحين لا يحقق زوج صحيح الأمرين، لا تتركّب التروس &mdash; وهي الحقيقة نفسها التي هي كتلة لا تنفصل، لا إخفاق في البحث.',
+  'rw.shifter.where': 'تخطيط غرفة',
+  'rw.shifter.body': 'أرضية 7 م في 5 م مساحتها 35 م². بلّطها شريطين &mdash; 4 م و3 م &mdash; فتصير 20 + 15، الأرضية نفسها موصوفة مرتين. كل مركّب مطابخ وكل مبلّط يعمل في هذا المستطيل، ولا أحد منهم يسمّيه خاصية التوزيع.',
+  'rw.shifter.tie': 'طريقة الصندوق <b>هي</b> ذلك المستطيل، مُجرًى بالمقلوب: المساحة معلومة، وأنت تطارد الضلعين.',
+  'rw.drill.where': 'اختصاران يستعملهما الناس أصلًا',
+  'rw.drill.body': '47 × 53 هي 50 − 3 و50 + 3، فتكون 50² − 3² = 2491، ذهنيًا. و1001 هي 10³ + 1³، فتكون 11 × 91 &mdash; ولذلك 1001 = 7 × 11 × 13، ولذلك أي ثلاثة أرقام مكرّرة تقبل القسمة على الثلاثة جميعًا.',
+  'rw.drill.tie': 'وكلاهما هذه الأداة مقروءة بالمقلوب: فرق بين مربعين، ومجموع مكعبين. ولا يُطارَد أي منهما &mdash; إنما تنظر إلى الطرفين فتتبع الأقواس.',
+  'rw.auger.where': 'تقسيم فاتورة لا تنقسم بالتساوي',
+  'rw.auger.body': 'ستة أشخاص، ومجموع أعوج، واثنان منهم تقاسما طبقًا. فتكسر المجموع إلى أجزاء تتجمّع بنظافة بدل أن تقسم الكل دفعة واحدة &mdash; أعد التجميع أولًا، فيصير الحساب القبيح جمعين سهلين.',
+  'rw.auger.tie': 'وذلك هو التحليل بالتجميع: قسّم الوسط إلى قطعتين تشترك كل واحدة مع جارتها في شيء، ثم أخرج الجزء المشترك من كل زوج.',
+  'reflect.lab': '&#9998; قبل أن تمضي',
+  'reflect.placeholder': 'بكلماتك أنت…',
+  'reflect.aria': 'مساحة للكتابة. لا شيء تكتبه هنا يُقرأ أو يُفحص أو يُحفظ.',
+  'reflect.note': '<b>لا شيء هنا يُقرأ أو يُفحص أو يُحفظ.</b> ولا يُرسل إلى أي مكان، ويزول حين تغادر الصفحة. والفائدة من كتابته هي الكتابة نفسها.',
+
+  /* the kinds of ore — what the assay calls each shape */
+  'assay.pure.name': 'سبيكة نقية',
+  'assay.pure.tell': 'لا ينفصل منها شيء. هي عنصر أصلًا &mdash; عدد أولي، أو كثير حدود لا يمر به عِرق صحيح.',
+  'assay.composite.name': 'تنفصل',
+  'assay.composite.tell': 'فيها عوامل. اقسمها وواصل القسمة حتى يصير كل شيء نقيًا.',
+  'assay.shared.name': 'معدن مشترك',
+  'assay.shared.tell': 'كل حد يحمل الكتلة نفسها. وتلك تخرج إلى الأمام قبل أي شيء آخر.',
+  'assay.twin.name': 'عِرق توأم',
+  'assay.twin.tell': 'مربعان كاملان بينهما ناقص، وبلا حدّ أوسط البتة.',
+  'assay.plain.name': 'ثلاثي حدود سادة',
+  'assay.plain.tell': 'x² واحدة لا شيء أمامها. عددان يضربان فيعطيان c ويجمعان فيعطيان b.',
+  'assay.loaded.name': 'ثلاثي حدود محمَّل',
+  'assay.loaded.tell': 'أمام x² شيء. والزوج الذي تطارده يضرب فيعطي a·c.',
+  'assay.grouped.name': 'عِرق مجمَّع',
+  'assay.grouped.tell': 'أربعة حدود وحرفان. خذها اثنين اثنين فيخرج القوس نفسه من النصفين.',
+  'assay.stacked.name': 'عِرق مرصوف',
+  'assay.stacked.tell': 'x أُس أربعة. اقرأ x&sup2; على أنها الوحدة فإذا هي ثلاثي حدود عادي &mdash; ثم انظر في كل نصف من جديد.',
+  'assay.twoel.name': 'عنصران',
+  'assay.twoel.tell': 'حرفان من أوله إلى آخره. والزوج ما زال يضرب فيعطي النهاية ويجمع فيعطي الوسط &mdash; الجديد هو الـ y، لا البحث.',
+  'assay.cubes.name': 'عِرق مكعب',
+  'assay.cubes.tell': 'الطرفان مكعبان كاملان. يخرج قوس واحد من النظرة الأولى، وما يبقى خلفه لا ينفصل أبدًا.',
+
+  /* the nine layers of the shaft */
+  'layer.1.name': 'حصى',
+  'layer.1.what': 'أعداد سادة',
+  'layer.2.name': 'صخر العِرق',
+  'layer.2.what': 'معدن مشترك — 6x + 15، 3x² + 12x',
+  'layer.3.name': 'الطبقات التوأم',
+  'layer.3.what': 'خام من حدين — x² − 9، وسبائك نقية',
+  'layer.4.name': 'ثلاثي الحدود',
+  'layer.4.what': 'x² + bx + c',
+  'layer.5.name': 'العِرق المحمَّل',
+  'layer.5.what': 'ax² + bx + c',
+  'layer.6.name': 'التجميع',
+  'layer.6.what': 'أربعة حدود، حرفان — xy + 3x + 2y + 6',
+  'layer.7.name': 'الأرض الأعلى',
+  'layer.7.what': 'x⁴ + bx² + c — ثلاثي حدود بترس أعلى',
+  'layer.8.name': 'عنصران',
+  'layer.8.what': 'x² + bxy + cy² — البحث نفسه بحرفين',
+  'layer.9.name': 'المكعبات',
+  'layer.9.what': 'x³ ± مكعب — قوس من النظرة الأولى، والباقي منتهٍ',
+
+  /* the seven instruments */
+  'tool.pick.nm': 'معول التنقيب',
+  'tool.pick.short': 'معول التنقيب',
+  'tool.pick.order': 'معول تفحص به الصخر',
+  'tool.pick.ds': 'يسمّي نوع الخام في الكتلة قبل أن تضربها.',
+  'tool.pick.forge': 'صبّ <b>12</b> من معدن نقي. ثلاث سبائك سادة، وإحداها تأتي مرتين.',
+  'tool.pick.does': 'يسمّي الشكل قبل التحليل',
+  'tool.lantern.nm': 'الفانوس',
+  'tool.lantern.short': 'الفانوس',
+  'tool.lantern.order': 'فانوس منجم للأعماق',
+  'tool.lantern.ds': 'ألصقه بكتلة فيخبرك هل ما زال يمر بها عِرق &mdash; لتعرف متى تستحق القطعة ضربة أخرى ومتى تكون عنصرًا. ولا يقول أبدًا على أي خط يمر.',
+  'tool.lantern.forge': 'صبّ <b>30</b> من معدن نقي. ثلاثة أعداد أولية مختلفة، ولا تفي بذلك إلا ثلاثة واحدة.',
+  'tool.lantern.does': 'يعطي عاملًا؛ والباقي ما يتبقّى',
+  'tool.steel.nm': 'المعول الفولاذي',
+  'tool.steel.short': 'المعول الفولاذي',
+  'tool.steel.order': 'رأس فولاذي للعِرق المشترك',
+  'tool.steel.ds': 'ينتزع المعدن المشترك من الكتلة بضربة واحدة دون أن تسمّيه. ولا يأخذ إلا المعدن الذي يحمله كل حد &mdash; وبقية الصخر ما زال الأمر لك أن تكسرها.',
+  'tool.steel.forge': 'صبّ <b>3x + 12</b>. معدن سادة موزَّع على قوس واحد &mdash; وتوزيع المعدن المشترك هو الحركة التي يجريها هذا الرأس بعدها بالمقلوب.',
+  'tool.steel.does': 'يُخرج القاسم المشترك الأكبر',
+  'tool.dial.nm': 'النفق العرضي',
+  'tool.dial.short': 'النفق العرضي',
+  'tool.dial.order': 'نفق عرضي محفور فوق العِرق',
+  'tool.dial.ds': 'يرسم X على الكتلة: ما يجب أن يضرب الزوج فيعطيه في الأعلى، وما يجب أن يجمع فيعطيه في الأسفل. ولا يملأ الجانبين أبدًا. أزِح النهاية عن العدد الصحيح قليلًا وراقب العِرق الذي كان يطارده يزول.',
+  'tool.dial.forge': 'صبّ <b>x² + 3x + 2</b>. قوسان بينهما واحد &mdash; a·c هي 2 والوسط 3، وذلك أصغر X صادقة.',
+  'tool.dial.does': 'X: اضرب فتعطي a·c، واجمع فتعطي b',
+  'tool.shifter.nm': 'ذراع التروس',
+  'tool.shifter.short': 'ذراع التروس',
+  'tool.shifter.order': 'ذراع تروس للطاحونة',
+  'tool.shifter.ds': 'مُلصقًا بكتلة يُظهر من أين يمكن أن تكون x² قد جاءت &mdash; من ضرب جزأين فيهما x، وهو المكان الوحيد الذي تأتي منه x² البتة.',
+  'tool.shifter.forge': 'صبّ <b>x² + 8x + 16</b>. القوس نفسه مرتين، فلا شك البتة من أين جاءت x².',
+  'tool.shifter.does': 'طريقة الصندوق — أربعة حواصل',
+  'tool.drill.nm': 'المثقاب',
+  'tool.drill.short': 'المثقاب',
+  'tool.drill.order': 'مثقاب عيّنات لمكتب الفحص',
+  'tool.drill.ds': 'يأخذ عيّنة ويقرأ الطرفين. مربعان بينهما ناقص وبلا حدّ أوسط عِرق توأم &mdash; والقوسان عدد ومقابله. ومكعبان كاملان عِرق مكعب: يخرج قوس واحد، والقطعة خلفه لا تنكسر أبدًا.',
+  'tool.drill.forge': 'صبّ <b>x² − 25</b>. قوسان بعددين متقابلين، فيلغي الوسط نفسه ويخرج من القالب عِرق توأم.',
+  'tool.drill.does': 'مربعان أو مكعبان، يُقرآن من الطرفين',
+  'tool.auger.nm': 'البريمة الآلية',
+  'tool.auger.short': 'البريمة الآلية',
+  'tool.auger.order': 'بريمة آلية للخام المحمَّل',
+  'tool.auger.ds': 'تُظهر كيف يجب أن يجري العِرق قبل أن تحفره: ما الذي يجب أن يقسمه الجزء ذو x الذي تُخرجه، وما الذي يجب أن يقسمه العدد. وعلى ضربة تصيب ترسم القسمة.',
+  'tool.auger.forge': 'صبّ <b>6x² + 7x − 3</b>. الطرفان مثبّتان: أجزاء x يجب أن تضرب فتعطي 6 والأعداد تعطي −3، وتركيب واحد فقط يجعل الوسط 7 أيضًا.',
+  'tool.auger.does': 'تقسم الوسط، ثم تحلّل بالتجميع',
+
+  /* the four deep castings */
+  'part.frame.nm': 'إطار الرفع',
+  'part.frame.short': 'إطار الرفع',
+  'part.frame.order': 'إطار عرضي للطاحونة',
+  'part.frame.ds': 'قوسان بحرفين مختلفين. لا شيء فيه يُجمع مع شيء آخر، فتبقى الحواصل الأربعة كلها.',
+  'part.frame.forge': 'صبّ <b>xy + 2x + 3y + 6</b> من <b>x + 3</b> و<b>y + 2</b>. أربعة حواصل وليس فيها زوج من النوع نفسه &mdash; ولذلك تبدأ عملية التجميع من كتلة ذات أربعة حدود.',
+  'part.frame.does': 'أربعة حدود، ولا يندمج منها شيء',
+  'part.frame.fits': 'الطاحونة',
+  'part.stamp4.nm': 'المدق الرابع',
+  'part.stamp4.short': 'المدق الرابع',
+  'part.stamp4.order': 'مدق رابع لبطارية المطحنة',
+  'part.stamp4.ds': 'ضرب تربيعيَّين غير قابلين للتحليل. تبديل الترس مُجرًى إلى الأمام: x² في x² هي مصدر الأس الرابع.',
+  'part.stamp4.forge': 'صبّ <b>x<sup>4</sup> + 5x<sup>2</sup> + 4</b> من <b>x<sup>2</sup> + 1</b> و<b>x<sup>2</sup> + 4</b>. كلا المعدنين عنصر &mdash; لن ينكسر أي منهما &mdash; والشيء الذي يصنعانه أعلى بترس كامل.',
+  'part.stamp4.does': 'x² × x² هي مصدر x⁴',
+  'part.stamp4.fits': 'مطحنة الدق',
+  'part.rail2.nm': 'السكة الثانية',
+  'part.rail2.short': 'السكة الثانية',
+  'part.rail2.order': 'سكة ثانية لمسار العربة',
+  'part.rail2.ds': 'قوسان يحملان الحرفين. وهنا الوسطان <b>فعلًا</b> من النوع نفسه، فيجتمعان &mdash; عكس الإطار تمامًا، عن قصد.',
+  'part.rail2.forge': 'صبّ <b>x<sup>2</sup> + 3xy + 2y<sup>2</sup></b> من <b>x + y</b> و<b>x + 2y</b>. أربعة حواصل من جديد، وهذه المرة اثنان منها xy فيجريان معًا.',
+  'part.rail2.does': 'حرفان، والوسطان يجتمعان',
+  'part.rail2.fits': 'مسار العربة',
+  'part.counter.nm': 'الثقل الموازن المكعب',
+  'part.counter.short': 'الثقل الموازن',
+  'part.counter.order': 'ثقل موازن لبرج البئر',
+  'part.counter.ds': 'قوس ورفيقه. تدخل ستة حواصل ويلغي أربعة منها بعضها بعضًا، ولذلك لا ينجو إلا الطرفان.',
+  'part.counter.forge': 'صبّ <b>x<sup>3</sup> &minus; 8</b> من <b>x &minus; 2</b> و<b>x<sup>2</sup> + 2x + 4</b>. راقب الحدود الوسطى تزول: ذلك الإلغاء هو السبب كله في أن الرفيق لا ينكسر أبدًا.',
+  'part.counter.does': 'ستة حواصل، أربعة منها تتلاشى',
+  'part.counter.fits': 'برج البئر',
+
+  /* the lessons: words shared by several methods */
+  'schema.hunt': 'اضرب فتعطي {m}، واجمع فتعطي {a}',
+  'schema.and': '  و  ',
+
+  /* the Prospector's Pick */
+  'schema.pick.s1': 'ألصقه بكتلة ما زالت في الجدار.',
+  'schema.pick.s1.key': 'واحد من هذه. لا أي أعداد &mdash; بل أي <b>شكل</b>.',
+  'schema.pick.s2': 'يختار الشكل من تلك القائمة ويقف عندها.',
+  'schema.pick.s2.key': '<b>{name}.</b> {tell}',
+  'schema.pick.s3': 'وأي أعداد فيها ما زال الأمر لك.',
+  'schema.pick.s3.label': '{name}، فالعِرق',
+
+  /* the Lantern */
+  'schema.lantern.none': 'لا شيء يتحرك في الداخل. العنصر ليس له طرفان.',
+  'schema.lantern.none.key': 'لا وجود لأي من الطرفين. وذلك ما <b>هو</b> المعدن الأصلي.',
+  'schema.lantern.s1': 'الفانوس يضيء <b>شكل</b> طرف واحد &mdash; كم x، وإلى أي جهة تتجه الإشارة.',
+  'schema.lantern.s1.key': 'يضيء الطرف <b>الأبسط</b>، ولا كله: الرقم ما زال الأمر لك.',
+  'schema.lantern.s2': 'املأ ذلك الرقم، فيكون الطرف المظلم هو ما يتبقّى حين يخرج ذاك.',
+  'schema.lantern.s3': 'سمِّه واضرب. الفانوس لن يقول هل أصبت &mdash; الصخر هو الذي يقول.',
+  'schema.lantern.s3.label': 'اقطع المطرقة على',
+
+  /* the Steel Pick */
+  'schema.steel.s1': 'اسأل ما الذي يقسم كل حد.',
+  'schema.steel.s1.label': 'الأكبر الذي يقسمها جميعًا',
+  'schema.steel.none': 'لا شيء غير واحد، فلا معدن يُنتزع. والضربة المسمّاة تعمل مع ذلك.',
+  'schema.steel.none.key': 'الانتزاع الذي لا يغيّر شيئًا ليس حركة.',
+  'schema.steel.s2': 'قفه إلى الأمام أمام قوس.',
+  'schema.steel.s2.key': 'خرج المعدن. وما بقي في القوس لك.',
+  'schema.steel.s3': 'والذي يدخل هو كل حد مقسومًا عليه.',
+
+  /* the Crosscut */
+  'schema.dial.two.s1': 'نفس X كالعادة. النهاية في الأعلى والوسط في الأسفل.',
+  'schema.dial.two.s2': 'ونفس البحث.',
+  'schema.dial.two.s3': 'الجديد هو أين يستقران. كل واحد يحمل y.',
+  'schema.dial.two.s3.key': 'الزوج هو كم <b>y</b> &mdash; لا نهاية القوس كلها.',
+  'schema.dial.two.s4': 'وهو ما كانت x&sup2; + 5x + 6 تفعله طول الوقت.',
+  'schema.dial.two.s4.why': 'وضع 1 في الفراغات يعطي ثلاثي الحدود السادة. ووضع y يعطي هذه.',
+  'schema.dial.two.s5': 'وغياب زوج صحيح ما زال يعني غياب العِرق.',
+  'schema.dial.two.s5.key': 'الوقوع بين علامتين شأن الصخر، لا شأنك.',
+  'schema.dial.two.s5.keyno': 'هذه تقع بين العلامتين.',
+  'schema.dial.number': 'X تحتاج إلى حدّ أوسط تجلس تحته، والعدد السادة لا حدّ أوسط له.',
+  'schema.dial.number.label': 'لا شيء يُقطع هنا',
+  'schema.dial.linear': 'لا x&sup2;، فلا a&middot;c تُوضع في الأعلى. ابحث عن المعدن الذي يحمله كل حد.',
+  'schema.dial.linear.label': 'هذه للرأس الفولاذي',
+  'schema.dial.s1': 'العدد في النهاية يذهب إلى أعلى X.',
+  'schema.dial.s1.loaded': 'اضرب x&sup2; في النهاية &mdash; a&middot;c. تلك تذهب إلى الأعلى.',
+  'schema.dial.s2': 'والحدّ الأوسط يذهب تحتها.',
+  'schema.dial.s3': 'والزوج الذي يفعل الأمرين يذهب إلى الجانبين. ولا شيء يملؤهما لك.',
+  'schema.dial.s4': 'وإن لم يفعل زوج صحيح الأمرين، فلا زوج يُوجد &mdash; أزِح النهاية عن العدد الصحيح وراقبه يزول.',
+  'schema.dial.s4.key': 'بين علامتين. ذلك شأن الصخر، لا شأنك.',
+  'schema.is': '   هي   ',
+
+  /* each method's name, the claim it rests on, and the lump to try */
+  'schema.pick.name': 'فحص الصخر قبل الضرب',
+  'schema.pick.why': 'كل أداة أخرى تعمل على كتلة حفرتها أصلًا. وهذه تعمل عند الجدار، وتسمّي النوع لا الجواب &mdash; فيصير اختيار ما تقطعه قرارًا بدل أن يكون قرعة.',
+  'schema.pick.practice.ask': 'سمِّ عددًا صحيحًا واحدًا يجري في 12.',
+  'schema.lantern.name': 'طرف مضاء وطرف مظلم',
+  'schema.lantern.why': 'للتحليل طرفان، ومتى خرج أحدهما صار الآخر هو ما تبقّى. فالطرف الواحد موطئ قدم لا جواب &mdash; والفانوس يضيء الأبسط منهما.',
+  'schema.lantern.practice.ask': 'x&sup2; &minus; 5x + 6 فيها ( x &minus; 2 ). سمِّ الطرف الآخر.',
+  'schema.steel.name': 'إخراج العامل المشترك (القاسم المشترك الأكبر)',
+  'schema.steel.why': 'إن كان كل حد يحمل المعدن نفسه، فإنه يُرفع منها جميعًا دفعة واحدة ويقف أمام قوس. وذلك خاصية التوزيع مُجراة بالمقلوب، وهي أول ما يُجرَّب دائمًا.',
+  'schema.steel.practice.ask': '6x + 15 &mdash; ما أكبر شيء يقسم الحدين؟ ضع 0 في خانة x وذلك العدد في النهاية.',
+  'schema.dial.name': 'طريقة X',
+  'schema.dial.why': 'على عددين أن يؤدّيا عملين في آن: يضربان فيعطيان a&middot;c ويجمعان فيعطيان الوسط. ضع الهدفين على X فيكون الزوج الذي تريده هو الذي يحقّق الاثنين.',
+  'schema.dial.practice.ask': 'x&sup2; + 5xy + 6y&sup2; &mdash; الزوج يضرب فيعطي 6 ويجمع فيعطي 5. سمِّ قوسًا واحدًا، وتذكّر الـ y.',
+  'schema.shifter.name': 'طريقة الصندوق',
+  'schema.shifter.why': 'x&sup2; لا تأتي إلا من ضرب جزأين فيهما x، والنهاية لا تأتي إلا من ضرب العددين. ضع هذين في زاويتين متقابلتين فيتحدّد الضلعان. وبدّل الترس أولًا فيدخل الأس الرابع الصندوق نفسه.',
+  'schema.shifter.practice.ask': 'x&#8308; &minus; 5x&sup2; + 4 &mdash; اقرأ x&sup2; على أنها الوحدة، والزوج يضرب فيعطي 4 ويجمع فيعطي &minus;5. سمِّ نصفًا واحدًا.',
+  'schema.drill.name': 'طرفان يُقرآن من النظرة الأولى',
+  'schema.drill.why': 'بعض الكتل لا تحتاج مطاردة: الطرفان يعطيان القوسين. المربعات تعطي عددًا ومقابله؛ والمكعبات تعطي قوسًا وقطعة لا تنفصل أبدًا.',
+  'schema.drill.practice.ask': 'x&sup3; &minus; 8 &mdash; الطرفان مكعبان كاملان. سمِّ القوس الذي يخرج منها.',
+  'schema.auger.name': 'التحليل بالتجميع',
+  'schema.auger.why': 'الحدود الأربعة تقع في زوجين، وإن خرج القوس نفسه من الاثنين فهو يجري في الكتلة كلها. والحدود الثلاثة يجب أن <b>تُصنع</b> أربعة أولًا &mdash; ولذلك وُجدت X.',
+  'schema.auger.practice.ask': '3 &times; 2 هي 6، فهي تتجمّع. اختر حرفًا وسمِّ ذلك القوس.',
+
+  /* the Shifter */
+  'schema.shifter.q1': 'x&sup2; مضروبة في نفسها هي x&#8308;. فاقرأ x&sup2; على أنها الوحدة.',
+  'schema.shifter.q2': 'فإذا هي ثلاثي حدود، ويدخل الصندوق كأي ثلاثي آخر.',
+  'schema.shifter.q2.cap': 'زاويتان متقابلتان، كما كان تمامًا &mdash; إنما الأسس أعلى بترس.',
+  'schema.shifter.q2.a11y': 'صندوق اثنين في اثنين، في إحدى زواياه x أُس أربعة و{c} في الزاوية المقابلة.',
+  'schema.shifter.q3': 'الضلعان يحملان x&sup2; واحدة، وكلاهما ما زال الأمر لك.',
+  'schema.shifter.cap.mid': 'على هذين أن يبلغا {mid}. وذلك هو الفحص كله.',
+  'schema.shifter.away': '، مطروحًا',
+  'schema.shifter.q3.a11y': 'الصندوق نفسه أعلى بترس، والضلعان مجهولان.',
+  'schema.shifter.q4': 'ثم الجزء الذي لا يكون في ثلاثي الحدود أبدًا: انظر في كل نصف من جديد.',
+  'schema.shifter.q4.key': 'النصف مثل x<sup>2</sup> &minus; 4 مربعان بينهما ناقص، وينفصل من جديد. وتلك النظرة الثانية هي حيث تنتهي كتلة كهذه.',
+  'schema.shifter.q4.keyno': 'لا زوج صحيح يفعل الأمرين، فهي لا تنفصل بهذه الطريقة &mdash; ولا بأي طريقة أخرى. وقد انتهى أمرها.',
+  'schema.shifter.none': 'الصندوق يحتاج إلى x&sup2; لزاويته الأولى، ولا x&sup2; في هذه.',
+  'schema.shifter.none.label': 'لا x² تُوضع في زاوية',
+  'schema.shifter.m1': 'x&sup2; تذهب إلى زاوية، والعدد في النهاية إلى الزاوية المقابلة.',
+  'schema.shifter.m1.cap': 'زاويتان متقابلتان، لأن ذلك هو السبيل الوحيد لخروج x² وعدد سادة من الضلعين نفسيهما.',
+  'schema.shifter.m1.a11y': 'صندوق اثنين في اثنين، في إحدى زواياه {sq} و{c} في الزاوية المقابلة، والزاويتان الأخريان فارغتان.',
+  'schema.shifter.m2': 'ضلعا الصندوق هما القطعتان اللتان تطاردهما. ولا واحدة منهما معلومة بعد.',
+  'schema.shifter.m2.cap': 'زاويتان معطاتان. أما الضلعان والزاويتان الأخريان فلا.',
+  'schema.shifter.m2.a11y': 'صندوق اثنين في اثنين، في إحدى زواياه {sq} و{c} في الزاوية المقابلة، وعلى كل ضلع علامة استفهام.',
+  'schema.shifter.m3': 'املأ الزاويتين الأخريين بحيث تجمعان إلى الوسط. عندها يكون الضلعان هما الجواب.',
+  'schema.shifter.m3.a11y': 'الصندوق نفسه، وعلى الزاويتين الباقيتين علامتا استفهام يجب أن تجمعا إلى {mid}.',
+
+  /* the Drill */
+  'schema.drill.c1': 'طرفان ولا وسط. هل كلاهما مكعب كامل؟',
+  'schema.drill.front': 'الطرف الأمامي',
+  'schema.drill.end': 'الطرف الأخير',
+  'schema.drill.notcube': 'ليس مكعبًا',
+  'schema.drill.c2': 'كلاهما كذلك، فقوس واحد معلوم أصلًا: الجذران، بإشارة الكتلة نفسها.',
+  'schema.drill.c2.no': 'أحدهما ليس كذلك، فلا عِرق مكعب هنا.',
+  'schema.drill.c2.key': 'لا مطاردة. الجذران <b>هما</b> القوس.',
+  'schema.drill.c2.keyno': 'لا شيء يُقرأ.',
+  'schema.drill.c3': 'القطعة خلفه فيها ثلاثة حدود.',
+  'schema.drill.c4': 'تلك القطعة لا تنفصل أبدًا. ولا لأي مكعب.',
+  'schema.drill.c4.label': '{right}  هي',
+  'schema.drill.c4.labelno': 'القطعة خلفه هي',
+  'schema.drill.c4.el': 'عنصر',
+  'schema.drill.c4.why': 'مميّزها سالب دائمًا &mdash; فينتهي هذا في ضربة <b>واحدة</b>.',
+  'schema.drill.number': 'العِرق التوأم شكل، والعدد السادة لا شكل له.',
+  'schema.drill.number.label': 'لا شيء مربع في',
+  'schema.drill.linear': 'لا x&sup2;، فليس هناك مربعان يكون بينهما فرق.',
+  'schema.drill.linear.key': 'هذه كتلة الرأس الفولاذي.',
+  'schema.drill.not1': 'فحصان، وهذه الكتلة تُخفق في أحدهما: هل الوسط صفر، وهل الطرفان مربعان؟',
+  'schema.drill.not1.label': 'الحدّ الأوسط',
+  'schema.drill.not2': 'فهي ليست عِرقًا توأمًا. خذ إليها X بدل ذلك.',
+  'schema.drill.t1': 'فحصان. هل الحدّ الأوسط صفر، وهل الطرفان مربعان كاملان؟',
+  'schema.drill.t1.label': 'الوسط',
+  'schema.drill.t2': 'كلاهما ينجح، فعلى الزوج أن يجمع فيعطي صفرًا &mdash; عدد ومقابله.',
+  'schema.drill.t2.bot': 'لا شيء في الوسط',
+  'schema.drill.t3': 'فخذ الجذر التربيعي لكل طرف. ذلك العدد، موجبًا وسالبًا، هو القوسان.',
+
+  /* the Powered Auger */
+  'schema.auger.g1': 'أربعة حدود أصلًا. لا شيء يُقسم.',
+  'schema.auger.g1.label': 'عُدّها',
+  'schema.auger.g2': 'خذها اثنين اثنين.',
+  'schema.auger.g3': 'أخرج الجزء المشترك من كل نصف.',
+  'schema.auger.g4': 'هل خرج القوس <b>نفسه</b> من الاثنين؟',
+  'schema.auger.g4.key': 'الذي يخرج <b>مرتين</b> يجري في الكتلة. وما وقف أمام كل نصف هو الطرف الآخر.',
+  'schema.auger.g5': 'فالنهاية تخبرك قبل أن تبدأ.',
+  'schema.auger.g5.label': '{b}  ×  {c}  هي',
+  'schema.auger.g5.why': 'وهي هنا <b>{d}</b>. وضربة واحدة هي الفحص كله.',
+  'schema.auger.g6': 'وثلاثي الحدود هو هذا، بعد خطوة واحدة.',
+  'schema.auger.g6.why': '6x&sup2; + 7x &minus; 3 فيها ثلاثة، فتقسم X الوسط و<b>تصنع</b> أربعة.',
+  'schema.auger.number': 'ما يخرج من عدد سادة يجب أن يقسمه تمامًا. وتلك هي القاعدة الوحيدة هنا.',
+  'schema.auger.number.key': 'لا شيء يُجمَّع — العدد لا حدّ أوسط له ليُقسم.',
+  'schema.auger.linear': 'لا x&sup2;، فلا شيء يُجمَّع. وما يخرج يجب أن يقسم الحدين.',
+  'schema.auger.linear.label': 'عليه أن يقسم الاثنين',
+  'schema.auger.m1': 'اضرب x&sup2; في النهاية. ذلك هو أعلى X.',
+  'schema.auger.m2': 'ابحث عن الزوج الذي يفعل الأمرين. البريمة لن تختاره لك.',
+  'schema.auger.m3': 'اقسم الوسط إلى تينك القطعتين &mdash; أربعة حدود بدل ثلاثة.',
+  'schema.auger.m4': 'الأربعة تدخل صندوقًا. أخرج المعدن المشترك من كل صف وكل عمود.',
+  'schema.auger.m4.cap': 'الوسط المقسوم يملأ الزاويتين الأخريين. والحواف هي العوامل.',
+  'schema.auger.m4.a11y': 'صندوق اثنين في اثنين يحمل الحدود الأربعة، وزوجا الحواف مجهولان.',
+  'schema.auger.m5': 'القوس نفسه يخرج من المجموعتين. وذلك التكرار هو العِرق.',
+  'schema.auger.m5.key': 'القوس الذي يخرج <b>مرتين</b> يجري في الكتلة كلها.',
+
+  /* the diagrams the lessons and the instruments draw with */
+  'dia.unknown': 'مجهول',
+  'dia.x.top': '<b>الأعلى</b> — ما يضربان فيعطيانه',
+  'dia.x.bottom': '<b>الأسفل</b> — ما يجمعان فيعطيانه',
+  'dia.x.sides': '<b>الجانبان</b> — الزوج الذي تطارده',
+  'dia.x.aria': 'رسم X. الأعلى: {top}، العدد الذي يضرب الزوج فيعطيه. الأسفل: {bottom}، العدد الذي يجمع الزوج فيعطيه. اليسار: {left}. اليمين: {right}.',
+  'dia.split.aria': 'رسم انفصال. {whole} ينفصل إلى {left} و{right}.',
+  'dia.split.lump': 'كتلة',
+  'dia.split.unknown': 'قطعة مجهولة',
+  'dia.kinds.lit': 'قائمة قصيرة بأنواع الخام، و{kind} مختار منها.',
+  'dia.kinds.none': 'قائمة قصيرة بأنواع الخام، ولم يُختر منها شيء بعد.',
+  'dia.tick.on': 'مسطرة معلَّمة عند الأعداد الصحيحة، وعِرق يقف على علامة.',
+  'dia.tick.off': 'مسطرة معلَّمة عند الأعداد الصحيحة، وعِرق يقع بين علامتين حيث لا تستقر سبيكة كاملة.',
+  'dia.xbox.aria': 'صندوق اثنين في اثنين يحمل الحدود الأربعة، والعوامل على حوافه.',
+  'dia.area.aria': 'نموذج المساحة',
+
+  /* the pour, written out, and the mold seen from above */
+  'pour.lab': 'الصبّة، مكتوبة',
+  'pour.in': 'ما دخل القالب',
+  'pour.over': 'ذلك معدن أكثر مما يسع القالب.',
+  'pour.pairs': 'كل جزء من معدن يلاقي كل جزء من الآخر',
+  'pour.terms': 'كل زوج مضروبًا',
+  'pour.depth': 'العمق يبلغ كل جزء',
+  'pour.merged': '{from} من النوع نفسه، فهما حدّ واحد',
+  'pour.out': 'يخرج شيء واحد',
+  'mold.casting': 'صبّة',
+  'mold.aria.pour': 'منظور من فوق: معدن يجري في مجرى إلى قالب مقطوع على شكل {tool}، والعوامل تنحل إلى {single}',
+  'mold.aria.wait': 'منظور من فوق: قالب مقطوع على شكل {tool}، ينتظر المعدن.',
+
+  /* what an instrument writes into the ore, and says about it */
+  'lens.steel.found': 'كل حد يحمل {g}',
+  'lens.native': 'لا شيء يتحرك في الداخل',
+  'lens.shaped': 'أحد طرفيها على شكل {shape}',
+  'lens.half.shaped': 'أحد نصفيها على شكل {shape}',
+  'lens.side': 'أحد طرفيها {side}',
+  'lens.drill.cubes': 'الطرفان مكعبان كاملان',
+  'lens.drill.sum': 'الوسط مجموع',
+  'lens.shifter.gear': 'ثلاثي حدود، بترس أدنى',
+  'lens.shifter.product': 'النهاية حاصل ضرب',
+  'lens.auger.halves': 'نصفان، وقوس خرج أصلًا من الأول',
+  'lens.auger.four': 'أربعة حدود، لا ثلاثة',
+  'lens.dial.pair': 'الزوج يضرب فيعطي {m} ويجمع فيعطي {a}',
+  'lens.pick.apart': 'إنها تنفصل',
+  'lens.x.aria': 'رسم X. الأعلى: {top}، ما يضربان فيعطيانه. الأسفل: {bot}، ما يجمعان فيعطيانه. {sides}',
+  'lens.x.one': 'اليسار: {left}. واليمين مجهول.',
+  'lens.x.none': 'الجانبان مجهولان.',
+  'lens.none.owner': 'لا تمسك — تلك كتلة {tool}',
+  'lens.none': 'لا تمسك بهذا الشكل',
+  'lens.readby': '{ore}، كما قرأتها {tool}: {read}',
+  'lens.notmy.group': '<b>{line}</b> أربعة حدود وحرفان كتلة <b>البريمة الآلية</b> &mdash; وهي تأخذها اثنين اثنين.',
+  'lens.notmy.cube': '<b>{line}</b> x مكعبة كتلة <b>المثقاب</b> &mdash; يقرأ الطرفين ويُخرج قوسًا من النظرة الأولى.',
+  'lens.notmy.pair': '<b>{line}</b> حرفان من أوله إلى آخره كتلة <b>النفق العرضي</b> &mdash; البحث هو هو، إنما تبدو الأقواس مختلفة.',
+  'lens.notmy.gear': '<b>{line}</b> x أُس أربعة كتلة <b>ذراع التروس</b> &mdash; وهو ينزل بالكل ترسًا أولًا.',
+  /* the fit test, when an instrument does not fit the rock */
+  'misfit.lab': 'هل تناسب؟',
+  'misfit.is': 'ما هذه الصخرة: {kind}',
+  'lens.bracket.big': 'لا شيء يتحرك في الداخل.',
+  'lens.bracket.sm': 'x واحدة وy واحدة ولا شيء يقسم الاثنين. {ore} عنصر &mdash; النوع نفسه من الأشياء الذي هو العدد الأولي.',
+
+  /* an instrument held to a piece on the breaking floor: words shared by several */
+  'read.nothing': 'لا شيء يتحرك في الداخل.',
+  'read.seam': 'ما زال يمر بهذه عِرق.',
+  'read.light': 'ما يبلغه الضوء',
+
+  /* the Lantern, on the floor */
+  'read.lantern.cube.native': 'لا طرف منهما مكعب كامل ولا يخرج منها شيء خطي أيضًا. إنها عنصر.',
+  'read.lantern.cube.seam': 'يخرج منها قوس واحد، وما يبقى خلفه ينتهي أمره لحظة يقع.',
+  'read.lantern.cube.key': 'كم x، وإلى أي جهة تتجه الإشارة. الرقم لك &mdash; وكذلك القطعة ذات الحدود الثلاثة خلفه كلها.',
+  'read.lantern.two.native': 'لا عددان صحيحان يضربان فيعطيان النهاية ويجمعان فيعطيان الوسط، فلا يخرج منها شيء. إنها عنصر.',
+  'read.lantern.two.seam': 'تنفصل إلى قوسين، وكلاهما يحمل الحرفين. والفانوس يضيء شكل أحدهما.',
+  'read.lantern.two.key': 'x واحدة، ثم إشارة، ثم عدد من y. الرقم لك، وكذلك القوس الآخر كله.',
+  'read.lantern.quart.native': 'لا يمر بها عِرق صحيح &mdash; لا كثلاثي حدود في x&sup2;، ولا بأي طريقة أخرى. إنها عنصر.',
+  'read.lantern.quart.seam': 'تنفصل إلى نصفين، وكل نصف يستحق نظرة ثانية. والفانوس يضيء شكل أحدهما.',
+  'read.lantern.quart.key': 'x&sup2; واحدة وإلى أي جهة تتجه الإشارة. الرقم لك، وكذلك النصف الآخر كله.',
+  'read.lantern.group.native': 'النهاية ليست حاصل ضرب الاثنين في الوسط، فهذه الحدود الأربعة لا تنفصل اثنين اثنين. إنها عنصر.',
+  'read.lantern.group.seam': 'ستنفصل إلى قوسين بحرفين مختلفين. والفانوس يضيء شكل أحدهما.',
+  'read.lantern.group.key': 'أي حرف وإلى أي جهة تتجه الإشارة. الرقم ما زال الأمر لك، وكذلك القوس الآخر كله.',
+  'read.lantern.prime': 'إنها عدد أولي. وفي الضوء تبقى تمامًا كما هي.',
+  'read.lantern.element': 'لا يمر به عِرق صحيح. إنه عنصر — النوع نفسه من الأشياء الذي هو العدد الأولي.',
+  'read.lantern.apart': 'ستنفصل. والفانوس يضيء طرفًا ويترك الآخر مظلمًا.',
+  'read.lantern.key.plain': 'طرف مضاء. والآخر هو ما يتبقّى حين يخرج ذاك — والفانوس لن يضيئه.',
+  'read.lantern.key.shape': '<b>شكل</b> طرف واحد، لا عدده. الفانوس يريك كم x وإلى أي جهة تتجه الإشارة؛ والرقم ما زال الأمر لك، وكذلك الطرف الآخر كله.',
+
+  /* the Drill, on the floor */
+  'read.drill.cube.lab': 'فحص العِرق المكعب',
+  'read.drill.cube.front': 'هل الطرف الأمامي مكعب كامل؟',
+  'read.drill.cube.end': 'والطرف الأخير؟',
+  'read.drill.cube.no': 'لا — لا شيء مكعبًا يعطي {n}',
+  'read.drill.cube.yes': 'نعم — {r}<sup>3</sup> هي {n}',
+  'read.drill.cube.off': 'فيخرج قوس من النظرة الأولى',
+  'read.drill.cube.key': 'الجذران المكعبان، بالإشارة التي في الكتلة أصلًا. وما يبقى قطعة بثلاثة حدود &mdash; و<b>تلك لا تنفصل أبدًا</b>، وهي الفائدة التي تستحق الحفظ.',
+  'read.drill.cube.none': '<b>فلا عِرق مكعب فيها.</b> ',
+  'read.drill.cube.finished': 'ولا يمر بها شيء آخر أيضًا &mdash; قد انتهى أمرها.',
+  'read.drill.cube.other': 'يخرج من هذه الكتلة شيء، لكن لا عن طريق المكعبات.',
+  'read.drill.tests': 'فحصا العِرق التوأم',
+  'read.drill.q.mid': 'هل الحدّ الأوسط صفر؟',
+  'read.drill.q.sq': 'هل الطرفان مربعان وبينهما ناقص؟',
+  'read.drill.adds': 'فالزوج يجمع فيعطي صفرًا',
+  'read.drill.two.mid': 'نعم — {ore} ليس فيها حدّ xy',
+  'read.drill.two.sq': 'نعم — x<sup>2</sup>، و{y} مربعة',
+  'read.drill.two.key': 'العدد نفسه مرتين، مرة بكل جهة &mdash; وهو هنا كم <b>y</b>، لا عدد سادة.',
+  'read.drill.two.not': 'هناك حدّ أوسط، فهذه ليست عِرقًا توأمًا.',
+  'read.drill.quart.mid': 'نعم — {ore} ليس فيها حدّ x<sup>2</sup>',
+  'read.drill.quart.sq': 'نعم — x<sup>4</sup> هي ( x<sup>2</sup> )<sup>2</sup>، و{c} هي {r}<sup>2</sup>',
+  'read.drill.quart.key': 'العدد نفسه مرتين، مرة بكل جهة. وأي عدد هو لك &mdash; ثم ينفصل أحد هذين النصفين من جديد.',
+  'read.drill.quart.not': 'لا حدّ أوسط غائب ولا ناقص بين مربعين، فليس هنا ما يُقرأ من الشكل.',
+  'read.drill.group.not': 'لا شيء هنا مربع، فليس هناك مربعان يكون بينهما فرق.',
+  'read.drill.prime.lab': 'لا شيء يزاوج هذه',
+  'read.drill.prime.label': 'الزوج الوحيد الموجود',
+  'read.drill.prime.pair': '1  و  {n}',
+  'read.drill.prime.hint': '<b>{n} عدد أولي</b>، فذلك الزوج هو العدد نفسه و1. إنه معدن أصلي &mdash; الشيء نفسه الذي هو كثير حدود غير قابل للتحليل، وليس فيه ما يطارده المثقاب.',
+  'read.drill.num.label': 'كل زوج يضرب فيعطي',
+  'read.drill.num.hint': '<b>المثقاب لن يختار لك صفًّا.</b> وأي واحد منها يمكن ضربها؛ وبعضها يترك أكثر ليُكسر.',
+  'read.drill.lin.label': 'لا x² يُطارَد فيها — انظر إلى',
+  'read.drill.lin.and': ' و ',
+  'read.drill.lin.together': ' معًا',
+  'read.drill.mid.yes': 'نعم — {ore} ليس فيها حدّ x',
+  'read.drill.mid.no': 'لا — هو {mid}',
+  'read.drill.sq.yes': 'نعم',
+  'read.drill.sq.pos': 'لا — النهاية موجبة',
+  'read.drill.sq.not': 'لا — أحد الطرفين ليس مربعًا',
+  'read.drill.twin.hint': 'عدد ومقابله &mdash; الزوج الوحيد الذي يجمع فيعطي صفرًا. خذ الجذر التربيعي لكل طرف وذلك هو القوسان.',
+  'read.drill.not.hint': 'ليست عِرقًا توأمًا، فليس هناك ما يُقرأ من الشكل. و<b>النفق العرضي</b> هو المناسب لهذه الكتلة &mdash; فهو يطارد الزوج بدل أن يتعرّفه.',
+  'read.pair.must': 'فعلى الزوج أن يضرب فيعطي {m} ويجمع فيعطي {a}',
+  'read.becomes': '   تصير   ',
+
+  /* the Shifter, on the floor */
+  'read.shifter.cube.not': 'الصندوق يريد x&sup2; في زاويته الأولى، وهذه تبدأ بأُس أعلى.',
+  'read.shifter.two.not': 'الصندوق يريد عددًا سادة في الزاوية المقابلة لـ x&sup2;، وهذه تنتهي بـ y&sup2;.',
+  'read.shifter.group.not': 'لا x&sup2; هنا تُوضع في الزاوية الأولى من صندوق.',
+  'read.shifter.gear.lab': 'أنزلها ترسًا &mdash; اقرأ x&sup2; على أنها الوحدة',
+  'read.shifter.trinomial': 'وهي الآن ثلاثي حدود',
+  'read.shifter.gear.native': '<b>ولا زوج صحيح يفعل الأمرين</b>، فهي لا تنفصل بهذه الطريقة &mdash; ولا بأي طريقة أخرى. وقد انتهى أمرها.',
+  'read.shifter.gear.seam': '<b>ثم انظر في كل نصف من جديد.</b> النصف مثل x&sup2; &minus; 4 مربعان بينهما ناقص، والمثقاب يعرف ما يصنع بذلك. وتلك النظرة الثانية هي حيث تنتهي كتلة كهذه فعلًا.',
+  'read.shifter.none': '<b>لا x² في هذه.</b> والصندوق يحتاج إلى واحدة لزاويته الأولى.',
+  'read.shifter.xfirst': 'X أولًا',
+  'read.shifter.box': 'والزوج يدخل الصندوق',
+  'read.shifter.box.cap': 'زاويتان معطاتان، وواحدة مضاءة، وكل ضلع ما زال مفتوحًا.',
+  'read.shifter.box.a11y': 'صندوق اثنين في اثنين، في إحدى زواياه {sq} و{c} في الزاوية المقابلة، وعلى كل ضلع علامة استفهام.',
+  'read.shifter.middles': 'على الوسطين أن يبلغا',
+  'read.shifter.hint': 'أخرج المعدن المشترك من كل صف وكل عمود، فيكون ضلعا الصندوق هما الجواب.',
+
+  /* the Crosscut, on the floor */
+  'read.dial.cube.not': 'X تتدلّى تحت حدّ أوسط، وهذه لا حدّ أوسط لها البتة.',
+  'read.dial.lab.end': 'X &mdash; النهاية في الأعلى والوسط في الأسفل',
+  'read.dial.lab.ac': 'X &mdash; a&middot;c في الأعلى والوسط في الأسفل',
+  'read.dial.y': 'ومع كل واحد تأتي y',
+  'read.dial.two.native': 'لا زوج صحيح يفعل الأمرين، فلا يخرج من هذه شيء. إنها عنصر.',
+  'read.dial.two.seam': 'العددان نفساهما اللذان يعطيهما ثلاثي حدود سادة &mdash; ومع كل منهما الـ y التي كانت هناك دائمًا، لابسة 1.',
+  'read.dial.quart.not': 'النفق العرضي يدلّي X تحت x&sup2;، وطرف هذه الأمامي أُس رابع.',
+  'read.dial.group.not': 'النفق العرضي يدلّي X تحت حدّ أوسط واحد، وهذه الكتلة فيها اثنان.',
+  'read.dial.number': '<b>النفق العرضي مقطوع لكتل فيها x.</b> والعدد السادة لا حدّ أوسط له تتدلّى تحته X.',
+  'read.dial.given': 'أحد الزوجين معطى. والآخر هو ما يتبقّى حين تسأله السؤالين نفسيهما &mdash; والمطرقة وحدها هي التي تؤكّده.',
+  'read.dial.linear': '<b>لا x&sup2;، فلا a&middot;c تُوضع في الأعلى.</b> الرأس الفولاذي هو المناسب لهذه الكتلة.',
+  'read.dial.nopair': 'وإن لم يفعل زوج صحيح الأمرين',
+
+  /* the Prospector's Pick, on the floor */
+  'read.pick.floor': '<b>هذا يعمل عند العِرق، لا على الأرضية.</b> ألصقه بكتلة ما زالت في الجدار فيسمّي نوع الخام فيها قبل أن تقطعها. أما هنا في الأسفل فالكتلة معك أصلًا.',
+
+  /* the Steel Pick, on the floor */
+  'read.steel.divides': 'ما يقسم كل حد',
+  'read.steel.both': 'الأكبر الذي يقسم الاثنين',
+  'read.steel.three': 'الأكبر الذي يقسم الثلاثة',
+  'read.steel.four': 'الأكبر الذي يقسم الأربعة',
+  'read.steel.nothing': 'فليس هناك ما يقف أمام قوس.',
+  'read.steel.two.not': 'الكتلة التي أمامها x&sup2; واحدة لا تحمل معدنًا سادة أبدًا.',
+  'read.steel.native': '<b>ولا شيء آخر يخرج أيضًا.</b> {why} إنه معدن أصلي &mdash; أصفى شيء في المنجم أصلًا. والفولاذ لا يجد ما يمسك به لأنه لم يبق في الداخل ما يُمسك.',
+  'read.steel.prime': '{n} عدد أولي.',
+  'read.steel.noseam': 'لا يمر به عِرق صحيح.',
+  'read.steel.x': 'فليس هناك ما يقف أمام قوس. وX هي المدخل إلى هذه:',
+  'read.steel.neither': 'فليس هناك ما يقف أمام قوس، ولا x&sup2; تتدلّى تحتها X أيضًا. وما بقي أن تسمّي عاملًا بنفسك.',
+  'read.steel.neither.key': 'الطرفان ما زالا لك. سمِّ واحدًا واضرب.',
+  'read.steel.same': 'كل حد يحمل المعدن نفسه',
+  'read.steel.each': 'كل واحد يقسم على',
+  'read.steel.front': 'فيخرج إلى الأمام',
+  'read.steel.rip': 'انتزع المعدن المشترك',
+
+  /* the Powered Auger, on the floor */
+  'read.auger.cube.not': 'حدّان، فلا وسط يُقسم ولا شيء يُؤخذ اثنين اثنين.',
+  'read.auger.two.not': 'ثلاثة حدود، والزوج يذهب إلى الأقواس مباشرة &mdash; فلا وسط يُقسم أولًا.',
+  'read.auger.quart.not': 'ثلاثة حدود، ولا وسط يستحق القسمة حتى تنزل الأسس.',
+  'read.auger.g1': '1 &mdash; خذها اثنين اثنين',
+  'read.auger.g2': '2 &mdash; أخرج الجزء المشترك من كل نصف',
+  'read.auger.g3': '3 &mdash; وإن خرج القوس نفسه من الاثنين',
+  'read.auger.g.key': 'القوس الذي خرج من النصفين هو طرف؛ وما بقي أمام كل واحد هو الآخر. والبريمة لن تكتب لك الثاني.',
+  'read.auger.g.keyno': 'لم يخرج من النصف الثاني شيء مشترك، فالاثنان لا يلتقيان. قابل {d} بـ {b} × {c} &mdash; وذلك هو الفحص كله.',
+  'read.auger.num.label': 'ما يخرج عليه أن يقسم',
+  'read.auger.lin.label': 'ما يخرج عليه أن يقسم الاثنين',
+  'read.auger.m1': '1 — X',
+  'read.auger.m2': '2 — اقسم الوسط بذلك الزوج',
+  'read.auger.m3': '3 — الحدود الأربعة تدخل الصندوق',
+  'read.auger.m3.cap': 'أخرج المعدن المشترك من كل صف وكل عمود. والضلعان هما العاملان.',
+  'read.auger.m4': '4 — اقرأ العوامل من الحواف',
+  'read.auger.hint': 'الطرفان لك. البريمة تقرأ الصخر ولن تختار عنك.',
+
+  /* the panel an instrument opens in, and the method line under every reading */
+  'sheet.close': 'إغلاق',
+  'sheet.close.aria': '{close} — يغلق هذه اللوحة',
+  'sheet.fail': 'لم تحصل هذه الأداة على قراءة من ذلك.',
+  'sheet.guide.who': 'Mr Factor',
+  'sheet.guide.give': 'سيقول لك هذه مباشرة',
+  'sheet.guide.word': 'عنده كلمة في هذه',
+  'sheet.foot': 'لا شيء هنا يضرب عنك. اضغط <b>Esc</b> لتضعها جانبًا.',
+  'sheet.method.go': 'اقرأها في سقيفة الصب &rarr;',
+  'sheet.method.aria': 'اقرأ الطريقة كاملة لـ {name} في سقيفة الصب',
+  'sheet.schema.why': 'لماذا يعمل هذا',
+  'sheet.schema.reach': 'هذه الطريقة لا تبلغ تلك الكتلة.',
+  'sheet.schema.foot': 'الخطوات المفتوحة لك. لا شيء هنا يؤدّيها، ولا شيء هنا يقول هل أصبت فيها.',
+  'tool.sheet.label': '{tool}، مُلصقة بـ {ore}',
+  'tool.sheet.sub': 'مُلصقة بـ <b>{ore}</b>',
+  'tool.sheet.close': 'ارفعها',
+  'part.sheet.label': '{part}، مصبوب أصلًا',
+  'part.sheet.sub': 'صُبّ <b>{cast}</b>، ورُكّب في {fits}',
+  'part.sheet.foot': 'الجزء ليس أداة. لم يتغيّر شيء على حزامك حين صُبّ، ولا شيء في المنجم يُقرأ على نحو مختلف بسببه.',
+  'part.sheet.why': '<b>{does}.</b> والمنجم يجري هذا بالمقلوب &mdash; وذلك كل ما هو التحليل.',
+  'room.name.mill': 'مطحنة الدق',
+  'room.name.shed': 'سقيفة الصب',
+
+  /* naming the other side */
+  'side.lab': 'الطرف الآخر',
+  'side.hint': 'اكتب ما تظنه، ثم خذه إلى السندان. والمطرقة وحدها هي التي تؤكّد أي شيء هنا.',
+  'side.aria.num': 'العدد الذي تظنه يجري فيها',
+  'side.go': 'اقطع المطرقة عليه',
+  'side.notwhole': 'ذاك ليس عددًا صحيحًا، فليس هناك ما يُقطع عليه الرأس بعد.',
+  'side.gone': 'تلك القطعة لم تعد على الأرضية.',
+
+  /* the decimal dial and the pair table */
+  'dial.tag': 'قرص الكسور العشرية',
+  'dial.hint': 'أزِح العدد الأخير عن الأعداد الصحيحة وراقب ما يحدث للعِرق. الصخر لا يتغيّر أبدًا — الذي يتغيّر هو <em>البحث</em>.',
+  'dial.aria': 'أزِح الحدّ الأخير',
+  'dial.clean': '<b>يمر بهذه عِرق صحيح.</b> والسبائك الكاملة ستستقر عليه — وإن كان القرص لن يقول لك أيها.',
+  'dial.none': '<b>لا عِرق صحيح.</b> ',
+  'dial.two': 'العِرق حقيقي — قرب {p} و{q} — لكنهما ليسا عددين صحيحين، ولن تستقر عليهما سبيكة كاملة أبدًا.',
+  'dial.one': 'العِرق حقيقي — يجري عند {r} — لكنه ليس عددًا صحيحًا، ولن تستقر عليه سبيكة كاملة أبدًا.',
+  'dial.nodec': 'ولا على الكسور العشرية أيضًا.',
+  'scan.pair': 'الزوج',
+  'scan.mul': 'يضرب فيعطي',
+  'scan.add': 'يجمع فيعطي',
+  'scan.cell': '{a}  و  {b}',
+
+  /* the belt */
+  'belt.lab': 'على حزامك',
+  'belt.h3': 'على حزامك',
+  'belt.bare': 'جلد عارٍ. الأدوات لا تُوزَّع — أنت تصنعها في الكور من معدن كسرته بيدك.',
+  'belt.armed': '<b>{tool} في يدك.</b> انقر صخرة لتستعملها.',
+  'belt.idle': 'انقر واحدة، ثم انقر صخرة — أو اسحبها إليها. <b>كيف؟</b> تفتح الغرفة التي تعلّمها.',
+  'belt.aria.armed': '{tool}. {ds} في يدك — انقر صخرة لتستعملها، أو انقر ثانية لتعيدها.',
+  'belt.aria.idle': '{tool}. {ds} انقر لتلتقطها، ثم انقر صخرة. أو اسحبها إليها.',
+  'belt.how': 'كيف؟',
+  'belt.how.aria': 'كيف تعمل {tool}؟ اذهب إلى {room}.',
+  'belt.how.title': 'كيف تعمل — {room}',
+
+  'flash.done': 'تمّ.',
+
+  /* the Forge */
+  'forge.title': 'الكور',
+  'forge.lede': '<b>هنا تصنع الأشياء.</b> المنجم يكسر الصخر؛ وهنا يجري الفرن في الاتجاه الآخر — معدن أصلي يدخل قالبًا وتخرج أداة واحدة مصوغة. ذلك هو <b>التوزيع</b>، ولا يحدث في أي مكان آخر في المنجم، والقالب يتشكّل حول ما تصبّه بدل أن يُختار. والجزء إما سليم وإما خردة.',
+  'board.h3': 'لوح الطلبات',
+  'board.hint': 'كل طلب مقطوع لـ <b>شيء واحد بعينه</b>. ابحث عن المعادن التي تضرب فتعطيه فيخرج الجزء سليمًا. وتشتدّ كلما نزلت في اللوح، وكذلك الأدوات.',
+  'order.cast': 'صبّ <b>{cast}</b>',
+  'order.fitted': 'رُكّب في {fits}',
+  'order.hands': 'في يديك',
+  'order.ready': 'عندك المعدن',
+  'order.short': 'ليس على الرف بعد',
+  'order.aria': '{nm} — {does}. صبّ {cast}. {state}',
+  'order.aria.fitted': 'مصبوب أصلًا ومركّب في {fits}.',
+  'order.aria.belt': 'مصنوع أصلًا وعلى حزامك.',
+  'order.aria.ready': 'عندك المعدن لهذا. افتح القالب.',
+  'order.aria.short': 'ليس عندك المعدن لهذا بعد. افتح القالب لترى ما يحتاجه.',
+  'deep.h3': 'الصبّات العميقة',
+  'deep.hint': 'معدن الأعماق &mdash; أقواس فيها <b>y</b>، وأقواس بحرفين، وعناصر لا تنكسر &mdash; لا يناسب أي طلب على لوح الطلبات. وهذه مقطوعة له. <b>ولا واحدة منها أداة</b>: إنها أجزاء للمنجم، والسبب في صبّ واحدة هو الضرب الذي تجعلك تؤدّيه. وكل واحدة تصبّها تصعد إلى السطح وتُركّب في المبنى الذي قُطعت له.',
+  'rack.lab': 'الرف &mdash; معدن أصلي، جاهز للإنفاق',
+  'rack.empty': 'عارٍ. اكسر كتلة حتى آخرها في المنجم فيوضع معدنها على الرف هنا.',
+  'rack.plain': 'معدن سادة',
+  'rack.x': 'معدن فيه x',
+  'rack.deep': 'معدن من الأعماق',
+  'rack.aria.used': '{metal} — في القالب أصلًا',
+  'rack.aria.open': '{metal} — ألقه في القالب',
+  'rack.aria.first': '{metal} — اختر طلبًا أولًا',
+  'rack.title.used': 'في القالب أصلًا',
+  'rack.title.open': 'ألقه في القالب',
+  'rack.title.first': 'اختر طلبًا أولًا',
+  'rack.note.used': 'ذاك في القالب أصلًا. انقره في الخانة لتعيده.',
+  'rack.note.first': 'اختر طلبًا من لوح الطلبات أولًا، فينفتح القالب.',
+  'rack.note.full': 'امتلأ القالب. أخرج شيئًا من خانة إن أردت التبديل.',
+  'heap.tag': 'الساحة &mdash; ما زال صخرًا',
+  'heap.lab': 'الكومة &mdash; ما زالت تحمل عِرقًا',
+  'heap.empty': 'لم يُلقَ هنا شيء. وكل ما تتركه نصف مكسور في المنجم يقع على الكومة.',
+  'heap.aria': '{ore} — ما زال صخرًا. لا يستطيع الكور إنفاقه حتى يُكسر.',
+  'heap.hint': '<b>الفرن لا يأخذ صخرًا.</b> كل ما على الكومة ما زال فيه عِرق &mdash; اكسره في المنجم فيعود المعدن إلى هنا.',
+  'shelf.tag': 'الرف &mdash; ماذا صار معدن الأعماق',
+  'shelf.empty': 'مكان فارغ',
+  'shelf.aria.made': '{nm}، صُبّ {cast}، ورُكّب في {fits}',
+  'shelf.aria.empty': 'مكان فارغ على الرف.',
+  'shelf.any': '<b>لا واحد من هذه أداة.</b> الجزء هو الشيء نفسه &mdash; لم يتغيّر شيء على حزامك حين صُبّ. وكل واحد منها في الأعلى على السطح، على المبنى الذي قُطع له.',
+  'shelf.none': 'لم يُصبّ شيء بعد. ولا تأخذ معدن الأعماق إلا طلبات <b>الصبّات العميقة</b>.',
+  'craft.tag': 'أرضية الصنعة',
+  'craft.cold': 'القالب بارد.',
+  'craft.for': 'هذا القالب مقطوع لـ',
+  'craft.in': 'ما يدخل',
+  'craft.chip.title': 'أعده',
+  'craft.chip.aria': '{metal} في القالب. أعده.',
+  'craft.empty': 'فارغ',
+  'craft.hint.out': 'انقر واحدًا لتعيده.',
+  'craft.hint.in': 'انقر معدنًا على الرف في الأسفل لتلقيه فيه.',
+  'craft.pour': 'اصبب القالب',
+  'craft.notfull': 'لم يمتلئ القالب بعد.',
+  'craft.cannot': '<b>الرف لا يستطيع صنع {cast} بعد.</b> ليس عليه {n} معادن تضرب فتعطي ذلك. ولا شيء مقفل &mdash; اكسر خامًا أكثر وما يخرج يوضع على الرف هنا.',
+  'pour.sound': 'سليم.',
+  'pour.scrap': 'خردة.',
+  'pour.send': 'أرسله إلى {fits}',
+  'pour.part.foot': '<b>{does}.</b> وذلك كل ما تعلّمه الصبّة العميقة، وهي على الرف في الأسفل. <b>وليست أداة</b> &mdash; لم يتغيّر شيء على حزامك، ولا شيء في المنجم يُقرأ على نحو مختلف بسببها.',
+  'pour.belt': 'علّقه على حزامك',
+  'pour.lesson': '<b>انفتح درسها على أرضية العمل في سقيفة الصب.</b> يمشي في {name} خطوة خطوة على كتلة اختيرت لها، وفي النهاية كتلة تجرّبها. ولا شيء في المنجم ينتظرها.',
+  'pour.read': 'اقرأها في سقيفة الصب &rarr;',
+  'pour.rake': 'أخرجه وجرّب من جديد',
+  'judge.ok': 'المعادن التي تضرب فتعطيه هي المعادن التي كانت فيه.',
+  'judge.other': 'ذلك يصبّ <b>{got}</b>، وهو شيء سليم &mdash; إنما ليس هذا. والطلب لـ <b>{want}</b>.',
+  'judge.over': 'ذلك معدن أكثر مما يسع القالب — فقد فاض عن الحواف. والطلب لـ <b>{want}</b>.',
+  'judge.over.big': 'ذلك معدن أكثر مما يسع القالب — فقد فاض عن الحواف. والطلب لـ <b>{want}</b>، وما صببته أكبر من ذلك.',
+  'judge.off.a': 'x²&nbsp;<b>{got}</b>، والمطلوب <b>{want}</b>',
+  'judge.off.b': 'الوسط&nbsp;<b>{got}</b>، والمطلوب <b>{want}</b>',
+  'judge.off.c': 'النهاية&nbsp;<b>{got}</b>، والمطلوب <b>{want}</b>',
+  'judge.missed': 'فاتك: {list}.',
+
+  /* the Mine: the shaft */
+  'shaft.h3': 'البئر',
+  'shaft.hint': 'انزل إلى العمق الذي تريده. لست مضطرًا لكسر شيء لتنزل — املأ العربة واعمل عليها حين يحلو لك.',
+  'shaft.layer': 'الطبقة {n}',
+  'shaft.shut': 'لم تُدعَّم بعد',
+
+  /* the Mine: the rock face */
+  'face.h3': 'الطبقة {n} &mdash; {name}',
+  'face.depth': 'الخام هنا {what}. انظر في واحدة قبل أن تضرب &mdash; لا شيء ينكسر حتى تقول أنت.',
+  'face.aria': 'عِرق من الصخر عند الطبقة {n}، أعرض من الشاشة. مرّر أو استعمل زرّي المسح للتنقل على طوله.',
+  'face.rock.aria': 'كتلة خام: {ore}. انظر إليها، ثم اكسرها.',
+  'face.scan.back': '◀ امسح إلى الوراء',
+  'face.scan.along': 'امسح إلى الأمام ▶',
+  'face.where': 'أين أنت على طول العِرق',
+
+  /* the Mine: a lump picked out of the wall */
+  'insp.aria': 'ما تنظر إليه، وما تفعله به',
+  'insp.lab': 'أنت تنظر إلى',
+  'insp.front.number': 'لا x فيها البتة',
+  'insp.front.flat': 'لا x²، عِرق مسطّح',
+  'insp.front.one': 'x² واحدة، لا شيء أمامها',
+  'insp.front.a': '{a} أمام x²',
+  'insp.vein.one': 'عِرق واحد',
+  'insp.vein.many': '{n} عروق',
+  'insp.obs': '<b>{veins}</b> · {front} · الطبقة {layer}، {name}',
+  'insp.pick': '<br><b class="pickread">المعول يقرؤها {name}.</b> <em>{tell}</em>',
+  'insp.native': 'لا شيء يُكسر. والساحة هي مكان هذه.',
+  'insp.worth': 'يمر بها عِرق. تستحق الحمل.',
+  'insp.nopick': '<br><em>وأي عِرق يمر بها ليس شيئًا يُرى من هنا — ذلك عمل الفحص.</em>',
+  'insp.swing': 'اضرب بالمعول',
+  'insp.swing.aria': 'اقطع {ore} من العِرق إلى العربة',
+  'insp.keep': 'واصل المسح',
+  'insp.keep.aria': 'اترك {ore} في الجدار وامضِ على طول العِرق',
+
+  /* the Mine: the cart */
+  'cart.tag': 'العربة',
+  'cart.empty': 'فارغة. اضرب بالمعول في الجدار أعلاه — احفر ما شئت قبل أن تعمل على أي منها.',
+  'cart.drag': '<b>اسحب أداة إلى صخرة</b> فتتغيّر الأعداد المحفورة فيها.',
+  'cart.aria.armed': '{ore}، الطبقة {layer}. انقر لتستعمل {tool} عليها.',
+  'cart.aria.idle': '{ore}، الطبقة {layer}. ألقِ عليها أداة، أو أرسلها بالزرّين في الأسفل.',
+  'cart.break': 'اكسرها',
+  'cart.break.aria': 'ضع {ore} على أرضية الكسر واعمل عليها',
+  'cart.yard': 'إلى الساحة',
+  'cart.yard.aria': 'ضع {ore} جانبًا في الساحة دون أن تعمل عليها',
+  /* an instrument sitting on a rock, and the way back off it */
+  'slot.aria': '{tool} على {ore}. ارفعها.',
+  'slot.title': 'ارفع {tool}',
+
+  /* the Mine: the breaking floor and the assay */
+  'floor.tag': 'أرضية الكسر',
+  'assay.offer': 'أي نوع من الصخر هذا؟',
+  'assay.offer.aria': 'سمِّ نوع هذا الصخر. اختياري — والمطرقة تعمل في الحالين.',
+  'assay.offer.hint': 'اختياري. والمطرقة تعمل في الحالين.',
+  'assay.called': '<b>سمّيتها: {name}.</b> ',
+  'assay.ask': '<b>أي نوع من الصخر في يدك؟</b> لا شيء يتوقف على هذا &mdash; تستطيع أن تضرب بدونه. وهو هنا لأن تسمية سمّيتها بنفسك هي الشيء الوحيد الذي تستطيع أن تراجع نفسك عليه بعد ذلك.',
+  'assay.lamp': '<b>مصباح الفحص:</b> ',
+  'assay.lamp.number': 'إنه عدد سادة، فالسؤال الوحيد هل يقسمه شيء.',
+  'assay.lamp.below': 'ولا شيء دون {n} يحتاج فحصًا بعد تلك النقطة.',
+  'assay.lamp.term.one': 'فيه <b>{n}</b> حد.',
+  'assay.lamp.term.many': 'فيه <b>{n}</b> حدود.',
+  'assay.lamp.gcd': 'كل حد يقسم على <b>{g}</b>.',
+  'assay.lamp.nogcd': 'لا عدد فوق 1 يقسم كل حد.',
+  'assay.lamp.noend': 'لا عدد سادة في النهاية، فكل حد ما زال يحمل x.',
+  'assay.lamp.front.one': 'لا شيء يقف أمام x².',
+  'assay.lamp.front.none': 'لا x² البتة.',
+  'assay.lamp.front.a': '<b>{a}</b> يقف أمام x².',
+  'assay.lamp.twin': 'حدّان بينهما ناقص — افحص هل الطرفان مربعان كاملان.',
+  'assay.also': 'صحيح أيضًا — هذه فعلًا مربعان بينهما ناقص. والقراءتان صحيحتان؛ وعادة تخرج الكتلة المشتركة أولًا، لأن العِرق التوأم تحتها يصير أسهل رؤية متى خرجت.',
+  'assay.skip': 'لا عليك — عودة إلى المطرقة',
+
+  /* the Mine: the anvil and what the hammer is cut to */
+  'burst.thud': 'دمْ!',
+  'burst.clang': 'طنّ!',
+  'echo.empty.group': 'الرأس فارغ — اختر حرفًا واكتب العدد معه',
+  'echo.empty': 'الرأس فارغ — اكتب ما تُخرجه',
+  'echo.notwhole': '<span class="bad">ذاك ليس عددًا صحيحًا</span>',
+  'echo.power': '<span class="bad">تُقطع x على أُس صحيح، والأولى على الأقل</span>',
+  'echo.cut': 'المطرقة مقطوعة على <b>{head}</b>',
+  'anvil.aria': '{ore} — على السندان. انقرها لتنزل عليها المطرقة.',
+
+  /* the Mine: the pieces on the floor, and the ways off it */
+  'floor.spent': '<b>كل قطعة معدن أصلي.</b> ولا شيء في أي منها ينفصل أكثر. وتلك نهاية الكتلة &mdash; لا إخفاق في التوغّل فيها.',
+  'floor.cue': '<b>انقر الخام.</b> ستسألك المطرقة ما الذي تقطعه منه.',
+  'floor.on': 'على الأرضية',
+  'floor.native': 'معدن أصلي',
+  'floor.rock': 'ما زال صخرًا',
+  'floor.aria.native': '{ore} — معدن أصلي. لا شيء فيه ينفصل.',
+  'floor.aria.rock': '{ore} — ما زال صخرًا. انقره لتضعه على السندان.',
+  'floor.why.native': 'لم يبق في تلك شيء. {ore} لا تنفصل — إنها عنصر.',
+  'floor.ok': '<b>جرى العِرق.</b> خرج منها <b>{left}</b>، وبقي خلفه <b>{right}</b>.',
+  'floor.swung': ' وكانت المطرقة مقطوعة على <b>{head}</b>.',
+  'floor.lost': ' ولم يُفقد شيء &mdash; الصخر كما كان تمامًا، وتستطيع الضرب من جديد.',
+  'floor.carry': 'احمل المعدن إلى الساحة',
+  'floor.carry.flash': 'معدن أصلي على الرف.',
+  'floor.tip': 'ألقِ ما معك في الساحة',
+  'floor.tip.flash': 'أُلقي في الساحة. والصخر هناك حين تريده.',
+  'floor.tip.hint': 'المعدن يذهب إلى الرف، والصخر إلى الكومة. والكومة يمكن كسرها لاحقًا.',
+  'floor.leave': 'اتركه الآن',
+
+  /* the Mine: the hammer */
+  'hammer.label': 'المطرقة، فوق {ore}',
+  'hammer.title': 'سمِّ شيئًا واحدًا فيها',
+  'hammer.close': 'ضعها',
+  'hammer.foot': 'الصخر هو الذي يقرّر، لا هذه اللوحة. و<b>Esc</b> تضع المطرقة.',
+  'hammer.cut': 'اقطع الرأس على',
+  'hammer.v.aria': 'القوس الذي فيه {v}',
+  'hammer.pow.aria': 'ما الأس المرفوعة إليه x — اتركه فارغًا لـ x واحدة',
+  'hammer.hint.group': 'اختر الحرف، ثم العدد الذي يذهب معه. وكلا القوسين في كتلة ذات أربعة حدود يحمل حرفًا واحدًا.',
+  'hammer.hint.num': 'عدد صحيح يجري فيها.',
+  'hammer.hint.x': 'جزء x الفارغ يعني x واحدة. ضع 0 هناك لتُخرج عددًا سادة بدلًا من ذلك.',
+  'hammer.swing': 'أنزل المطرقة',
+  'hammer.swing.empty': 'أنزل المطرقة — ليس بعد، الرأس فارغ',
+  'hammer.drill': '<span style="opacity:.8">مثقاب العيّنات كان سيقرأ الأزواج من هذه.</span>',
+  'swing.empty': 'الرأس فارغ. اكتب ما تُخرجه، فيكون للمطرقة ما تقطعه.',
+  'swing.power': 'تُقطع x على أُس صحيح، والأولى على الأقل.',
+  'swing.whole': 'المطرقة تُقطع على شكل صحيح. وتلك الخانات لا تأخذ إلا أعدادًا صحيحة.',
+
+  /* the Mine: what the Auger and the Shifter show after a swing */
+  'trace.tag': '&#128295; البريمة &mdash; كيف جرت',
+  'trace.h.part': 'هذا الجزء من الصخر',
+  'trace.h.from': 'جاء من',
+  'trace.h.is': 'وهو',
+  'trace.x2': 'الـ x²',
+  'trace.end': 'النهاية',
+  'trace.mid': 'الوسط',
+  'trace.mid.from': '{a} × {b}  و  {c} × {d}',
+  'trace.mid.is': '{p} و{q}، ويجريان معًا {s}',
+  'trace.hint': 'الطرفان كانا مثبّتين. والوسط هو الجزء الذي وجب فحصه، وقد صحّ.',
+  'rail.tag': '&#8646; سكة الأسس',
+  'rail.xx': 'جزء x × جزء x',
+  'rail.xn': 'جزء x × عدد',
+  'rail.nx': 'عدد × جزء x',
+  'rail.nn': 'عدد × عدد',
+  'rail.xx.why': 'x · x = x²، وهذا هو المكان الوحيد الذي تأتي منه x²',
+  'rail.mid.why': 'تبقى x واحدة، فيستقر في الوسط',
+  'rail.nn.why': 'لا تبقى x البتة، فيستقر في النهاية',
+  'rail.h.which': 'أي اثنين',
+  'rail.h.mult': 'مضروبين',
+  'rail.h.gives': 'يعطيان',
+  'rail.h.why': 'لماذا يستقر حيث يستقر',
+  'rail.hint': 'الصفّان المظلّلان من النوع نفسه، فيجريان معًا: <b>{p}</b> و<b>{q}</b> يصنعان <b>{s}</b>.',
+
+  /* the Mine: straight to the yard, and choosing an instrument for a slot */
+  'yard.flash.rack': '{ore} معدن أصلي — وُضع على رف الساحة.',
+  'yard.flash.heap': '{ore} ما زال فيها عِرق. على الكومة، جاهزة حين تريد.',
+  'slot.sheet.label': 'اختر أداة تُلصقها بـ {ore}',
+  'slot.sheet.title': 'الخانة',
+  'slot.sheet.sub': 'على <b>{ore}</b>',
+  'slot.sheet.empty': '<b>لا شيء على الحزام بعد.</b> الأدوات لا تُوزَّع هنا &mdash; أنت تصنعها في الكور من معدن كسرته بيدك. وكل شيء في المنجم يعمل بدونها؛ وهي لا تفعل إلا أن تسهّل الرؤية.',
+  'slot.sheet.which': 'أيها تريد أن تُلصق بها؟',
+  'slot.sheet.aria': 'ألصق {tool} بـ {ore}',
+
+  /* the Mine: the yard, and a screen that failed to build */
+  'yard.h': 'الساحة',
+  'yard.hint': 'كل ما أخرجته. الصخر على الكومة، والمعدن على الرف.',
+  'yard.rack': 'الرف &mdash; معدن أصلي',
+  'yard.rack.empty': 'عارٍ. وكل ما تكسره حتى يصير عنصرًا يوضع على الرف هنا، وتحته الكتلة التي خرج منها — وهذا ما ينفقه الكور.',
+  'yard.shelf.plain': 'معدن سادة',
+  'yard.shelf.x': 'معدن فيه x',
+  'yard.shelf.deep': 'معدن من الأعماق',
+  'yard.from': 'من {ore}',
+  'yard.more': ' <span class="mmore">+{n} أخرى</span>',
+  'yard.face': '<span class="mmore">من الجدار مباشرة</span>',
+  'yard.heap': 'الكومة &mdash; ما زالت تحمل عِرقًا',
+  'yard.heap.empty': 'فارغة. وكل ما تلقيه هنا نصف مكسور يقع على الكومة، ويبقى هنا حين تعود إليه.',
+  'yard.heap.aria': '{ore} — ما زال صخرًا. أعده تحت المعول.',
+  'yard.heap.title': 'أعده تحت المعول',
+  'yard.heap.hint': 'أعد واحدة تحت المعول — انقرها، أو اسحبها إلى الأرضية.',
+  'yard.toforge': 'احمل المعدن إلى الكور',
+  'go.failed': '<b>هذه الشاشة لم تُبنَ.</b> وذلك عيب في المنجم، لا فيك. ({err})',
+
+  /* the engine: what the rock says when a hammer comes down on it */
+  'break.malformed': 'ذاك ليس شكلًا تُقطع عليه مطرقة.',
+  'break.zero': 'ذاك لا شيء البتة — ولا حدّ فيه يُنزل.',
+  'break.one': 'كل شيء يقسم على واحد. وإخراجه يترك الكتلة كما هي تمامًا.',
+  'break.quart.pow': 'انزلقت المطرقة. هذه الكتلة مبنية من أنصاف x&sup2;، والرأس مقطوع على x{pow}.',
+  'break.nopow': 'انزلقت المطرقة. لا x<sup>{pow}</sup> في أي موضع من هذه ليمسك بها ذاك.',
+  'break.unsound': 'القطع لا تعود بالجمع إلى الصخرة التي خرجت منها.',
+  'break.runs': 'جرى العِرق.',
+  'break.cube.other': 'انزلقت المطرقة. يخرج من هذه شيء، لكن لا عن طريق المكعبات — وهذا ليس شكلًا يعلّمه المنجم.',
+  'break.cube.none': 'انزلقت المطرقة. لا طرف منهما مكعب كامل، فلا عِرق مكعب فيها.',
+  'break.cube.bracket': 'انزلقت المطرقة. ذاك ليس القوس الذي يعطيه العِرق المكعب.',
+  'break.two.front': 'انزلقت المطرقة. كلا القوسين هنا أمامه x واحدة.',
+  'break.two.none': 'انزلقت المطرقة. لا عددان صحيحان يضربان فيعطيان {c} ويجمعان فيعطيان {b}، فلا يخرج من هذه شيء.',
+  'break.bracket': 'انزلقت المطرقة. ذلك القوس ليس فيها.',
+  'break.bi': 'تلك هي الكتلة كلها. ولا شيء غير 1 يقسم {ore}.',
+  'break.quart.front': 'انزلقت المطرقة. كلا نصفي كتلة كهذه أمامه x&sup2; واحدة.',
+  'break.quart.none': 'انزلقت المطرقة. لا عددان صحيحان يضربان فيعطيان {c} ويجمعان فيعطيان {b}، فهي لا تنفصل بتلك الطريقة.',
+  'break.quart.half': 'انزلقت المطرقة. ذلك النصف ليس فيها.',
+  'break.group.plain': 'انزلقت المطرقة. لا شيء غير 1 يقسم الحدود الأربعة — فلا معدن سادة في هذه يُخرج إلى الأمام.',
+  'break.group.front': 'انزلقت المطرقة. كلا القوسين في كتلة كهذه أمامه {v} واحد.',
+  'break.group.none': 'انزلقت المطرقة. {d} ليست {b} × {c}، فهذه الحدود الأربعة لا تنفصل اثنين اثنين.',
+  'break.num.shape': 'لا x في أي موضع من هذه الكتلة ليمسك بها ذاك.',
+  'break.num.glance': 'انزلقت المطرقة. {d} لا يجري في {n}.',
+  'break.whole': 'تلك هي الكتلة كلها. ولن تترك خلفها شيئًا.',
+  'break.plain.glance': 'انزلقت المطرقة. {g} لا يجري في كل حد.',
+  'break.shape': 'انزلقت المطرقة. لا شيء من ذلك الشكل يجري في هذه.',
+  'break.middle': 'انزلقت المطرقة. الطرفان يتطابقان والوسط لا.',
+
+  /* pictures: what a screen reader hears for Mr Factor and the surface */
+  'factor.aria': 'Mr Factor، عامل منجم بمصباح خوذة ومعول',
+  'surface.aria': 'منجم على السطح: بيت رفع بعجلة تدور، وبيت الصهر، وسقيفة الصب، والكور وفرنه مشتعل، وعربة خام على قضبان، ومدخل المنجم.',
+
+  /* the nameplates bolted to the surface buildings - the plate widens to fit */
+  'plate.windmill': 'الطاحونة',
+  'plate.mill': 'مطحنة الدق',
+  'plate.shed': 'سقيفة الصب',
+  'plate.forge': 'الكور',
+  'plate.mine': 'المنجم',
+  'plate.yard': 'الساحة',
+
+  /* the buildings on the surface are doors, and this is what each one is called */
+  'door.mill': 'مطحنة الدق',
+  'door.shed': 'سقيفة الصب',
+  'door.forge': 'الكور',
+  'door.mine': 'ادخل المنجم',
+
+  /* the surface: the deep castings fitted to the buildings, and what is in the yard */
+  'surface.part.title': '{part}، رُكّب في {fits} — مصبوب من معدن أخرجته من الأعماق.',
+  'surface.aria.parts': 'مركّبة في المباني، وكل واحدة مصبوبة من معدن الأعماق: {parts}.',
+  'surface.yard.bare': 'الساحة: أرض عارية، حتى يصعد المعدن من المنجم.',
+  'surface.yard.rack': 'على الرف: {metal}.',
+  'surface.yard.heap': 'على الكومة: {rock}.',
+  'list.sep': '، ',
+  'part.sheet.up': 'صار الآن في الأعلى على السطح، مركّبًا في {fits} &mdash; مصنوعًا من معدن أخرجته من الأعماق.'
 };
 /* ===== END LANGUAGE: ar ===== */
 MF._missing = {};
@@ -23589,7 +24562,8 @@ MF.LENS.shifter = function(ore){
      instrument actually is, so it draws one. */
   var sqPlain = (ore.a === 1 ? 'x²' : ore.a === -1 ? '−x²' : num(ore.a) + 'x²');
   return {
-    html: MF.oreLabel(ore) + lensBox(sqTerm(ore.a), sqPlain, num(ore.c)),
+    html: MF.oreLabel(ore) +
+          lensBox(sqTerm(ore.a), sqPlain, num(ore.c), ore.a === 1 ? 'x' : null),
     found: MF.t('lens.shifter.product')
   };
 };
@@ -23648,11 +24622,18 @@ function lensX(top, bot, left){
    doing any of it, which is the rule every instrument here follows.
    The label is the lesson's own description of this same box, so it is already
    written in all fourteen languages and none of them falls back to English. */
-function lensBox(sqHtml, sqPlain, cLabel){
+function lensBox(sqHtml, sqPlain, cLabel, edgeX){
   var qm = '<span class="qm">?</span>';
   function cell(x, y, cls, s){
     return '<b class="' + cls + '" style="left:' + x + '%; top:' + y + '%">' + s + '</b>';
   }
+  /* THE TWO EDGES THAT TOUCH THE x² ARE FORCED when nothing sits in front of
+     it: x² can only be x · x, so both of them are a single x and writing them
+     gives away neither number. On a loaded lump the x-parts multiply to a and
+     the split is a real choice, so those two stay open. */
+  var ex = edgeX ? '<b class="lbgiven" style="left:40%; top:10%">' + edgeX + '</b>' +
+                   '<b class="lbgiven" style="left:10%; top:41%">' + edgeX + '</b>'
+                 : cell(40, 10, 'lbopen', qm) + cell(10, 41, 'lbopen', qm);
   return '<span class="lensbox" role="img" aria-label="' +
       MF.t('schema.shifter.m2.a11y', {sq: sqPlain, c: cLabel}) + '">' +
       '<svg viewBox="0 0 120 84" aria-hidden="true" focusable="false">' +
@@ -23660,8 +24641,7 @@ function lensBox(sqHtml, sqPlain, cLabel){
         '<path d="M24 18 V84 M72 18 V84 M120 18 V84"/>' +
       '</svg>' +
       /* the two edges along the top, and the two down the side */
-      cell(40, 10, 'lbopen', qm) + cell(80, 10, 'lbopen', qm) +
-      cell(10, 41, 'lbopen', qm) + cell(10, 80, 'lbopen', qm) +
+      ex + cell(80, 10, 'lbopen', qm) + cell(10, 80, 'lbopen', qm) +
       /* the four cells: x² and the end given, the two middles open */
       cell(40, 41, 'lbgiven', sqHtml) + cell(80, 41, 'lbopen', qm) +
       cell(40, 80, 'lbopen', qm)      + cell(80, 80, 'lbgiven', cLabel) +
@@ -23731,9 +24711,15 @@ MF.lensFor = function(ore, tk){
   var t = owner && MF.TOOLS[owner];
   return {
     none: true,
-    /* THE ORE UNCHANGED AND DIMMED, then the owning tool's belt glyph. */
+    /* THE ORE UNCHANGED AND DIMMED, then a mark that cannot be missed, then the
+       owning tool's belt glyph.
+       IT IS A MARK AND NOT A SENTENCE. The rock carries numbers; the words for
+       this live in `found` and in the fit test the panel opens, and the `lens`
+       group fails any lens that writes prose beside a lump. But the old version
+       printed only the other tool's small dimmed glyph, which reads as nothing
+       having happened at all — the one thing a student told us about it. */
     html: lensMark('lnone', MF.oreLabel(ore)) +
-          lensMark('lnobite', t ? t.ic : '&#8709;'),
+          lensMark('lnobite', '❌' + (t ? ' ' + t.ic : '')),
     /* the words live here, where a screen reader gets them and the rock does
        not. `nm` already begins "The". */
     found: t ? MF.t('lens.none.owner', {tool: t.nm}) : MF.t('lens.none')
@@ -26136,14 +27122,32 @@ MF.surfaceScene = function(){
     });
     deepMark(g, x + w/2, y + h/2);
   });
-  /* a fourth stamp on a beam off the Stamp Mill's end wall, over its die */
+  /* A FOURTH STAMP WHOSE HEAD IS A SQUARE CUT INTO FOUR SQUARES.
+     The casting teaches one thing — x² times x² is where an x⁴ comes from — and
+     the head now says it: one square, quartered, so the fourth power is visible
+     as a square of squares rather than implied by a grey block. It also has to
+     read as a DIFFERENT OBJECT from the Cube Counterweight out by the portal,
+     which is a solid three-quarter cube; this one is deliberately flat, square
+     and gridded, and it hangs on a shaft over a die instead of on a cable. */
   fitted('stamp4', function(g){
+    var hx = 363, hy = 310, s = 22;
     g.appendChild(S('rect',{x:'362',y:'282',width:'22',height:'4',rx:'1',fill:'#4A3524'}));
-    g.appendChild(S('rect',{x:'374',y:'286',width:'3',height:'30',fill:'#7C838A'}));
-    g.appendChild(S('rect',{x:'368',y:'316',width:'15',height:'14',rx:'2',fill:'#5A626A',
-      stroke:'#3A3F44','stroke-width':'1.5'}));
-    g.appendChild(S('rect',{x:'366',y:'342',width:'19',height:'8',rx:'1',fill:'#4A4038'}));
-    deepMark(g, 375.5, 323);
+    /* the shaft, thicker so the head reads as driven rather than hung */
+    g.appendChild(S('rect',{x:'371.5',y:'286',width:'5',height:'24',fill:'#7C838A'}));
+    g.appendChild(S('rect',{x:String(hx),y:String(hy),width:String(s),height:String(s),rx:'1.5',
+      fill:'#5A626A',stroke:'#2F343A','stroke-width':'1.8'}));
+    /* the quartering: one square into four, which is the whole lesson */
+    g.appendChild(S('path',{d:'M'+(hx+s/2)+' '+hy+' V'+(hy+s)+' M'+hx+' '+(hy+s/2)+' H'+(hx+s),
+      stroke:'#C9CFD4','stroke-width':'1.7'}));
+    /* and each quarter carries its own square, so it is squares all the way */
+    [[hx+s*0.25,hy+s*0.25],[hx+s*0.75,hy+s*0.25],
+     [hx+s*0.25,hy+s*0.75],[hx+s*0.75,hy+s*0.75]].forEach(function(c){
+      g.appendChild(S('rect',{x:String(c[0]-2.4),y:String(c[1]-2.4),width:'4.8',height:'4.8',
+        fill:'#8C949C',opacity:'.85'}));
+    });
+    /* the die it falls on, wider than the head so the blow has somewhere to land */
+    g.appendChild(S('rect',{x:'360',y:'338',width:'28',height:'9',rx:'1',fill:'#4A4038'}));
+    deepMark(g, 374, 352);
   });
   /* a second rail laid beside the first, still bright */
   fitted('rail2', function(g){
@@ -29292,11 +30296,15 @@ MF.paintFace = function(){
   /* keep the position marker honest as the student scrolls or drags */
   function syncMarker(){
     var max = Math.max(1, faceBox.scrollWidth - faceBox.clientWidth);
-    var frac = faceBox.scrollLeft / max;
+    /* DISTANCE ALONG THE SEAM, not a raw scrollLeft: in Arabic that runs from 0
+       down to a negative number, and dividing it by `max` put the marker at the
+       wrong end of its own rail. `inset-inline-start` then places the marker
+       from whichever end the seam starts at. */
+    var frac = MF.seamScan(faceBox) / max;
     var vis = faceBox.clientWidth / Math.max(1, faceBox.scrollWidth);
     marker.style.width = Math.max(8, vis*100).toFixed(1) + '%';
-    marker.style.left = (frac * (100 - Math.max(8, vis*100))).toFixed(1) + '%';
-    MF.state.scan = faceBox.scrollLeft;
+    marker.style.insetInlineStart = (frac * (100 - Math.max(8, vis*100))).toFixed(1) + '%';
+    MF.state.scan = MF.seamScan(faceBox);
   }
   on(faceBox,'scroll',function(){
     syncMarker();
@@ -29315,14 +30323,18 @@ MF.paintFace = function(){
      not treated as a drag at all. */
   var dragging=false, startX=0, startLeft=0, moved=0;
   on(faceBox,'pointerdown',function(e){
-    dragging=true; moved=0; startX=e.clientX; startLeft=faceBox.scrollLeft;
+    dragging=true; moved=0; startX=e.clientX; startLeft=MF.seamScan(faceBox);
     faceBox.style.scrollBehavior='auto';
   });
   on(faceBox,'pointermove',function(e){
     if(!dragging) return;
     var dx = e.clientX - startX;
     moved = Math.max(moved, Math.abs(dx));
-    if(moved > 4){ faceBox.scrollLeft = startLeft - dx; }
+    /* dragging left moves ALONG the seam in English and back along it in Arabic */
+    if(moved > 4){
+      var rtlDrag = getComputedStyle(faceBox).direction === 'rtl';
+      MF.seamScanTo(faceBox, startLeft + (rtlDrag ? dx : -dx));
+    }
   });
   ['pointerup','pointercancel','pointerleave'].forEach(function(ev){
     on(faceBox,ev,function(){ dragging=false; faceBox.style.scrollBehavior='smooth'; });
@@ -29377,24 +30389,62 @@ MF.sizeSeam = function(box){
   return {zoom:zoom, w:pxW, h:pxH, avail:avail};
 };
 
+/* THE SEAM IS SCANNED ALONG THE READING DIRECTION, AND IN ARABIC THAT RUNS THE
+   OTHER WAY. `scrollLeft` counts from the start of the line, so in a
+   right-to-left box it goes NEGATIVE — 0 at the right-hand end, −(scrollWidth −
+   clientWidth) at the far left. Every `Math.max(0, …)` here therefore clamped
+   the seam to a dead stop the moment the page turned around: the first Arabic
+   run reported 13 of 24 lumps off the side of the window with their own reading
+   on screen, and a reading standing 901px from the lump it described.
+   These two helpers work in DISTANCE ALONG THE SEAM, which is positive in both
+   directions, and put the sign back on only when touching the DOM. */
+MF.seamScan = function(box){
+  return Math.abs(box.scrollLeft);
+};
+MF.seamScanTo = function(box, dist){
+  var max = Math.max(0, box.scrollWidth - box.clientWidth);
+  var d = Math.max(0, Math.min(max, dist));
+  var rtl = getComputedStyle(box).direction === 'rtl';
+  box.scrollLeft = rtl ? -d : d;
+  return d;
+};
+/* AND THE OTHER COORDINATE, which is the one that actually strands lumps.
+   The rocks live at fixed positions in the SVG's own 0…SEAM_W space, so a
+   lump's `px` is a distance from the CONTENT's left edge — while the scan above
+   is a distance from where READING starts. In English those are the same
+   number. In Arabic the window's left edge sits at (scrollWidth − clientWidth)
+   − scan, so comparing one against the other put the seam a whole screen away
+   from the lump it was chasing: 21 of 24 lumps off the side of the window with
+   their own reading on screen, and a reading standing 992px from its stone. */
+MF.seamViewLeft = function(box){
+  var max = Math.max(0, box.scrollWidth - box.clientWidth);
+  var d = MF.seamScan(box);
+  return getComputedStyle(box).direction === 'rtl' ? (max - d) : d;
+};
+MF.seamViewTo = function(box, viewLeft){
+  var max = Math.max(0, box.scrollWidth - box.clientWidth);
+  var v = Math.max(0, Math.min(max, viewLeft));
+  var rtl = getComputedStyle(box).direction === 'rtl';
+  return MF.seamScanTo(box, rtl ? (max - v) : v);
+};
 /* SIZE THE ROCK, THEN PUT THE SCROLL BACK, THEN CHASE THE LUMP IF IT IS OFF SCREEN. */
 MF.fitSeam = function(){
   var F = MF._face;
   if(!F || !F.box || !F.box.isConnected) return null;
   var box = F.box, got = MF.sizeSeam(box);
   box.style.scrollBehavior = 'auto';
-  box.scrollLeft = MF.state.scan || 0;
+  MF.seamScanTo(box, MF.state.scan || 0);
   box.style.scrollBehavior = '';
   var target = F.target;
   if(target){
+    /* both of these are CONTENT coordinates, so they can be compared */
+    var here = MF.seamViewLeft(box);
     var tLeft = (target.px / F.W) * box.scrollWidth;
     var pad = Math.max(60, target.sz * (box.scrollWidth / F.W) + 40);
-    if(tLeft < box.scrollLeft + pad || tLeft > box.scrollLeft + box.clientWidth - pad){
+    if(tLeft < here + pad || tLeft > here + box.clientWidth - pad){
       /* A THIRD IN, NOT CENTRED. */
-      var wantLeft = Math.max(0, Math.min(box.scrollWidth - box.clientWidth,
-                                          tLeft - box.clientWidth * 0.32));
-      box.scrollLeft = wantLeft;             /* smooth, per the stylesheet */
-      MF.state.scan = wantLeft;
+      MF.seamViewTo(box, tLeft - box.clientWidth * 0.32);
+      MF.state.scan = MF.seamScan(box);
     }
   }
   if(F.sync) F.sync();
@@ -31961,11 +33011,17 @@ MF.validate = function(){
         !!(top.compareDocumentPosition(low) & Node.DOCUMENT_POSITION_FOLLOWING) &&
         low.getBoundingClientRect().top >= top.getBoundingClientRect().bottom - 1;
     };
-    /* BESIDE: level tops, and the second starts where the first ends. */
+    /* BESIDE: level tops, and the second starts where the first ends —
+       IN READING ORDER. "Ends" is the right edge in English and the left edge in
+       Arabic, so a predicate written in `left` and `right` says the opposite of
+       what it means the moment the page turns around, and its own control goes
+       blind with it: both were reported the first time Arabic was validated. */
+    var obRTL = getComputedStyle(document.documentElement).direction === 'rtl';
     var beside = function(a, b){
       if(!a || !b) return false;
       var A = a.getBoundingClientRect(), B = b.getBoundingClientRect();
-      return Math.abs(A.top - B.top) <= 2 && B.left >= A.right - 1;
+      if(Math.abs(A.top - B.top) > 2) return false;
+      return obRTL ? B.right <= A.left + 1 : B.left >= A.right - 1;
     };
     var obTwo = getComputedStyle(ovStage.querySelector('.forgegrid')).gridTemplateColumns.trim().split(/\s+/).length > 1;
     chk('parts');
@@ -31973,7 +33029,7 @@ MF.validate = function(){
       errs.push('parts: Deep Castings does not hang under The Order Board');
     chk('parts');
     if(obTwo ? !beside(obDeep, obShelf) : !hangsUnder(obDeep, obShelf))
-      errs.push(obTwo ? 'parts: the Shelf is not beside Deep Castings, on its right'
+      errs.push(obTwo ? 'parts: the Shelf is not beside Deep Castings, after it in reading order'
                       : 'parts: on one column the Shelf does not follow Deep Castings');
     chk('parts');
     if(!hangsUnder(obCraft, obYard))
@@ -34410,8 +35466,7 @@ MF.validate = function(){
       var kf = MF._mine.mid.querySelector('.seamview');
       if(!kf){ errs.push('knock: no seam window to test a click against'); return; }
       kf.style.scrollBehavior = 'auto';
-      kf.scrollLeft = Math.min(1400, Math.max(0, kf.scrollWidth - kf.clientWidth));
-      MF.state.scan = kf.scrollLeft;
+      MF.state.scan = MF.seamScanTo(kf, Math.min(1400, kf.scrollWidth - kf.clientWidth));
       kf.style.scrollBehavior = '';
       var kb = kf.getBoundingClientRect();
       var kVis = [].slice.call(kf.querySelectorAll('.rock')).filter(function(r){
@@ -34421,11 +35476,11 @@ MF.validate = function(){
       if(!kVis.length){ errs.push('knock: no lump was fully on screen, so the click had nothing safe to aim at'); return; }
       var kTarget = kVis[0], kIdx = kTarget.getAttribute('data-i');
       var kSvg0 = kf.querySelector('svg');
-      var kL0 = kf.scrollLeft, kX0 = kTarget.getBoundingClientRect().left, kY0 = window.scrollY;
+      var kL0 = MF.seamScan(kf), kX0 = kTarget.getBoundingClientRect().left, kY0 = window.scrollY;
       kHit(kTarget);
       var kf2 = MF._mine.mid.querySelector('.seamview');
       var kNow = kf2 && kf2.querySelector('.rock[data-i="' + kIdx + '"]');
-      var dSeam = Math.round(kf2 ? kf2.scrollLeft - kL0 : 0);
+      var dSeam = Math.round(kf2 ? MF.seamScan(kf2) - kL0 : 0);
       var dLump = kNow ? Math.round(kNow.getBoundingClientRect().left - kX0) : 0;
       var dPage = Math.round(window.scrollY - kY0);
       if(Math.abs(dLump) > 2)
@@ -34593,11 +35648,16 @@ MF.validate = function(){
         var f = MF._face && MF._face.box;
         if(!f) return;
         f.style.scrollBehavior = 'auto';
-        f.scrollLeft = Math.max(0, (o.px / MF.SEAM_W) * f.scrollWidth - f.clientWidth/2);
+        MF.seamViewTo(f, (o.px / MF.SEAM_W) * f.scrollWidth - f.clientWidth/2);
         f.style.scrollBehavior = '';
       };
+      /* START WHERE THERE IS ROOM TO MOVE IN EITHER DIRECTION. Parking at the
+         far end of the seam left a re-centred lump with nowhere to go, so the
+         planted fault produced no jump and the control stopped failing — which
+         is how Arabic reported it, the seam having only just learned which way
+         it runs. Half way along works whichever way the page reads. */
       kf.style.scrollBehavior = 'auto';
-      kf.scrollLeft = Math.min(1400, Math.max(0, kf.scrollWidth - kf.clientWidth));
+      MF.seamScanTo(kf, Math.max(0, (kf.scrollWidth - kf.clientWidth) / 2));
       kf.style.scrollBehavior = '';
       var kb = kf.getBoundingClientRect();
       var kVis = [].slice.call(kf.querySelectorAll('.rock')).filter(function(r){
@@ -34965,13 +36025,17 @@ MF.validate = function(){
       var sbGiven = sbEl.querySelectorAll('.lensbox .lbgiven');
       var sbOpen  = sbEl.querySelectorAll('.lensbox .lbopen');
       chk('schema');
-      if(sbGiven.length !== 2)
-        errs.push('schema: the Gear Lever writes ' + sbGiven.length + ' cells of its box — exactly two are ' +
-                  'forced, and anything past them is the factorisation rather than a method');
+      /* On a plain trinomial four things are forced — x², the end, and the two
+         edges touching the x², which can only be a single x each. The two
+         middle cells and the two number edges are the work and stay open. */
+      if(sbGiven.length !== 4)
+        errs.push('schema: the Gear Lever writes ' + sbGiven.length + ' parts of its box — on a plain ' +
+                  'trinomial exactly four are forced, and anything past them is the factorisation ' +
+                  'rather than a method');
       chk('schema');
-      if(sbOpen.length !== 6)
+      if(sbOpen.length !== 4)
         errs.push('schema: the Gear Lever leaves ' + sbOpen.length + ' parts of its box open, and there are ' +
-                  'six: two middle cells and four edges');
+                  'four: the two middle cells and the two number edges');
       chk('schema');
       var sbTxt = [].map.call(sbGiven, function(g){ return g.textContent.trim(); }).join(' ');
       if(sbTxt.indexOf('12') < 0 || sbTxt.indexOf('x2') < 0)
@@ -35669,11 +36733,18 @@ MF.validate = function(){
   lyStage.appendChild(lyProbe);
   lyProbe.appendChild(H('div', null, '<span style="white-space:nowrap; display:inline-block">' +
     new Array(40).join('a line of text that cannot wrap ') + '</span>'));
-  var lyEdge = lyProbe.getBoundingClientRect().right, lyCaught = false;
+  /* TEXT THAT CANNOT WRAP RUNS OFF THE END OF THE LINE, and the end of the line
+     is the left edge in Arabic. Looking only at `right` made this control blind
+     the moment the page turned around — it reported itself on the first Arabic
+     run, which is exactly what a control is for. */
+  var lyBox = lyProbe.getBoundingClientRect(), lyCaught = false;
+  var lyRTL = getComputedStyle(document.documentElement).direction === 'rtl';
   lyProbe.querySelectorAll('*').forEach(function(n){
-    if(n.getBoundingClientRect().right > lyEdge + 1) lyCaught = true;
+    var lyR = n.getBoundingClientRect();
+    if(lyRTL ? lyR.left < lyBox.left - 1 : lyR.right > lyBox.right + 1) lyCaught = true;
   });
-  if(!lyCaught) errs.push('CONTROL: the layout sweep cannot see text running off the right edge');
+  if(!lyCaught) errs.push('CONTROL: the layout sweep cannot see text running off the ' +
+                          (lyRTL ? 'left' : 'right') + ' edge');
   document.body.removeChild(lyStage);
   MF._mine = lySaved.mine; MF._forge = lySaved.forge;
   /* 5n-ii. A LENS REARRANGES THE ORE AND NEVER ADDS TO IT. */
