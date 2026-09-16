@@ -107,6 +107,53 @@ renumbers every line after it**, and your recordings would then be one behind.
 The alternative — ids derived from the words — breaks the moment you reword a line, which
 happens far more often. Positional ids are the lesser of the two, but this is the trap.
 
+## 7. English only, and what another language would need
+
+**Nothing has been recorded yet.** When it is, it will be **English**, because the voice is
+the author's own, and English is the language they are fluent in. The site ships in fifteen; the
+voice does not, and that is a deliberate limit rather than an oversight.
+
+**This is not a wall.** `MF.voiceLines()` reads whatever language is set, so the script for
+another language is the same generator with the picker moved first:
+
+```js
+MF.state.access.lang = 'es'; MF.applyAccess();
+copy(MF.voiceLines().map(l => `${l.id}\t${l.dyn ? 'VARIES' : 'fixed'}\t${l.text}`).join('\n'))
+```
+
+The ids do not change with the language — `room-mine-2` is the second beat of the mine in
+every one of them — so a second recording is a second folder of identically named files.
+**What is not built is the switch between them:** `MF.VOICE_BASE` is one folder, so pointing
+it at `voice/es` would be a one-line change per language and no code knows to do it
+automatically. Worth knowing before anyone records in a second language, not after.
+
+Until then the other fourteen languages read on screen and are spoken by the browser's own
+voice through **Read aloud**, which already sets `u.lang` from the language's `speech` code.
+
+## 8. Proving this page is not stale
+
+This file is a second copy of words that live in the code, and the project has been caught
+twice by a second copy going quietly stale. The table below is checkable in a few seconds,
+so check it rather than trusting it — paste this in the console with the site open:
+
+```js
+(async () => {
+  const md = await (await fetch('docs/VOICE.md')).text(), rows = {};
+  md.split('\n').forEach(ln => { const m = ln.match(/^\|\s*\*?`([a-z0-9-]+)`\*?\s*\|\s*([^|]+?)\s*\|\s*(.+?)\s*\|\s*$/);
+    if (m) rows[m[1]] = m[3].replace(/\s+/g, ' ').trim(); });
+  const live = MF.voiceLines(), flat = s => String(s).replace(/\s+/g, ' ').trim();
+  console.log({
+    missingFromDoc: live.filter(l => !rows[l.id]).map(l => l.id),
+    textDiffers: live.filter(l => !l.dyn && rows[l.id] && rows[l.id] !== flat(l.text)).map(l => l.id),
+    notInSite: Object.keys(rows).filter(id => !live.some(l => l.id === id))
+  });
+})()
+```
+
+**All three lists empty is the pass.** Last run **2026-09-15**: 28 rows, 28 lines, all three
+empty — checked after the fifteen-language work, which rewrote a great deal of English around
+these lines without touching any of them.
+
 ---
 
 ## The lines

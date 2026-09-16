@@ -1,7 +1,7 @@
 # The Verification Standard
 ### Mr Fraction's Word Problem Express
 **Applies to:** every agent, **and to anyone working without one** — see `../CLAUDE.md`.
-**Owner:** Oversight. **Last updated:** 2026-08-17. **42 rules.**
+**Owner:** Oversight. **Last updated:** 2026-09-15. **107 rules.**
 
 Every rule here was written after a specific failure on this project. The evidence is kept with each rule, because a rule without its scar gets softened away.
 
@@ -2322,3 +2322,87 @@ compared words.
 
 **Read the denominator:** it sees what `validate` and nine playthroughs reach at the width it runs.
 Run it at 1250 and at 380; a string only a narrow screen builds is only proved there.
+
+## §104. A minimum written in English measures English, and green in one language proves one language
+
+A check that counts characters is a check with a language in it. The misfit panel has to stay the
+size of a reading rather than shrink back to a footnote, so the check required **90 characters** —
+and Chinese says the same thing in **55 to 63**, Japanese in **85**. Sweeping all fifteen languages
+returned **five errors in Chinese and two in Japanese**, every one of them *"the fit test on … is 62
+characters — that is a footnote again"*, on panels that were complete and correct.
+
+**This project had already fixed this exact fault once.** `MF.langLen(n)` exists for it, written the
+day three other checks stopped measuring English; it scales a minimum by the language's own prose
+budget and never rises above the English number. The new check was written hours later and hard-coded
+90 anyway.
+
+| | |
+|---|---|
+| what was proved | the panel was long enough **at 1250 and 380, in English** |
+| what was claimed | the panel is long enough |
+| what was true | it was a footnote in two of the fifteen languages the site ships |
+
+> **Any threshold in characters, words or lines must go through `MF.langLen`.** And the denominator
+> rule (§5) has a second axis now: green at four widths is still green in *one language*. A site with
+> fifteen language tables has fifteen denominators, and the only honest sweep runs all of them.
+
+## §105. Left and right are a language's opinion; the code must ask which way it reads
+
+Fourteen languages had all read left to right, so every assumption about direction had gone
+unchallenged. Arabic reported **nine errors on its first run and only two were the translation.**
+
+**The seam scrolled the wrong way, and then not at all.** `scrollLeft` counts from where reading
+starts, so in a right-to-left box it runs **negative** — and every `Math.max(0, …)` clamped the seam
+to a dead stop. Worse was the pair of coordinates underneath: a lump's position is a distance from
+the **content's** left edge, while the scan is a distance from where **reading** starts. In English
+those are the same number. In Arabic they are a screen apart, which is why the check reported *21 of
+24 lumps off the side of the window with their own reading on screen, and a reading standing 992px
+from its stone.*
+
+**Two checks and three controls were themselves written in left and right**, and all three controls
+reported themselves on that first Arabic run — which is what a control is for:
+
+| | what it assumed | what it did in Arabic |
+|---|---|---|
+| `beside` | the second thing starts where the first ends, on its right | said the layout was wrong, and its own control went blind with it |
+| the layout control | text that cannot wrap overflows the **right** edge | text overflowed left; the control stopped failing |
+| the click sweep | parking the seam at its far end leaves room to move | a re-centred lump had nowhere to go, so the planted fault produced no jump |
+
+> **Keep two coordinates apart and name them:** distance along the reading direction, and position in
+> the content. Convert only when touching the DOM. And a check that says "right" is making a claim
+> about the language, not the layout — `inset-inline-*`, `start`/`end`, and a `direction` test.
+
+## §106. Build it where the student will be standing
+
+The fit test — the panel that explains why an instrument does not fit a lump — was built into the
+sheet an instrument opens. **A student does not open that sheet.** They pick a tool off the belt and
+drop it on a rock, and what that produced was the expression, dimmed, with a small grey glyph after
+it. The work was one click away with nothing saying so.
+
+It was verified, too: a synthetic call into `TOOL_READ`, a screenshot of the panel, and a check with
+a control that failed correctly. All of it measured the panel. None of it did what a student does.
+
+> **The reader's report was "it almost appeared none of that had been worked on", and that is the
+> most useful sentence in this file.** Before claiming a change is done, perform the gesture a
+> student performs — not the function call that renders the same markup. If the only route to a
+> thing is a click nobody is told to make, the thing is not there.
+
+Note the second half, which is the same rule pointing the other way: the fix could not be a caption
+on the rock, because `lens` fails any instrument that *"found nothing and wrote words beside the
+lump"*. The rock carries numbers and the panel carries prose. **A standing rule is not an obstacle to
+route around; it is the constraint the fix has to satisfy** — so the mark got louder instead.
+
+## §107. The instrument must not share a name with the subject
+
+Driving the site to take screenshots, a probe declared `var sh = document.querySelector('.gshut')`
+at top level. `index.html` defines a global `function sh(hex, f)` — a colour helper. The assignment
+overwrote it, and the next screen build died with *"This screen did not build. That is a fault in the
+mine, not in you. (sh is not a function)"*.
+
+The site was fine. The instrument had broken it, and then the site's own error message politely took
+the blame.
+
+> §35 says the instrument must not damage the subject; this is the cheapest way to do exactly that.
+> **Scripts injected into the page share its global scope.** Prefix probe variables, wrap them in an
+> IIFE, or assign to a namespaced object — and when a page that passed its checks a moment ago starts
+> throwing, suspect the probe before the page.
