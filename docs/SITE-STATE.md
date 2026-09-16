@@ -2765,3 +2765,25 @@ page makes to a stranger sat underneath it, so arriving meant scrolling past a
 picture to find out what any of this was. The heading and the three lede
 paragraphs now open the screen; the scene follows, with its own line under it,
 because the buildings are the way **in** rather than the explanation.
+
+### The deep castings are lit, not badged (2026-09-15)
+
+Each fitted casting carried a small gold **star**, which reads as a sticker
+awarded for finishing one — and nothing on this site is awarded. They are
+objects the student *made*, out of metal they broke out of the rock themselves,
+so the surface should look like it is **lit by them** rather than labelled with
+them.
+
+`deepMark` now draws four soft concentric circles instead of a star, and
+`.sc-part` carries a drop-shadow glow so the light bleeds off the object itself
+rather than sitting behind it. A slow 5.2s breath (opacity .72 → 1) makes it a
+lamp rather than an alert, and it stops under both `prefers-reduced-motion` and
+the site's own Movement setting.
+
+**It keeps the `sc-deepmark` class**, because the `surface` group requires every
+fitted casting to stay identifiable — the check passes on the glow exactly as it
+did on the star. The four-minute clock the sun, moon and sky phases share does
+not apply here, so a slower pulse is allowed.
+
+**Proved:** 0 errors in English (43,256 checks) and Arabic (43,267), both
+controls failing, playthroughs 1-9 clean.
