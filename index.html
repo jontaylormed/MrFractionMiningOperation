@@ -1598,8 +1598,6 @@ table.teachtbl td.tw .btn{padding-block:4px; padding-inline:10px; font-size:14px
 .teachsess{border-top:1px solid var(--rule); padding-block:10px 12px}
 .teachsess .row{gap:8px; flex-wrap:wrap}
 .teachtg{font-family:var(--display); font-size:13px; letter-spacing:.04em; color:var(--vein)}
-.teachfoot{justify-content:center; margin-top:18px}
-.acteach{margin-top:16px}
 
 /* the seven methods, folded away until wanted */
 .schemadet{border:2px solid var(--rule); border-radius:12px; background:#FFFCF6; margin:9px 0; overflow:hidden}
@@ -2259,6 +2257,15 @@ table.scan tr.hit td{background:#F1F8F5; color:var(--vein); font-weight:700}
 .accesscap{font-family:var(--body); font-size:calc(11px * var(--access-scale,1));
   line-height:1.25; color:#FFFFFF; opacity:.82; text-align:center;
   margin-top:4px; letter-spacing:.02em}
+/* FOR TEACHERS: the same amber as Reading & Access, about two-thirds the size,
+   so it reads as belonging to it and as the lesser of the two. */
+.teachbtn{font-family:var(--body); font-size:calc(12.5px * var(--access-scale,1)); font-weight:700;
+  align-self:center; margin-top:6px; padding-block:4px; padding-inline:12px; min-height:30px;
+  cursor:pointer; border:2px solid var(--lamp); border-radius:8px;
+  background:var(--lamp); color:#2A1B06; box-shadow:0 1px 0 rgba(0,0,0,.28)}
+.teachbtn:hover{background:#F2B457; border-color:#F2B457}
+.teachbtn:active{transform:translateY(1px); box-shadow:none}
+.teachbtn[aria-current]{background:transparent; color:var(--lamp)}
 .accessbtn:hover{background:#F2B457; border-color:#F2B457}
 .accessbtn:active{transform:translateY(1px); box-shadow:0 1px 0 rgba(0,0,0,.28)}
 @media(max-width:560px){ .accessbtnwrap{margin-inline-start:0; width:100%}
@@ -2345,6 +2352,8 @@ p,li{font-size:calc(17px * var(--access-scale,1))}
         <span aria-hidden="true">&#9881;</span> Reading &amp; Access
       </button>
       <div class="accesscap" aria-hidden="true">Music/Sound Control Options</div>
+      <!-- FOR TEACHERS: under Reading & Access, the same amber, smaller. -->
+      <button id="teachbtn" class="teachbtn" type="button">For teachers &rarr;</button>
     </div>
   </div>
 </header>
@@ -25061,7 +25070,7 @@ MF.tList = function(prefix, n){
 MF.STATIC = [
   ['#loadscreen h2', 'site.name'], ['#loadscreen .sub', 'load.sub'], ['#enter-btn', 'load.enter'],
   ['.top h1', 'site.name'], ['.top .tagline', 'top.tagline'],
-  ['#accessbtn', 'top.access'], ['.accesscap', 'top.accesscap']
+  ['#accessbtn', 'top.access'], ['.accesscap', 'top.accesscap'], ['#teachbtn', 'teach.link']
 ];
 MF.STATIC_ARIA = [['#accessbtn', 'top.access.aria'], ['#nav', 'nav.aria']];
 MF.paintStatic = function(){
@@ -26979,6 +26988,9 @@ MF.go = function(name){
    way out, so a bookmark never lands a student on it by accident. */
 MF.hashScreen = function(){ return location.hash === '#teachers' ? 'teachers' : null; };
 MF.syncHash = function(name){
+  /* the header button says so while you are on the page it opens */
+  var tb = q('#teachbtn');
+  if(tb) tb.toggleAttribute('aria-current', name === 'teachers');
   try {
     if(name === 'teachers'){
       if(location.hash !== '#teachers') history.replaceState(null, '', '#teachers');
@@ -27960,10 +27972,6 @@ MF.openAccess = function(opener){
           function(n){ return n.toFixed(1) + '&times;'; }, function(n){ a.speed = n; });
       }
 
-      /* FOR TEACHERS, last and quiet: the panel closes before the page opens */
-      var tRow = E('div','row acteach');
-      tRow.appendChild(MF.teachLink(function(){ MF.closeTool(); }));
-      b.appendChild(tRow);
     }
   });
 };
@@ -29027,11 +29035,6 @@ MF.SCREENS.home = function(host){
   });
   sell.appendChild(strip);
   host.appendChild(sell);
-
-  /* FOR TEACHERS: at the very foot, where a teacher looks and a student need not */
-  var tFoot = E('div','row teachfoot');
-  tFoot.appendChild(MF.teachLink());
-  host.appendChild(tFoot);
 };
 MF.card = function(title, tag, why, cta, fn){
   var c = E('div','card');
@@ -29173,13 +29176,6 @@ MF.SCREENS.teachers = function(host){
   for(var k = 1; k <= 5; k++) pl.appendChild(H('li', null, MF.t('teach.prac.' + k)));
   pr.appendChild(pl);
   host.appendChild(pr);
-};
-/* THE QUIET WAY IN — never in the students' nav */
-MF.teachLink = function(before){
-  var b = E('button','btn teachlink'); b.type = 'button';
-  b.innerHTML = MF.t('teach.link');
-  on(b,'click',function(){ if(before) before(); MF.go('teachers'); });
-  return b;
 };
 
 /* ===== THE AREA MODEL. Appends; never owns its host. ===== */
@@ -40765,25 +40761,22 @@ MF.validate = function(){
     if(!tcBogus || MF.SCREENS[tcBogus])
       errs.push('CONTROL: a target button to a room that does not exist would not be noticed');
 
-    /* THE WAY IN: from the Surface, from Reading & Access, and by address — and NOT the nav */
-    var tcHome = document.createElement('div');
-    try { MF.SCREENS.home(tcHome); } catch(e){}
-    var tcHl = tcHome.querySelector('.teachlink');
+    /* THE WAY IN: a smaller button under Reading & Access, and the address — NOT the nav */
+    var tcTb = q('#teachbtn'), tcAb = q('#accessbtn');
     chk('teachers');
-    if(!tcHl || tcGoes(tcHl) !== 'teachers')
-      errs.push('teachers: the Surface has no way to the teacher page');
+    if(!tcTb || tcGoes(tcTb) !== 'teachers')
+      errs.push('teachers: the header has no way to the teacher page');
     chk('teachers');
     if(tcGoes(MF.jump('x', 'home')) === 'teachers')
       errs.push('CONTROL: a link to somewhere else is being read as a way to the teacher page');
-    var tcSheetWas = !!MF._sheet;
-    if(!tcSheetWas){
-      MF.openAccess();
-      var tcAl = MF._sheet && MF._sheet.sheet.querySelector('.teachlink');
-      chk('teachers');
-      if(!tcAl || tcGoes(tcAl) !== 'teachers')
-        errs.push('teachers: Reading & Access has no way to the teacher page');
-      MF.closeTool();
-    }
+    chk('teachers');
+    if(tcTb && tcAb && (tcTb.parentNode !== tcAb.parentNode ||
+       !(tcAb.compareDocumentPosition(tcTb) & Node.DOCUMENT_POSITION_FOLLOWING)))
+      errs.push('teachers: the teacher button is not under Reading & Access');
+    chk('teachers');
+    if(tcTb && tcAb && tcTb.offsetHeight && tcTb.offsetHeight >= tcAb.offsetHeight)
+      errs.push('teachers: the teacher button is as big as Reading & Access (' + tcTb.offsetHeight +
+                'px against ' + tcAb.offsetHeight + 'px) — it is the lesser of the two');
     chk('teachers');
     MF.paintNav();
     if((q('#nav').textContent || '').indexOf(MF.plainT('teach.title')) >= 0)
@@ -41109,6 +41102,8 @@ MF.boot = function(){
   document.addEventListener('keydown', MF._accessKey, true);
   var acBtn = q('#accessbtn');
   if(acBtn) on(acBtn,'click',function(){ MF.openAccess(acBtn); });
+  var tBtn = q('#teachbtn');
+  if(tBtn) on(tBtn,'click',function(){ MF.go('teachers'); });
   var motes = MF.ambient();
   q('#hero-art').appendChild(MF.art(46));
   MF.loadScreen();
