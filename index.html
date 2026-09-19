@@ -1584,6 +1584,22 @@ table.rosetta td.rm b{font-family:var(--display); font-weight:400; font-size:17p
 table.rosetta .rn{font-size:13px; color:var(--ink-soft); margin-top:3px; max-width:38ch}
 table.rosetta td.rr{font-family:var(--display); font-size:16px; color:var(--vein); min-width:150px}
 table.rosetta td.rx{font-family:var(--display); font-size:16px; color:var(--ink); min-width:150px}
+/* THE TEACHER PAGE borrows the Rosetta table and adds a room button to each row */
+table.teachtbl{min-width:560px}
+table.teachtbl td.tn{font-family:var(--display); color:var(--ink-soft); padding-inline-end:10px}
+table.teachtbl td.tt{min-width:220px}
+table.teachtbl td.tbl{white-space:nowrap; color:var(--vein); font-family:var(--display)}
+table.teachtbl td.tw{min-width:150px}
+table.teachtbl td.tw .btn{padding-block:4px; padding-inline:10px; font-size:14px; margin-bottom:4px}
+.teachpanel{margin-top:18px}
+.teachpanel h3{margin-block:14px 4px}
+.teachlist{padding-inline-start:1.3em}
+.teachlist li{margin-bottom:10px}
+.teachsess{border-top:1px solid var(--rule); padding-block:10px 12px}
+.teachsess .row{gap:8px; flex-wrap:wrap}
+.teachtg{font-family:var(--display); font-size:13px; letter-spacing:.04em; color:var(--vein)}
+.teachfoot{justify-content:center; margin-top:18px}
+.acteach{margin-top:16px}
 
 /* the seven methods, folded away until wanted */
 .schemadet{border:2px solid var(--rule); border-radius:12px; background:#FFFCF6; margin:9px 0; overflow:hidden}
@@ -5188,7 +5204,142 @@ MF.STR.en = {
   'surface.yard.rack': 'On the rack: {metal}.',
   'surface.yard.heap': 'On the heap: {rock}.',
   'list.sep': ', ',
-  'part.sheet.up': 'It is up on the surface now, fitted to {fits} &mdash; made out of metal you brought up from the deep shafts.'
+  'part.sheet.up': 'It is up on the surface now, fitted to {fits} &mdash; made out of metal you brought up from the deep shafts.',
+
+  /* THE TEACHER GUIDE. Written for whoever is teaching, not for the student, so
+     this page is the one screen the no-grades sweep does not read: it has to
+     say "grade" and "score" to explain why the rest of the site never does. */
+  'teach.title': 'For teachers',
+  'teach.link': 'For teachers &rarr;',
+  'teach.direct': 'This page has its own address: add <b>#teachers</b> to the end of the site’s address to come straight here.',
+  'teach.lede1': '<b>This site teaches factoring through one idea: a prime number and an irreducible polynomial are the same kind of object.</b> Factoring 72 and factoring x² − 5x + 6 are the same act, and the site teaches them with the same tools. It is written for middle- and high-school students, and especially for the ones who have decided they are “not a maths person”.',
+  'teach.lede2': 'The whole site is a working mine. Expressions are <b>ore</b>, factors are <b>seams</b> running through the rock, and whatever will not come apart is <b>native metal</b>. Students break ore in the mine and pour metal at the forge. This page sets out what that teaches, where each part lives, and how to use it with a class.',
+
+  /* the learning targets */
+  'teach.targets.tag': 'LEARNING TARGETS',
+  'teach.targets.lede': 'Sixteen targets, written for students. Each button takes you to the room that teaches it.',
+  'teach.th.target': 'I can…',
+  'teach.th.bloom': 'Bloom’s level',
+  'teach.th.where': 'Where',
+  'teach.go': '{room} &rarr;',
+  'teach.go.aria': 'Go to {room}, where target {n} is taught',
+  'teach.t1': 'explain why a prime number and an irreducible polynomial are the same kind of object',
+  'teach.t1.where': 'the Surface, the Stamp Mill, the Words table',
+  'teach.t2': 'tell “nothing divides every term” apart from “it will not factor”',
+  'teach.t2.where': '“What did the miner do wrong?” in the Words',
+  'teach.t3': 'find the prime factorisation of any whole number up to 100',
+  'teach.t3.where': 'the Stamp Mill',
+  'teach.t4': 'explain why different routes to a prime factorisation end with the same primes',
+  'teach.t4.where': 'the Stamp Mill',
+  'teach.t5': 'multiply two brackets by matching every term with every term, and collect like terms',
+  'teach.t5.where': 'the Molds, the Forge',
+  'teach.t6': 'show a product of two brackets as an area model',
+  'teach.t6.where': 'the Molds, the Shifter’s lesson',
+  'teach.t7': 'identify an expression’s form before choosing a method',
+  'teach.t7.where': 'the assay on the breaking floor, the Prospector’s Pick',
+  'teach.t8': 'explain why a method does not fit a given expression',
+  'teach.t8.where': 'any tool held to a rock it does not fit',
+  'teach.t9': 'take out the greatest common factor',
+  'teach.t9.where': 'the Steel Pick',
+  'teach.t10': 'factor x² + bx + c and ax² + bx + c by finding the pair that multiplies to ac and adds to b',
+  'teach.t10.where': 'the Crosscut, the Shifter',
+  'teach.t11': 'factor a four-term expression by grouping, and split a middle term to make four',
+  'teach.t11.where': 'the Powered Auger',
+  'teach.t12': 'factor a difference of two squares and a sum or difference of two cubes, and explain why a cube’s leftover quadratic never factors',
+  'teach.t12.where': 'the Drill',
+  'teach.t13': 'factor x⁴ + bx² + c by treating x² as a single unit, then check each half again',
+  'teach.t13.where': 'the Shifter',
+  'teach.t14': 'factor completely, repeating until every piece is irreducible',
+  'teach.t14.where': 'the breaking floor',
+  'teach.t15': 'check a factorisation by multiplying it back out',
+  'teach.t15.where': 'the anvil, the pour',
+  'teach.t16': 'explain why an expression has no whole-number factors, even when a decimal pair exists',
+  'teach.t16.where': 'the Crosscut’s decimal dial',
+  'teach.bloom.remember': 'Remember',
+  'teach.bloom.understand': 'Understand',
+  'teach.bloom.apply': 'Apply',
+  'teach.bloom.analyze': 'Analyze',
+  'teach.bloom.evaluate': 'Evaluate',
+  'teach.bloom.create': 'Create',
+  'teach.cc': '<b>Common Core.</b> Targets 3 and 4 match 4.OA.B.4, target 9 matches 6.NS.B.4, target 5 matches A-APR.A.1, and targets 7 and 13 match A-SSE.A.2.',
+  'teach.gaps': '<b>What it does not cover.</b> Factoring to find zeros or solve equations (A-SSE.B.3a), completing the square, and fractional coefficients. In Bloom’s terms, <b>Create</b> is thin: the forge works backwards from an object it is given, but never asks a student to design one. Two targets are implied rather than said: the site never names unique factorisation (4) or says “whole-number coefficients” (16).',
+
+  /* the pedagogy */
+  'teach.ped.tag': 'THE PEDAGOGY',
+  'teach.ped.lede': 'Eight decisions shape every screen. Knowing them lets you say what the site is already saying.',
+  'teach.ped.1.h': 'The metaphor is the verb',
+  'teach.ped.1.b': 'The mine is not decoration on top of the maths; it names what the student does to it. The verb is <b>extract</b>: structure recovered from a lump that looks formless. A seam <em>is</em> a factor, not a picture of one. The Words workshop puts the two vocabularies side by side, and students should be able to cross between them in both directions.',
+  'teach.ped.2.h': 'A prime and an irreducible polynomial are one object',
+  'teach.ped.2.b': 'Most courses teach number factoring and polynomial factoring years apart, as different skills. Here they are the same act: keep breaking until nothing will come apart. x² + 4 is finished in exactly the way 97 is, and a student who meets it should read that as an answer, not as being stuck.',
+  'teach.ped.3.h': 'The mine breaks; the forge pours',
+  'teach.ped.3.b': 'Factoring happens only in the mine, and distributing only at the forge. Keeping them in different places makes them visibly inverse: the forge multiplies metals into one object, and the mine runs that backwards. The Molds workshop shows the pour one line at a time.',
+  'teach.ped.4.h': 'Recognise the form before you work',
+  'teach.ped.4.b': 'Before swinging, a student can name what kind of rock they are holding: a common factor, two squares, a loaded trinomial. The call is optional and never judged, but it is the thing a student can later catch themselves out on. Choosing a method by structure rather than by surface is the skill that transfers.',
+  'teach.ped.5.h': 'Correctness is physical',
+  'teach.ped.5.b': 'There are two signals of right and wrong, and both happen in the world. The seam runs or the pick glances off, and the rock says why. The casting comes out sound or as scrap, naming the term that disagrees. Underneath both is multiplying back, which students can do without the site.',
+  'teach.ped.6.h': 'Tools assist; they never gate',
+  'teach.ped.6.b': 'Tools are cast at the forge from metal the student broke out, and each carries one method. None is required: the deepest layer can be worked with an empty belt. A tool shows <em>part</em> of a factorisation (one side lit, the pairs listed) and the hammer confirms the rest. When a tool does not fit a rock it says why, and that explanation is part of the lesson.',
+  'teach.ped.7.h': 'Scored, never graded',
+  'teach.ped.7.b': 'The yard counts what a student owns, and it only grows. There are no percentages, accuracy rates, “X out of Y”, ranks, timers or lives, and nothing goes down. <b>A grade summarises the student; a score inventories the world.</b> “You are at 70%” is a verdict a struggling student turns into an identity. “You have 14 ingots” is a fact about a yard.',
+  'teach.ped.8.h': 'Help is never a demotion',
+  'teach.ped.8.b': 'Mr Factor explains each room when a student first arrives. When a student is stuck on a lump he steps in by stages: first the workshop that teaches the move, then a hint built from that lump’s own numbers, then the factor itself. None of it costs anything or is recorded. Every workshop is open from the first screen, so going back to one is ordinary navigation, not an admission.',
+
+  /* using it with a class */
+  'teach.use.tag': 'USING IT WITH A CLASS',
+  'teach.use.before': '<b>Before.</b> Spend ten minutes in the mine yourself: dig a lump on layer 4, break it, and cast one tool. Open the site on the devices students will use; it runs from the file with nothing to install, and the sound is optional. Decide whether students start at the Stamp Mill (numbers) or in the Casting Shed (words and molds). Both are open.',
+  'teach.use.during': '<b>During.</b> Let students choose their own depth. Circulate and ask about the <em>call</em> they made before a swing, not about how much they have done. When a pick glances off, the rock says why: ask the student to read that sentence aloud and say what they will try next.',
+  'teach.use.after': '<b>After.</b> Close on paper, away from the site: one lump to factor completely, and one sentence on how they knew it was finished. The reflection box at the end of each lesson is private (nothing in it is read, checked or kept), so treat it as thinking space, not work to collect.',
+  'teach.moves.h': 'Classroom moves that work with the design',
+  'teach.moves.1': '<b>Predict, then swing.</b> Before the hammer comes down, a student says out loud what they expect to come out.',
+  'teach.moves.2': '<b>Argue the assay.</b> Partners disagree about what kind of rock a lump is, then settle it by breaking it.',
+  'teach.moves.3': '<b>Find the miner’s mistake.</b> “What did the miner do wrong?” in the Words workshop makes a whole-class discussion: every line of arithmetic is right, and the error is a word.',
+  'teach.moves.4': '<b>Translate both ways.</b> One partner says a sentence in mine words and the other says it in maths words, then they swap.',
+  'teach.avoid.h': 'What to avoid',
+  'teach.avoid.1': '<b>Turning the yard into a grade.</b> Counting ingots to rank students, or setting a target count, rebuilds the thing the site removes.',
+  'teach.avoid.2': '<b>Timing it.</b> Nothing on the site is timed, and a clock changes what a glanced pick means.',
+  'teach.avoid.3': '<b>Requiring tools.</b> Tools make structure easier to see; they are not the method. A student who factors with an empty belt has done the whole job.',
+  'teach.avoid.4': '<b>Treating native metal as failure.</b> When nothing comes out, that is an answer. Say so.',
+  'teach.assess.h': 'Assessing, away from the site',
+  'teach.assess.b': 'The site keeps no record of any student: nothing is saved, sent or counted, and closing the tab clears everything. Assessment is yours, and it happens elsewhere. Useful evidence: whether a student names the form before choosing a method, whether they check by multiplying back, and whether they can say why an irreducible piece is finished.',
+
+  /* a suggested sequence */
+  'teach.seq.tag': 'A SUGGESTED SEQUENCE',
+  'teach.seq.lede': 'Five sessions of about forty minutes. Adapt them freely: every room is open from the start, and students can go deeper whenever they like.',
+  'teach.seq.targets': 'Targets {list}',
+  'teach.seq.ask': 'Ask:',
+  'teach.seq.listen': 'Listen for:',
+  'teach.seq.1.h': 'Session 1 — the idea, in numbers',
+  'teach.seq.1.do': 'Start on the Surface, then go to the Stamp Mill: break numbers up to 100 into primes, and compare two routes to the same number.',
+  'teach.seq.1.ask': 'Two of you cut 72 differently. Why did you end up with the same ingots?',
+  'teach.seq.1.listen': 'That a prime cannot be broken further, and that the order of cutting does not change what is inside.',
+  'teach.seq.2.h': 'Session 2 — words and molds',
+  'teach.seq.2.do': 'In the Casting Shed, the Words workshop (mine words to maths words, and the miner’s mistake), then the Molds, where two brackets multiply into one expression.',
+  'teach.seq.2.ask': 'In the mold, where does each term of the answer come from?',
+  'teach.seq.2.listen': 'Every part of one bracket meeting every part of the other, and like terms running together.',
+  'teach.seq.3.h': 'Session 3 — into the mine',
+  'teach.seq.3.do': 'Layers 1 to 4: dig, name the rock, and break it until only native metal is left. At the forge, cast a first tool from that metal.',
+  'teach.seq.3.ask': 'What kind of rock was that, and how did you know before you swung?',
+  'teach.seq.3.listen': 'A common factor looked for first, and a break checked by multiplying back.',
+  'teach.seq.4.h': 'Session 4 — loaded ore and grouping',
+  'teach.seq.4.do': 'Layers 5 and 6, with the Crosscut and the Powered Auger if students have cast them. Hold a tool to a rock it does not fit, and read why.',
+  'teach.seq.4.ask': 'Why did that tool have nothing to say about this lump?',
+  'teach.seq.4.listen': 'The a·c search, four terms taken two at a time, and a method matched to a form.',
+  'teach.seq.5.h': 'Session 5 — deeper shapes',
+  'teach.seq.5.do': 'Layers 7 to 9: fourth powers, two letters and cubes. Use the Crosscut’s decimal dial to see a seam that is real but not whole.',
+  'teach.seq.5.ask': 'This one would not break. Is it stuck, or is it finished?',
+  'teach.seq.5.listen': 'Irreducible as an answer, the leftover quadratic of a cube that never breaks, and “no whole pair” given as a reason.',
+
+  /* practical notes */
+  'teach.prac.tag': 'PRACTICAL NOTES',
+  'teach.prac.1': '<b>No install, no accounts.</b> The whole site is one file. It runs from a USB stick, a shared drive or a web page, and works offline.',
+  'teach.prac.2': '<b>Nothing is stored or sent.</b> No names, no logins, no tracking. Leaving the page resets it, so every session is a fresh start.',
+  'teach.prac.3': '<b>Reading &amp; Access</b> (the gear at the top, or Alt + A) changes the typeface, text size, page colour, line spacing and motion, and can read the page aloud.',
+  'teach.prac.4': '<b>Sixteen languages.</b> Every translation is a draft that no fluent speaker or teacher has checked yet, and corrections are welcome.',
+  'teach.prac.5': '<b>Not yet tested with students.</b> The design is argued from research and checked by machine, but no class has used it yet. What you notice is the most useful evidence there is.',
+
+  /* Mr Factor, on the one page that is not for students */
+  'guide.teachers.where': 'FOR TEACHERS',
+  'guide.teachers.1': 'This page is for whoever is teaching: what the mine teaches, where, and how to use it with a class. If you came to dig, the way down is in the bar at the top.'
 };
 
 /* ===== LANGUAGE: es ===== */
@@ -26816,12 +26967,29 @@ MF.go = function(name){
   }
   MF.paintNav();
   MF.guideArrive();
+  MF.syncHash(name);
   host.focus();
   window.scrollTo(0,0);
   host.classList.remove('arriving');
   void host.offsetWidth;                 /* restart the wipe on every arrival */
   host.classList.add('arriving');
 };
+/* THE TEACHER PAGE HAS AN ADDRESS: index.html#teachers, from file:// too. It is
+   the only screen that does — the address follows it in and is cleared on the
+   way out, so a bookmark never lands a student on it by accident. */
+MF.hashScreen = function(){ return location.hash === '#teachers' ? 'teachers' : null; };
+MF.syncHash = function(name){
+  try {
+    if(name === 'teachers'){
+      if(location.hash !== '#teachers') history.replaceState(null, '', '#teachers');
+    } else if(location.hash === '#teachers'){
+      history.replaceState(null, '', location.href.split('#')[0]);
+    }
+  } catch(e){ /* an address that cannot be rewritten is not worth a broken room */ }
+};
+window.addEventListener('hashchange', function(){
+  if(MF.hashScreen() && !MF.loading() && MF.state.screen !== 'teachers') MF.go('teachers');
+});
 /* ===== MR FACTOR, GUIDING. A DOCK, AND ONE WALKTHROUGH PER ROOM. ===== */
 /* Each room's `where` and `beats` are getters on the language tables, so the
    dock, the voice script and every check read the current language without
@@ -26840,7 +27008,9 @@ MF.GUIDE = {
   /* THESE TWO HAVE TO BE TRUE OF AN EMPTY ROOM, because the empty room is the
      likeliest FIRST view of it: the dock fires on first arrival… */
   'shed-methods': guideRoom('shed-methods', 2),
-  'workshop-ore': guideRoom('workshop-ore', 2)
+  'workshop-ore': guideRoom('workshop-ore', 2),
+  /* the page for teachers: one line, to whoever is reading it */
+  teachers: guideRoom('teachers', 1)
 };
 
 /* ===== SOUND. SYNTHESISED, AND THEREFORE STILL THERE FROM file://. ===== */
@@ -27789,6 +27959,11 @@ MF.openAccess = function(opener){
         slide(b, MF.t('access.speed'), null, 0.6, 1.6, 0.1, a.speed,
           function(n){ return n.toFixed(1) + '&times;'; }, function(n){ a.speed = n; });
       }
+
+      /* FOR TEACHERS, last and quiet: the panel closes before the page opens */
+      var tRow = E('div','row acteach');
+      tRow.appendChild(MF.teachLink(function(){ MF.closeTool(); }));
+      b.appendChild(tRow);
     }
   });
 };
@@ -27879,7 +28054,7 @@ MF.loadScreen = function(){
     fill.style.width = pct + '%';
   }, 210);
   /* THE SPLASH COMES OFF FIRST, AND ONLY THEN DOES HE SPEAK. */
-  on(btn,'click',function(){ q('#loadscreen').classList.add('gone'); MF.audio.start(); MF.go('home'); });
+  on(btn,'click',function(){ q('#loadscreen').classList.add('gone'); MF.audio.start(); MF.go(MF.hashScreen() || 'home'); });
   return true;
 };
 
@@ -28852,6 +29027,11 @@ MF.SCREENS.home = function(host){
   });
   sell.appendChild(strip);
   host.appendChild(sell);
+
+  /* FOR TEACHERS: at the very foot, where a teacher looks and a student need not */
+  var tFoot = E('div','row teachfoot');
+  tFoot.appendChild(MF.teachLink());
+  host.appendChild(tFoot);
 };
 MF.card = function(title, tag, why, cta, fn){
   var c = E('div','card');
@@ -28861,6 +29041,145 @@ MF.card = function(title, tag, why, cta, fn){
   var b = E('button','btn primary go', cta); b.type='button';
   on(b,'click',fn); c.appendChild(b);
   return c;
+};
+
+/* ===== FOR TEACHERS. The one page that is not written for the student. =====
+   It states the learning targets, sends a teacher straight to the room that
+   teaches each, and says why the site is built the way it is. It has to use the
+   words "grade" and "score" to do that, so it is the ONE screen the no-grades
+   sweep does not read — and a check holds that exemption to exactly this page. */
+MF.NOT_FOR_STUDENTS = ['teachers'];
+MF.forStudents = function(name){ return MF.NOT_FOR_STUDENTS.indexOf(name) < 0; };
+MF.BLOOM = ['remember','understand','apply','analyze','evaluate','create'];
+/* ONE LIST, read by the table, its buttons and its check alike */
+MF.TARGETS = [
+  {n:1,  bloom:['understand'],          screen:'home'},
+  {n:2,  bloom:['analyze'],             screen:'shed-words'},
+  {n:3,  bloom:['apply'],               screen:'workshop-ore'},
+  {n:4,  bloom:['understand'],          screen:'workshop-ore'},
+  {n:5,  bloom:['apply'],               screen:'shed-mold'},
+  {n:6,  bloom:['understand'],          screen:'shed-mold'},
+  {n:7,  bloom:['analyze'],             screen:'mine'},
+  {n:8,  bloom:['analyze'],             screen:'mine'},
+  {n:9,  bloom:['apply'],               screen:'mine'},
+  {n:10, bloom:['apply'],               screen:'mine'},
+  {n:11, bloom:['apply'],               screen:'mine'},
+  {n:12, bloom:['apply','understand'],  screen:'mine'},
+  {n:13, bloom:['apply'],               screen:'mine'},
+  {n:14, bloom:['apply'],               screen:'mine'},
+  {n:15, bloom:['evaluate'],            screen:'mine'},
+  {n:16, bloom:['evaluate'],            screen:'mine'}
+];
+MF.TEACH_SESSIONS = [
+  {targets:[1,3,4],        rooms:['home','workshop-ore']},
+  {targets:[2,5,6],        rooms:['shed-words','shed-mold']},
+  {targets:[7,9,10,14,15], rooms:['mine','forge']},
+  {targets:[8,10,11],      rooms:['mine']},
+  {targets:[12,13,16],     rooms:['mine']}
+];
+/* a room is called what its nav button or its workshop card already calls it */
+MF.TEACH_ROOM = {home:'nav.home', 'workshop-ore':'nav.mill', 'workshop-mold':'nav.shed',
+  'shed-mold':'shed.shed-mold.nm', 'shed-words':'shed.shed-words.nm',
+  'shed-methods':'shed.shed-methods.nm', mine:'nav.mine', forge:'nav.forge'};
+MF.teachGo = function(screen, n){
+  var room = MF.t(MF.TEACH_ROOM[screen] || screen);
+  var b = MF.jump(MF.t('teach.go', {room: room}), screen);
+  b.classList.add('tgo');
+  b.setAttribute('data-go', screen);
+  if(n) b.setAttribute('aria-label', MF.plainT('teach.go.aria', {room: room, n: n}));
+  return b;
+};
+MF.SCREENS.teachers = function(host){
+  host.appendChild(H('h2', null, MF.t('teach.title')));
+  host.appendChild(H('p','lede', MF.t('teach.lede1')));
+  host.appendChild(H('p','lede', MF.t('teach.lede2')));
+  host.appendChild(H('p','hint', MF.t('teach.direct')));
+
+  /* THE TARGETS, AND A WAY STRAIGHT TO EACH */
+  var tg = E('div','panel light teachpanel');
+  tg.appendChild(H('div','panel-tag', MF.t('teach.targets.tag')));
+  tg.appendChild(H('p','lede', MF.t('teach.targets.lede')));
+  var tbl = E('table','rosetta teachtbl');
+  var hr = E('tr');
+  hr.appendChild(E('th', null, '#'));
+  ['teach.th.target','teach.th.bloom','teach.th.where'].forEach(function(h){ hr.appendChild(H('th', null, MF.t(h))); });
+  tbl.appendChild(hr);
+  MF.TARGETS.forEach(function(t){
+    var tr = E('tr','trow'); tr.setAttribute('data-n', t.n);
+    tr.appendChild(E('td','tn', String(t.n)));
+    tr.appendChild(H('td','tt', MF.t('teach.t' + t.n)));
+    tr.appendChild(H('td','tbl', t.bloom.map(function(b){ return MF.t('teach.bloom.' + b); }).join(' / ')));
+    var w = E('td','tw');
+    w.appendChild(MF.teachGo(t.screen, t.n));
+    w.appendChild(H('div','rn', MF.t('teach.t' + t.n + '.where')));
+    tr.appendChild(w);
+    tbl.appendChild(tr);
+  });
+  var sc = E('div','tablescroll'); sc.appendChild(tbl); tg.appendChild(sc);
+  tg.appendChild(H('div','note', MF.t('teach.cc')));
+  tg.appendChild(H('div','note', MF.t('teach.gaps')));
+  host.appendChild(tg);
+
+  /* THE PEDAGOGY */
+  var pd = E('div','panel light teachpanel');
+  pd.appendChild(H('div','panel-tag', MF.t('teach.ped.tag')));
+  pd.appendChild(H('p','lede', MF.t('teach.ped.lede')));
+  var ol = E('ol','teachlist');
+  for(var i = 1; i <= 8; i++){
+    var li = E('li');
+    li.appendChild(H('h3', null, MF.t('teach.ped.' + i + '.h')));
+    li.appendChild(H('p', null, MF.t('teach.ped.' + i + '.b')));
+    ol.appendChild(li);
+  }
+  pd.appendChild(ol);
+  host.appendChild(pd);
+
+  /* USING IT WITH A CLASS */
+  var us = E('div','panel light teachpanel');
+  us.appendChild(H('div','panel-tag', MF.t('teach.use.tag')));
+  ['before','during','after'].forEach(function(k){ us.appendChild(H('p', null, MF.t('teach.use.' + k))); });
+  ['moves','avoid'].forEach(function(g){
+    us.appendChild(H('h3', null, MF.t('teach.' + g + '.h')));
+    var ul = E('ul','teachlist');
+    for(var j = 1; j <= 4; j++) ul.appendChild(H('li', null, MF.t('teach.' + g + '.' + j)));
+    us.appendChild(ul);
+  });
+  us.appendChild(H('h3', null, MF.t('teach.assess.h')));
+  us.appendChild(H('p', null, MF.t('teach.assess.b')));
+  host.appendChild(us);
+
+  /* A SUGGESTED SEQUENCE */
+  var sq = E('div','panel light teachpanel');
+  sq.appendChild(H('div','panel-tag', MF.t('teach.seq.tag')));
+  sq.appendChild(H('p','lede', MF.t('teach.seq.lede')));
+  MF.TEACH_SESSIONS.forEach(function(s, i){
+    var n = i + 1, card = E('div','teachsess');
+    card.appendChild(H('h3', null, MF.t('teach.seq.' + n + '.h')));
+    card.appendChild(H('div','teachtg', MF.t('teach.seq.targets', {list: s.targets.join(MF.t('list.sep'))})));
+    card.appendChild(H('p', null, MF.t('teach.seq.' + n + '.do')));
+    card.appendChild(H('p', null, '<b>' + MF.t('teach.seq.ask') + '</b> ' + MF.t('teach.seq.' + n + '.ask')));
+    card.appendChild(H('p', null, '<b>' + MF.t('teach.seq.listen') + '</b> ' + MF.t('teach.seq.' + n + '.listen')));
+    var go = E('div','row');
+    s.rooms.forEach(function(r){ go.appendChild(MF.teachGo(r)); });
+    card.appendChild(go);
+    sq.appendChild(card);
+  });
+  host.appendChild(sq);
+
+  /* PRACTICAL NOTES */
+  var pr = E('div','panel light teachpanel');
+  pr.appendChild(H('div','panel-tag', MF.t('teach.prac.tag')));
+  var pl = E('ul','teachlist');
+  for(var k = 1; k <= 5; k++) pl.appendChild(H('li', null, MF.t('teach.prac.' + k)));
+  pr.appendChild(pl);
+  host.appendChild(pr);
+};
+/* THE QUIET WAY IN — never in the students' nav */
+MF.teachLink = function(before){
+  var b = E('button','btn teachlink'); b.type = 'button';
+  b.innerHTML = MF.t('teach.link');
+  on(b,'click',function(){ if(before) before(); MF.go('teachers'); });
+  return b;
 };
 
 /* ===== THE AREA MODEL. Appends; never owns its host. ===== */
@@ -40374,7 +40693,7 @@ MF.validate = function(){
   /* 6. NOTHING ON SCREEN MAY HAVE A CEILING, A PERCENTAGE, OR A COMPARISON. */
   var banned = MF.langChecks().banned;
   /* ENUMERATED FROM THE REGISTRY, NOT WRITTEN OUT. */
-  Object.keys(MF.SCREENS).forEach(function(name){
+  Object.keys(MF.SCREENS).filter(MF.forStudents).forEach(function(name){
     chk('nogrades');
     var probe = document.createElement('div');
     try { MF.SCREENS[name](probe); } catch(e){ errs.push('nogrades: screen '+name+' threw: '+e.message); return; }
@@ -40385,7 +40704,7 @@ MF.validate = function(){
 
   /* 6b. AND THE SITE NO LONGER TELLS ANYONE IT IS NOT MARKING THEM. */
   var marky = MF.langChecks().marky;
-  Object.keys(MF.SCREENS).forEach(function(name){
+  Object.keys(MF.SCREENS).filter(MF.forStudents).forEach(function(name){
     chk('nogrades');
     var probe = document.createElement('div');
     try { MF.SCREENS[name](probe); } catch(e){ errs.push('nogrades: screen '+name+' threw: '+e.message); return; }
@@ -40393,6 +40712,100 @@ MF.validate = function(){
     if(m) errs.push('nogrades: screen "'+name+'" says "'+m[0]+'" — the site does not discuss marking, ' +
                     'including to deny it');
   });
+  /* 6d. THE TEACHER PAGE: spared the two sweeps above, and held to its own. */
+  (function(){
+    /* where a button goes, without going there */
+    var tcGoes = function(btn){
+      var went = null, realGo = MF.go;
+      MF.go = function(n){ went = n; };
+      try { btn.click(); } finally { MF.go = realGo; }
+      return went;
+    };
+    /* THE EXEMPTION IS THIS PAGE AND NOTHING ELSE */
+    var tcExempt = function(list){ return list.length === 1 && list[0] === 'teachers' && !!MF.SCREENS.teachers; };
+    chk('teachers');
+    if(!tcExempt(MF.NOT_FOR_STUDENTS))
+      errs.push('teachers: the no-grades sweep skips ' + JSON.stringify(MF.NOT_FOR_STUDENTS) +
+                ' — only the teacher page may be spared it');
+    chk('teachers');
+    if(tcExempt(MF.NOT_FOR_STUDENTS.concat(['mine'])))
+      errs.push('CONTROL: the exemption check would let a student screen out of the no-grades sweep');
+    chk('teachers');
+    var tcSwept = Object.keys(MF.SCREENS).filter(MF.forStudents);
+    if(tcSwept.indexOf('teachers') >= 0 || tcSwept.length !== Object.keys(MF.SCREENS).length - 1)
+      errs.push('teachers: the no-grades sweep is not reading every student screen and only those');
+
+    /* EVERY TARGET IS ON THE PAGE, AT A KNOWN LEVEL, WITH A WAY TO ITS ROOM */
+    var tcBloomOk = function(t){
+      return !!t.bloom && t.bloom.length > 0 && t.bloom.every(function(b){ return MF.BLOOM.indexOf(b) >= 0; });
+    };
+    var tcProbe = document.createElement('div');
+    try { MF.SCREENS.teachers(tcProbe); }
+    catch(e){ errs.push('teachers: the page threw while building: ' + (e.message || e)); return; }
+    chk('teachers');
+    var tcRows = tcProbe.querySelectorAll('tr.trow');
+    if(MF.TARGETS.length !== 16 || tcRows.length !== MF.TARGETS.length)
+      errs.push('teachers: ' + tcRows.length + ' target rows on the page for ' + MF.TARGETS.length + ' targets');
+    MF.TARGETS.forEach(function(t){
+      chk('teachers');
+      if(!tcBloomOk(t))
+        errs.push('teachers: target ' + t.n + ' is at a Bloom\'s level that is not one of the six');
+    });
+    chk('teachers');
+    if(tcBloomOk({bloom:['memorise']}))
+      errs.push('CONTROL: the Bloom\'s check accepts a level that is not one of the six');
+    [].slice.call(tcProbe.querySelectorAll('.tgo')).forEach(function(b){
+      chk('teachers');
+      var w = tcGoes(b);
+      if(!w || !MF.SCREENS[w] || w === 'teachers')
+        errs.push('teachers: "' + b.textContent.trim() + '" goes to "' + w + '", which is not a room');
+    });
+    chk('teachers');
+    var tcBogus = tcGoes(MF.jump('x', 'no-such-room'));
+    if(!tcBogus || MF.SCREENS[tcBogus])
+      errs.push('CONTROL: a target button to a room that does not exist would not be noticed');
+
+    /* THE WAY IN: from the Surface, from Reading & Access, and by address — and NOT the nav */
+    var tcHome = document.createElement('div');
+    try { MF.SCREENS.home(tcHome); } catch(e){}
+    var tcHl = tcHome.querySelector('.teachlink');
+    chk('teachers');
+    if(!tcHl || tcGoes(tcHl) !== 'teachers')
+      errs.push('teachers: the Surface has no way to the teacher page');
+    chk('teachers');
+    if(tcGoes(MF.jump('x', 'home')) === 'teachers')
+      errs.push('CONTROL: a link to somewhere else is being read as a way to the teacher page');
+    var tcSheetWas = !!MF._sheet;
+    if(!tcSheetWas){
+      MF.openAccess();
+      var tcAl = MF._sheet && MF._sheet.sheet.querySelector('.teachlink');
+      chk('teachers');
+      if(!tcAl || tcGoes(tcAl) !== 'teachers')
+        errs.push('teachers: Reading & Access has no way to the teacher page');
+      MF.closeTool();
+    }
+    chk('teachers');
+    MF.paintNav();
+    if((q('#nav').textContent || '').indexOf(MF.plainT('teach.title')) >= 0)
+      errs.push('teachers: the teacher page is in the students\' nav');
+    chk('teachers');
+    /* A PAGE THAT CANNOT REWRITE ITS OWN ADDRESS (a frame built from a string,
+       which is how the text harvest loads it) cannot be asked this, and is not
+       a page a teacher opens — so a refusal skips the check rather than failing it. */
+    var tcWas = location.href;
+    try {
+      history.replaceState(null, '', '#teachers');
+      var tcOn = MF.hashScreen();
+      history.replaceState(null, '', location.href.split('#')[0]);
+      var tcOff = MF.hashScreen();
+      if(tcOn !== 'teachers' || tcOff !== null)
+        errs.push('teachers: index.html#teachers does not lead to the teacher page');
+    } catch(e){
+    } finally {
+      try { history.replaceState(null, '', tcWas); } catch(e){}
+    }
+  })();
+
   /* AND MR FACTOR IS SWEPT NOW, WHICH HE NEVER HAS BEEN */
   var vlines = MF.voiceLines ? MF.voiceLines() : [];
   chk('nogrades');

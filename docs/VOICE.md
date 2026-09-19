@@ -39,11 +39,11 @@ Speech at 48 kbps mono is **6 KB per second** — 360 KB a minute.
 
 | | |
 |---|---|
-| Lines to record | **22** (2 more vary — see §4) |
-| Words | 508 |
-| Spoken length | **≈ 3 min 15 s** at an unhurried 2.6 words/second |
-| **Total, AAC 48 kbps** | **≈ 1.2 MB** |
-| Same at Opus 32 kbps | ≈ 780 KB |
+| Lines to record | **27** (2 more vary — see §4) |
+| Words | 703 |
+| Spoken length | **≈ 4 min 30 s** at an unhurried 2.6 words/second |
+| **Total, AAC 48 kbps** | **≈ 1.6 MB** |
+| Same at Opus 32 kbps | ≈ 1.1 MB |
 | Largest single file | `room-shed-methods-2`, ~10 s, ≈ 60 KB |
 
 **GitHub Pages will not notice this.** The published-site limit is **1 GB** and the soft
@@ -150,9 +150,9 @@ so check it rather than trusting it — paste this in the console with the site 
 })()
 ```
 
-**All three lists empty is the pass.** Last run **2026-09-15**: 28 rows, 28 lines, all three
+**All three lists empty is the pass.** Last run **2026-09-19**: 29 rows, 29 lines, all three
 empty — checked after the fifteen-language work, which rewrote a great deal of English around
-these lines without touching any of them.
+these lines without touching any of them, and again after the teacher page added `room-teachers-1`.
 
 ---
 
@@ -182,6 +182,7 @@ these lines without touching any of them.
 | `room-shed-methods-2` | The Tools | Under each walkthrough is a bench with three lumps on it. Take the instrument off the hook and hold it to one — that is the part that is not reading. |
 | `room-workshop-ore-1` | The Stamp Mill | Plain numbers, and the factors of everything up to a hundred. |
 | `room-workshop-ore-2` | The Stamp Mill | Put a lump on the bench and pull the lever. The press finds what divides it — and what will not come apart is a prime, which is the same object as native metal. |
+| `room-teachers-1` | For teachers | This page is for whoever is teaching: what the mine teaches, where, and how to use it with a class. If you came to dig, the way down is in the bar at the top. |
 | `clank-shed-1` | The breaking floor | A few clanks in a row usually means the method rather than the arithmetic. |
 | `clank-shed-2` | The breaking floor | You have not been in the Casting Shed yet. Start at The Molds — it writes a pour out a line at a time, and breaking is that run backwards. |
 | `says-mold-after-pour` | The Molds | Remember this shape. In the mine you will run it backwards — you will have the casting and be hunting for the metals that made it. |
