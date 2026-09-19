@@ -3,7 +3,7 @@
 [![Built with Claude](https://img.shields.io/badge/built%20with-Claude%20AI-D97757?style=flat-square&logo=anthropic&logoColor=white)](https://claude.com/claude-code)
 [![Audio: Epidemic Sound](https://img.shields.io/badge/audio-Epidemic%20Sound-1D1D1D?style=flat-square)](https://www.epidemicsound.com)
 [![One file](https://img.shields.io/badge/one%20file-no%20build%20step-2E7D64?style=flat-square)](index.html)
-[![Checks](https://img.shields.io/badge/MF.validate()-44%2C000%20checks-4A6FA5?style=flat-square)](docs/VERIFICATION.md)
+[![Checks](https://img.shields.io/badge/MF.validate()-46%2C500%20checks-4A6FA5?style=flat-square)](docs/VERIFICATION.md)
 
 A single-file, zero-dependency website for learning to factor, built on one idea: **a prime and an irreducible polynomial are the same object.** Factoring 72 and factoring `x² − 5x + 6` are the same act, taught here with the same tools.
 
@@ -13,7 +13,7 @@ The site is a working mine. Expressions are ore, factoring is breaking rock, and
 
 Open `index.html`. There is no build step, no server, no package to install, and nothing is stored.
 
-**≈2.93 MB, one file, and it runs from `file://`.**
+**≈3.22 MB, one file, and it runs from `file://`.**
 
 Available in **English, Spanish, Brazilian Portuguese, French, German, Italian, Indonesian, Turkish, Vietnamese, Russian, Simplified Chinese, Japanese, Korean, Hindi, Arabic and Urdu** — under Reading & Access → Language. Every student-facing string lives in one table per language, and a missing string falls back to English rather than to a blank. **Arabic and Urdu read right to left**: the page turns around, and the mathematics stays left to right inside it.
 
@@ -55,32 +55,17 @@ The yard counts what you own, and unlike a mark you can spend it. There are **no
 
 The distinction is set out in `docs/MR-FRACTION-PHILOSOPHY.md` §2.5a.
 
-## Learning targets
+## Learning targets, and the Teacher Guide
 
-What the site teaches, written as student-facing targets, each with its level in Bloom's Taxonomy (the 2001 revision) and where it is taught.
+The site carries its own guide for teachers: open **`index.html#teachers`**, or press **For Teachers** under Reading & Access. It is the one page written for the teacher rather than the student, and it holds:
 
-| | I can… | Bloom | Where |
-|---|---|---|---|
-| 1 | explain why a prime number and an irreducible polynomial are the same kind of object | Understand | the Surface, the Stamp Mill, the Words table |
-| 2 | tell "nothing divides every term" apart from "it will not factor" | Analyze | *What did the miner do wrong?* |
-| 3 | find the prime factorisation of any whole number up to 100 | Apply | the Stamp Mill |
-| 4 | explain why different routes to a prime factorisation end with the same primes | Understand | the Stamp Mill |
-| 5 | multiply two brackets by matching every term with every term, and collect like terms | Apply | the Molds, the Forge |
-| 6 | show a product of two brackets as an area model | Understand | the Molds, the Gear Lever lesson |
-| 7 | identify an expression's form before choosing a method | Analyze | the assay, the Prospector's Pick |
-| 8 | explain why a method does not fit a given expression | Analyze | the fit test |
-| 9 | take out the greatest common factor | Apply | the Steel Pick |
-| 10 | factor x² + bx + c and ax² + bx + c by finding the pair that multiplies to *ac* and adds to *b* | Apply | the Crosscut, the Gear Lever |
-| 11 | factor a four-term expression by grouping, and split a middle term to make four | Apply | the Powered Auger |
-| 12 | factor a difference of two squares and a sum or difference of two cubes, and explain why a cube's leftover quadratic never factors | Apply / Understand | the Drill |
-| 13 | factor x⁴ + bx² + c by treating x² as a single unit, then check each half again | Apply | the Gear Lever |
-| 14 | factor completely, repeating until every piece is irreducible | Apply | the breaking floor |
-| 15 | check a factorisation by multiplying it back out | Evaluate | the anvil, the pour |
-| 16 | explain why an expression has no whole-number factors, even when a decimal pair exists | Evaluate | the decimal dial |
+- **16 learning targets**, each written as an "I can…" statement with its level in Bloom's Taxonomy (2001 revision) and a button straight to the room that teaches it — from *a prime and an irreducible polynomial are the same kind of object* through to *why an expression has no whole-number factors even when a decimal pair exists*. The matching Common Core standards are 4.OA.B.4, 6.NS.B.4, A-APR.A.1 and A-SSE.A.2.
+- **The pedagogy**, as eight decisions: the metaphor is the verb, correctness is physical, tools assist but never gate, the site scores but never grades, and so on.
+- **How to use it with a class:** before, during and after a session, four classroom moves, four things to avoid, and how to assess away from a site that records nothing.
+- **A suggested five-session sequence**, each session with its targets, a question to ask and what to listen for.
+- **What the site does not cover**, stated plainly: factoring to find zeros (A-SSE.B.3a), completing the square, and fractional coefficients.
 
-**Common Core:** targets 3–4 match 4.OA.B.4, target 9 matches 6.NS.B.4, target 5 matches A-APR.A.1, and targets 7 and 13 match A-SSE.A.2.
-
-**Limits.** Bloom's *Create* is thin: the forge works backwards from a given object but never asks a student to design one. Targets 4 and 16 are implied rather than stated — the site never names unique factorisation or says "whole-number coefficients". Factoring to find zeros (A-SSE.B.3a), completing the square and fractional coefficients are not covered. **The targets are stated, never tracked:** nothing measures a student against them, because a tally of targets met is the kind of count the no-grades rule forbids.
+It is written in all 16 languages, and **the targets are stated, never tracked** — a tally of targets met is the kind of count the no-grades rule forbids.
 
 ## Checking it
 
@@ -89,9 +74,9 @@ What the site teaches, written as student-facing targets, each with its level in
 MF.validate()
 ```
 
-**About 44,000 checks across 49 groups, 0 errors, and two controls that must fail — and do.** The sweep covers the factor engine, seam classification, hundreds of generated lumps across all nine layers, the printer, the pour, the forge, every tool's reading and lesson, colour contrast on every rendered surface, the reading-and-access panel, the sound layer, the no-gate rule and the no-grades rule.
+**About 46,500 checks across 50 groups, 0 errors, and two controls that must fail — and do.** The sweep covers the factor engine, seam classification, hundreds of generated lumps across all nine layers, the printer, the pour, the forge, every tool's reading and lesson, colour contrast on every rendered surface, the reading-and-access panel, the sound layer, the no-gate rule and the no-grades rule.
 
-Every check carries a control that must fail, and a new check is proved by reintroducing the fault it exists to catch. `docs/VERIFICATION.md` records 109 such rules, each written after a real failure.
+Every check carries a control that must fail, and a new check is proved by reintroducing the fault it exists to catch. `docs/VERIFICATION.md` records 111 such rules, each written after a real failure.
 
 Run it at **380×780, 560×760, 994×700 and 1250×900**; a group green at one width has only proved itself at that width. `MF.playthrough(layer)` drives a whole lump end to end and reports what it did.
 
@@ -118,7 +103,7 @@ sfx/SOURCES.md                   what was cut from where, measured levels, the l
 docs/MINE-SPEC.md                what v1 is, and what is deliberately out
 docs/MR-FRACTION-PHILOSOPHY.md   what makes it a Mr Fraction site (incl. §2.5a)
 docs/SITE-STATE.md               the only document that states what exists
-docs/VERIFICATION.md             109 rules, each written after a real failure
+docs/VERIFICATION.md             111 rules, each written after a real failure
 docs/VOICE.md                    the recording script for Mr Factor
 .claude/agents/                  five review charters, deliberately disjoint
 tools/verify-published.js        run this on the live URL — see above
@@ -156,7 +141,7 @@ v1 is **the Ore Cart**: scan the seam, inspect a lump, break it, assay, smelt, p
 This site was designed, written and verified in collaboration with [Claude](https://claude.com/claude-code) (Claude Code, Anthropic). The metaphor, the `MF.validate()` harness, the verification rules and most of the prose were worked out in conversation.
 
 - **Every commit carries a `Co-Authored-By: Claude` trailer**, so `git log` is the complete record.
-- `docs/VERIFICATION.md` is the collaboration's clearest output: 109 rules, most written immediately after a failure Claude introduced.
+- `docs/VERIFICATION.md` is the collaboration's clearest output: 111 rules, most written immediately after a failure Claude introduced.
 
 Mathematical content, pedagogy and every decision about what this teaches are the author's.
 

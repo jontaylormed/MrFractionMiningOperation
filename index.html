@@ -42789,6 +42789,33 @@ MF.validate = function(){
     if(!tcBogus || MF.SCREENS[tcBogus])
       errs.push('CONTROL: a target button to a room that does not exist would not be noticed');
 
+    /* EVERY LANGUAGE SAYS IT ITSELF. A missing key falls back to English in
+       silence, which is right for a half-corrected table and wrong here: this
+       page was asked for in all sixteen, so a gap has to be visible. */
+    var tcOwn = Object.keys(MF.STR.en).filter(function(k){ return /^(teach\.|guide\.teachers\.)/.test(k); });
+    var tcGaps = function(lang){
+      return tcOwn.filter(function(k){ return MF.STR[lang] && MF.STR[lang][k] == null; });
+    };
+    Object.keys(MF.LANG).forEach(function(l){
+      if(l === 'en') return;
+      chk('teachers');
+      var gaps = tcGaps(l);
+      if(gaps.length)
+        errs.push('teachers: ' + l + ' falls back to English on ' + gaps.length +
+                  ' of the teacher page\'s words — the first is "' + gaps[0] + '"');
+    });
+    /* CONTROL: a key taken out of one language must show up as a gap */
+    chk('teachers');
+    var tcVictim = Object.keys(MF.LANG).filter(function(l){ return l !== 'en'; })[0];
+    if(tcVictim){
+      var tcKept = MF.STR[tcVictim]['teach.title'];
+      delete MF.STR[tcVictim]['teach.title'];
+      var tcSaw = tcGaps(tcVictim).length > 0;
+      MF.STR[tcVictim]['teach.title'] = tcKept;
+      if(!tcSaw)
+        errs.push('CONTROL: a teacher-page word missing from a language is not noticed');
+    }
+
     /* THE WAY IN: a smaller button under Reading & Access, and the address — NOT the nav */
     var tcTb = q('#teachbtn'), tcAb = q('#accessbtn');
     chk('teachers');

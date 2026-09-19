@@ -2827,3 +2827,44 @@ elements per language, nothing clipping in Urdu that does not in English) proves
 the fallback only. See VERIFICATION §108. **The first check to run on a machine
 with Noto Nastaliq Urdu installed is that sweep**, especially on the nav pills,
 `.panel-tag` and `.orelab`.
+
+## The Teacher Guide, a page for the one reader who is not a student (2026-09-19)
+
+`MF.SCREENS.teachers` is the seventh screen and the only one **not** written for the
+student. It states the sixteen learning targets, walks through the pedagogy, says how to
+use the site with a class, and offers a five-session sequence. Content lives under
+`teach.*` (117 keys) plus `guide.teachers.*` (2), **in all sixteen languages**.
+
+**The way in is one button.** `#teachbtn` sits in the header directly under Reading &
+Access — the same amber, about two-thirds the size, `aria-current` while the page is open.
+It is deliberately **not** in `MF.paintNav`: the five rooms are the student's. The page also
+has an address, `index.html#teachers`, read on load and on `hashchange`, written with
+`history.replaceState` on arrival and cleared on the way out, so a bookmark cannot strand a
+student there. (Earlier links at the foot of the Surface and inside the Reading & Access
+panel were removed when the header button replaced them.)
+
+**One list, three readers.** `MF.TARGETS` holds the sixteen targets with their Bloom's
+levels and the screen each belongs to; the table, its "take me there" buttons and the
+`teachers` checks all read that one list, so a target cannot exist in the prose and be
+missing from the checks.
+
+**It is exempt from `nogrades`, and that exemption is pinned.** The page has to say "grade"
+and "score" to explain why nothing else does, so the two sweeps filter through
+`MF.forStudents`. See VERIFICATION §110: the list must be exactly `['teachers']`, with a
+control that fails when a second screen is added, and a check that every other screen is
+still swept.
+
+**The `teachers` group is 68 checks**, each with a planted control: the page builds sixteen
+rows, every room button goes to a real screen, every Bloom's level is one of the six, the
+header button leads to the page and sits under Reading & Access and is smaller than it, the
+address works, the page is absent from the nav, and **no language falls back to English on a
+teacher key** (a gap the fallback would otherwise hide in silence).
+
+**Mr Factor has one line here**, addressed to whoever is reading and pointing a student back
+to the mine; it is in `docs/VOICE.md` as `room-teachers-1`, which took the script to 29 rows.
+
+**Proved:** 0 errors in English at 380, 560, 994 and 1250 (46,506 checks), every language 0
+at 994, and German, French, Japanese and Urdu 0 at 380 as well. Playthroughs 1–9 clean. The
+text harvest reported no student-facing string changed or removed. **Not seen by eye:** the
+preview pane renders an emulated viewport as a thumbnail, so no screenshot of this page has
+been read.

@@ -1,7 +1,7 @@
 # The Verification Standard
 ### Mr Fraction's Word Problem Express
 **Applies to:** every agent, **and to anyone working without one** — see `../CLAUDE.md`.
-**Owner:** Oversight. **Last updated:** 2026-09-19. **109 rules.**
+**Owner:** Oversight. **Last updated:** 2026-09-19. **111 rules.**
 
 Every rule here was written after a specific failure on this project. The evidence is kept with each rule, because a rule without its scar gets softened away.
 
@@ -2437,3 +2437,35 @@ validator measuring a screen no student ever reaches past the first second.
 
 > **Before `MF.validate()`, get the page into a state a student can be in** — past the splash, on a
 > real screen. An error that "goes away on a re-run" has a cause; find it before calling it noise.
+
+## §110. A rule that must not apply somewhere needs a list, and the list needs a control
+
+The teacher page has to say "grade" and "score" to explain why the rest of the site never
+does — so it is the one screen the `nogrades` sweep skips. An exemption is the most
+dangerous edit in this repo: it is one line, it is invisible afterwards, and it silently
+widens if anybody appends to it.
+
+So the exemption is a named list (`MF.NOT_FOR_STUDENTS`), the sweep filters through
+`MF.forStudents`, and the `teachers` group asserts the list is **exactly** `['teachers']` —
+with a control that adds a second screen to a copy of it and must fail. A separate check
+confirms every other screen is still swept, and a banned word planted on the Surface is
+still caught.
+
+> **Never let a rule carry its own exception inline.** Name the exception, pin the name
+> with a check that fails when the list grows, and prove the rule still bites everywhere
+> else. An exemption nobody can see is indistinguishable from a rule nobody enforces.
+
+## §111. Plant one fault at a time
+
+Eight planted faults were sent as four parallel `javascript_tool` calls: each saved a
+function, replaced it with a stub, validated, and restored. They interleaved. One batch's
+stub was live while another batch measured, and a restore captured a stub instead of the
+original — so a check that had just passed kept failing on a page that was fine, and the
+address check looked broken for four runs in a row.
+
+The site was never wrong. The instrument was, in exactly the manner of §107: a probe
+damaging the subject, then reporting the damage as a finding.
+
+> **A planted control is a mutation of global state, so it is not parallelisable.** Plant,
+> measure, restore, confirm the restore, then plant the next — and when a result contradicts
+> a run you trusted a moment ago, suspect the harness before the page.
