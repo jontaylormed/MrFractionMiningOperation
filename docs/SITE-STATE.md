@@ -2787,3 +2787,43 @@ not apply here, so a slower pulse is allowed.
 
 **Proved:** 0 errors in English (43,256 checks) and Arabic (43,267), both
 controls failing, playthroughs 1-9 clean.
+
+## Urdu, the sixteenth language (2026-09-19)
+
+`MF.STR.ur` holds all **1,160 keys in English order**, in one block between
+`/* ===== LANGUAGE: ur ===== */` markers. It is **a draft by Claude that no fluent
+speaker or teacher has read**, like the other fourteen. The mathematics uses the
+words a Pakistani textbook uses (مفرد عدد, تحلیل, سب سے بڑا مشترک عامل,
+قوسین); the mine keeps plain Urdu (رگ for seam, اصلی دھات for native metal,
+سِلّی for ingot, پن چکی for the windmill).
+
+It is the first language built on the Arabic groundwork **as a table alone**,
+as phase 5 promised: direction, the logical properties, the seam coordinates and
+the bidi isolation all came for free. What Urdu needed of its own was CSS:
+
+- **A Nastaliq font stack** (`Noto Nastaliq Urdu`, `Jameel Noori Nastaleeq`,
+  `Nafees Nastaleeq`, falling back to `Segoe UI`), with taller lines (body 2.05,
+  headings 1.9) because Nastaliq words hang lower than Naskh ones.
+- **Its own loose-spacing step (2.45).** Urdu's everyday line height equals
+  everyone else's *loose* one, so the Reading & Access spacing option changed
+  nothing for an Urdu reader. The `access` group caught it.
+
+Four fields of the `LANG` entry were rewritten to match the words the table
+actually uses (`popSwing`, `popScan`, `finishedSteel`, `finishedLantern`).
+`marky` was narrowed to *marking* words (گریڈ, نمبر لگنا): the first draft
+banned جانچ, "check", which English allows ("read, checked or kept"). Its
+control phrase changed with it. `tool.shifter.does` holds a literal "—" rather
+than `&mdash;`, because the forge and lesson checks compare rendered text.
+
+**Proved:** 0 errors in Urdu at 380, 560, 994 and 1250, and in English at 380
+and 1250. Both controls fail. Playthroughs 1–9 clean. All sixteen languages are
+0 at 994. Each fix was proved by planting its fault back in: spacing (caught by
+`access`), the entity (`forge` and `taught`), the steel regex (`reading`), and a
+marking phrase (`nogrades`).
+
+**Not proved: Nastaliq itself.** No Nastaliq face is installed on the build
+machine, so Urdu rendered in Segoe UI throughout. The vertical-clip sweep (664
+elements per language, nothing clipping in Urdu that does not in English) proves
+the fallback only. See VERIFICATION §108. **The first check to run on a machine
+with Noto Nastaliq Urdu installed is that sweep**, especially on the nav pills,
+`.panel-tag` and `.orelab`.

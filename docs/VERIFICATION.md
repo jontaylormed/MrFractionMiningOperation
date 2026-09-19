@@ -1,7 +1,7 @@
 # The Verification Standard
 ### Mr Fraction's Word Problem Express
 **Applies to:** every agent, **and to anyone working without one** — see `../CLAUDE.md`.
-**Owner:** Oversight. **Last updated:** 2026-09-15. **107 rules.**
+**Owner:** Oversight. **Last updated:** 2026-09-19. **109 rules.**
 
 Every rule here was written after a specific failure on this project. The evidence is kept with each rule, because a rule without its scar gets softened away.
 
@@ -2406,3 +2406,34 @@ the blame.
 > **Scripts injected into the page share its global scope.** Prefix probe variables, wrap them in an
 > IIFE, or assign to a namespaced object — and when a page that passed its checks a moment ago starts
 > throwing, suspect the probe before the page.
+
+## §108. A font you name is not a font you have
+
+Urdu is set in Nastaliq, which cascades downward as it runs, so the risk with Urdu was always
+vertical: a word clipping out of a row sized for Latin. The first sweep for that asked the browser
+which faces were present with `document.fonts.check()`, and all four Nastaliq faces answered *true*.
+**`fonts.check` returns true for any face that is not a loaded web font** — it answers "nothing needs
+downloading", not "this is installed". Measuring the rendered width against a monospace fallback
+showed the truth: none of the four was on the machine, and Urdu was rendering in Segoe UI, a Naskh
+face with none of Nastaliq's descent.
+
+So the clip sweep's 0 (664 elements per language, nothing clipping in Urdu that did not in English)
+proves the fallback, and says nothing about Nastaliq.
+
+> **A check about a typeface can only be run where the typeface is.** Establish what actually
+> rendered by measuring it, never by asking the font API, and when the face is absent, report the
+> check as *not run*, not as passed.
+
+## §109. Validate from where the student is standing
+
+Validating Urdu, six `guide` and `parts` errors appeared — and appeared identically in English.
+`MF.paintGuide` refuses to draw while `MF.loading()` is true, and the page had been reloaded but the
+splash never dismissed: there was no dock to open, so every check of the dock failed. After one
+click on the Enter button, both languages went to 0.
+
+This is almost certainly what the "first load in a freshly reopened pane" errors were earlier — 52 of
+them, dismissed as an artifact because a re-run cleared them. They were not noise. They were the
+validator measuring a screen no student ever reaches past the first second.
+
+> **Before `MF.validate()`, get the page into a state a student can be in** — past the splash, on a
+> real screen. An error that "goes away on a re-run" has a cause; find it before calling it noise.

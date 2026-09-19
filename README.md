@@ -3,7 +3,7 @@
 [![Built with Claude](https://img.shields.io/badge/built%20with-Claude%20AI-D97757?style=flat-square&logo=anthropic&logoColor=white)](https://claude.com/claude-code)
 [![Audio: Epidemic Sound](https://img.shields.io/badge/audio-Epidemic%20Sound-1D1D1D?style=flat-square)](https://www.epidemicsound.com)
 [![One file](https://img.shields.io/badge/one%20file-no%20build%20step-2E7D64?style=flat-square)](index.html)
-[![Checks](https://img.shields.io/badge/MF.validate()-42%2C000%20checks-4A6FA5?style=flat-square)](docs/VERIFICATION.md)
+[![Checks](https://img.shields.io/badge/MF.validate()-44%2C000%20checks-4A6FA5?style=flat-square)](docs/VERIFICATION.md)
 
 A single-file, zero-dependency website for learning to factor, built on one idea: **a prime and an irreducible polynomial are the same object.** Factoring 72 and factoring `x² − 5x + 6` are the same act, taught here with the same tools.
 
@@ -13,9 +13,9 @@ The site is a working mine. Expressions are ore, factoring is breaking rock, and
 
 Open `index.html`. There is no build step, no server, no package to install, and nothing is stored.
 
-**≈2.91 MB, one file, and it runs from `file://`.**
+**≈2.93 MB, one file, and it runs from `file://`.**
 
-Available in **English, Spanish, Brazilian Portuguese, French, German, Italian, Indonesian, Turkish, Vietnamese, Russian, Simplified Chinese, Japanese, Korean, Hindi and Arabic** — under Reading & Access → Language. Every student-facing string lives in one table per language, and a missing string falls back to English rather than to a blank. **Arabic reads right to left**: the page turns around, and the mathematics stays left to right inside it.
+Available in **English, Spanish, Brazilian Portuguese, French, German, Italian, Indonesian, Turkish, Vietnamese, Russian, Simplified Chinese, Japanese, Korean, Hindi, Arabic and Urdu** — under Reading & Access → Language. Every student-facing string lives in one table per language, and a missing string falls back to English rather than to a blank. **Arabic and Urdu read right to left**: the page turns around, and the mathematics stays left to right inside it.
 
 The only files it ever fetches are the sounds in `sfx/`, and every one of those fetches is allowed to fail. Without the folder, cues fall back to synthesised tones and the music stays silent.
 
@@ -62,9 +62,9 @@ The distinction is set out in `docs/MR-FRACTION-PHILOSOPHY.md` §2.5a.
 MF.validate()
 ```
 
-**About 42,000 checks across 49 groups, 0 errors, and two controls that must fail — and do.** The sweep covers the factor engine, seam classification, hundreds of generated lumps across all nine layers, the printer, the pour, the forge, every tool's reading and lesson, colour contrast on every rendered surface, the reading-and-access panel, the sound layer, the no-gate rule and the no-grades rule.
+**About 44,000 checks across 49 groups, 0 errors, and two controls that must fail — and do.** The sweep covers the factor engine, seam classification, hundreds of generated lumps across all nine layers, the printer, the pour, the forge, every tool's reading and lesson, colour contrast on every rendered surface, the reading-and-access panel, the sound layer, the no-gate rule and the no-grades rule.
 
-Every check carries a control that must fail, and a new check is proved by reintroducing the fault it exists to catch. `docs/VERIFICATION.md` records 103 such rules, each written after a real failure.
+Every check carries a control that must fail, and a new check is proved by reintroducing the fault it exists to catch. `docs/VERIFICATION.md` records 109 such rules, each written after a real failure.
 
 Run it at **380×780, 560×760, 994×700 and 1250×900**; a group green at one width has only proved itself at that width. `MF.playthrough(layer)` drives a whole lump end to end and reports what it did.
 
@@ -91,7 +91,7 @@ sfx/SOURCES.md                   what was cut from where, measured levels, the l
 docs/MINE-SPEC.md                what v1 is, and what is deliberately out
 docs/MR-FRACTION-PHILOSOPHY.md   what makes it a Mr Fraction site (incl. §2.5a)
 docs/SITE-STATE.md               the only document that states what exists
-docs/VERIFICATION.md             103 rules, each written after a real failure
+docs/VERIFICATION.md             109 rules, each written after a real failure
 docs/VOICE.md                    the recording script for Mr Factor
 .claude/agents/                  five review charters, deliberately disjoint
 tools/verify-published.js        run this on the live URL — see above
@@ -103,7 +103,7 @@ tools/                           serve.ps1, zz-drive.js — scaffolding, never s
 
 v1 is **the Ore Cart**: scan the seam, inspect a lump, break it, assay, smelt, pour, then spend the metals at the forge. The guided route and the fully open face are planned as modes on the same bench rather than rebuilds.
 
-- **The 14 non-English translations are drafts by Claude that no fluent speaker or teacher has read.** The language picker says so, and corrections are welcome one string at a time.
+- **The 15 non-English translations are drafts by Claude that no fluent speaker or teacher has read.** The language picker says so, and corrections are welcome one string at a time.
 - **No student has used this, and no independent reviewer has assessed it.** Everything here was checked by the person who wrote it, which `docs/VERIFICATION.md` §16 names as the weakest form of check.
 
 ## Credits and attribution
@@ -129,7 +129,7 @@ v1 is **the Ore Cart**: scan the seam, inspect a lump, break it, assay, smelt, p
 This site was designed, written and verified in collaboration with [Claude](https://claude.com/claude-code) (Claude Code, Anthropic). The metaphor, the `MF.validate()` harness, the verification rules and most of the prose were worked out in conversation.
 
 - **Every commit carries a `Co-Authored-By: Claude` trailer**, so `git log` is the complete record.
-- `docs/VERIFICATION.md` is the collaboration's clearest output: 103 rules, most written immediately after a failure Claude introduced.
+- `docs/VERIFICATION.md` is the collaboration's clearest output: 109 rules, most written immediately after a failure Claude introduced.
 
 Mathematical content, pedagogy and every decision about what this teaches are the author's.
 
