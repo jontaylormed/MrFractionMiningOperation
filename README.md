@@ -55,6 +55,33 @@ The yard counts what you own, and unlike a mark you can spend it. There are **no
 
 The distinction is set out in `docs/MR-FRACTION-PHILOSOPHY.md` §2.5a.
 
+## Learning targets
+
+What the site teaches, written as student-facing targets, each with its level in Bloom's Taxonomy (the 2001 revision) and where it is taught.
+
+| | I can… | Bloom | Where |
+|---|---|---|---|
+| 1 | explain why a prime number and an irreducible polynomial are the same kind of object | Understand | the Surface, the Stamp Mill, the Words table |
+| 2 | tell "nothing divides every term" apart from "it will not factor" | Analyze | *What did the miner do wrong?* |
+| 3 | find the prime factorisation of any whole number up to 100 | Apply | the Stamp Mill |
+| 4 | explain why different routes to a prime factorisation end with the same primes | Understand | the Stamp Mill |
+| 5 | multiply two brackets by matching every term with every term, and collect like terms | Apply | the Molds, the Forge |
+| 6 | show a product of two brackets as an area model | Understand | the Molds, the Gear Lever lesson |
+| 7 | identify an expression's form before choosing a method | Analyze | the assay, the Prospector's Pick |
+| 8 | explain why a method does not fit a given expression | Analyze | the fit test |
+| 9 | take out the greatest common factor | Apply | the Steel Pick |
+| 10 | factor x² + bx + c and ax² + bx + c by finding the pair that multiplies to *ac* and adds to *b* | Apply | the Crosscut, the Gear Lever |
+| 11 | factor a four-term expression by grouping, and split a middle term to make four | Apply | the Powered Auger |
+| 12 | factor a difference of two squares and a sum or difference of two cubes, and explain why a cube's leftover quadratic never factors | Apply / Understand | the Drill |
+| 13 | factor x⁴ + bx² + c by treating x² as a single unit, then check each half again | Apply | the Gear Lever |
+| 14 | factor completely, repeating until every piece is irreducible | Apply | the breaking floor |
+| 15 | check a factorisation by multiplying it back out | Evaluate | the anvil, the pour |
+| 16 | explain why an expression has no whole-number factors, even when a decimal pair exists | Evaluate | the decimal dial |
+
+**Common Core:** targets 3–4 match 4.OA.B.4, target 9 matches 6.NS.B.4, target 5 matches A-APR.A.1, and targets 7 and 13 match A-SSE.A.2.
+
+**Limits.** Bloom's *Create* is thin: the forge works backwards from a given object but never asks a student to design one. Targets 4 and 16 are implied rather than stated — the site never names unique factorisation or says "whole-number coefficients". Factoring to find zeros (A-SSE.B.3a), completing the square and fractional coefficients are not covered. **The targets are stated, never tracked:** nothing measures a student against them, because a tally of targets met is the kind of count the no-grades rule forbids.
+
 ## Checking it
 
 ```bash
