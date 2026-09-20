@@ -20,6 +20,20 @@ is load-bearing:
 does not; the casting is sound or it is scrap.** Neither is a mark. Tools
 assist; they never gate. Nothing is scored.
 
+## Pushing is the user's decision, always
+
+**Never `git push` without the user asking for it in that turn.** Not in auto mode,
+not because the tree is clean, not because a change is finished, not because a
+previous push was approved — approval is per-push and does not carry forward.
+
+Committing locally is ordinary work and needs no permission (see rule 4 below).
+Publishing is different: the site is public, the repository is public, and a push
+deploys to GitHub Pages within a minute. If you believe a push is warranted, say
+so and stop.
+
+The same goes for anything else that leaves this machine: creating a remote,
+changing repository settings, enabling Pages, opening a PR.
+
 ## The five rules that have actually cost this project time
 
 1. **Three scene builders end identically.** `surfaceScene`, `roomScene` and
