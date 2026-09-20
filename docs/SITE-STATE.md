@@ -2868,3 +2868,25 @@ at 994, and German, French, Japanese and Urdu 0 at 380 as well. Playthroughs 1�
 text harvest reported no student-facing string changed or removed. **Not seen by eye:** the
 preview pane renders an emulated viewport as a thumbnail, so no screenshot of this page has
 been read.
+
+## Published (2026-09-20)
+
+**Live at https://jontaylormed.github.io/MrFractionMiningOperation/**, deployed from
+`.github/workflows/pages.yml` on every push to `main`, with Pages set to the **GitHub
+Actions** source and `.nojekyll` at the root.
+
+The branch source was tried first and never produced a build — fifteen minutes, zero runs
+in Actions, 404 throughout — and once a workflow existed, `deploy-pages` failed until the
+source was switched away from the branch. Both deploy paths ran briefly at once; only the
+workflow remains.
+
+**Licensing.** Apache-2.0 for the code, CC BY-SA 4.0 for the writing, the illustrations and
+the voice (`LICENSE`, `LICENSE-CONTENT`, `NOTICE`). The Epidemic Sound audio is in the
+repository so the site plays with sound, and `NOTICE` states that its presence grants
+nothing and that a fork should delete `sfx/`. The names Mr Fraction and Mr Factor are
+reserved under both licences.
+
+**Verified on the published copy, not on this machine:** 12 of 12 checks pass,
+`MF.validate()` 0 errors over 46,505 checks with both controls failing, 9 of 9 screens
+built, nothing fetched over the network, no storage APIs in use. See VERIFICATION §112 for
+the one failure that run produced, which was the checking tool rather than the site.

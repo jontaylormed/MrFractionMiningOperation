@@ -82,24 +82,26 @@ Every check carries a control that must fail, and a new check is proved by reint
 
 Run it at **380×780, 560×760, 994×700 and 1250×900**; a group green at one width has only proved itself at that width. `MF.playthrough(layer)` drives a whole lump end to end and reports what it did.
 
-## Publishing to GitHub Pages
+## Published
 
-1. Create an empty repository on GitHub, then from this folder:
+**The site is live at [jontaylormed.github.io/MrFractionMiningOperation](https://jontaylormed.github.io/MrFractionMiningOperation/).**
 
-```bash
-git remote add origin https://github.com/YOUR-USERNAME/YOUR-REPO.git && git push -u origin HEAD
-```
+It deploys through **`.github/workflows/pages.yml`**: every push to `main` uploads the repository as it stands and publishes it, with **Settings → Pages → Source set to GitHub Actions**. A `.nojekyll` file at the root stops any preprocessing, so nothing is rewritten and no folder is skipped for being named with a dot.
 
-2. **Settings → Pages → Deploy from a branch**, then pick your branch and `/ (root)`.
+*The branch source — "Deploy from a branch" — was tried first and never triggered a build at all: fifteen minutes, zero runs in Actions, 404 throughout. If you fork this, start with the workflow.*
 
-3. **Open the published URL, open the browser console, and paste in the whole of `tools/verify-published.js`.**
+**After every deploy, run the published-copy check.** Open the live URL, open the browser console, and paste in the whole of `tools/verify-published.js`.
 
-Step 3 is the only check that examines what a student actually opens. It re-runs the site's own checks on the published copy, confirms nothing is fetched over the network, builds all five screens, and re-asserts the no-grades rule. On a sister project this step was skipped and the site went live broken, because two directories had never been committed — something no local check could have caught.
+It is the only check that examines what a student actually opens: it re-runs the site's own checks on the published copy, confirms nothing is fetched over the network, builds **every** screen in the registry, and re-asserts the no-grades rule against the student screens while sparing the teacher page. On a sister project this step was skipped and the site went live broken, because two directories had never been committed — something no local check could have caught.
+
+Last run on the live URL: **12 of 12 pass**, `MF.validate()` 0 errors across 46,505 checks, both controls failing as required, 9 of 9 screens built.
 
 ## Layout
 
 ```
 index.html                       the entire site
+.github/workflows/pages.yml      publishes every push to main
+.nojekyll                        no preprocessing on the way out
 LICENSE                          Apache-2.0 — the code
 LICENSE-CONTENT                  CC BY-SA 4.0 — the writing, the art, the voice
 NOTICE                           who owns what, and what the licences do not cover

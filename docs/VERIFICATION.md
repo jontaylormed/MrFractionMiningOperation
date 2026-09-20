@@ -1,7 +1,7 @@
 # The Verification Standard
 ### Mr Fraction's Word Problem Express
 **Applies to:** every agent, **and to anyone working without one** — see `../CLAUDE.md`.
-**Owner:** Oversight. **Last updated:** 2026-09-19. **111 rules.**
+**Owner:** Oversight. **Last updated:** 2026-09-20. **112 rules.**
 
 Every rule here was written after a specific failure on this project. The evidence is kept with each rule, because a rule without its scar gets softened away.
 
@@ -2469,3 +2469,27 @@ damaging the subject, then reporting the damage as a finding.
 > **A planted control is a mutation of global state, so it is not parallelisable.** Plant,
 > measure, restore, confirm the restore, then plant the next — and when a result contradicts
 > a run you trusted a moment ago, suspect the harness before the page.
+
+## §112. A screen that measures itself cannot be built where there is nothing to measure
+
+`verify-published.js` exists for one purpose — to test the copy a student opens — and on
+its first real run against the live site it reported the mine as **"rendered only 0 chars"**
+and printed *"the live site is not sound"*. The live site was sound. The published file was
+byte-identical to the local one, and the same call rendered 1,217 characters a moment later.
+
+The difference was the node. The check built each screen into a bare
+`document.createElement('div')`, never attached to the document. Four screens do not care.
+The mine lays its scanning face out against a real width, and a detached node has no layout
+to read, so it built nothing and said so honestly. `MF.validate()` never had this bug: it
+builds into an off-screen stage that **is** in the document (`scStage`, `position:absolute;
+left:-12000px`). The tool written to check the deployment was the only thing that was wrong.
+
+Two more gaps the same run exposed: it enumerated five screens by hand and so had never
+looked at the four added since, and it would have swept the teacher page for the word
+"grade" — the one word that page exists to explain — instead of honouring
+`MF.NOT_FOR_STUDENTS` (§110).
+
+> **Build a probe where the thing can measure itself: attached, off-screen, at a real
+> width.** And when a check on a published copy fails, prove the copy differs from the
+> local one before believing it — here the copies were identical and only the instrument
+> had changed.
