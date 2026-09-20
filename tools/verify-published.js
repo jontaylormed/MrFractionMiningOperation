@@ -57,28 +57,54 @@
       Array.prototype.map.call(document.scripts, function (s) { return s.textContent || ''; }).join('')),
      'inline script scanned');
 
-  /* ---- 4. it actually boots into a usable place ---- */
-  var screens = ['home', 'workshop-mold', 'workshop-ore', 'mine', 'forge'];
+  /* ---- 4. it actually boots into a usable place ----
+
+     A SCREEN THAT MEASURES ITSELF CANNOT BE BUILT IN A DETACHED NODE. The mine
+     lays out its scanning face against a real width, and a `div` that is not in
+     the document has no layout to read: it rendered 0 characters here while the
+     same screen rendered 1,217 attached, and this check called the published
+     site broken for it. MF.validate() never had the bug — it builds into an
+     off-screen stage that IS in the document. Do the same. */
+  var stage = document.createElement('div');
+  stage.style.cssText = 'position:absolute; left:-12000px; top:0; width:1100px';
+  document.body.appendChild(stage);
+  var probeInto = function (s) {
+    var probe = document.createElement('div');
+    stage.appendChild(probe);
+    MF.SCREENS[s](probe);
+    return probe;
+  };
+  /* EVERY SCREEN IN THE REGISTRY, not a list typed out here — a list goes stale
+     the moment a room is added, and says PASS while never looking at it. */
+  var screens = Object.keys(MF.SCREENS);
   var built = 0, thin = [];
   screens.forEach(function (s) {
-    var probe = document.createElement('div');
-    try { MF.SCREENS[s](probe); } catch (e) { thin.push(s + ' threw: ' + e.message); return; }
+    var probe;
+    try { probe = probeInto(s); } catch (e) { thin.push(s + ' threw: ' + e.message); return; }
     var len = (probe.textContent || '').trim().length;
     if (len > 300) built++; else thin.push(s + ' rendered only ' + len + ' chars');
   });
-  ok('all five screens build with real content', built === screens.length, built + ' of ' + screens.length +
+  ok('every screen builds with real content', built === screens.length, built + ' of ' + screens.length +
      (thin.length ? ' — ' + thin.join('; ') : ''));
 
   /* ---- 5. the invariants a student would notice ---- */
   var banned = /(\d+\s*(?:%|percent))|(\b\d+\s*(?:out of|\/)\s*\d+\b)|\b(score|scored|grade|graded|accuracy|rank|ranked|leaderboard|streak)\b/i;
   var hits = [];
-  screens.forEach(function (s) {
-    var probe = document.createElement('div');
-    try { MF.SCREENS[s](probe); } catch (e) { return; }
+  /* THE TEACHER PAGE IS THE ONE SCREEN THIS RULE DOES NOT COVER: it has to say
+     "grade" to explain why nothing a student sees ever does. The site names that
+     exemption in MF.NOT_FOR_STUDENTS and pins it to exactly that page; honour the
+     same list here rather than inventing a second one. */
+  var forStudents = typeof MF.forStudents === 'function' ? MF.forStudents : function () { return true; };
+  var swept = screens.filter(forStudents);
+  swept.forEach(function (s) {
+    var probe;
+    try { probe = probeInto(s); } catch (e) { return; }
     var m = (probe.textContent || '').match(banned);
     if (m) hits.push(s + ': "' + m[0] + '"');
   });
-  ok('nothing has a ceiling, a percentage or a comparison', hits.length === 0, hits.join('; ') || 'five screens swept');
+  ok('nothing has a ceiling, a percentage or a comparison', hits.length === 0,
+     hits.join('; ') || swept.length + ' student screens swept, ' + (screens.length - swept.length) + ' exempt');
+  stage.remove();
 
   var gated = 0;
   for (var L = 1; L <= MF.LAYERS.length; L++) {
