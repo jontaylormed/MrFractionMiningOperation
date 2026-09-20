@@ -4,6 +4,8 @@
 [![Audio: Epidemic Sound](https://img.shields.io/badge/audio-Epidemic%20Sound-1D1D1D?style=flat-square)](https://www.epidemicsound.com)
 [![One file](https://img.shields.io/badge/one%20file-no%20build%20step-2E7D64?style=flat-square)](index.html)
 [![Checks](https://img.shields.io/badge/MF.validate()-46%2C500%20checks-4A6FA5?style=flat-square)](docs/VERIFICATION.md)
+[![Licence](https://img.shields.io/badge/code-Apache--2.0-4E8098?style=flat-square)](LICENSE)
+[![Content](https://img.shields.io/badge/content-CC%20BY--SA%204.0-7A6FA5?style=flat-square)](LICENSE-CONTENT)
 
 A single-file, zero-dependency website for learning to factor, built on one idea: **a prime and an irreducible polynomial are the same object.** Factoring 72 and factoring `x² − 5x + 6` are the same act, taught here with the same tools.
 
@@ -98,6 +100,9 @@ Step 3 is the only check that examines what a student actually opens. It re-runs
 
 ```
 index.html                       the entire site
+LICENSE                          Apache-2.0 — the code
+LICENSE-CONTENT                  CC BY-SA 4.0 — the writing, the art, the voice
+NOTICE                           who owns what, and what the licences do not cover
 sfx/                             six cues and two beds — Epidemic Sound, see below
 sfx/SOURCES.md                   what was cut from where, measured levels, the licence note
 docs/MINE-SPEC.md                what v1 is, and what is deliberately out
@@ -117,6 +122,21 @@ v1 is **the Ore Cart**: scan the seam, inspect a lump, break it, assay, smelt, p
 
 - **The 15 non-English translations are drafts by Claude that no fluent speaker or teacher has read.** The language picker says so, and corrections are welcome one string at a time.
 - **No student has used this, and no independent reviewer has assessed it.** Everything here was checked by the person who wrote it, which `docs/VERIFICATION.md` §16 names as the weakest form of check.
+
+## Licence
+
+**Two licences, one repository**, because a single file here is both a program and a piece of writing:
+
+| | |
+|---|---|
+| **The code** — the script, markup and stylesheet inside `index.html`, and everything in `tools/` | [Apache License 2.0](LICENSE) |
+| **The content** — the student-facing text and all sixteen translations, the runtime SVG scenery, the four Mr Factor illustrations, the documents in `docs/`, and the recorded voice when it lands | [CC BY-SA 4.0](LICENSE-CONTENT) |
+
+Attribute as: **"Mr Factor's Mining Operation" by Jon Taylor, CC BY-SA 4.0.** The voice of Mr Factor is performed and owned by **Jon Taylor VO Talent**.
+
+Share-alike is deliberate: the fifteen non-English tables are unreviewed drafts, and a teacher who corrects one should be handing that correction back to the next teacher, not into a closed fork.
+
+**Two things are not licensed.** The audio in `sfx/` is © Epidemic Sound AB (see below) — it is in this repository so the site runs, and that is not a grant of anything. And the names: **Mr Fraction** is a brand and **Mr Factor** is a character, so neither licence gives anyone the right to call a derivative work by either name. `NOTICE` states all of this in full.
 
 ## Credits and attribution
 

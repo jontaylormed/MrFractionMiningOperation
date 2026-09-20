@@ -1,0 +1,43 @@
+Mr Factor's Mining Operation
+Copyright 2026 Jon Taylor
+
+This product includes software and original content developed by Jon Taylor.
+
+WHAT IS COVERED, AND BY WHICH LICENCE
+-------------------------------------
+
+The code — everything in index.html that is script, markup and stylesheet,
+plus everything in tools/ — is licensed under the Apache License, Version 2.0.
+See LICENSE.
+
+The content — the student-facing text and every translation of it, the SVG
+scenery drawn at runtime, the four Mr Factor illustrations embedded in
+index.html, the documents in docs/, and the recorded voice of Mr Factor when it
+is added — is licensed under the Creative Commons Attribution-ShareAlike 4.0
+International License. See LICENSE-CONTENT, or
+https://creativecommons.org/licenses/by-sa/4.0/
+
+  Attribute as: "Mr Factor's Mining Operation" by Jon Taylor, CC BY-SA 4.0.
+  The voice of Mr Factor is performed and owned by Jon Taylor VO Talent.
+
+WHAT IS NOT COVERED
+-------------------
+
+MUSIC AND SOUND EFFECTS ARE NOT LICENSED WITH THIS WORK, THOUGH THE FILES ARE
+IN THIS REPOSITORY. The cues and beds in sfx/ are the copyright of Epidemic
+Sound AB and are used under the author's own subscription. That subscription
+covers the author's use of them. It does not pass to anyone who clones, forks
+or downloads this repository, and it is not permission to redistribute them.
+Their presence here grants nothing.
+
+If you fork this work, delete sfx/ — the site is built to run without it, and
+falls back to synthesised cues with the music silent. sfx/SOURCES.md records
+which track each cue was cut from, and is the file to read first.
+
+NAMES ARE NOT LICENSED EITHER. "Mr Fraction" is the author's brand and
+"Mr Factor" is the author's character. Neither licence above grants any right
+to use those names, or any confusingly similar name, to identify a derivative
+work or to suggest that the author endorses one. Apache-2.0 section 6 says so
+for the code; the same reservation applies to the content.
+
+A fork is welcome. A fork that calls itself Mr Fraction is not.
