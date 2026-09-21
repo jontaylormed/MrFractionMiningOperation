@@ -30825,14 +30825,22 @@ MF.surfaceScene = function(){
   /* Mr Factor, standing on the surface - and the ONE instance whose helmet lamp
      answers the day/night clock, because this is the only scene MF.syncDay runs
      over. */
-  /* HE STANDS STILL OUT HERE, and he faces his own operation: the mine mouth is
-     at x 712 and he is at 322, so the right-facing drawing looks into the scene
-     rather than out of it. */
+  /* HE STANDS ON THE APRON, LOOKING INTO THE MINE. The portal arch runs x 748 to
+     828, and the grass loop above already refuses to grow tufts between 686 and
+     872 because that ground is walked flat every day — which makes it the one
+     place a miner would be standing before going in. He faces right, so his lamp
+     beam falls on the mouth rather than on the buildings behind him. His feet
+     (y 400) sit below the rails (y 378), so he reads as in front of the track
+     rather than standing on it. */
   /* BIGGER OUT HERE TOO. His feet stay on the ground line at y 400 — the width
      grows from the same centre and the height hangs off that baseline, or he
      floats above his own shadow. */
   var mf = MF.art(100, {pose:'right', lit:true});
-  mf.setAttribute('x','309'); mf.setAttribute('y','278');
+  mf.setAttribute('x','664'); mf.setAttribute('y','278');
+  /* HE IS SCENERY, NOT A DOOR. Standing on the apron he overlaps the edge of the
+     forge's target and the mouth of the mine's, and he is drawn after both — so
+     without this he would quietly eat the clicks meant for the buildings. */
+  mf.style.pointerEvents = 'none';
   mf.removeAttribute('width'); mf.removeAttribute('height');
   mf.setAttribute('width','100'); mf.setAttribute('height','122');
   svg.appendChild(mf);
