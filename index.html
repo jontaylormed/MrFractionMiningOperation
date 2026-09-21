@@ -30835,14 +30835,18 @@ MF.surfaceScene = function(){
   /* Mr Factor, standing on the surface - and the ONE instance whose helmet lamp
      answers the day/night clock, because this is the only scene MF.syncDay runs
      over. */
-  /* HE STANDS WHERE HE ALWAYS STOOD, between the windmill and the mill, and he
-     faces the other way now. His feet (y 400) sit below the rails (y 378), so he
-     reads as in front of the track rather than standing on it. */
+  /* HE STANDS BETWEEN THE WINDMILL AND THE MILL, FACING THE MINE. The mill is at
+     translate(232,214) and its door is the rect at local x 92 — so the door is
+     scene x 324 to 350, and at his old x of 309 he covered all of it. The drawn
+     figure occupies 0.125 to 0.73 of his own canvas, so a 100-wide box at 264
+     ends at 337 and leaves the right half of the door showing past his shoulder.
+     His feet (y 400) sit below the rails (y 378), so he reads as in front of the
+     track rather than standing on it. */
   /* BIGGER OUT HERE TOO. His feet stay on the ground line at y 400 — the width
      grows from the same centre and the height hangs off that baseline, or he
      floats above his own shadow. */
-  var mf = MF.art(100, {pose:'left', lit:true});
-  mf.setAttribute('x','309'); mf.setAttribute('y','278');
+  var mf = MF.art(100, {pose:'right', lit:true});
+  mf.setAttribute('x','264'); mf.setAttribute('y','278');
   /* HE IS SCENERY, NOT A DOOR. Standing on the apron he overlaps the edge of the
      forge's target and the mouth of the mine's, and he is drawn after both — so
      without this he would quietly eat the clicks meant for the buildings. */
