@@ -3305,8 +3305,16 @@ MF.ART_SRC = {
 /* where the helmet lamp sits in each drawing, as a fraction of the canvas — the
    lamp is on the side of the helmet the miner is facing, so it moves with the
    pose. Read off the drawings against a 10% grid; an automated pass kept finding
-   the pick head, which is brighter than the lamp housing. */
-MF.ART_LAMP = {front:[0.496,0.265], back:[0.579,0.251], left:[0.405,0.248], right:[0.305,0.288]};
+   the pick head, which is brighter than the lamp housing.
+
+   THE APEX BELONGS AT THE FRONT OF THE HELMET, NOT THE MIDDLE OF IT. Placed
+   mid-dome the light leaves from behind the brow and washes back over the crown,
+   which reads as a lit head. The profile values are taken from the leading edge
+   of the yellow helmet at the lamp's own height — 0.513 in the left drawing,
+   0.324 in the right — and sit 0.019 proud of it, where the housing overhangs.
+   The two drawings are not mirrors of each other, so each is measured on its
+   own; 1 minus one value is not the other. */
+MF.ART_LAMP = {front:[0.496,0.265], back:[0.579,0.251], left:[0.532,0.248], right:[0.305,0.288]};
 /* which way the drawing looks, in SCREEN terms: +1 is the viewer's right. A lamp
    pointing at the reader is a disc; a lamp pointing along the ground is a beam,
    and only a profile has somewhere to aim. */
@@ -3347,8 +3355,8 @@ MF.art = function(size, opts){
     if(face){
       /* THE BEAM HAS TO END INSIDE THE DRAWING. The gradient fades to nothing at
          the tip, so a cone that runs off the canvas is cut at full strength and
-         leaves a hard edge. The lamp is not in the middle — 0.33 across in the
-         left-facing drawing — so the room in front of it differs by pose. */
+         leaves a hard edge. The lamp sits at the front of the helmet rather than
+         the middle of the canvas, so the room in front of it differs by pose. */
       var room = (face > 0 ? (W - lx) : lx) - 4;
       var len = Math.min(W * 0.46, room), tilt = 0.34, spread = 0.27;
       var ex = lx + face * len, ey = ly + len * tilt;
