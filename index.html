@@ -30471,11 +30471,15 @@ MF.surfaceScene = function(){
     sm.appendChild(puff);
   });
   nameplate(sm, 66, 54, MF.t('plate.mill'));
-  /* THE STAMP MILL'S WINDOWS - both of them. */
+  /* THE STAMP MILL'S WINDOWS - both of them, and both DARK. They used to burn,
+     and they sat either side of the door Mr Factor stands at, so the two
+     brightest things in his corner of the site were three feet from his head.
+     His helmet lamp is the point of that corner; a window outshining it read as
+     his head being lit by the building. The other places still burn. */
   sm.appendChild(S('rect',{x:'12',y:'90',width:'36',height:'36',rx:'3',fill:'#2A1E14'}));
-  sm.appendChild(lit(S('rect',{x:'14',y:'92',width:'32',height:'32',rx:'3',fill:'#E2600F',opacity:'.9',class:'sc-lamp'})));
+  sm.appendChild(S('rect',{x:'14',y:'92',width:'32',height:'32',rx:'3',fill:'#3A2A1C'}));
   sm.appendChild(S('rect',{x:'54',y:'94',width:'28',height:'28',rx:'3',fill:'#2A1E14'}));
-  sm.appendChild(lit(S('rect',{x:'56',y:'96',width:'24',height:'24',rx:'3',fill:'#FFC46A',class:'sc-lamp'})));
+  sm.appendChild(S('rect',{x:'56',y:'96',width:'24',height:'24',rx:'3',fill:'#3A2A1C'}));
   sm.appendChild(S('rect',{x:'92',y:'98',width:'26',height:'38',rx:'2',fill:'#4A3524'}));   /* the door */
   svg.appendChild(sm);
 
@@ -30906,14 +30910,16 @@ MF.surfaceScene = function(){
   [
     /* the windmill's four windows - group at translate(112,132) */
     [158,231,34],[182,231,34],[148,287,34],[184,287,34],
-    /* the Stamp Mill's two - group at translate(232,214) */
-    [262,322,40],[302,324,40],
+    /* the Stamp Mill's two are gone with the windows that cast them */
     /* the Casting Shed's two - group at translate(400,236) */
     [424,328,38],[458,328,38],
     /* the two lanterns on the site */
-    [750,314,44],[540,296,42],
-    /* Mr Factor's helmet lamp, at the top of a 74x90 figure placed at 322,310 */
-    [359,320,34]
+    [750,314,44],[540,296,42]
+    /* Mr Factor's helmet lamp USED TO BE HAND-PLACED HERE, at [359,320,34], for a
+       74x90 figure at 322,310. He is now 100x122 at 264,278 and his lamp is at
+       316,316, so the blob had come adrift and read as a second light hanging by
+       the mill door. MF.art draws his halo and beam itself, from MF.ART_LAMP, and
+       they move when he does — the light layer must not keep its own copy. */
   ].forEach(function(p){
     lightLayer.appendChild(S('circle',{cx:String(p[0]),cy:String(p[1]),r:String(p[2]),
       fill:'url(#nightglow)'}));
