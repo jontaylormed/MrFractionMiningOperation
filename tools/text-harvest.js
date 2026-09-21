@@ -18,7 +18,7 @@
    innerText, nodeValue, insertAdjacentHTML, createTextNode, the title
    property and the aria-label / title / placeholder / alt attributes, on
    every state validate and the playthroughs reach, plus the static markup
-   and MF.voiceLines(). It does not see text on a path neither of those
+   and MF.guideLines(). It does not see text on a path neither of those
    drives, and it does not see pixels. */
 window.MFHarvest = (function(){
 
@@ -28,10 +28,12 @@ window.MFHarvest = (function(){
        makes. Pin that one call and leave the clock real afterwards, so the
        day cycle and every timer still run. Pinning Math.random alone left two
        harvests of the same file 420 expressions apart. */
-    /* SILENT. A harvest drives every hammer, pour and stamp in the site, twice,
-       and the user heard all of it. Every audio context is born suspended and
-       cannot resume, and no media element makes a sound. Text is untouched:
-       the old and new copies are silenced identically. */
+    /* SILENT, AND IT IS A BELT ON TOP OF BRACES NOW. A harvest drives every
+       hammer, pour and stamp in the site, twice, and the user used to hear all
+       of it. The site no longer has an audio engine to be loud with, but this
+       stays: it costs nothing, it keeps the harness honest if audio ever comes
+       back, and speechSynthesis IS still live — read-aloud survived the removal,
+       and a harvest must not start narrating. */
     ['AudioContext','webkitAudioContext'].forEach(function(n){
       var AC = window[n];
       if(!AC) return;
@@ -131,7 +133,7 @@ window.MFHarvest = (function(){
       for(var L = 1; L <= 9; L++){
         try { MF.playthrough(L); } catch(e){ H.add('PLAYTHROUGH ' + L + ' THREW: ' + e.message); }
       }
-      (MF.voiceLines ? MF.voiceLines() : []).forEach(function(l){ H.add(l && l.text); });
+      (MF.guideLines ? MF.guideLines() : []).forEach(function(l){ H.add(l && l.text); });
       walk(d.documentElement, H.add);
       H.on = false;
       return { errors: v.errors, detail: v.detail, checked: v.checked, strings: H.out.slice().sort() };

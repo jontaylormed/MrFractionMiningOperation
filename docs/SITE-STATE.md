@@ -490,88 +490,116 @@ it must keep naming it. See `VERIFICATION.md` §94 and §95 — the first versio
 guarded itself with `MF.isNative`, the exact call the fix turns on, and its control was then
 misread because `validate()` only returned the first twenty errors.
 
-## The sound layer, and the two beds
+## There is no sound layer
 
-**Added 2026-09-06, at the user's request, mirroring the sister site's volume controls.** The
-site made no sound at all before this; `THUD!` and `CLANG!` were painted `<div>`s.
+**USER, 2026-09-21:** *"Epidemic Music got back to us, and it is a complete no. Let's remove the
+soundtrack and music from the project… this project will not have any sound until I have sourced
+the correct permissions and copyrights."*
 
-`MF.audio` is one `AudioContext` behind three buses — `fxBus`, `ambBus`, `musicBus` — into a
-`master` that mute pulls to zero. **It never speaks first:** the context is built on the
-"Enter the Operation" button and not one moment earlier, and `play`, `say` and every bed
-refuse to construct one on their own. That is enforced on a detached `Object.create(MF.audio)`
-copy rather than by nulling the live one, which is `VERIFICATION.md` §80 exactly.
+**The site plays nothing.** There is no `AudioContext`, no cue, no bed, no music, no recorded
+voice and no audio file in the repository. What stood here — a sound layer built 2026-09-06, two
+beds on their own buses, nine cues loaded from `sfx/`, synthesised fallbacks so it still spoke
+from `file://`, a three-sound hammer, a ducking rule and a per-room bed rule — is gone in full.
 
-**Nine cues, each on a moment that already has a picture** — `pick` when a lump is cut out of
-the wall, `thud` when a seam runs, `clang`
-on a glance, `pour` at the ladle *and* in the Molds room, `stamp` under the mill press, `tick`
-when a lump is picked out, and `hoist` when the cage moves between layers. Each is
-**synthesised by default and file-backed when a file is there**, and every failure — no
-folder, 404, a format the decoder refuses, a fetch still in flight — falls back to the
-oscillators. **Adding sound files can never take sound away.**
+**Why it went.** The cues and beds were cut from a subscription library. The library was asked,
+in writing, whether its licence covered catalogue audio used as interaction cues and ambience
+inside a free educational web application whose own source is published under CC BY-SA. The
+answer was no. The reasoning that made it unanswerable in-house is in the enquiry: the sync
+grant covered video and podcast productions rather than interactive sites; the files sat at
+public URLs where a visitor could fetch them standalone; they were used as effects and beds; two
+cues layered two recordings; and the project's own share-alike licence invites exactly the
+third-party reuse the library's terms restrict.
 
-**THE PICK SWING WAS SILENT, AND 132 SOUND CHECKS SAID NOTHING. USER, 2026-09-07:**
-*"There should be a sound a pick axe... There are no sounds. Something is very broken that you
-think is working."*
+**What was removed, precisely:**
 
-`MF.breakRock` — the **"Swing the pick"** button, a 400 ms pick-arm animation and a nine-shard
-burst, the loudest gesture in the mine — fired no cue at all. The faint noise a student *did*
-hear was `tick`, which belongs to merely **selecting** a lump one step earlier. Every check was
-about the sound *layer* — a cue can fire, fall back, be muted, be levelled, duck the beds — and
-**none asked whether the button a student presses fires one.** `VERIFICATION.md` §97.
+| | |
+|---|---|
+| `sfx/` | eleven files, deleted from the tree and purged from every commit |
+| `docs/VOICE.md` | the recording script — deleted |
+| `MF.audio` | engine replaced by a stub whose every method does nothing |
+| Reading & Access | the whole SOUND section: mute, effects, ambience, music |
+| strings | 17 keys × 16 languages = 272 lines |
+| `MF.ACCESS_FX`, `MF.ACCESS_MUSIC` | opening levels — gone |
+| `MF.ROOM_SOUND`, `MF.roomSound` | the per-room bed rule — gone |
+| `MF.VOICE_BASE`, `MF.SFX_BASE`, `MF.MUSIC_SRC`, `MF.AMBIENCE_SRC` | paths — gone |
 
-A literal `GESTURES` table now names every physical moment and the cue it owes, plus the
-reverse: a cue nothing plays is a failure, not 7 KB nobody notices.
+**The hundred-odd call sites stayed.** `MF.audio.play('thud')` still sits at the moment the
+hammer lands, and lands on a stub. Those moments were chosen carefully and finding them again
+would be the expensive part of ever restoring sound; a live player with nothing to play would be
+the standing invitation to drop files back in.
 
-**And the two hammer outcomes are now two real hammer strikes**, chosen by how they decay
-rather than by spectral tilt — the physically true distinction and a much louder one:
+**Read-aloud survived and is checked for being PRESENT.** It is the browser's own speech
+synthesiser: it plays no file, ships no recording, and no licence reaches it. It is the only
+thing on the site that makes a noise. Removing it would have cost a real accessibility feature
+to settle a copyright question it was never part of.
 
-| | RMS | still ringing at 180 ms | |
-|---|---|---|---|
-| `thud` — the seam runs | −21.5 | −36.9 | **lands and stops** |
-| `clang` — the pick glances | −23.0 | −18.8 | **bounces and sings** |
+### The reading voice now has its own volume, and nearly did not
 
-19.5 dB apart, which is what "tellable with your back to the screen" means as a number. The
-old `clang` came from a take literally named *"Put Hammer In Box"* — a set-down, and a
-confident metallic clunk is what success sounds like, not a miss.
+**USER, 2026-09-21:** *"Make sure we are not losing the accommodation of reading the site out
+loud and volume controls as with the sister site."*
 
-**THE BEDS DUCK UNDER A CUE. USER, 2026-09-07:** *"I am hearing the elevator. But I am barely
-hearing any sound effect for the pick. And i hear nothing for the hammer."*
+**It had been lost, and nothing had noticed.** Read-aloud never carried a volume of its own —
+it had Play, Stop and Speed, and a volume slider was always sitting beside it because the audio
+engine put one there. Removing the engine removed the accommodation. The new checks did not
+catch it: they asked whether read-aloud was *present*, and it was.
 
-The hammer was firing correctly — verified by driving the real bench. **Duration was doing the
-work:** the elevator is four seconds of continuous motor, the hammer four tenths of a second,
-and two beds at ~−21 dB RMS mask a short transient however it is levelled. Levelling harder
-only reaches the point of clipping, and compression was measured to make it *worse* — it pulls
-down the transient that dominates the RMS and cost 6 dB of the spectral tilt that makes a
-scrape tellable from an impact.
+`SpeechSynthesisUtterance` has a `volume`, so the control is now real rather than borrowed:
 
-So `MF.audio.DUCK` pulls both beds down **~10 dB for 0.28 s** on the three impacts, gentler and
-longer for the pour and the hoist. Measured live: 0.600 → 0.180 → 0.600. **The `tick` is
-deliberately not in that table** — it fires on every lump picked out of the wall, and a bed
-that dips on every pick is a bed that pumps.
+| | |
+|---|---|
+| **Voice volume** | 0 to 1 in steps of 0.05, shown as *off* or a percentage |
+| **at zero** | it does not speak at all, rather than speaking into a muted channel — a silent utterance still occupies the synthesiser, and Stop would have something to cancel while the panel claimed nothing was happening |
+| **`access.read.vol`, `access.read.off`** | new keys, written in all sixteen languages |
 
-**The Molds room pours through `playSettled`, not `play`.** That room re-pours on every slider
-tick, so a cue on the repaint fired forty times across one drag and only the last matched what
-the student ended up holding. It waits 420 ms for the hand to stop, then pours once.
+**Checked, and the checks are spied rather than assumed:** `speechSynthesis.speak` is captured,
+the slider is set to 0.35 and the speed to 1.2, and the utterance that arrives must carry both.
+Then the volume is set to zero and nothing may be spoken at all. A slider wired to nothing is
+precisely the failure this exists to catch.
 
-**Two beds, not one, and they are asymmetric on purpose:**
+> **The panel check had to be fixed before it was worth anything.** Its first version looked for
+> `.acsheet`, which does not exist — the panel's body is `.tsbody`. It read an empty string,
+> failed to find a volume label in it, and reported success. Green and vacuous (§5). It now
+> fails loudly when it cannot read the panel at all. See VERIFICATION §114.
 
-| | falls back to | why |
-|---|---|---|
-| `amb` — the mine's room tone | **the oscillators** | a mine with no room tone is the thing the fallback exists to prevent |
-| `music` — the track | **nothing** | you cannot synthesise a song, and a drone arriving where a student turned on "Music" reads as a fault rather than as music |
+**The masthead caption and the button's aria-label both promised music.** *"Music/Sound Control
+Options"* and *"…including music and sound volume"* were still there in all sixteen languages,
+which is what a screen-reader user would have been told the button did. They now name what is
+actually behind it: text size, colour and read-aloud.
 
-They have separate buses and separate sliders because a room tone and a song are not the same
-request. Both start at **off**; effects start at **`MF.ACCESS_FX` = 0.85**, up from 0.35 — the beds sit at ~−21 dB RMS and the cues at −24 to −28, so a further 9 dB cut had been putting a hammer landing *underneath the music it lands over*. The `sound` group holds the default to a floor of 0.6.
+### The 73 checks became 316, and they assert the opposite
 
-> **The bed assertion is an IFF, not "it starts".** A bed runs exactly when it is wanted *and*
-> has something to play. "Turning music up starts the bed" is red on every `file://` open —
-> the fetch cannot succeed there — and `file://` is the one way this page is guaranteed to be
-> used. `sound` is 132 checks; six of its controls were proved by reintroducing the fault,
-> including one slider carrying both beds and the music bed quietly synthesising a drone.
+The `sound` group held an engine together. The `silence` group holds the claim that there is no
+engine — because *"we deleted it"* is not a check.
 
-**All audio in `sfx/` is © Epidemic Sound**, under the author's subscription. `sfx/SOURCES.md`
-and the README credits section carry it. Deleting the folder is a supported state, not a
-degraded one — which is exactly what makes the licence honourable by removing a directory.
+1. **No call builds an `AudioContext`.** Every stub method is fired with the constructor under a
+   spy, including the ones only a user gesture used to reach.
+2. **Nothing reports having played.** Any method returning truthy would mean a survivor is still
+   wired in under an old name.
+3. **No engine furniture survives on `MF.audio`** — no `CUES`, `beds`, `sfx`, bus or buffer table.
+4. **No audio path or media element is left anywhere in the document.**
+5. **No language carries a sound key** — swept by key across all sixteen, because a word list
+   would only ever have proved the English one.
+6. **Read-aloud is still there**, with its wording.
+
+All six controls were proved by planting their faults back one at a time (VERIFICATION §111 —
+and a batch of three did leave one planted, which is how the rule earned its keep a second time).
+
+> **The audio-path sweep failed on itself, twice.** It reads the whole document, and the document
+> contains the sweep. A control naming a file the ordinary way was found by the very sweep it was
+> testing; so was the comment written to explain the control. The dot and the extension are now
+> joined at runtime so they never sit together in the source. See VERIFICATION §113.
+
+**Sound returns only under a licence that survives CC BY-SA.** The site grants everyone the right
+to copy, adapt and rehost it. Audio that may be used but not redistributed cannot sit inside that
+grant, whatever it costs. That is a stricter test than "we paid for it", and it is the test the
+last set failed.
+
+### The site now fetches nothing at all
+
+With the audio gone, `index.html` makes **no network requests of any kind** — no libraries, no
+fonts, no analytics, no media. Measured after driving `MF.validate()`, all nine playthroughs and
+four screens: `performance.getEntriesByType('resource')` returns an empty list. Opened from a
+disk it behaves exactly as it does published.
 
 ## Invariants enforced in code, not asserted in prose
 
@@ -666,56 +694,6 @@ tool being broken.
 - Eight contrast failures on gradient backgrounds — the checker walked past the gradient to the body colour. Resolving the real stops gave zero failures.
 - A 375px capture appeared to clip text; at a true 375px viewport nothing clipped.
 - A source read reported depth 5 printing its split at load; the rendered box showed the uncut lump.
-
-## The hammer is three sounds, and the rooms open the beds
-
-**USER, 2026-09-07:** *"There should be a swing, sound, and then a chip when the hammer strikes
-the ore, corresponding with the clank or thud."*
-
-**The cue was 1740 ms early.** `.hammerswing` runs `hammerarc` over 3000 ms with the strike
-keyframe at 58%, and one `play('thud')` at the moment the swing was *decided* fired while the
-hammer was still winding up. Nothing was broken — the cue played, the bus measured 0.63 — the
-sound and the picture were describing different moments. `VERIFICATION.md` §98.
-
-`MF.audio.playAt(name, delay)` schedules on the audio clock, and `MF.audio.hammer(kind)` lays
-three cues on three keyframes:
-
-| | | |
-|---|---|---|
-| 46% · 1380 ms | the downswing begins | `swish` |
-| 58% · 1740 ms | **the strike** | `thud` / `clang` (57% · 1710 ms on the bounce) |
-| + 100 ms | the rock giving way | `chip` — **a hit only** |
-
-Measured against the live animation: the arc starts **4 ms** after the cues are scheduled.
-
-**The chip never follows a glance.** Loose rock coming away is what "the seam ran" *sounds*
-like; a glance is the hammer skidding off with nothing broken, and debris on it would say the
-opposite of what the rock did. The check enforces the order *and* that meaning, reading 3000 ×
-0.58 out of the stylesheet rather than comparing `MF.HAMMER` to itself.
-
-`swish` is **the one cue with no recording behind it** — a blacksmith take is all strikes, and
-none of the supplied material contains a hammer moving through air. Filtered noise swept up and
-away is what a whoosh physically is.
-
-### What each room opens the beds at
-
-**USER, 2026-09-07:** music at 30% on the surface, no ambience; ambience at 40% on entering the
-mine.
-
-- **The music is a state default** (`MF.ACCESS_MUSIC = 0.30`) — no room enforces it, so nothing
-  can undo it.
-- **`MF.ROOM_SOUND = { mine:{ambience:0.40} }`** — the pump-jack bed is the mine's own room
-  tone, so the mine is the only room that raises it.
-
-**It is a first arrival only, and a slider the student has touched is off limits to every room
-for the rest of the visit.** A room that reasserted a volume on every arrival would be silently
-undoing the panel, and the panel is the one place on this site that promises the student is in
-charge.
-
-> **The first version had `home:{music:0.30, ambience:0}` and it was a real bug**: walking back
-> up out of the mine forced the room tone off, wiping a level the student may have set. The
-> check written for it caught it on its first run. A room may **raise** a bed it owns; a room
-> that lowers one is undoing a setting from somewhere else, and that is now its own assertion.
 
 ## Layer 6 — the Grouping shaft
 
@@ -2880,11 +2858,11 @@ in Actions, 404 throughout — and once a workflow existed, `deploy-pages` faile
 source was switched away from the branch. Both deploy paths ran briefly at once; only the
 workflow remains.
 
-**Licensing.** Apache-2.0 for the code, CC BY-SA 4.0 for the writing, the illustrations and
-the voice (`LICENSE`, `LICENSE-CONTENT`, `NOTICE`). The Epidemic Sound audio is in the
-repository so the site plays with sound, and `NOTICE` states that its presence grants
-nothing and that a fork should delete `sfx/`. The names Mr Fraction and Mr Factor are
-reserved under both licences.
+**Licensing.** Apache-2.0 for the code, CC BY-SA 4.0 for the writing and the illustrations
+(`LICENSE`, `LICENSE-CONTENT`, `NOTICE`). **There is no third-party material left to carve
+out**: the subscription audio that `NOTICE` used to except was removed on 2026-09-21 and
+purged from the history — see *There is no sound layer* above. The names Mr Fraction and
+Mr Factor are reserved under both licences, and are now the only reservation.
 
 **Verified on the published copy, not on this machine:** 12 of 12 checks pass,
 `MF.validate()` 0 errors over 46,505 checks with both controls failing, 9 of 9 screens

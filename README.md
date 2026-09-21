@@ -1,9 +1,8 @@
 # Mr Factor's Mining Operation
 
 [![Built with Claude](https://img.shields.io/badge/built%20with-Claude%20AI-D97757?style=flat-square&logo=anthropic&logoColor=white)](https://claude.com/claude-code)
-[![Audio: Epidemic Sound](https://img.shields.io/badge/audio-Epidemic%20Sound-1D1D1D?style=flat-square)](https://www.epidemicsound.com)
 [![One file](https://img.shields.io/badge/one%20file-no%20build%20step-2E7D64?style=flat-square)](index.html)
-[![Checks](https://img.shields.io/badge/MF.validate()-46%2C500%20checks-4A6FA5?style=flat-square)](docs/VERIFICATION.md)
+[![Checks](https://img.shields.io/badge/MF.validate()-46%2C525%20checks-4A6FA5?style=flat-square)](docs/VERIFICATION.md)
 [![Licence](https://img.shields.io/badge/code-Apache--2.0-4E8098?style=flat-square)](LICENSE)
 [![Content](https://img.shields.io/badge/content-CC%20BY--SA%204.0-7A6FA5?style=flat-square)](LICENSE-CONTENT)
 
@@ -15,11 +14,11 @@ The site is a working mine. Expressions are ore, factoring is breaking rock, and
 
 Open `index.html`. There is no build step, no server, no package to install, and nothing is stored.
 
-**≈3.22 MB, one file, and it runs from `file://`.**
+**≈3.17 MB, one file, and it runs from `file://`.**
 
 Available in **English, Spanish, Brazilian Portuguese, French, German, Italian, Indonesian, Turkish, Vietnamese, Russian, Simplified Chinese, Japanese, Korean, Hindi, Arabic and Urdu** — under Reading & Access → Language. Every student-facing string lives in one table per language, and a missing string falls back to English rather than to a blank. **Arabic and Urdu read right to left**: the page turns around, and the mathematics stays left to right inside it.
 
-The only files it ever fetches are the sounds in `sfx/`, and every one of those fetches is allowed to fail. Without the folder, cues fall back to synthesised tones and the music stays silent.
+**It fetches nothing at all.** One file is the whole site: no libraries, no fonts over the network, no audio, no analytics, no requests of any kind. Saved to a disk and opened from `file://` it behaves exactly as it does when published.
 
 ## The model
 
@@ -76,9 +75,9 @@ It is written in all 16 languages, and **the targets are stated, never tracked**
 MF.validate()
 ```
 
-**About 46,500 checks across 50 groups, 0 errors, and two controls that must fail — and do.** The sweep covers the factor engine, seam classification, hundreds of generated lumps across all nine layers, the printer, the pour, the forge, every tool's reading and lesson, colour contrast on every rendered surface, the reading-and-access panel, the sound layer, the no-gate rule and the no-grades rule.
+**About 46,525 checks across 50 groups, 0 errors, and two controls that must fail — and do.** The sweep covers the factor engine, seam classification, hundreds of generated lumps across all nine layers, the printer, the pour, the forge, every tool's reading and lesson, colour contrast on every rendered surface, the reading-and-access panel, the no-gate rule, the no-grades rule, and the 432 assertions that the site can make no sound and that read-aloud still works.
 
-Every check carries a control that must fail, and a new check is proved by reintroducing the fault it exists to catch. `docs/VERIFICATION.md` records 111 such rules, each written after a real failure.
+Every check carries a control that must fail, and a new check is proved by reintroducing the fault it exists to catch. `docs/VERIFICATION.md` records 114 such rules, each written after a real failure.
 
 Run it at **380×780, 560×760, 994×700 and 1250×900**; a group green at one width has only proved itself at that width. `MF.playthrough(layer)` drives a whole lump end to end and reports what it did.
 
@@ -94,7 +93,7 @@ It deploys through **`.github/workflows/pages.yml`**: every push to `main` uploa
 
 It is the only check that examines what a student actually opens: it re-runs the site's own checks on the published copy, confirms nothing is fetched over the network, builds **every** screen in the registry, and re-asserts the no-grades rule against the student screens while sparing the teacher page. On a sister project this step was skipped and the site went live broken, because two directories had never been committed — something no local check could have caught.
 
-Last run on the live URL: **12 of 12 pass**, `MF.validate()` 0 errors across 46,505 checks, both controls failing as required, 9 of 9 screens built.
+Last run on the live URL: **12 of 12 pass**, `MF.validate()` 0 errors across 46,505 checks, both controls failing as required, 9 of 9 screens built. *That run predates the removal of the audio; the next deploy needs a fresh one.*
 
 ## Layout
 
@@ -103,15 +102,12 @@ index.html                       the entire site
 .github/workflows/pages.yml      publishes every push to main
 .nojekyll                        no preprocessing on the way out
 LICENSE                          Apache-2.0 — the code
-LICENSE-CONTENT                  CC BY-SA 4.0 — the writing, the art, the voice
+LICENSE-CONTENT                  CC BY-SA 4.0 — the writing and the art
 NOTICE                           who owns what, and what the licences do not cover
-sfx/                             six cues and two beds — Epidemic Sound, see below
-sfx/SOURCES.md                   what was cut from where, measured levels, the licence note
 docs/MINE-SPEC.md                what v1 is, and what is deliberately out
 docs/MR-FRACTION-PHILOSOPHY.md   what makes it a Mr Fraction site (incl. §2.5a)
 docs/SITE-STATE.md               the only document that states what exists
-docs/VERIFICATION.md             111 rules, each written after a real failure
-docs/VOICE.md                    the recording script for Mr Factor
+docs/VERIFICATION.md             114 rules, each written after a real failure
 .claude/agents/                  five review charters, deliberately disjoint
 tools/verify-published.js        run this on the live URL — see above
 tools/text-harvest.js            every student-facing string, before vs after
@@ -132,38 +128,34 @@ v1 is **the Ore Cart**: scan the seam, inspect a lump, break it, assay, smelt, p
 | | |
 |---|---|
 | **The code** — the script, markup and stylesheet inside `index.html`, and everything in `tools/` | [Apache License 2.0](LICENSE) |
-| **The content** — the student-facing text and all sixteen translations, the runtime SVG scenery, the four Mr Factor illustrations, the documents in `docs/`, and the recorded voice when it lands | [CC BY-SA 4.0](LICENSE-CONTENT) |
+| **The content** — the student-facing text and all sixteen translations, the runtime SVG scenery, the four Mr Factor illustrations and the documents in `docs/` | [CC BY-SA 4.0](LICENSE-CONTENT) |
 
-Attribute as: **"Mr Factor's Mining Operation" by Jon Taylor, CC BY-SA 4.0.** The voice of Mr Factor is performed and owned by **Jon Taylor VO Talent**.
+Attribute as: **"Mr Factor's Mining Operation" by Jon Taylor, CC BY-SA 4.0.**
 
 Share-alike is deliberate: the fifteen non-English tables are unreviewed drafts, and a teacher who corrects one should be handing that correction back to the next teacher, not into a closed fork.
 
-**Two things are not licensed.** The audio in `sfx/` is © Epidemic Sound AB (see below) — it is in this repository so the site runs, and that is not a grant of anything. And the names: **Mr Fraction** is a brand and **Mr Factor** is a character, so neither licence gives anyone the right to call a derivative work by either name. `NOTICE` states all of this in full.
+**One thing is not licensed:** the names. **Mr Fraction** is a brand and **Mr Factor** is a character, so neither licence gives anyone the right to call a derivative work by either name. `NOTICE` states this in full.
+
+## The site has no sound
+
+**There is no music, no sound effects and no soundtrack, and there is no audio file in this repository.** This is deliberate and it is checked: 316 of the assertions in `MF.validate()` exist to prove the site cannot make a sound — that no call builds an `AudioContext`, that nothing reports having played, that no audio path or media element survives anywhere in the document, and that none of the sixteen languages still carries a sound-control string.
+
+Earlier versions shipped nine cues and two beds cut from a subscription library. The library was asked, in writing, whether its licence covered catalogue audio used as interaction cues inside a free educational web application that publishes its own source under CC BY-SA — a licence that invites anyone to copy, adapt and rehost everything in it. The answer was no. The files were removed from the working tree and purged from the repository's history.
+
+Sound will return when there is audio the project has the right to publish **under terms that survive its own share-alike licence**. That is the condition the last set failed, and it is a stricter test than "we paid for it": a licence that permits use but forbids redistribution cannot sit inside a work that grants redistribution to everyone.
+
+**Read-aloud is not affected, and it keeps its volume.** It uses the browser's own speech synthesiser, plays no file and needs nobody's permission. Under **Reading & Access → READ ALOUD** it has Read this page, Stop, a speed from 0.6× to 1.6×, and a **voice volume** from off to 100% — all of it in all sixteen languages. It is the one thing on the site that makes a noise, and the checks require it to stay.
+
+> The volume nearly went out with the audio. Read-aloud had never needed a volume control of its own because the engine's sliders were always sitting next to it, so removing the engine removed the accommodation — while the checks, which asked only whether read-aloud *existed*, kept reporting it fine. `docs/VERIFICATION.md` §114 is the rule that came out of it.
 
 ## Credits and attribution
-
-### Music and sound — © Epidemic Sound
-
-**All music and sound effects are the copyright of [Epidemic Sound AB](https://www.epidemicsound.com)** and are used under the author's active subscription. They are not original to this project, they are not in the public domain, and no licence to them passes to anyone who clones this repository.
-
-| | |
-|---|---|
-| `music.m4a` | the music bed — cut to a 112 s seamless loop |
-| `bed.m4a` | the mine's room tone — a 40 s loop |
-| `thud` `clang` `stamp` `tick` `pour` | the five cues |
-
-`sfx/SOURCES.md` names the track each one was cut from, where in it, and why.
-
-**If you fork this, the audio does not come with you.** Delete `sfx/` and the site runs as it always has, with synthesised cues and silent beds.
-
-**One caution before publishing:** on GitHub Pages every file in `sfx/` is directly fetchable at a public URL, and a subscription library's terms generally cover *use in content* rather than *redistribution as standalone files*. Worth confirming with Epidemic Sound first.
 
 ### Built with Claude AI
 
 This site was designed, written and verified in collaboration with [Claude](https://claude.com/claude-code) (Claude Code, Anthropic). The metaphor, the `MF.validate()` harness, the verification rules and most of the prose were worked out in conversation.
 
 - **Every commit carries a `Co-Authored-By: Claude` trailer**, so `git log` is the complete record.
-- `docs/VERIFICATION.md` is the collaboration's clearest output: 111 rules, most written immediately after a failure Claude introduced.
+- `docs/VERIFICATION.md` is the collaboration's clearest output: 114 rules, most written immediately after a failure Claude introduced.
 
 Mathematical content, pedagogy and every decision about what this teaches are the author's.
 

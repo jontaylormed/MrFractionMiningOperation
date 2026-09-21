@@ -2352,10 +2352,10 @@ p,li{font-size:calc(17px * var(--access-scale,1))}
     <div class="accessbtnwrap">
       <button id="accessbtn" class="accessbtn" type="button"
               aria-haspopup="dialog"
-              aria-label="Reading and access settings, including music and sound volume. Also opens with Alt and A.">
+              aria-label="Reading and access settings, including read-aloud and its volume. Also opens with Alt and A.">
         <span aria-hidden="true">&#9881;</span> Reading &amp; Access
       </button>
-      <div class="accesscap" aria-hidden="true">Music/Sound Control Options</div>
+      <div class="accesscap" aria-hidden="true">Text size, colour and read-aloud</div>
       <!-- FOR TEACHERS: under Reading & Access, the same amber, smaller. -->
       <button id="teachbtn" class="teachbtn" type="button">For Teachers</button>
     </div>
@@ -3988,8 +3988,8 @@ MF.STR.en = {
   'load.enter': 'Enter the Operation',
   'top.tagline': 'smelt it apart &middot; pour it back &middot; find out',
   'top.access': '<span aria-hidden="true">&#9881;</span> Reading &amp; Access',
-  'top.access.aria': 'Reading and access settings, including music and sound volume. Also opens with Alt and A.',
-  'top.accesscap': 'Music/Sound Control Options',
+  'top.access.aria': 'Reading and access settings, including read-aloud and its volume. Also opens with Alt and A.',
+  'top.accesscap': 'Text size, colour and read-aloud',
   'nav.aria': 'Main',
   'nav.home': 'Surface',
   'nav.mill': 'Stamp Mill',
@@ -4039,6 +4039,8 @@ MF.STR.en = {
   'access.read.hint': 'Reads what Mr Factor says and the words of a lesson. It does not read the diagrams &mdash; those carry their own descriptions for a screen reader, and they say more than the numbers would.',
   'access.read.play': '&#9654; Read this page',
   'access.read.stop': '&#9632; Stop',
+  'access.read.vol': 'Voice volume',
+  'access.read.off': 'off',
   'access.speed': 'Speed',
 
   /* the surface */
@@ -5419,8 +5421,8 @@ MF.STR.es = {
   'load.enter': 'Entrar en la Explotación',
   'top.tagline': 'sepáralo &middot; vuélvelo a verter &middot; compruébalo',
   'top.access': '<span aria-hidden="true">&#9881;</span> Lectura y Accesibilidad',
-  'top.access.aria': 'Ajustes de lectura y accesibilidad, incluido el volumen de la música y el sonido. También se abre con Alt y A.',
-  'top.accesscap': 'Opciones de música y sonido',
+  'top.access.aria': 'Ajustes de lectura y accesibilidad, incluida la lectura en voz alta y su volumen. También se abre con Alt y A.',
+  'top.accesscap': 'Tamaño, color y lectura en voz alta',
   'nav.aria': 'Principal',
   'nav.home': 'Superficie',
   'nav.mill': 'Bocarte',
@@ -5470,6 +5472,8 @@ MF.STR.es = {
   'access.read.hint': 'Lee lo que dice Mr Factor y el texto de una lección. No lee los diagramas &mdash; esos llevan su propia descripción para los lectores de pantalla, y dicen más de lo que dirían los números.',
   'access.read.play': '&#9654; Leer esta página',
   'access.read.stop': '&#9632; Parar',
+  'access.read.vol': 'Volumen de la voz',
+  'access.read.off': 'apagado',
   'access.speed': 'Velocidad',
 
   /* the surface */
@@ -6845,8 +6849,8 @@ MF.STR['pt-BR'] = {
   'load.enter': 'Entrar na Mineração',
   'top.tagline': 'separe &middot; despeje de volta &middot; descubra',
   'top.access': '<span aria-hidden="true">&#9881;</span> Leitura e Acessibilidade',
-  'top.access.aria': 'Ajustes de leitura e acessibilidade, incluindo o volume da música e do som. Também abre com Alt e A.',
-  'top.accesscap': 'Opções de música e som',
+  'top.access.aria': 'Ajustes de leitura e acessibilidade, incluindo a leitura em voz alta e o seu volume. Também abre com Alt e A.',
+  'top.accesscap': 'Tamanho, cor e leitura em voz alta',
   'nav.aria': 'Principal',
   'nav.home': 'Superfície',
   'nav.mill': 'Engenho de Pilões',
@@ -6896,6 +6900,8 @@ MF.STR['pt-BR'] = {
   'access.read.hint': 'Lê o que o Mr Factor diz e o texto de uma lição. Não lê os diagramas &mdash; eles têm a própria descrição para leitores de tela, e dizem mais do que os números diriam.',
   'access.read.play': '&#9654; Ler esta página',
   'access.read.stop': '&#9632; Parar',
+  'access.read.vol': 'Volume da voz',
+  'access.read.off': 'desligado',
   'access.speed': 'Velocidade',
 
   /* the surface */
@@ -8271,8 +8277,8 @@ MF.STR.fr = {
   'load.enter': 'Entrer dans l’Exploitation',
   'top.tagline': 'sépare-le &middot; recoule-le &middot; vérifie',
   'top.access': '<span aria-hidden="true">&#9881;</span> Lecture et Accessibilité',
-  'top.access.aria': 'Réglages de lecture et d’accessibilité, y compris le volume de la musique et du son. S’ouvre aussi avec Alt et A.',
-  'top.accesscap': 'Options de musique et de son',
+  'top.access.aria': 'Réglages de lecture et d’accessibilité, y compris la lecture à voix haute et son volume. S’ouvre aussi avec Alt et A.',
+  'top.accesscap': 'Taille, couleur et lecture à voix haute',
   'nav.aria': 'Principal',
   'nav.home': 'Surface',
   'nav.mill': 'Bocard',
@@ -8322,6 +8328,8 @@ MF.STR.fr = {
   'access.read.hint': 'Lit ce que dit Mr Factor et le texte d’une leçon. Ne lit pas les schémas &mdash; ils ont leur propre description pour les lecteurs d’écran, et elle en dit plus que les nombres.',
   'access.read.play': '&#9654; Lire cette page',
   'access.read.stop': '&#9632; Arrêter',
+  'access.read.vol': 'Volume de la voix',
+  'access.read.off': 'coupé',
   'access.speed': 'Vitesse',
 
   /* the surface */
@@ -9698,8 +9706,8 @@ MF.STR.de = {
   'load.enter': 'Das Bergwerk betreten',
   'top.tagline': 'zerlege es &middot; gieß es zurück &middot; finde es heraus',
   'top.access': '<span aria-hidden="true">&#9881;</span> Lesen &amp; Barrierefreiheit',
-  'top.access.aria': 'Einstellungen für Lesen und Barrierefreiheit, auch für Musik- und Lautstärke. Öffnet sich auch mit Alt und A.',
-  'top.accesscap': 'Musik und Ton einstellen',
+  'top.access.aria': 'Einstellungen für Lesen und Barrierefreiheit, auch für das Vorlesen und seine Lautstärke. Öffnet sich auch mit Alt und A.',
+  'top.accesscap': 'Schrift, Farbe und Vorlesen',
   'nav.aria': 'Hauptmenü',
   'nav.home': 'Übertage',
   'nav.mill': 'Pochwerk',
@@ -9749,6 +9757,8 @@ MF.STR.de = {
   'access.read.hint': 'Liest vor, was Mr Factor sagt, und den Text einer Lektion. Die Diagramme liest es nicht &mdash; die haben eigene Beschreibungen für Screenreader, und die sagen mehr, als die Zahlen es würden.',
   'access.read.play': '&#9654; Diese Seite vorlesen',
   'access.read.stop': '&#9632; Stopp',
+  'access.read.vol': 'Lautstärke der Stimme',
+  'access.read.off': 'aus',
   'access.speed': 'Tempo',
 
   /* the surface */
@@ -11126,8 +11136,8 @@ MF.STR.it = {
   'load.enter': 'Entra nella Miniera',
   'top.tagline': 'scomponilo &middot; ricolalo &middot; scoprilo',
   'top.access': '<span aria-hidden="true">&#9881;</span> Lettura e Accessibilità',
-  'top.access.aria': 'Impostazioni di lettura e accessibilità, compreso il volume di musica e suoni. Si apre anche con Alt e A.',
-  'top.accesscap': 'Opzioni di musica e suoni',
+  'top.access.aria': 'Impostazioni di lettura e accessibilità, compresa la lettura ad alta voce e il suo volume. Si apre anche con Alt e A.',
+  'top.accesscap': 'Dimensioni, colore e lettura ad alta voce',
   'nav.aria': 'Principale',
   'nav.home': 'Superficie',
   'nav.mill': 'Frantoio',
@@ -11177,6 +11187,8 @@ MF.STR.it = {
   'access.read.hint': 'Legge quello che dice Mr Factor e il testo di una lezione. Non legge i diagrammi &mdash; hanno una descrizione loro per i lettori di schermo, e dice più di quanto direbbero i numeri.',
   'access.read.play': '&#9654; Leggi questa pagina',
   'access.read.stop': '&#9632; Ferma',
+  'access.read.vol': 'Volume della voce',
+  'access.read.off': 'spento',
   'access.speed': 'Velocità',
 
   /* the surface */
@@ -12554,8 +12566,8 @@ MF.STR.id = {
   'load.enter': 'Masuk ke Tambang',
   'top.tagline': 'lebur jadi bagian &middot; tuang kembali &middot; buktikan',
   'top.access': '<span aria-hidden="true">&#9881;</span> Bacaan &amp; Akses',
-  'top.access.aria': 'Pengaturan bacaan dan akses, termasuk volume musik dan suara. Juga terbuka dengan Alt dan A.',
-  'top.accesscap': 'Pilihan Musik dan Suara',
+  'top.access.aria': 'Pengaturan bacaan dan akses, termasuk baca nyaring dan volumenya. Juga terbuka dengan Alt dan A.',
+  'top.accesscap': 'Ukuran, warna, dan baca nyaring',
   'nav.aria': 'Utama',
   'nav.home': 'Permukaan',
   'nav.mill': 'Penumbuk',
@@ -12605,6 +12617,8 @@ MF.STR.id = {
   'access.read.hint': 'Membacakan ucapan Mr Factor dan kata-kata dalam pelajaran. Diagram tidak dibacakan &mdash; diagram membawa deskripsinya sendiri untuk pembaca layar, dan deskripsi itu menjelaskan lebih banyak daripada angkanya.',
   'access.read.play': '&#9654; Bacakan halaman ini',
   'access.read.stop': '&#9632; Berhenti',
+  'access.read.vol': 'Volume suara',
+  'access.read.off': 'mati',
   'access.speed': 'Kecepatan',
 
   /* the surface */
@@ -13984,8 +13998,8 @@ MF.STR.tr = {
   'load.enter': 'İşletmeye Gir',
   'top.tagline': 'erit ve ayır &middot; geri dök &middot; öğren',
   'top.access': '<span aria-hidden="true">&#9881;</span> Okuma ve Erişim',
-  'top.access.aria': 'Müzik ve ses düzeyi dahil okuma ve erişim ayarları. Alt ve A ile de açılır.',
-  'top.accesscap': 'Müzik ve Ses Seçenekleri',
+  'top.access.aria': 'Sesli okuma ve ses düzeyi dahil okuma ve erişim ayarları. Alt ve A ile de açılır.',
+  'top.accesscap': 'Yazı, renk ve sesli okuma',
   'nav.aria': 'Ana menü',
   'nav.home': 'Yüzey',
   'nav.mill': 'Kırma Değirmeni',
@@ -14035,6 +14049,8 @@ MF.STR.tr = {
   'access.read.hint': 'Mr Factor’un söylediklerini ve bir dersin metnini okur. Çizimleri okumaz &mdash; onların ekran okuyucu için kendi açıklamaları vardır ve sayılardan fazlasını anlatırlar.',
   'access.read.play': '&#9654; Bu sayfayı oku',
   'access.read.stop': '&#9632; Durdur',
+  'access.read.vol': 'Okuma sesi düzeyi',
+  'access.read.off': 'kapalı',
   'access.speed': 'Hız',
 
   /* the surface */
@@ -15413,8 +15429,8 @@ MF.STR.vi = {
   'load.enter': 'Vào Công Trường',
   'top.tagline': 'nấu tách ra &middot; rót lại &middot; tìm hiểu',
   'top.access': '<span aria-hidden="true">&#9881;</span> Đọc &amp; Trợ năng',
-  'top.access.aria': 'Cài đặt đọc và trợ năng, gồm cả âm lượng nhạc và âm thanh. Cũng mở được bằng Alt và A.',
-  'top.accesscap': 'Tùy chọn Nhạc và Âm thanh',
+  'top.access.aria': 'Cài đặt đọc và trợ năng, gồm cả đọc to và âm lượng của giọng đọc. Cũng mở được bằng Alt và A.',
+  'top.accesscap': 'Cỡ chữ, màu và đọc to',
   'nav.aria': 'Chính',
   'nav.home': 'Mặt Đất',
   'nav.mill': 'Xưởng Nghiền',
@@ -15464,6 +15480,8 @@ MF.STR.vi = {
   'access.read.hint': 'Đọc những gì Mr Factor nói và phần chữ của bài học. Không đọc các hình vẽ &mdash; chúng có mô tả riêng cho trình đọc màn hình, và mô tả đó nói được nhiều hơn các con số.',
   'access.read.play': '&#9654; Đọc trang này',
   'access.read.stop': '&#9632; Dừng',
+  'access.read.vol': 'Âm lượng giọng đọc',
+  'access.read.off': 'tắt',
   'access.speed': 'Tốc độ',
 
   /* the surface */
@@ -16843,8 +16861,8 @@ MF.STR.ru = {
   'load.enter': 'Спуститься в рудник',
   'top.tagline': 'расплавь и раздели &middot; залей обратно &middot; проверь',
   'top.access': '<span aria-hidden="true">&#9881;</span> Чтение и доступность',
-  'top.access.aria': 'Настройки чтения и доступности, включая громкость музыки и звука. Открываются также клавишами Alt и A.',
-  'top.accesscap': 'Музыка и звук',
+  'top.access.aria': 'Настройки чтения и доступности, включая чтение вслух и его громкость. Открываются также клавишами Alt и A.',
+  'top.accesscap': 'Шрифт, цвет и чтение вслух',
   'nav.aria': 'Главное меню',
   'nav.home': 'Поверхность',
   'nav.mill': 'Толчея',
@@ -16894,6 +16912,8 @@ MF.STR.ru = {
   'access.read.hint': 'Читает то, что говорит Mr Factor, и текст урока. Схемы не читаются &mdash; у них есть собственные описания для программ чтения с экрана, и эти описания говорят больше, чем числа.',
   'access.read.play': '&#9654; Прочитать страницу',
   'access.read.stop': '&#9632; Стоп',
+  'access.read.vol': 'Громкость голоса',
+  'access.read.off': 'выкл.',
   'access.speed': 'Скорость',
 
   /* the surface */
@@ -18274,8 +18294,8 @@ MF.STR.zh = {
   'load.enter': '进入矿场',
   'top.tagline': '熔开它 &middot; 浇回去 &middot; 看结果',
   'top.access': '<span aria-hidden="true">&#9881;</span> 阅读与无障碍',
-  'top.access.aria': '阅读与无障碍设置，包括音乐和音效音量。也可以按 Alt 和 A 打开。',
-  'top.accesscap': '音乐与音效选项',
+  'top.access.aria': '阅读与无障碍设置，包括朗读及其音量。也可以按 Alt 和 A 打开。',
+  'top.accesscap': '字号、配色与朗读',
   'nav.aria': '主导航',
   'nav.home': '地面',
   'nav.mill': '捣矿厂',
@@ -18325,6 +18345,8 @@ MF.STR.zh = {
   'access.read.hint': '朗读 Mr Factor 说的话和课程里的文字。不朗读示意图 &mdash; 示意图为读屏软件准备了自己的说明，这些说明比数字本身讲得更多。',
   'access.read.play': '&#9654; 朗读本页',
   'access.read.stop': '&#9632; 停止',
+  'access.read.vol': '朗读音量',
+  'access.read.off': '关闭',
   'access.speed': '语速',
 
   /* the surface */
@@ -19703,8 +19725,8 @@ MF.STR.ja = {
   'load.enter': '鉱山に入る',
   'top.tagline': '溶かして分ける &middot; 流し戻す &middot; 確かめる',
   'top.access': '<span aria-hidden="true">&#9881;</span> 読みやすさとアクセシビリティ',
-  'top.access.aria': '音楽と効果音の音量を含む、読みやすさとアクセシビリティの設定です。Alt と A でも開きます。',
-  'top.accesscap': '音楽・効果音の設定',
+  'top.access.aria': '読み上げとその音量を含む、読みやすさとアクセシビリティの設定です。Alt と A でも開きます。',
+  'top.accesscap': '文字サイズ・配色・読み上げ',
   'nav.aria': 'メインメニュー',
   'nav.home': '地上',
   'nav.mill': '砕鉱所',
@@ -19754,6 +19776,8 @@ MF.STR.ja = {
   'access.read.hint': 'Mr Factor の言葉と、レッスンの文章を読み上げます。図は読み上げません &mdash; 図にはスクリーンリーダー用の説明がついていて、その説明のほうが数字よりも多くを伝えます。',
   'access.read.play': '&#9654; このページを読み上げる',
   'access.read.stop': '&#9632; 止める',
+  'access.read.vol': '読み上げの音量',
+  'access.read.off': 'オフ',
   'access.speed': '速さ',
 
   /* the surface */
@@ -21132,8 +21156,8 @@ MF.STR.ko = {
   'load.enter': '광산으로 들어가기',
   'top.tagline': '녹여서 나누기 &middot; 다시 붓기 &middot; 확인하기',
   'top.access': '<span aria-hidden="true">&#9881;</span> 읽기와 접근성',
-  'top.access.aria': '음악과 효과음 음량을 포함한 읽기와 접근성 설정이에요. Alt와 A로도 열 수 있어요.',
-  'top.accesscap': '음악·효과음 설정',
+  'top.access.aria': '읽어주기와 그 음량을 포함한 읽기와 접근성 설정이에요. Alt와 A로도 열 수 있어요.',
+  'top.accesscap': '글자 크기·색·읽어주기',
   'nav.aria': '주 메뉴',
   'nav.home': '지상',
   'nav.mill': '쇄광소',
@@ -21183,6 +21207,8 @@ MF.STR.ko = {
   'access.read.hint': 'Mr Factor가 하는 말과 수업의 글을 읽어 줘요. 그림은 읽지 않아요 &mdash; 그림에는 화면 낭독기용 설명이 따로 있고, 그 설명이 숫자보다 더 많은 것을 알려 줘요.',
   'access.read.play': '&#9654; 이 페이지 읽기',
   'access.read.stop': '&#9632; 멈추기',
+  'access.read.vol': '읽어주기 음량',
+  'access.read.off': '꺼짐',
   'access.speed': '속도',
 
   /* the surface */
@@ -22562,8 +22588,8 @@ MF.STR.hi = {
   'load.enter': 'खान में चलें',
   'top.tagline': 'पिघलाकर अलग करें &middot; वापस ढालें &middot; जाँचें',
   'top.access': '<span aria-hidden="true">&#9881;</span> पढ़ना और सुगमता',
-  'top.access.aria': 'पढ़ने और सुगमता की सेटिंग, जिनमें संगीत और ध्वनि की आवाज़ भी है। Alt और A दबाकर भी खुलती हैं।',
-  'top.accesscap': 'संगीत और ध्वनि विकल्प',
+  'top.access.aria': 'पढ़ने और सुगमता की सेटिंग, जिनमें पढ़कर सुनाना और उसकी आवाज़ भी है। Alt और A दबाकर भी खुलती हैं।',
+  'top.accesscap': 'अक्षर का आकार, रंग और पढ़कर सुनाना',
   'nav.aria': 'मुख्य मेनू',
   'nav.home': 'सतह',
   'nav.mill': 'कुटाई मिल',
@@ -22613,6 +22639,8 @@ MF.STR.hi = {
   'access.read.hint': 'Mr Factor की बातें और पाठ के शब्द पढ़कर सुनाता है। चित्र नहीं पढ़ता &mdash; उनके पास स्क्रीन रीडर के लिए अपने विवरण हैं, और वे विवरण संख्याओं से ज़्यादा बताते हैं।',
   'access.read.play': '&#9654; यह पन्ना पढ़ें',
   'access.read.stop': '&#9632; रोकें',
+  'access.read.vol': 'आवाज़ का स्तर',
+  'access.read.off': 'बंद',
   'access.speed': 'गति',
 
   /* the surface */
@@ -23984,8 +24012,8 @@ MF.STR.ar = {
   'load.enter': 'ادخل المنجم',
   'top.tagline': 'افصله &middot; أعِده صبًّا &middot; واعرف',
   'top.access': '<span aria-hidden="true">&#9881;</span> القراءة والوصول',
-  'top.access.aria': 'إعدادات القراءة والوصول، ومنها مستوى الموسيقى والصوت. تُفتح أيضًا بـ Alt و A.',
-  'top.accesscap': 'خيارات التحكم بالموسيقى والصوت',
+  'top.access.aria': 'إعدادات القراءة والوصول، ومنها القراءة بصوت عالٍ ومستوى صوتها. تُفتح أيضًا بـ Alt و A.',
+  'top.accesscap': 'حجم الخط واللون والقراءة بصوت عالٍ',
   'nav.aria': 'الرئيسية',
   'nav.home': 'السطح',
   'nav.mill': 'مطحنة الدق',
@@ -24035,6 +24063,8 @@ MF.STR.ar = {
   'access.read.hint': 'يقرأ ما يقوله Mr Factor وكلام الدرس. ولا يقرأ الرسوم &mdash; فتلك تحمل أوصافها الخاصة لقارئ الشاشة، وهي تقول أكثر مما تقوله الأرقام.',
   'access.read.play': '&#9654; اقرأ هذه الصفحة',
   'access.read.stop': '&#9632; قف',
+  'access.read.vol': 'مستوى صوت القراءة',
+  'access.read.off': 'صامت',
   'access.speed': 'السرعة',
 
   /* the surface */
@@ -25408,8 +25438,8 @@ MF.STR.ur = {
   'load.enter': 'کان میں داخل ہوں',
   'top.tagline': 'الگ کیجیے &middot; واپس ڈھالیے &middot; اور جانیے',
   'top.access': '<span aria-hidden="true">&#9881;</span> پڑھائی اور رسائی',
-  'top.access.aria': 'پڑھائی اور رسائی کی ترتیبات، بشمول موسیقی اور آواز کی سطح۔ Alt اور A سے بھی کھلتی ہیں۔',
-  'top.accesscap': 'موسیقی اور آواز کے اختیارات',
+  'top.access.aria': 'پڑھائی اور رسائی کی ترتیبات، بشمول بلند خوانی اور اس کی آواز۔ Alt اور A سے بھی کھلتی ہیں۔',
+  'top.accesscap': 'متن کا سائز، رنگ اور بلند خوانی',
   'nav.aria': 'مرکزی',
   'nav.home': 'سطح',
   'nav.mill': 'کٹائی مِل',
@@ -25459,6 +25489,8 @@ MF.STR.ur = {
   'access.read.hint': 'یہ وہ پڑھتا ہے جو Mr Factor کہتے ہیں اور سبق کے الفاظ۔ خاکے نہیں پڑھتا &mdash; اُن کے اپنے بیان اسکرین ریڈر کے لیے موجود ہیں، اور وہ اعداد سے زیادہ بتاتے ہیں۔',
   'access.read.play': '&#9654; یہ صفحہ پڑھیے',
   'access.read.stop': '&#9632; رُکیے',
+  'access.read.vol': 'آواز کی سطح',
+  'access.read.off': 'خاموش',
   'access.speed': 'رفتار',
 
   /* the surface */
@@ -26933,7 +26965,7 @@ MF.state = {
      reaches a speaker. The three sound levels and the mute flag went with the
      audio engine. */
   access:{ type:'standard', size:100, tint:'none', ruler:false, spacing:false,
-           motion:'auto', speed:1, lang:'en' },
+           motion:'auto', speed:1, readVol:1, lang:'en' },
   rng: makeRng((Date.now()^0x5f3759df)>>>0)
 };
 
@@ -29367,6 +29399,14 @@ MF.openAccess = function(opener){
         b.appendChild(row);
         slide(b, MF.t('access.speed'), null, 0.6, 1.6, 0.1, a.speed,
           function(n){ return n.toFixed(1) + '&times;'; }, function(n){ a.speed = n; });
+        /* THE READING VOICE HAS ITS OWN VOLUME, and it is the only volume left on
+           the site. It is not a survivor of the removed sound engine — that one
+           set gains on audio buses. This sets `volume` on the utterance itself,
+           so it is the browser's own speech and needs no licence. A student who
+           can hear the page at all must be able to set how loud it is. */
+        slide(b, MF.t('access.read.vol'), null, 0, 1, 0.05, a.readVol,
+          function(n){ return n === 0 ? MF.t('access.read.off') : Math.round(n*100) + '%'; },
+          function(n){ a.readVol = n; if(!n) MF.readStop(); });
       }
 
     }
@@ -29398,12 +29438,18 @@ MF.readAloud = function(){
     });
   });
   if(!said.length) return 0;
+  /* AT ZERO IT DOES NOT SPEAK AT ALL, rather than speaking silently. A muted
+     utterance still occupies the synthesiser, so Stop would have something to
+     cancel and the panel would be lying about what is happening. */
+  var vol = MF.state.access.readVol;
+  if(vol === 0) return 0;
   var lg = MF.LANG[MF.lang()];
   var u = new SpeechSynthesisUtterance(said.join(lg.stop));
   /* English keeps whatever voice the device picks; any other language asks
      for a voice that can say it */
   if(MF.lang() !== 'en') u.lang = lg.speech;
   u.rate = MF.state.access.speed || 1;
+  u.volume = (vol == null ? 1 : vol);
   window.speechSynthesis.speak(u);
   return said.length;
 };
@@ -41708,10 +41754,77 @@ MF.validate = function(){
   chk('silence');
   if(typeof MF.readAloud !== 'function' || typeof MF.readStop !== 'function')
     errs.push('silence: read-aloud went out with the audio, and it had no reason to go');
-  ['access.read','access.read.hint','access.read.play','access.read.stop'].forEach(function(k){
-    chk('silence');
-    if(!(k in MF.STR.en)) errs.push('silence: read-aloud lost its "' + k + '" wording');
+  /* ITS WORDING, IN EVERY LANGUAGE. The accommodation is only real where the
+     student can read the control, so this is swept across all sixteen rather
+     than spot-checked in English — a missing key falls back silently (§?), and
+     an accommodation that silently reverts to English is half an accommodation. */
+  ['access.read','access.read.hint','access.read.play','access.read.stop',
+   'access.read.vol','access.read.off','access.speed'].forEach(function(k){
+    Object.keys(MF.STR).forEach(function(lg){
+      chk('silence');
+      if(!(k in MF.STR[lg]))
+        errs.push('silence: ' + lg + ' has no "' + k + '" — read-aloud would fall back to English');
+    });
   });
+
+  /* AND THE VOICE HAS A VOLUME, which is the one volume control left on the
+     site. It went missing once already: the sliders that used to carry it
+     belonged to the audio engine, so removing the engine removed the
+     accommodation with it. */
+  (function(){
+    chk('silence');
+    if(typeof MF.state.access.readVol !== 'number')
+      errs.push('silence: the reading voice has no volume setting');
+    /* THE PANEL BUILDS THE CONTROL — and this must not be allowed to pass by
+       finding nothing. The first version of this check looked for `.acsheet`,
+       which does not exist; the panel's body is `.tsbody`. It read an empty
+       string, found no volume label in it, and reported success. A check whose
+       subject is missing has to say so, not shrug (§5). */
+    var opened = false;
+    try { MF.openAccess(); opened = true; } catch(e){}
+    if(opened){
+      var sheet = document.querySelector('.tsbody');
+      chk('silence');
+      if(!sheet || !(sheet.textContent || '').length){
+        errs.push('silence: the Reading & Access panel could not be read, so its ' +
+                  'controls are unchecked rather than present');
+      } else {
+        chk('silence');
+        if((sheet.textContent || '').indexOf(MF.plainText(MF.t('access.read.vol'))) < 0)
+          errs.push('silence: the panel does not offer a volume for the reading voice');
+        chk('silence');
+        if((sheet.textContent || '').indexOf(MF.plainText(MF.t('access.read.play'))) < 0)
+          errs.push('silence: the panel does not offer read-aloud at all');
+      }
+      try { if(MF._sheet && MF._sheet.close) MF._sheet.close(); } catch(e){}
+    }
+    /* IT REACHES THE UTTERANCE. Spied, not assumed — a slider wired to nothing
+       is exactly the failure this check exists for. */
+    if('speechSynthesis' in window){
+      var realSpeak = window.speechSynthesis.speak, saw = null;
+      window.speechSynthesis.speak = function(u){ saw = u; };
+      var keepV = MF.state.access.readVol, keepS = MF.state.access.speed;
+      MF.state.access.readVol = 0.35; MF.state.access.speed = 1.2;
+      try { MF.readAloud(); } catch(e){}
+      chk('silence');
+      if(!saw) errs.push('silence: read-aloud did not speak at all, so nothing carries the volume');
+      else {
+        chk('silence');
+        if(Math.abs(saw.volume - 0.35) > 0.001)
+          errs.push('silence: the voice spoke at volume ' + saw.volume + ' with the slider at 0.35');
+        chk('silence');
+        if(Math.abs(saw.rate - 1.2) > 0.001)
+          errs.push('silence: the voice spoke at rate ' + saw.rate + ' with the speed at 1.2');
+      }
+      /* AT ZERO IT MUST NOT SPEAK AT ALL */
+      saw = null; MF.state.access.readVol = 0;
+      try { MF.readAloud(); } catch(e){}
+      chk('silence');
+      if(saw) errs.push('silence: the reading voice still speaks with its volume at zero');
+      MF.state.access.readVol = keepV; MF.state.access.speed = keepS;
+      window.speechSynthesis.speak = realSpeak;
+    }
+  })();
 
   /* 6. NOTHING ON SCREEN MAY HAVE A CEILING, A PERCENTAGE, OR A COMPARISON. */
   var banned = MF.langChecks().banned;

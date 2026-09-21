@@ -2219,10 +2219,10 @@ not one:
 | | |
 |---|---|
 | **width** | `layout`, `reach`, `hollow`, `cartdraw` and `contrast` measure the live viewport (§61, §63, §65) |
-| **the beds** | `sound` and its dependants need `sfx/` decoded — wait for `MF.audio.beds`, do not race it |
+| ~~**the beds**~~ | *removed 2026-09-21 with the audio. There is no fetch left in the site and no denominator that moves with one — but the rule is the point, not the instrument: any count taken while something is still arriving is a count of a different page.* |
 | **untouched** | a page that has been through `playthrough(1..9)` has a cart, a rack and a layer, and reports different denominators again |
 
-**The canonical number for this project is: 1250×900, beds up, freshly loaded, not driven.**
+**The canonical number for this project is: 1250×900, freshly loaded, not driven.**
 
 > And the shape of the mistake is the familiar one. A number that disagrees with a document is
 > evidence about **one of the two**, and the document is not automatically the wrong one — but
@@ -2493,3 +2493,69 @@ looked at the four added since, and it would have swept the teacher page for the
 > width.** And when a check on a published copy fails, prove the copy differs from the
 > local one before believing it — here the copies were identical and only the instrument
 > had changed.
+
+## §113. A sweep that reads the whole document will read itself
+
+The audio removal left one claim to hold: that no path to an audio file survives anywhere
+in the page. One file is the whole program, so one sweep covers it —
+
+```js
+var aud = /\.(?:m4a|mp3|ogg|wav|aac|flac|opus)\b/i;
+var hit = (document.documentElement.innerHTML || '').match(aud);
+if(hit) errs.push('silence: the page still names an audio file ("' + hit[0] + '")');
+```
+
+— and then it needs a control, because a sweep that has never matched anything is a sweep
+that might match nothing. The control was written the ordinary way:
+
+```js
+if(!aud.test('sfx/music.m4a')) errs.push('CONTROL: …');
+```
+
+**That is a `.m4a` in the document.** The script is inline, `innerHTML` returns it, and the
+sweep found its own control and failed. The fix was to join the pieces at runtime —
+`'sfx/music.' + 'm4a'` — so the string exists only while the check runs.
+
+It failed a second time on the comment written to explain the first failure, which had
+spelled the filename out to say why it must not be spelled out.
+
+The underlying mistake is assuming the observer is outside the observed. In a single-file
+site it never is: the validator, its controls, its error strings and its comments are all
+inside the thing being swept. Any check that greps the document for a forbidden pattern
+must not contain that pattern — not in the test, not in the message, not in the prose
+beside it.
+
+> **When a check reads the whole document, the check is part of the document.** Build the
+> forbidden pattern at runtime, and remember the comment is in there too.
+
+## §114. Removing a feature can remove an accommodation that was only lodging inside it
+
+The audio engine went out whole: the buses, the cues, the beds, and the SOUND section of
+Reading & Access with its mute switch and three volume sliders. Everything removed belonged
+to the engine — except that **the reading voice had no volume control of its own.** It had
+never needed one, because a volume slider was always there next to it.
+
+Read-aloud survived the removal intact and was checked for surviving. It still had its
+Play, its Stop and its Speed. What it no longer had was any way to be made quieter, and the
+checks written to protect it did not notice, because they asked whether read-aloud was
+*present* rather than whether it was *whole*.
+
+The user caught it, not the harness: *"Make sure we are not losing the accommodation of
+reading the site out loud and volume controls."*
+
+The fix is a real volume on the utterance (`SpeechSynthesisUtterance.volume`), which is the
+browser's own speech and needs no licence — and at zero it does not speak at all, rather
+than speaking silently into a muted channel where Stop would still have something to cancel.
+
+Two things this cost, both now checked:
+
+- **A feature's checks must cover its controls, not its existence.** `typeof MF.readAloud
+  === 'function'` was true the whole time the accommodation was broken.
+- **The panel check has to fail when it finds nothing.** The first version looked for
+  `.acsheet`, which does not exist — the panel's body is `.tsbody`. It read an empty string,
+  found no volume label in it, and reported success. Green, and vacuous (§5).
+
+> **Before removing a subsystem, list what was sharing a room with it.** An accessibility
+> control that happens to live inside a feature does not belong to that feature, and it will
+> leave with it silently — the harness will keep reporting that the accommodation is there,
+> because a thing can be present and still be missing a limb.
