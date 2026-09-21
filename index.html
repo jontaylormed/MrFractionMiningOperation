@@ -3306,7 +3306,7 @@ MF.ART_SRC = {
    lamp is on the side of the helmet the miner is facing, so it moves with the
    pose. Read off the drawings against a 10% grid; an automated pass kept finding
    the pick head, which is brighter than the lamp housing. */
-MF.ART_LAMP = {front:[0.496,0.265], back:[0.579,0.251], left:[0.365,0.250], right:[0.345,0.290]};
+MF.ART_LAMP = {front:[0.496,0.265], back:[0.579,0.251], left:[0.405,0.248], right:[0.305,0.288]};
 /* which way the drawing looks, in SCREEN terms: +1 is the viewer's right. A lamp
    pointing at the reader is a disc; a lamp pointing along the ground is a beam,
    and only a profile has somewhere to aim. */
@@ -3350,14 +3350,18 @@ MF.art = function(size, opts){
          leaves a hard edge. The lamp is not in the middle — 0.33 across in the
          left-facing drawing — so the room in front of it differs by pose. */
       var room = (face > 0 ? (W - lx) : lx) - 4;
-      var len = Math.min(W * 0.46, room), tilt = 0.30, spread = 0.20;
+      var len = Math.min(W * 0.46, room), tilt = 0.34, spread = 0.27;
       var ex = lx + face * len, ey = ly + len * tilt;
       var uid = 'mfbeam' + (MF._beamN = (MF._beamN || 0) + 1);
       var defs = S('defs',{});
+      /* A FLASHLIGHT FALLS OFF ALL THE WAY DOWN. The first version put a second
+         bright band partway along, which reads as a lens focusing rather than a
+         lamp throwing, so the stops only ever get dimmer and the brightest point
+         is the lamp itself. */
       var grad = S('linearGradient',{id:uid, gradientUnits:'userSpaceOnUse',
                                      x1:String(lx), y1:String(ly), x2:String(ex), y2:String(ey)});
-      grad.appendChild(S('stop',{offset:'0','stop-color':'#FFF3C4','stop-opacity':'0.72'}));
-      grad.appendChild(S('stop',{offset:'0.55','stop-color':'#FFE9A8','stop-opacity':'0.28'}));
+      grad.appendChild(S('stop',{offset:'0','stop-color':'#FFF3C4','stop-opacity':'0.56'}));
+      grad.appendChild(S('stop',{offset:'0.40','stop-color':'#FFE9A8','stop-opacity':'0.24'}));
       grad.appendChild(S('stop',{offset:'1','stop-color':'#FFE9A8','stop-opacity':'0'}));
       defs.appendChild(grad);
       s.appendChild(defs);
@@ -3368,11 +3372,16 @@ MF.art = function(size, opts){
       beam.setAttribute('class','sc-glow artbeam');
       s.appendChild(beam);
     }
-    var halo = S('circle',{cx:String(lx), cy:String(ly), r:String(Math.round(W * (face ? 0.075 : 0.13))),
+    /* THE HALO LIGHTS THE LAMP, NOT HIS HEAD. Head-on it is the whole effect and
+       can be broad; in profile the beam carries the light, so the disc shrinks to
+       a bloom around the glass and is held down with fill-opacity — a wide bright
+       circle at the apex made him look like the thing being lit. */
+    var halo = S('circle',{cx:String(lx), cy:String(ly), r:String(Math.round(W * (face ? 0.038 : 0.13))),
                            fill:'#FFE9A8', opacity:'0'});
+    if(face) halo.setAttribute('fill-opacity','0.42');
     halo.setAttribute('class','sc-glow artlamp');
     s.appendChild(halo);
-    var glass = S('circle',{cx:String(lx), cy:String(ly), r:String(Math.round(W*0.042)),
+    var glass = S('circle',{cx:String(lx), cy:String(ly), r:String(Math.round(W * (face ? 0.026 : 0.042))),
                             fill:'#FFF3C4', opacity:'0'});
     glass.setAttribute('class','sc-lit artlampglass');
     s.appendChild(glass);
