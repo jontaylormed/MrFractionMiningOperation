@@ -3472,11 +3472,9 @@ MF.ambient = function(){
 };
 
 /* ===== STATE. Held in memory only - no storage, by design. ===== */
-/* THE EFFECTS DEFAULT, AS A NAMED VALUE. */
-MF.ACCESS_FX = 0.85;
-/* and the music opens at 30%. A state default, not a rule a room enforces on
-   arrival — see MF.ROOM_SOUND for why that distinction cost a bug. */
-MF.ACCESS_MUSIC = 0.30;
+/* THERE ARE NO SOUND LEVELS. MF.ACCESS_FX and MF.ACCESS_MUSIC were the opening
+   volumes for an engine that has been removed; nothing reads a level now, so
+   carrying one would only make the next reader think something plays. */
 
 /* ===== LANGUAGES ===== */
 /* One table of strings per language, and one lookup. `MF.t(key, vars)` reads
@@ -4036,23 +4034,6 @@ MF.STR.en = {
   'access.motion.hint': 'The mine has a working day, smoke and a turning wheel.',
   'access.motion.auto': 'As my device says',
   'access.motion.reduce': 'Reduce it',
-  'access.sound': 'SOUND',
-  'access.fx.synth': 'The recorded cues are not loading from here, so these are the <b>made-up</b> ones &mdash; oscillators, not a real hammer. They still fire on everything.',
-  'access.fx.part': 'Some of the recorded cues are not loading from here; those ones are synthesised instead.',
-  'access.fx.loading': 'The recordings are still arriving. Synthesised cues until they do.',
-  'access.amb.synth': 'The recording is not loading from here, so this is a <b>synthesised</b> room tone.',
-  'access.amb.loading': 'The recording is still arriving.',
-  'access.music.none': '<b>There is no track to play from here.</b> A song cannot be synthesised, so this slider will stay silent until the file loads &mdash; which it will on the published site.',
-  'access.music.loading': 'The track is still arriving.',
-  'access.mute': 'Mute everything',
-  'access.level.off': 'off',
-  'access.fx': 'Sound effects',
-  'access.fx.hint': 'The hammer landing, a seam running, the pour.',
-  'access.amb': 'Mine ambience',
-  'access.amb.hint': 'The room tone of the place &mdash; machinery, a long way off. Comes up in the mine.',
-  'access.music': 'Music',
-  'access.music.hint': 'A track over the top of it.',
-  'access.quiet': 'Both of these are off just now. The music comes up on the surface and the room tone in the mine &mdash; and once you move either slider yourself, it stays exactly where you put it.',
   'access.read': 'READ ALOUD',
   'access.read.none': 'This browser has no built-in voice, so read aloud is not available here.',
   'access.read.hint': 'Reads what Mr Factor says and the words of a lesson. It does not read the diagrams &mdash; those carry their own descriptions for a screen reader, and they say more than the numbers would.',
@@ -4132,8 +4113,8 @@ MF.STR.en = {
   'guide.hint.pair.1': 'Put the <b>X</b> on it: the pair has to multiply to <b>{ac}</b> and add to <b>{b}</b>. Both at once, or it is not the pair.',
   'guide.hint.pair.2': 'And a hammer is cut to a whole shape. If no whole pair does both, there is no pair of brackets in there &mdash; once you have taken out anything <b>every term is carrying</b>.',
   'guide.hint.any': 'Take the pieces one at a time, and name what you think runs through the one under the pick.',
-  'voice.hint.dyn': '(varies with the lump) Put the X on it: the pair has to multiply to … and add to ….',
-  'voice.give.dyn': '(varies with the lump) That one is fighting you, so I will just say it: … runs through it.',
+  'guide.hint.dyn': '(varies with the lump) Put the X on it: the pair has to multiply to … and add to ….',
+  'guide.give.dyn': '(varies with the lump) That one is fighting you, so I will just say it: … runs through it.',
 
   /* Mr Factor inside a room */
   'says.prefix': '<b>Mr Factor:</b> ',
@@ -5484,23 +5465,6 @@ MF.STR.es = {
   'access.motion.hint': 'La mina tiene su jornada de trabajo, humo y una rueda que gira.',
   'access.motion.auto': 'Lo que diga mi dispositivo',
   'access.motion.reduce': 'Reducirlo',
-  'access.sound': 'SONIDO',
-  'access.fx.synth': 'Los efectos grabados no se cargan desde aquí, así que estos son los <b>inventados</b> &mdash; osciladores, no un martillo de verdad. Siguen sonando en todo.',
-  'access.fx.part': 'Algunos de los efectos grabados no se cargan desde aquí; esos se sintetizan en su lugar.',
-  'access.fx.loading': 'Las grabaciones todavía están llegando. Hasta entonces, efectos sintetizados.',
-  'access.amb.synth': 'La grabación no se carga desde aquí, así que este es un sonido ambiente <b>sintetizado</b>.',
-  'access.amb.loading': 'La grabación todavía está llegando.',
-  'access.music.none': '<b>Desde aquí no hay ninguna pista que reproducir.</b> Una canción no se puede sintetizar, así que este control seguirá en silencio hasta que se cargue el archivo &mdash; cosa que sí pasará en el sitio publicado.',
-  'access.music.loading': 'La pista todavía está llegando.',
-  'access.mute': 'Silenciarlo todo',
-  'access.level.off': 'apagado',
-  'access.fx': 'Efectos de sonido',
-  'access.fx.hint': 'El martillo al caer, una veta que se abre, la colada.',
-  'access.amb': 'Ambiente de la mina',
-  'access.amb.hint': 'El sonido del lugar &mdash; maquinaria, muy a lo lejos. Sube en la mina.',
-  'access.music': 'Música',
-  'access.music.hint': 'Una pista por encima de todo.',
-  'access.quiet': 'Los dos están apagados ahora mismo. La música sube en la superficie y el ambiente en la mina &mdash; y en cuanto muevas tú cualquiera de los dos, se queda exactamente donde lo dejes.',
   'access.read': 'LEER EN VOZ ALTA',
   'access.read.none': 'Este navegador no tiene voz integrada, así que aquí no se puede leer en voz alta.',
   'access.read.hint': 'Lee lo que dice Mr Factor y el texto de una lección. No lee los diagramas &mdash; esos llevan su propia descripción para los lectores de pantalla, y dicen más de lo que dirían los números.',
@@ -5580,8 +5544,8 @@ MF.STR.es = {
   'guide.hint.pair.1': 'Pon la <b>X</b> encima: la pareja tiene que multiplicar <b>{ac}</b> y sumar <b>{b}</b>. Las dos cosas a la vez, o no es la pareja.',
   'guide.hint.pair.2': 'Y un martillo se ajusta a una forma entera. Si ninguna pareja entera hace las dos cosas, ahí dentro no hay dos paréntesis &mdash; una vez que hayas sacado lo que <b>lleva cada término</b>.',
   'guide.hint.any': 'Toma las piezas de una en una, y nombra lo que creas que atraviesa la que está bajo el pico.',
-  'voice.hint.dyn': '(cambia según el trozo) Pon la X encima: la pareja tiene que multiplicar … y sumar ….',
-  'voice.give.dyn': '(cambia según el trozo) Ese se te está resistiendo, así que te lo digo sin más: … lo atraviesa.',
+  'guide.hint.dyn': '(cambia según el trozo) Pon la X encima: la pareja tiene que multiplicar … y sumar ….',
+  'guide.give.dyn': '(cambia según el trozo) Ese se te está resistiendo, así que te lo digo sin más: … lo atraviesa.',
 
   /* Mr Factor inside a room */
   'says.prefix': '<b>Mr Factor:</b> ',
@@ -6927,23 +6891,6 @@ MF.STR['pt-BR'] = {
   'access.motion.hint': 'A mina tem um dia de trabalho, fumaça e uma roda que gira.',
   'access.motion.auto': 'O que meu aparelho disser',
   'access.motion.reduce': 'Reduzir',
-  'access.sound': 'SOM',
-  'access.fx.synth': 'Os efeitos gravados não carregam daqui, então estes são os <b>inventados</b> &mdash; osciladores, não um martelo de verdade. Eles ainda tocam em tudo.',
-  'access.fx.part': 'Alguns dos efeitos gravados não carregam daqui; esses são sintetizados no lugar.',
-  'access.fx.loading': 'As gravações ainda estão chegando. Até lá, efeitos sintetizados.',
-  'access.amb.synth': 'A gravação não carrega daqui, então este é um som ambiente <b>sintetizado</b>.',
-  'access.amb.loading': 'A gravação ainda está chegando.',
-  'access.music.none': '<b>Daqui não há nenhuma faixa para tocar.</b> Uma música não pode ser sintetizada, então este controle vai continuar em silêncio até o arquivo carregar &mdash; o que vai acontecer no site publicado.',
-  'access.music.loading': 'A faixa ainda está chegando.',
-  'access.mute': 'Silenciar tudo',
-  'access.level.off': 'desligado',
-  'access.fx': 'Efeitos sonoros',
-  'access.fx.hint': 'O martelo batendo, um veio se abrindo, o vazamento.',
-  'access.amb': 'Ambiente da mina',
-  'access.amb.hint': 'O som do lugar &mdash; máquinas, bem ao longe. Aumenta na mina.',
-  'access.music': 'Música',
-  'access.music.hint': 'Uma faixa por cima de tudo.',
-  'access.quiet': 'Os dois estão desligados agora. A música aumenta na superfície e o ambiente na mina &mdash; e assim que você mexer em qualquer um dos dois, ele fica exatamente onde você deixar.',
   'access.read': 'LEITURA EM VOZ ALTA',
   'access.read.none': 'Este navegador não tem voz embutida, então a leitura em voz alta não está disponível aqui.',
   'access.read.hint': 'Lê o que o Mr Factor diz e o texto de uma lição. Não lê os diagramas &mdash; eles têm a própria descrição para leitores de tela, e dizem mais do que os números diriam.',
@@ -7023,8 +6970,8 @@ MF.STR['pt-BR'] = {
   'guide.hint.pair.1': 'Coloque o <b>X</b> em cima: o par tem que multiplicar <b>{ac}</b> e somar <b>{b}</b>. As duas coisas ao mesmo tempo, ou não é o par.',
   'guide.hint.pair.2': 'E um martelo é ajustado para uma forma inteira. Se nenhum par inteiro faz as duas coisas, não há dois parênteses ali dentro &mdash; depois que você tirar o que <b>cada termo está carregando</b>.',
   'guide.hint.any': 'Pegue as peças uma de cada vez, e nomeie o que você acha que passa pela que está debaixo da picareta.',
-  'voice.hint.dyn': '(muda conforme o pedaço) Coloque o X em cima: o par tem que multiplicar … e somar ….',
-  'voice.give.dyn': '(muda conforme o pedaço) Esse está brigando com você, então vou dizer logo: … passa por ele.',
+  'guide.hint.dyn': '(muda conforme o pedaço) Coloque o X em cima: o par tem que multiplicar … e somar ….',
+  'guide.give.dyn': '(muda conforme o pedaço) Esse está brigando com você, então vou dizer logo: … passa por ele.',
 
   /* Mr Factor inside a room */
   'says.prefix': '<b>Mr Factor:</b> ',
@@ -8370,23 +8317,6 @@ MF.STR.fr = {
   'access.motion.hint': 'La mine a sa journée de travail, de la fumée et une roue qui tourne.',
   'access.motion.auto': 'Comme le dit mon appareil',
   'access.motion.reduce': 'Le réduire',
-  'access.sound': 'SON',
-  'access.fx.synth': 'Les effets enregistrés ne se chargent pas d’ici, alors ce sont les effets <b>fabriqués</b> &mdash; des oscillateurs, pas un vrai marteau. Ils se déclenchent quand même partout.',
-  'access.fx.part': 'Certains effets enregistrés ne se chargent pas d’ici ; ceux-là sont synthétisés à la place.',
-  'access.fx.loading': 'Les enregistrements arrivent encore. En attendant, des effets synthétisés.',
-  'access.amb.synth': 'L’enregistrement ne se charge pas d’ici, alors c’est un fond sonore <b>synthétisé</b>.',
-  'access.amb.loading': 'L’enregistrement arrive encore.',
-  'access.music.none': '<b>Il n’y a aucune piste à jouer d’ici.</b> Une chanson ne se synthétise pas, alors ce curseur restera silencieux jusqu’à ce que le fichier se charge &mdash; ce qui se fera sur le site publié.',
-  'access.music.loading': 'La piste arrive encore.',
-  'access.mute': 'Tout couper',
-  'access.level.off': 'coupé',
-  'access.fx': 'Effets sonores',
-  'access.fx.hint': 'Le marteau qui tombe, un filon qui s’ouvre, la coulée.',
-  'access.amb': 'Ambiance de la mine',
-  'access.amb.hint': 'Le fond sonore du lieu &mdash; des machines, très loin. Monte dans la mine.',
-  'access.music': 'Musique',
-  'access.music.hint': 'Une piste par-dessus le tout.',
-  'access.quiet': 'Les deux sont coupés pour l’instant. La musique monte à la surface et l’ambiance dans la mine &mdash; et dès que tu bouges l’un des deux curseurs toi-même, il reste exactement là où tu l’as mis.',
   'access.read': 'LECTURE À VOIX HAUTE',
   'access.read.none': 'Ce navigateur n’a pas de voix intégrée, donc la lecture à voix haute n’est pas disponible ici.',
   'access.read.hint': 'Lit ce que dit Mr Factor et le texte d’une leçon. Ne lit pas les schémas &mdash; ils ont leur propre description pour les lecteurs d’écran, et elle en dit plus que les nombres.',
@@ -8466,8 +8396,8 @@ MF.STR.fr = {
   'guide.hint.pair.1': 'Pose le <b>X</b> dessus : la paire doit avoir pour produit <b>{ac}</b> et pour somme <b>{b}</b>. Les deux à la fois, sinon ce n’est pas la paire.',
   'guide.hint.pair.2': 'Et un marteau se règle sur une forme entière. Si aucune paire entière ne fait les deux, il n’y a pas deux parenthèses là-dedans &mdash; une fois que tu as sorti ce que <b>chaque terme porte</b>.',
   'guide.hint.any': 'Prends les pièces une par une, et nomme ce qui, selon toi, traverse celle qui est sous la pioche.',
-  'voice.hint.dyn': '(dépend du bloc) Pose le X dessus : la paire doit avoir pour produit … et pour somme ….',
-  'voice.give.dyn': '(dépend du bloc) Celui-là te résiste, alors je vais te le dire franchement : … le traverse.',
+  'guide.hint.dyn': '(dépend du bloc) Pose le X dessus : la paire doit avoir pour produit … et pour somme ….',
+  'guide.give.dyn': '(dépend du bloc) Celui-là te résiste, alors je vais te le dire franchement : … le traverse.',
 
   /* Mr Factor inside a room */
   'says.prefix': '<b>Mr Factor :</b> ',
@@ -9814,23 +9744,6 @@ MF.STR.de = {
   'access.motion.hint': 'Das Bergwerk hat einen Arbeitstag, Rauch und ein Rad, das sich dreht.',
   'access.motion.auto': 'Wie mein Gerät es sagt',
   'access.motion.reduce': 'Verringern',
-  'access.sound': 'TON',
-  'access.fx.synth': 'Die aufgenommenen Geräusche laden von hier aus nicht, deshalb sind das die <b>nachgebauten</b> &mdash; Oszillatoren, kein echter Hammer. Sie klingen trotzdem bei allem.',
-  'access.fx.part': 'Einige der aufgenommenen Geräusche laden von hier aus nicht; die werden stattdessen synthetisch erzeugt.',
-  'access.fx.loading': 'Die Aufnahmen kommen noch. Bis dahin synthetische Geräusche.',
-  'access.amb.synth': 'Die Aufnahme lädt von hier aus nicht, deshalb ist das ein <b>synthetischer</b> Raumklang.',
-  'access.amb.loading': 'Die Aufnahme kommt noch.',
-  'access.music.none': '<b>Von hier aus gibt es kein Stück zum Abspielen.</b> Ein Lied lässt sich nicht synthetisch erzeugen, deshalb bleibt dieser Regler still, bis die Datei lädt &mdash; auf der veröffentlichten Seite tut sie das.',
-  'access.music.loading': 'Das Stück kommt noch.',
-  'access.mute': 'Alles stumm',
-  'access.level.off': 'aus',
-  'access.fx': 'Geräusche',
-  'access.fx.hint': 'Der Hammer, der aufschlägt, eine Ader, die aufgeht, der Guss.',
-  'access.amb': 'Bergwerksklang',
-  'access.amb.hint': 'Der Raumklang des Ortes &mdash; Maschinen, weit weg. Wird im Bergwerk lauter.',
-  'access.music': 'Musik',
-  'access.music.hint': 'Ein Stück darüber.',
-  'access.quiet': 'Beide sind gerade aus. Die Musik kommt übertage und der Raumklang im Bergwerk &mdash; und sobald du einen der beiden Regler selbst bewegst, bleibt er genau da, wo du ihn hinstellst.',
   'access.read': 'VORLESEN',
   'access.read.none': 'Dieser Browser hat keine eingebaute Stimme, deshalb gibt es hier kein Vorlesen.',
   'access.read.hint': 'Liest vor, was Mr Factor sagt, und den Text einer Lektion. Die Diagramme liest es nicht &mdash; die haben eigene Beschreibungen für Screenreader, und die sagen mehr, als die Zahlen es würden.',
@@ -9910,8 +9823,8 @@ MF.STR.de = {
   'guide.hint.pair.1': 'Leg das <b>X</b> darauf: Das Paar muss als Produkt <b>{ac}</b> und als Summe <b>{b}</b> ergeben. Beides zugleich, sonst ist es nicht das Paar.',
   'guide.hint.pair.2': 'Und ein Hammer wird auf eine ganze Form eingestellt. Wenn kein ganzzahliges Paar beides schafft, stecken da keine zwei Klammern drin &mdash; sobald du herausgezogen hast, was <b>jeder Term trägt</b>.',
   'guide.hint.any': 'Nimm dir die Stücke einzeln vor und nenne, was deiner Meinung nach durch das Stück unter der Hacke läuft.',
-  'voice.hint.dyn': '(je nach Brocken) Leg das X darauf: Das Paar muss als Produkt … und als Summe … ergeben.',
-  'voice.give.dyn': '(je nach Brocken) Der wehrt sich, also sag ich es dir einfach: … läuft hindurch.',
+  'guide.hint.dyn': '(je nach Brocken) Leg das X darauf: Das Paar muss als Produkt … und als Summe … ergeben.',
+  'guide.give.dyn': '(je nach Brocken) Der wehrt sich, also sag ich es dir einfach: … läuft hindurch.',
 
   /* Mr Factor inside a room */
   'says.prefix': '<b>Mr Factor:</b> ',
@@ -11259,23 +11172,6 @@ MF.STR.it = {
   'access.motion.hint': 'La miniera ha una giornata di lavoro, del fumo e una ruota che gira.',
   'access.motion.auto': 'Come dice il mio dispositivo',
   'access.motion.reduce': 'Riducilo',
-  'access.sound': 'SUONO',
-  'access.fx.synth': 'Gli effetti registrati non si caricano da qui, quindi questi sono quelli <b>inventati</b> &mdash; oscillatori, non un vero martello. Suonano comunque su tutto.',
-  'access.fx.part': 'Alcuni degli effetti registrati non si caricano da qui; quelli vengono sintetizzati al loro posto.',
-  'access.fx.loading': 'Le registrazioni stanno ancora arrivando. Fino ad allora, effetti sintetizzati.',
-  'access.amb.synth': 'La registrazione non si carica da qui, quindi questo è un suono d’ambiente <b>sintetizzato</b>.',
-  'access.amb.loading': 'La registrazione sta ancora arrivando.',
-  'access.music.none': '<b>Da qui non c’è nessun brano da riprodurre.</b> Una canzone non si può sintetizzare, quindi questo cursore resterà muto finché il file non si carica &mdash; cosa che sul sito pubblicato succederà.',
-  'access.music.loading': 'Il brano sta ancora arrivando.',
-  'access.mute': 'Silenzia tutto',
-  'access.level.off': 'spento',
-  'access.fx': 'Effetti sonori',
-  'access.fx.hint': 'Il martello che cade, un filone che si apre, la colata.',
-  'access.amb': 'Atmosfera della miniera',
-  'access.amb.hint': 'Il suono del posto &mdash; macchinari, molto lontano. Sale in miniera.',
-  'access.music': 'Musica',
-  'access.music.hint': 'Un brano sopra a tutto.',
-  'access.quiet': 'Sono spenti tutti e due, per ora. La musica sale in superficie e l’atmosfera in miniera &mdash; e appena muovi tu uno dei due cursori, resta esattamente dove lo metti.',
   'access.read': 'LETTURA AD ALTA VOCE',
   'access.read.none': 'Questo browser non ha una voce integrata, quindi qui la lettura ad alta voce non è disponibile.',
   'access.read.hint': 'Legge quello che dice Mr Factor e il testo di una lezione. Non legge i diagrammi &mdash; hanno una descrizione loro per i lettori di schermo, e dice più di quanto direbbero i numeri.',
@@ -11355,8 +11251,8 @@ MF.STR.it = {
   'guide.hint.pair.1': 'Metti la <b>X</b> sopra: la coppia deve dare come prodotto <b>{ac}</b> e come somma <b>{b}</b>. Tutte e due le cose insieme, o non è la coppia.',
   'guide.hint.pair.2': 'E un martello si regola su una forma intera. Se nessuna coppia intera fa tutte e due le cose, lì dentro non ci sono due parentesi &mdash; una volta tolto quello che <b>porta ogni termine</b>.',
   'guide.hint.any': 'Prendi i pezzi uno alla volta, e nomina quello che secondo te attraversa quello sotto il piccone.',
-  'voice.hint.dyn': '(dipende dal blocco) Metti la X sopra: la coppia deve dare come prodotto … e come somma ….',
-  'voice.give.dyn': '(dipende dal blocco) Questo ti sta facendo penare, quindi te lo dico e basta: … lo attraversa.',
+  'guide.hint.dyn': '(dipende dal blocco) Metti la X sopra: la coppia deve dare come prodotto … e come somma ….',
+  'guide.give.dyn': '(dipende dal blocco) Questo ti sta facendo penare, quindi te lo dico e basta: … lo attraversa.',
 
   /* Mr Factor inside a room */
   'says.prefix': '<b>Mr Factor:</b> ',
@@ -12704,23 +12600,6 @@ MF.STR.id = {
   'access.motion.hint': 'Tambang ini punya hari kerja, asap, dan roda yang berputar.',
   'access.motion.auto': 'Ikuti perangkatku',
   'access.motion.reduce': 'Kurangi',
-  'access.sound': 'SUARA',
-  'access.fx.synth': 'Rekaman suara tidak termuat dari sini, jadi ini suara <b>buatan</b> &mdash; osilator, bukan palu sungguhan. Suaranya tetap berbunyi untuk semuanya.',
-  'access.fx.part': 'Sebagian rekaman suara tidak termuat dari sini; yang itu diganti suara sintetis.',
-  'access.fx.loading': 'Rekamannya masih dalam perjalanan. Sampai tiba, yang terdengar suara sintetis.',
-  'access.amb.synth': 'Rekamannya tidak termuat dari sini, jadi ini suara ruangan <b>sintetis</b>.',
-  'access.amb.loading': 'Rekamannya masih dalam perjalanan.',
-  'access.music.none': '<b>Tidak ada lagu yang bisa diputar dari sini.</b> Lagu tidak bisa disintesis, jadi penggeser ini akan tetap sunyi sampai berkasnya termuat &mdash; dan di situs yang diterbitkan, berkas itu akan termuat.',
-  'access.music.loading': 'Lagunya masih dalam perjalanan.',
-  'access.mute': 'Bisukan semuanya',
-  'access.level.off': 'mati',
-  'access.fx': 'Efek suara',
-  'access.fx.hint': 'Palu yang mendarat, urat yang terbuka, tuangan.',
-  'access.amb': 'Suasana tambang',
-  'access.amb.hint': 'Suara ruangan tempat ini &mdash; mesin, jauh di sana. Terdengar di dalam tambang.',
-  'access.music': 'Musik',
-  'access.music.hint': 'Sebuah lagu di atas semua itu.',
-  'access.quiet': 'Keduanya sedang mati. Musik terdengar di permukaan dan suara ruangan di dalam tambang &mdash; dan begitu kamu menggeser salah satunya sendiri, penggeser itu tetap di tempat kamu menaruhnya.',
   'access.read': 'BACAKAN',
   'access.read.none': 'Peramban ini tidak punya suara bawaan, jadi fitur bacakan tidak tersedia di sini.',
   'access.read.hint': 'Membacakan ucapan Mr Factor dan kata-kata dalam pelajaran. Diagram tidak dibacakan &mdash; diagram membawa deskripsinya sendiri untuk pembaca layar, dan deskripsi itu menjelaskan lebih banyak daripada angkanya.',
@@ -12800,8 +12679,8 @@ MF.STR.id = {
   'guide.hint.pair.1': 'Pasang <b>X</b> di atasnya: pasangannya harus punya hasil kali <b>{ac}</b> dan jumlah <b>{b}</b>. Keduanya sekaligus, atau itu bukan pasangannya.',
   'guide.hint.pair.2': 'Dan palu dipotong ke bentuk yang utuh. Kalau tidak ada pasangan bilangan bulat yang memenuhi keduanya, tidak ada sepasang kurung di dalamnya &mdash; setelah kamu mengeluarkan apa pun yang <b>dibawa setiap suku</b>.',
   'guide.hint.any': 'Ambil potongannya satu per satu, dan sebut apa yang menurutmu melewati potongan di bawah beliung.',
-  'voice.hint.dyn': '(berubah sesuai bongkahan) Pasang X di atasnya: pasangannya harus punya hasil kali … dan jumlah ….',
-  'voice.give.dyn': '(berubah sesuai bongkahan) Yang itu melawanmu, jadi aku katakan saja: … melewatinya.',
+  'guide.hint.dyn': '(berubah sesuai bongkahan) Pasang X di atasnya: pasangannya harus punya hasil kali … dan jumlah ….',
+  'guide.give.dyn': '(berubah sesuai bongkahan) Yang itu melawanmu, jadi aku katakan saja: … melewatinya.',
 
   /* Mr Factor inside a room */
   'says.prefix': '<b>Mr Factor:</b> ',
@@ -14151,23 +14030,6 @@ MF.STR.tr = {
   'access.motion.hint': 'Madenin bir iş günü, dumanı ve dönen bir çarkı var.',
   'access.motion.auto': 'Cihazım ne diyorsa',
   'access.motion.reduce': 'Azalt',
-  'access.sound': 'SES',
-  'access.fx.synth': 'Kayıtlı sesler buradan yüklenmiyor, bu yüzden bunlar <b>yapay</b> sesler &mdash; gerçek bir çekiç değil, osilatör. Yine de her şeyde çalarlar.',
-  'access.fx.part': 'Kayıtlı seslerin bazıları buradan yüklenmiyor; onların yerine sentez sesler çalıyor.',
-  'access.fx.loading': 'Kayıtlar henüz gelmedi. Gelene kadar sentez sesler çalar.',
-  'access.amb.synth': 'Kayıt buradan yüklenmiyor, bu yüzden bu <b>sentez</b> bir ortam sesi.',
-  'access.amb.loading': 'Kayıt henüz gelmedi.',
-  'access.music.none': '<b>Buradan çalınacak bir parça yok.</b> Bir şarkı sentezlenemez, bu yüzden dosya yüklenene kadar bu kaydırıcı sessiz kalır &mdash; yayımlanan sitede yüklenecektir.',
-  'access.music.loading': 'Parça henüz gelmedi.',
-  'access.mute': 'Her şeyi sustur',
-  'access.level.off': 'kapalı',
-  'access.fx': 'Ses efektleri',
-  'access.fx.hint': 'Çekicin inişi, bir damarın açılması, döküm.',
-  'access.amb': 'Maden ortam sesi',
-  'access.amb.hint': 'Buranın ortam sesi &mdash; uzaklarda makineler. Madende duyulur.',
-  'access.music': 'Müzik',
-  'access.music.hint': 'Hepsinin üstünde çalan bir parça.',
-  'access.quiet': 'Bu ikisi şu an kapalı. Müzik yüzeyde, ortam sesi madende açılır &mdash; kaydırıcılardan birini kendin oynattığında da tam bıraktığın yerde kalır.',
   'access.read': 'SESLİ OKU',
   'access.read.none': 'Bu tarayıcıda yerleşik bir ses yok, bu yüzden sesli okuma burada kullanılamıyor.',
   'access.read.hint': 'Mr Factor’un söylediklerini ve bir dersin metnini okur. Çizimleri okumaz &mdash; onların ekran okuyucu için kendi açıklamaları vardır ve sayılardan fazlasını anlatırlar.',
@@ -14247,8 +14109,8 @@ MF.STR.tr = {
   'guide.hint.pair.1': 'Üzerine <b>X</b> koy: çiftin çarpımı <b>{ac}</b>, toplamı <b>{b}</b> olmalı. İkisi birden, yoksa o çift değildir.',
   'guide.hint.pair.2': 'Çekiç de tam bir biçime göre kesilir. İkisini birden sağlayan tam sayı çifti yoksa, <b>her terimin taşıdığı</b> şeyi çıkardıktan sonra orada bir parantez çifti de yoktur.',
   'guide.hint.any': 'Parçaları tek tek al ve kazmanın altındakinden neyin geçtiğini düşünüyorsan onu söyle.',
-  'voice.hint.dyn': '(topağa göre değişir) Üzerine X koy: çiftin çarpımı …, toplamı … olmalı.',
-  'voice.give.dyn': '(topağa göre değişir) Bu seninle inatlaşıyor, o yüzden doğrudan söyleyeyim: içinden … geçiyor.',
+  'guide.hint.dyn': '(topağa göre değişir) Üzerine X koy: çiftin çarpımı …, toplamı … olmalı.',
+  'guide.give.dyn': '(topağa göre değişir) Bu seninle inatlaşıyor, o yüzden doğrudan söyleyeyim: içinden … geçiyor.',
 
   /* Mr Factor inside a room */
   'says.prefix': '<b>Mr Factor:</b> ',
@@ -15597,23 +15459,6 @@ MF.STR.vi = {
   'access.motion.hint': 'Hầm mỏ có một ngày làm việc, khói và một bánh xe đang quay.',
   'access.motion.auto': 'Theo thiết bị của tôi',
   'access.motion.reduce': 'Giảm bớt',
-  'access.sound': 'ÂM THANH',
-  'access.fx.synth': 'Các âm thanh thu sẵn không tải được từ đây, nên đây là âm <b>tổng hợp</b> &mdash; tạo bằng bộ dao động, không phải tiếng búa thật. Chúng vẫn vang lên ở mọi chỗ.',
-  'access.fx.part': 'Một số âm thanh thu sẵn không tải được từ đây; những âm đó được thay bằng âm tổng hợp.',
-  'access.fx.loading': 'Các bản thu vẫn đang tải. Trong lúc chờ sẽ dùng âm tổng hợp.',
-  'access.amb.synth': 'Bản thu không tải được từ đây, nên đây là tiếng nền <b>tổng hợp</b>.',
-  'access.amb.loading': 'Bản thu vẫn đang tải.',
-  'access.music.none': '<b>Không có bản nhạc nào để phát từ đây.</b> Một bài hát thì không tổng hợp được, nên thanh trượt này sẽ im lặng cho đến khi tệp tải xong &mdash; trên trang đã xuất bản thì tệp sẽ tải.',
-  'access.music.loading': 'Bản nhạc vẫn đang tải.',
-  'access.mute': 'Tắt hết âm thanh',
-  'access.level.off': 'tắt',
-  'access.fx': 'Hiệu ứng âm thanh',
-  'access.fx.hint': 'Tiếng búa giáng xuống, tiếng vỉa tách ra, tiếng rót kim loại.',
-  'access.amb': 'Tiếng nền hầm mỏ',
-  'access.amb.hint': 'Tiếng nền của nơi này &mdash; máy móc ở đằng xa. Vang lên khi xuống mỏ.',
-  'access.music': 'Nhạc',
-  'access.music.hint': 'Một bản nhạc phát bên trên tất cả.',
-  'access.quiet': 'Cả hai đang tắt. Nhạc vang lên ở mặt đất và tiếng nền vang lên trong mỏ &mdash; và một khi bạn tự kéo thanh trượt nào, nó sẽ ở nguyên chỗ bạn đặt.',
   'access.read': 'ĐỌC TO',
   'access.read.none': 'Trình duyệt này không có giọng đọc sẵn, nên không dùng được tính năng đọc to ở đây.',
   'access.read.hint': 'Đọc những gì Mr Factor nói và phần chữ của bài học. Không đọc các hình vẽ &mdash; chúng có mô tả riêng cho trình đọc màn hình, và mô tả đó nói được nhiều hơn các con số.',
@@ -15693,8 +15538,8 @@ MF.STR.vi = {
   'guide.hint.pair.1': 'Đặt <b>X</b> lên nó: cặp số phải có tích <b>{ac}</b> và tổng <b>{b}</b>. Cả hai cùng lúc, không thì đó không phải cặp cần tìm.',
   'guide.hint.pair.2': 'Và búa được chỉnh theo một dạng nguyên. Nếu không có cặp số nguyên nào thỏa cả hai, thì bên trong không có cặp ngoặc nào &mdash; sau khi bạn đã rút ra thứ mà <b>mọi hạng tử đều mang</b>.',
   'guide.hint.any': 'Lấy từng mảnh một, và gọi tên thứ bạn nghĩ đang chạy qua mảnh nằm dưới cuốc.',
-  'voice.hint.dyn': '(thay đổi theo cục quặng) Đặt X lên nó: cặp số phải có tích … và tổng ….',
-  'voice.give.dyn': '(thay đổi theo cục quặng) Cục này đang làm khó bạn, nên tôi nói luôn: … chạy qua nó.',
+  'guide.hint.dyn': '(thay đổi theo cục quặng) Đặt X lên nó: cặp số phải có tích … và tổng ….',
+  'guide.give.dyn': '(thay đổi theo cục quặng) Cục này đang làm khó bạn, nên tôi nói luôn: … chạy qua nó.',
 
   /* Mr Factor inside a room */
   'says.prefix': '<b>Mr Factor:</b> ',
@@ -17044,23 +16889,6 @@ MF.STR.ru = {
   'access.motion.hint': 'На руднике идёт рабочий день, есть дым и вращающееся колесо.',
   'access.motion.auto': 'Как на устройстве',
   'access.motion.reduce': 'Уменьшить',
-  'access.sound': 'ЗВУК',
-  'access.fx.synth': 'Записанные звуки отсюда не загружаются, поэтому звучат <b>синтезированные</b> &mdash; генераторы, а не настоящий молот. Они всё равно звучат на каждое действие.',
-  'access.fx.part': 'Часть записанных звуков отсюда не загружается; они заменены синтезированными.',
-  'access.fx.loading': 'Записи ещё загружаются. Пока звучат синтезированные.',
-  'access.amb.synth': 'Запись отсюда не загружается, поэтому это <b>синтезированный</b> фон.',
-  'access.amb.loading': 'Запись ещё загружается.',
-  'access.music.none': '<b>Здесь нечего проигрывать.</b> Песню нельзя синтезировать, поэтому этот ползунок будет молчать, пока файл не загрузится &mdash; на опубликованном сайте он загрузится.',
-  'access.music.loading': 'Трек ещё загружается.',
-  'access.mute': 'Выключить весь звук',
-  'access.level.off': 'выкл.',
-  'access.fx': 'Звуковые эффекты',
-  'access.fx.hint': 'Удар молота, раскрывшаяся жила, заливка.',
-  'access.amb': 'Шум рудника',
-  'access.amb.hint': 'Фоновый шум этого места &mdash; далёкие машины. Слышен в руднике.',
-  'access.music': 'Музыка',
-  'access.music.hint': 'Трек поверх всего остального.',
-  'access.quiet': 'Оба сейчас выключены. Музыка включается на поверхности, а фон — в руднике &mdash; а если сдвинуть любой ползунок вручную, он останется ровно там, где его поставили.',
   'access.read': 'ЧТЕНИЕ ВСЛУХ',
   'access.read.none': 'В этом браузере нет встроенного голоса, поэтому чтение вслух здесь недоступно.',
   'access.read.hint': 'Читает то, что говорит Mr Factor, и текст урока. Схемы не читаются &mdash; у них есть собственные описания для программ чтения с экрана, и эти описания говорят больше, чем числа.',
@@ -17140,8 +16968,8 @@ MF.STR.ru = {
   'guide.hint.pair.1': 'Поставь на него <b>X</b>: пара должна давать в произведении <b>{ac}</b>, а в сумме <b>{b}</b>. Оба условия сразу, иначе это не та пара.',
   'guide.hint.pair.2': 'А молот настраивается на целую форму. Если ни одна целая пара не подходит под оба условия, никакой пары скобок там нет &mdash; после того как вынесено всё, что <b>несёт каждый член</b>.',
   'guide.hint.any': 'Бери куски по одному и называй то, что, по-твоему, проходит через тот, что под кайлом.',
-  'voice.hint.dyn': '(зависит от куска) Поставь на него X: пара должна давать в произведении …, а в сумме ….',
-  'voice.give.dyn': '(зависит от куска) Этот кусок упрямится, так что скажу прямо: через него проходит ….',
+  'guide.hint.dyn': '(зависит от куска) Поставь на него X: пара должна давать в произведении …, а в сумме ….',
+  'guide.give.dyn': '(зависит от куска) Этот кусок упрямится, так что скажу прямо: через него проходит ….',
 
   /* Mr Factor inside a room */
   'says.prefix': '<b>Mr Factor:</b> ',
@@ -18492,23 +18320,6 @@ MF.STR.zh = {
   'access.motion.hint': '矿场有日夜更替、烟雾和转动的轮子。',
   'access.motion.auto': '跟随设备设置',
   'access.motion.reduce': '减少动画',
-  'access.sound': '声音',
-  'access.fx.synth': '录制的音效无法从这里加载，所以现在播放的是<b>合成</b>音效 &mdash; 由振荡器产生，不是真的锤子。不过每个动作仍然都有声音。',
-  'access.fx.part': '部分录制的音效无法从这里加载，这些音效改用合成声音。',
-  'access.fx.loading': '录音还在加载。加载完成前先使用合成音效。',
-  'access.amb.synth': '录音无法从这里加载，所以这是<b>合成</b>的环境声。',
-  'access.amb.loading': '录音还在加载。',
-  'access.music.none': '<b>这里没有可以播放的曲目。</b>歌曲无法合成，所以在文件加载前这个滑块不会有声音 &mdash; 在正式发布的网站上文件会加载。',
-  'access.music.loading': '曲目还在加载。',
-  'access.mute': '全部静音',
-  'access.level.off': '关',
-  'access.fx': '音效',
-  'access.fx.hint': '锤子落下、矿脉裂开、浇铸的声音。',
-  'access.amb': '矿井环境声',
-  'access.amb.hint': '这个地方的背景声 &mdash; 远处的机器。在矿井里响起。',
-  'access.music': '音乐',
-  'access.music.hint': '叠在一切之上的一段音乐。',
-  'access.quiet': '这两项现在都是关着的。音乐在地面响起，环境声在矿井里响起 &mdash; 只要你亲手拖动过其中一个滑块，它就会一直停在你放的位置。',
   'access.read': '朗读',
   'access.read.none': '这个浏览器没有内置语音，所以这里无法使用朗读。',
   'access.read.hint': '朗读 Mr Factor 说的话和课程里的文字。不朗读示意图 &mdash; 示意图为读屏软件准备了自己的说明，这些说明比数字本身讲得更多。',
@@ -18588,8 +18399,8 @@ MF.STR.zh = {
   'guide.hint.pair.1': '在它上面画 <b>X</b>：这对数必须乘积是 <b>{ac}</b>，和是 <b>{b}</b>。两个条件同时满足，否则就不是那一对。',
   'guide.hint.pair.2': '锤子只能调成整数的形状。如果没有一对整数能同时满足两个条件，那里面就没有一对括号 &mdash; 前提是你已经提出了<b>每一项都带着的</b>东西。',
   'guide.hint.any': '一次拿一块，说出你认为贯穿锤下这一块的是什么。',
-  'voice.hint.dyn': '（随矿石变化）在它上面画 X：这对数必须乘积是……，和是……。',
-  'voice.give.dyn': '（随矿石变化）这块跟你较上劲了，我直接说吧：……贯穿其中。',
+  'guide.hint.dyn': '（随矿石变化）在它上面画 X：这对数必须乘积是……，和是……。',
+  'guide.give.dyn': '（随矿石变化）这块跟你较上劲了，我直接说吧：……贯穿其中。',
 
   /* Mr Factor inside a room */
   'says.prefix': '<b>Mr Factor：</b>',
@@ -19938,23 +19749,6 @@ MF.STR.ja = {
   'access.motion.hint': '鉱山には一日の移り変わりと、煙と、回る車輪があります。',
   'access.motion.auto': '端末の設定に合わせる',
   'access.motion.reduce': '減らす',
-  'access.sound': '音',
-  'access.fx.synth': '録音した効果音をここから読み込めないため、<b>合成</b>の音を使っています &mdash; 本物のハンマーではなく発振器の音です。それでも、すべての操作で鳴ります。',
-  'access.fx.part': '録音した効果音の一部をここから読み込めないため、その分は合成の音を使っています。',
-  'access.fx.loading': '録音はまだ読み込み中です。届くまでは合成の音を使います。',
-  'access.amb.synth': '録音をここから読み込めないため、これは<b>合成</b>の環境音です。',
-  'access.amb.loading': '録音はまだ読み込み中です。',
-  'access.music.none': '<b>ここから再生できる曲はありません。</b>曲は合成できないため、ファイルが読み込まれるまでこのスライダーは無音です &mdash; 公開されたサイトでは読み込まれます。',
-  'access.music.loading': '曲はまだ読み込み中です。',
-  'access.mute': 'すべて消音',
-  'access.level.off': 'オフ',
-  'access.fx': '効果音',
-  'access.fx.hint': 'ハンマーが落ちる音、鉱脈が割れる音、流し込む音。',
-  'access.amb': '鉱山の環境音',
-  'access.amb.hint': 'この場所の背景の音です &mdash; 遠くで動く機械。鉱山の中で聞こえます。',
-  'access.music': '音楽',
-  'access.music.hint': 'すべての上に流れる一曲です。',
-  'access.quiet': 'どちらも今はオフです。音楽は地上で、環境音は鉱山の中で流れます &mdash; 自分でスライダーを動かしたら、その位置のまま変わりません。',
   'access.read': '読み上げ',
   'access.read.none': 'このブラウザーには読み上げ用の音声がないため、ここでは読み上げを使えません。',
   'access.read.hint': 'Mr Factor の言葉と、レッスンの文章を読み上げます。図は読み上げません &mdash; 図にはスクリーンリーダー用の説明がついていて、その説明のほうが数字よりも多くを伝えます。',
@@ -20034,8 +19828,8 @@ MF.STR.ja = {
   'guide.hint.pair.1': 'その上に <b>X</b> を書きましょう。二つの数は、積が <b>{ac}</b>、和が <b>{b}</b> にならなければなりません。両方を同時に満たさなければ、その組ではありません。',
   'guide.hint.pair.2': 'そしてハンマーは整数の形にしか合わせられません。両方を満たす整数の組がなければ、中にかっこの組はありません &mdash; <b>すべての項が持っている</b>ものをくくり出したあとなら。',
   'guide.hint.any': '塊をひとつずつ取り上げて、つるはしの下にあるものを何が通っていると思うか言ってください。',
-  'voice.hint.dyn': '（塊によって変わります）その上に X を置きましょう。二つの数は、積が……、和が……にならなければなりません。',
-  'voice.give.dyn': '（塊によって変わります）この塊は手ごわいので、はっきり言いますね。……が通っています。',
+  'guide.hint.dyn': '（塊によって変わります）その上に X を置きましょう。二つの数は、積が……、和が……にならなければなりません。',
+  'guide.give.dyn': '（塊によって変わります）この塊は手ごわいので、はっきり言いますね。……が通っています。',
 
   /* Mr Factor inside a room */
   'says.prefix': '<b>Mr Factor：</b>',
@@ -21384,23 +21178,6 @@ MF.STR.ko = {
   'access.motion.hint': '광산에는 하루의 흐름과 연기, 돌아가는 바퀴가 있어요.',
   'access.motion.auto': '기기 설정 따르기',
   'access.motion.reduce': '줄이기',
-  'access.sound': '소리',
-  'access.fx.synth': '녹음된 효과음을 여기서 불러올 수 없어서 <b>합성</b> 소리를 쓰고 있어요 &mdash; 진짜 망치 소리가 아니라 발진기 소리예요. 그래도 모든 동작에서 소리가 나요.',
-  'access.fx.part': '녹음된 효과음 일부를 여기서 불러올 수 없어서, 그 소리는 합성 소리로 대신해요.',
-  'access.fx.loading': '녹음이 아직 불러오는 중이에요. 도착할 때까지는 합성 소리를 써요.',
-  'access.amb.synth': '녹음을 여기서 불러올 수 없어서, 이건 <b>합성</b> 환경음이에요.',
-  'access.amb.loading': '녹음이 아직 불러오는 중이에요.',
-  'access.music.none': '<b>여기서 재생할 곡이 없어요.</b> 노래는 합성할 수 없어서, 파일을 불러오기 전까지 이 슬라이더는 조용해요 &mdash; 공개된 사이트에서는 불러와져요.',
-  'access.music.loading': '곡이 아직 불러오는 중이에요.',
-  'access.mute': '모든 소리 끄기',
-  'access.level.off': '끔',
-  'access.fx': '효과음',
-  'access.fx.hint': '망치가 떨어지는 소리, 광맥이 갈라지는 소리, 쇳물을 붓는 소리.',
-  'access.amb': '광산 환경음',
-  'access.amb.hint': '이곳의 배경 소리예요 &mdash; 멀리서 도는 기계들. 광산 안에서 들려요.',
-  'access.music': '음악',
-  'access.music.hint': '모든 소리 위에 흐르는 곡이에요.',
-  'access.quiet': '지금은 둘 다 꺼져 있어요. 음악은 지상에서, 환경음은 광산 안에서 켜져요 &mdash; 슬라이더를 직접 한 번 움직이면 그 자리에 그대로 머물러요.',
   'access.read': '소리 내어 읽기',
   'access.read.none': '이 브라우저에는 읽어 주는 음성이 없어서, 여기서는 소리 내어 읽기를 쓸 수 없어요.',
   'access.read.hint': 'Mr Factor가 하는 말과 수업의 글을 읽어 줘요. 그림은 읽지 않아요 &mdash; 그림에는 화면 낭독기용 설명이 따로 있고, 그 설명이 숫자보다 더 많은 것을 알려 줘요.',
@@ -21480,8 +21257,8 @@ MF.STR.ko = {
   'guide.hint.pair.1': '그 위에 <b>X</b>를 그리세요. 두 수는 곱이 <b>{ac}</b>, 합이 <b>{b}</b>여야 해요. 둘을 동시에 만족해야 그 짝이에요.',
   'guide.hint.pair.2': '그리고 망치는 정수 모양에만 맞출 수 있어요. 둘을 모두 만족하는 정수 짝이 없다면, 안에 괄호 짝도 없어요 &mdash; <b>모든 항이 가진</b> 것을 이미 묶어 냈다면요.',
   'guide.hint.any': '조각을 하나씩 들고, 곡괭이 아래 있는 조각에 무엇이 지나간다고 생각하는지 말해 보세요.',
-  'voice.hint.dyn': '(덩어리에 따라 달라요) 그 위에 X를 그리세요. 두 수는 곱이 …, 합이 …여야 해요.',
-  'voice.give.dyn': '(덩어리에 따라 달라요) 이 덩어리는 버티고 있으니 그냥 말할게요. …이(가) 지나가요.',
+  'guide.hint.dyn': '(덩어리에 따라 달라요) 그 위에 X를 그리세요. 두 수는 곱이 …, 합이 …여야 해요.',
+  'guide.give.dyn': '(덩어리에 따라 달라요) 이 덩어리는 버티고 있으니 그냥 말할게요. …이(가) 지나가요.',
 
   /* Mr Factor inside a room */
   'says.prefix': '<b>Mr Factor:</b> ',
@@ -22831,23 +22608,6 @@ MF.STR.hi = {
   'access.motion.hint': 'खान में दिन का काम, धुआँ और घूमता पहिया है।',
   'access.motion.auto': 'जैसा मेरा डिवाइस कहे',
   'access.motion.reduce': 'कम करें',
-  'access.sound': 'ध्वनि',
-  'access.fx.synth': 'रिकॉर्ड की गई ध्वनियाँ यहाँ से लोड नहीं हो रहीं, इसलिए ये <b>कृत्रिम</b> ध्वनियाँ हैं &mdash; असली हथौड़ा नहीं, ऑसिलेटर। फिर भी हर काम पर बजती हैं।',
-  'access.fx.part': 'कुछ रिकॉर्ड की गई ध्वनियाँ यहाँ से लोड नहीं हो रहीं; उनकी जगह कृत्रिम ध्वनियाँ बज रही हैं।',
-  'access.fx.loading': 'रिकॉर्डिंग अभी आ रही हैं। तब तक कृत्रिम ध्वनियाँ बजेंगी।',
-  'access.amb.synth': 'रिकॉर्डिंग यहाँ से लोड नहीं हो रही, इसलिए यह <b>कृत्रिम</b> माहौल की ध्वनि है।',
-  'access.amb.loading': 'रिकॉर्डिंग अभी आ रही है।',
-  'access.music.none': '<b>यहाँ से बजाने के लिए कोई गाना नहीं है।</b> गाना कृत्रिम रूप से नहीं बनाया जा सकता, इसलिए फ़ाइल लोड होने तक यह स्लाइडर चुप रहेगा &mdash; प्रकाशित साइट पर फ़ाइल लोड होगी।',
-  'access.music.loading': 'गाना अभी आ रहा है।',
-  'access.mute': 'सारी आवाज़ बंद करें',
-  'access.level.off': 'बंद',
-  'access.fx': 'ध्वनि प्रभाव',
-  'access.fx.hint': 'हथौड़े का गिरना, शिरा का खुलना, ढलाई।',
-  'access.amb': 'खान का माहौल',
-  'access.amb.hint': 'इस जगह की पृष्ठभूमि की आवाज़ &mdash; दूर चलती मशीनें। खान के भीतर सुनाई देती है।',
-  'access.music': 'संगीत',
-  'access.music.hint': 'इन सबके ऊपर बजता एक गाना।',
-  'access.quiet': 'अभी ये दोनों बंद हैं। संगीत सतह पर और माहौल की आवाज़ खान में शुरू होती है &mdash; और एक बार कोई स्लाइडर ख़ुद खिसकाने पर, वह वहीं टिका रहता है जहाँ रखा गया।',
   'access.read': 'पढ़कर सुनाएँ',
   'access.read.none': 'इस ब्राउज़र में पढ़कर सुनाने वाली आवाज़ नहीं है, इसलिए यहाँ यह सुविधा उपलब्ध नहीं है।',
   'access.read.hint': 'Mr Factor की बातें और पाठ के शब्द पढ़कर सुनाता है। चित्र नहीं पढ़ता &mdash; उनके पास स्क्रीन रीडर के लिए अपने विवरण हैं, और वे विवरण संख्याओं से ज़्यादा बताते हैं।',
@@ -22927,8 +22687,8 @@ MF.STR.hi = {
   'guide.hint.pair.1': 'इस पर <b>X</b> बनाइए: जोड़ी का गुणनफल <b>{ac}</b> और योग <b>{b}</b> होना चाहिए। दोनों एक साथ, वरना वह जोड़ी नहीं।',
   'guide.hint.pair.2': 'और हथौड़ा किसी पूरे आकार के लिए ही काटा जाता है। अगर कोई पूर्णांक जोड़ी दोनों शर्तें पूरी न करे, तो भीतर कोष्ठकों की कोई जोड़ी नहीं है &mdash; बशर्ते <b>हर पद में जो है</b> वह पहले निकाल लिया गया हो।',
   'guide.hint.any': 'टुकड़ों को एक-एक करके लीजिए, और बताइए कि गैंती के नीचे वाले टुकड़े में से क्या गुज़रता है।',
-  'voice.hint.dyn': '(ढेले के हिसाब से बदलता है) इस पर X बनाइए: जोड़ी का गुणनफल … और योग … होना चाहिए।',
-  'voice.give.dyn': '(ढेले के हिसाब से बदलता है) यह ढेला अड़ा हुआ है, इसलिए सीधे बता देता हूँ: इसमें से … गुज़रता है।',
+  'guide.hint.dyn': '(ढेले के हिसाब से बदलता है) इस पर X बनाइए: जोड़ी का गुणनफल … और योग … होना चाहिए।',
+  'guide.give.dyn': '(ढेले के हिसाब से बदलता है) यह ढेला अड़ा हुआ है, इसलिए सीधे बता देता हूँ: इसमें से … गुज़रता है।',
 
   /* Mr Factor inside a room */
   'says.prefix': '<b>Mr Factor:</b> ',
@@ -24270,23 +24030,6 @@ MF.STR.ar = {
   'access.motion.hint': 'في المنجم يوم عمل، ودخان، وعجلة تدور.',
   'access.motion.auto': 'كما يقول جهازي',
   'access.motion.reduce': 'قلّلها',
-  'access.sound': 'الصوت',
-  'access.fx.synth': 'الأصوات المسجّلة لا تصل من هنا، لذا هذه هي الأصوات <b>المصنوعة</b> &mdash; مذبذبات، لا مطرقة حقيقية. وهي تعمل على كل شيء رغم ذلك.',
-  'access.fx.part': 'بعض الأصوات المسجّلة لا تصل من هنا؛ تلك وحدها مصنوعة بدلًا منها.',
-  'access.fx.loading': 'التسجيلات ما زالت في الطريق. أصوات مصنوعة حتى تصل.',
-  'access.amb.synth': 'التسجيل لا يصل من هنا، لذا هذه أجواء غرفة <b>مصنوعة</b>.',
-  'access.amb.loading': 'التسجيل ما زال في الطريق.',
-  'access.music.none': '<b>لا يوجد مقطع يُشغَّل من هنا.</b> الأغنية لا تُصنع، لذا سيبقى هذا المؤشر صامتًا حتى يصل الملف &mdash; وسيصل على الموقع المنشور.',
-  'access.music.loading': 'المقطع ما زال في الطريق.',
-  'access.mute': 'أسكِت كل شيء',
-  'access.level.off': 'مغلق',
-  'access.fx': 'المؤثرات الصوتية',
-  'access.fx.hint': 'وقع المطرقة، وجريان العِرق، والصبّ.',
-  'access.amb': 'أجواء المنجم',
-  'access.amb.hint': 'صوت المكان نفسه &mdash; آلات على بُعد. يعلو داخل المنجم.',
-  'access.music': 'الموسيقى',
-  'access.music.hint': 'مقطع يعلو فوق كل ذلك.',
-  'access.quiet': 'كلاهما مغلق الآن. الموسيقى تعلو على السطح وصوت الغرفة داخل المنجم &mdash; وما إن تحرّك أيًّا منهما بنفسك حتى يبقى حيث وضعته تمامًا.',
   'access.read': 'القراءة بصوت مسموع',
   'access.read.none': 'لا صوت مدمجًا في هذا المتصفح، لذا القراءة بصوت مسموع غير متاحة هنا.',
   'access.read.hint': 'يقرأ ما يقوله Mr Factor وكلام الدرس. ولا يقرأ الرسوم &mdash; فتلك تحمل أوصافها الخاصة لقارئ الشاشة، وهي تقول أكثر مما تقوله الأرقام.',
@@ -24366,8 +24109,8 @@ MF.STR.ar = {
   'guide.hint.pair.1': 'ضع <b>X</b> عليها: الزوج يجب أن يضرب فيعطي <b>{ac}</b> ويجمع فيعطي <b>{b}</b>. الاثنان معًا، وإلا فليس هو الزوج.',
   'guide.hint.pair.2': 'والمطرقة مقطوعة على شكل صحيح. فإن لم يحقق زوج صحيح الأمرين، فلا زوج أقواس هناك &mdash; بعد أن تكون قد أخرجت ما <b>يحمله كل حد</b>.',
   'guide.hint.any': 'خذ القطع واحدة واحدة، وسمِّ ما تظنه يجري في التي تحت المعول.',
-  'voice.hint.dyn': '(يختلف باختلاف الكتلة) ضع X عليها: الزوج يجب أن يضرب فيعطي … ويجمع فيعطي ….',
-  'voice.give.dyn': '(يختلف باختلاف الكتلة) تلك تقاومك، لذا سأقولها مباشرة: … يجري فيها.',
+  'guide.hint.dyn': '(يختلف باختلاف الكتلة) ضع X عليها: الزوج يجب أن يضرب فيعطي … ويجمع فيعطي ….',
+  'guide.give.dyn': '(يختلف باختلاف الكتلة) تلك تقاومك، لذا سأقولها مباشرة: … يجري فيها.',
 
   /* Mr Factor inside a room */
   'says.prefix': '<b>Mr Factor:</b> ',
@@ -25711,23 +25454,6 @@ MF.STR.ur = {
   'access.motion.hint': 'کان میں کام کا دن ہے، دھواں ہے، اور ایک گھومتا پہیہ۔',
   'access.motion.auto': 'جیسا میرا آلہ کہے',
   'access.motion.reduce': 'کم کر دیجیے',
-  'access.sound': 'آواز',
-  'access.fx.synth': 'ریکارڈ شدہ آوازیں یہاں سے نہیں آ رہیں، اس لیے یہ <b>بنائی ہوئی</b> آوازیں ہیں &mdash; مرتعش آلات، اصلی ہتھوڑا نہیں۔ پھر بھی یہ ہر چیز پر چلتی ہیں۔',
-  'access.fx.part': 'کچھ ریکارڈ شدہ آوازیں یہاں سے نہیں آ رہیں؛ اُن کی جگہ بنائی ہوئی آوازیں ہیں۔',
-  'access.fx.loading': 'ریکارڈنگ ابھی آ رہی ہے۔ تب تک بنائی ہوئی آوازیں۔',
-  'access.amb.synth': 'ریکارڈنگ یہاں سے نہیں آ رہی، اس لیے یہ <b>بنائی ہوئی</b> کمرے کی گونج ہے۔',
-  'access.amb.loading': 'ریکارڈنگ ابھی آ رہی ہے۔',
-  'access.music.none': '<b>یہاں سے چلانے کو کوئی دھن نہیں۔</b> گانا بنایا نہیں جا سکتا، اس لیے یہ سلائیڈر خاموش رہے گا جب تک فائل نہ آ جائے &mdash; اور شائع شدہ سائٹ پر وہ آ جائے گی۔',
-  'access.music.loading': 'دھن ابھی آ رہی ہے۔',
-  'access.mute': 'سب کچھ خاموش کر دیں',
-  'access.level.off': 'بند',
-  'access.fx': 'صوتی اثرات',
-  'access.fx.hint': 'ہتھوڑے کا گرنا، رگ کا چلنا، اور ڈھلائی۔',
-  'access.amb': 'کان کی فضا',
-  'access.amb.hint': 'جگہ کی اپنی آواز &mdash; دور کہیں مشینیں۔ کان کے اندر بلند ہوتی ہے۔',
-  'access.music': 'موسیقی',
-  'access.music.hint': 'سب کے اوپر ایک دھن۔',
-  'access.quiet': 'دونوں اِس وقت بند ہیں۔ موسیقی سطح پر بلند ہوتی ہے اور کمرے کی گونج کان کے اندر &mdash; اور جہاں آپ خود اِن میں سے کوئی سلائیڈر رکھ دیں، وہیں ٹھہری رہتی ہے۔',
   'access.read': 'بلند آواز میں پڑھنا',
   'access.read.none': 'اِس براؤزر میں کوئی آواز شامل نہیں، اس لیے بلند خوانی یہاں دستیاب نہیں۔',
   'access.read.hint': 'یہ وہ پڑھتا ہے جو Mr Factor کہتے ہیں اور سبق کے الفاظ۔ خاکے نہیں پڑھتا &mdash; اُن کے اپنے بیان اسکرین ریڈر کے لیے موجود ہیں، اور وہ اعداد سے زیادہ بتاتے ہیں۔',
@@ -25807,8 +25533,8 @@ MF.STR.ur = {
   'guide.hint.pair.1': 'اُس پر <b>X</b> رکھیے: جوڑے کو ضرب دے کر <b>{ac}</b> اور جمع کر کے <b>{b}</b> دینا ہے۔ دونوں ایک ساتھ، ورنہ وہ جوڑا نہیں۔',
   'guide.hint.pair.2': 'اور ہتھوڑا پوری شکل پر کٹتا ہے۔ اگر کوئی صحیح جوڑا دونوں نہ کرے تو اُس میں قوسین کا جوڑا ہے ہی نہیں &mdash; بشرطیکہ آپ وہ نکال چکے ہوں جو <b>ہر رقم اُٹھائے</b> ہوئے ہے۔',
   'guide.hint.any': 'ٹکڑے ایک ایک کر کے لیجیے، اور جو گینتی کے نیچے ہے اُس میں سے جو گزرتا لگے اُسے نام دیجیے۔',
-  'voice.hint.dyn': '(ڈھیلے کے ساتھ بدلتا ہے) اُس پر X رکھیے: جوڑے کو ضرب دے کر … اور جمع کر کے … دینا ہے۔',
-  'voice.give.dyn': '(ڈھیلے کے ساتھ بدلتا ہے) وہ ڈھیلا اَڑ گیا ہے، تو میں سیدھا بتا دیتا ہوں: … اُس میں سے گزرتا ہے۔',
+  'guide.hint.dyn': '(ڈھیلے کے ساتھ بدلتا ہے) اُس پر X رکھیے: جوڑے کو ضرب دے کر … اور جمع کر کے … دینا ہے۔',
+  'guide.give.dyn': '(ڈھیلے کے ساتھ بدلتا ہے) وہ ڈھیلا اَڑ گیا ہے، تو میں سیدھا بتا دیتا ہوں: … اُس میں سے گزرتا ہے۔',
 
   /* Mr Factor inside a room */
   'says.prefix': '<b>Mr Factor:</b> ',
@@ -27184,7 +26910,7 @@ MF.paintStatic = function(){
   [].forEach.call(document.querySelectorAll('#hero-art svg[role="img"], #load-art svg[role="img"]'), function(s){
     s.setAttribute('aria-label', MF.t('factor.aria'));
   });
-  document.title = MF.voiceText ? MF.voiceText(MF.t('site.name')) : MF.t('site.name');
+  document.title = MF.plainText ? MF.plainText(MF.t('site.name')) : MF.t('site.name');
   return true;
 };
 
@@ -27203,10 +26929,11 @@ MF.state = {
   forge:{slots:[], picked:null},
   broken:0,
   /* READING & ACCESS, and it is held exactly like everything else */
-  /* THREE SOUND LEVELS, NOT TWO. */
+  /* `speed` is the reading voice's rate and is the only thing here that ever
+     reaches a speaker. The three sound levels and the mute flag went with the
+     audio engine. */
   access:{ type:'standard', size:100, tint:'none', ruler:false, spacing:false,
-           motion:'auto', fx:MF.ACCESS_FX, music:MF.ACCESS_MUSIC, ambience:0, mute:false, speed:1,
-           lang:'en' },
+           motion:'auto', speed:1, lang:'en' },
   rng: makeRng((Date.now()^0x5f3759df)>>>0)
 };
 
@@ -29047,26 +28774,13 @@ function isXMetal(g){ return g.m!==0; }
 
 /* ===== SCREENS ===== */
 MF.SCREENS = {};
-/* WHAT EACH ROOM SOUNDS LIKE WHEN YOU FIRST WALK INTO IT */
-MF.ROOM_SOUND = { mine:{ambience:0.40} };
-MF.roomSound = function(name){
-  var want = MF.ROOM_SOUND[name];
-  if(!want) return false;
-  var a = MF.state.access, touched = false;
-  ['music','ambience'].forEach(function(k){
-    if(want[k] == null || a['_set_' + k]) return;   /* the student's choice wins */
-    if(MF.state._roomdone && MF.state._roomdone[k + ':' + name]) return;
-    a[k] = want[k];
-    (MF.state._roomdone = MF.state._roomdone || {})[k + ':' + name] = 1;
-    touched = true;
-  });
-  if(touched && MF.audio.ready) MF.audio.apply();
-  return touched;
-};
+/* NO ROOM SOUNDS LIKE ANYTHING. MF.ROOM_SOUND said what a room raised on first
+   arrival — the mine brought its room tone up to 40% — and MF.roomSound applied
+   it once per room, carefully never overriding a level the student had set. All
+   of it addressed an engine that is gone. */
 
 MF.go = function(name){
   MF.state.screen = name;
-  MF.roomSound(name);
   var host = q('#screen');
   clear(host);
   try {
@@ -29126,487 +28840,89 @@ MF.GUIDE = {
   teachers: guideRoom('teachers', 1)
 };
 
-/* ===== SOUND. SYNTHESISED, AND THEREFORE STILL THERE FROM file://. ===== */
+/* ===== SILENCE. THE SITE MAKES NO SOUND, AND CANNOT. =====
+
+   This was a Web Audio engine: two beds on their own buses, nine cues loaded
+   from sfx/, synthesised fallbacks so it still spoke from file://, and a loader
+   for a recorded voice. All of it is gone.
+
+   The cues and beds were licensed catalogue recordings. The rights holder was
+   asked, in writing, whether the licence covered a free educational site that
+   publishes its own source openly, and the answer was no. So the files are gone
+   from the tree and from the history, and the code that reached for them went
+   with them — a player with nothing to play is an invitation to put them back.
+
+   WHAT REMAINS IS A STUB THAT SWALLOWS EVERY CALL. About a hundred call sites
+   across the mine, the forge and the guide ask for a cue at the moment something
+   happens, and those moments are the right ones; tearing them out would mean
+   finding them all again later. So the calls stay and land here, where they do
+   nothing, and no AudioContext is ever constructed.
+
+   READ-ALOUD IS NOT THIS. It is the browser's own speech synthesiser: it plays
+   no file and needs nobody's permission, so it stays.
+
+   TO GIVE THE SITE SOUND AGAIN you need audio you have the right to publish
+   under a licence that survives this project's own CC BY-SA, which invites
+   everyone to copy and rehost everything in it. That is the condition that the
+   last set failed. Write the engine back; do not just repoint a path. */
 MF.audio = {
-  ctx:null, master:null, musicBus:null, ambBus:null, fxBus:null, ready:false,
-  /* two beds, one bus each. `music` is a track and has no synthesised fallback
-     — you cannot synthesise a song… */
-  beds:{music:{node:null, file:null}, amb:{node:null, file:null}},
-  /* the context cannot exist before a gesture, so nothing here runs at boot */
-  start: function(){
-    if(this.ctx) { this.resume(); return this.ctx; }
-    var AC = window.AudioContext || window.webkitAudioContext;
-    if(!AC) return null;                       /* no Web Audio: stay silent */
-    try { this.ctx = new AC(); } catch(e){ return null; }
-    var c = this.ctx;
-    this.master = c.createGain();
-    this.musicBus = c.createGain();
-    this.ambBus = c.createGain();
-    this.fxBus = c.createGain();
-    this.musicBus.connect(this.master);
-    this.ambBus.connect(this.master);
-    this.fxBus.connect(this.master);
-    this.master.connect(c.destination);
-    this.ready = true;
-    this.loadSfx();                            /* no-op unless a folder is set */
-    this.loadBeds();
-    this.apply();
-    return c;
-  },
-  resume: function(){
-    if(this.ctx && this.ctx.state === 'suspended'){ try { this.ctx.resume(); } catch(e){} }
-  },
-  /* the panel's three controls, read straight off state */
-  apply: function(){
-    if(!this.ready) return false;
-    var a = MF.state.access, t = this.ctx.currentTime;
-    var m = a.mute ? 0 : 1;
-    this.master.gain.setTargetAtTime(m, t, 0.02);
-    this.fxBus.gain.setTargetAtTime(a.fx, t, 0.02);
-    this.musicBus.gain.setTargetAtTime(a.music, t, 0.05);
-    this.ambBus.gain.setTargetAtTime(a.ambience, t, 0.05);
-    /* each bed starts and stops itself with its own volume — a bed running at
-       zero is a phone burning battery on something nobody can hear */
-    if(a.music > 0 && !a.mute) this.bedOn('music'); else this.bedOff('music');
-    if(a.ambience > 0 && !a.mute) this.bedOn('amb'); else this.bedOff('amb');
-    return true;
-  },
-
-  /* ---- ONE ENVELOPE HELPER, so every cue decays the same way ---- */
-  _env: function(node, at, peak, attack, decay){
-    var g = this.ctx.createGain();
-    g.gain.setValueAtTime(0.0001, at);
-    g.gain.exponentialRampToValueAtTime(Math.max(0.0001, peak), at + attack);
-    g.gain.exponentialRampToValueAtTime(0.0001, at + attack + decay);
-    node.connect(g);
-    return g;
-  },
-  _noise: function(secs){
-    var c = this.ctx, n = Math.max(1, Math.floor(c.sampleRate * secs));
-    var buf = c.createBuffer(1, n, c.sampleRate), d = buf.getChannelData(0);
-    for(var i=0; i<n; i++) d[i] = Math.random() * 2 - 1;
-    var s = c.createBufferSource(); s.buffer = buf;
-    return s;
-  },
-
-  /* ---- THE CUES ---- */
-  CUES: {
-    /* THE PICK AT THE FACE */
-    pick: function(A, t){
-      /* the bite, then the spoil coming down after it */
-      var o = A.ctx.createOscillator();
-      o.type = 'triangle';
-      o.frequency.setValueAtTime(190, t);
-      o.frequency.exponentialRampToValueAtTime(62, t + 0.16);
-      A._env(o, t, 0.75, 0.004, 0.20).connect(A.fxBus);
-      o.start(t); o.stop(t + 0.28);
-      var n = A._noise(0.42), bp = A.ctx.createBiquadFilter();
-      bp.type = 'bandpass'; bp.Q.value = 0.8;
-      bp.frequency.setValueAtTime(2600, t);
-      bp.frequency.exponentialRampToValueAtTime(700, t + 0.34);
-      n.connect(bp);
-      var g = A.ctx.createGain();
-      g.gain.setValueAtTime(0.0001, t);
-      g.gain.linearRampToValueAtTime(0.34, t + 0.012);
-      g.gain.exponentialRampToValueAtTime(0.0001, t + 0.44);
-      bp.connect(g); g.connect(A.fxBus);
-      n.start(t); n.stop(t + 0.46);
-    },
-    /* THE HAMMER COMING DOWN. */
-    swish: function(A, t){
-      var n = A._noise(0.42), bp = A.ctx.createBiquadFilter();
-      bp.type = 'bandpass'; bp.Q.value = 0.9;
-      bp.frequency.setValueAtTime(420, t);
-      bp.frequency.exponentialRampToValueAtTime(1750, t + 0.30);
-      bp.frequency.exponentialRampToValueAtTime(900, t + 0.42);
-      n.connect(bp);
-      var g = A.ctx.createGain();
-      g.gain.setValueAtTime(0.0001, t);
-      g.gain.linearRampToValueAtTime(0.30, t + 0.28);
-      g.gain.exponentialRampToValueAtTime(0.0001, t + 0.42);
-      bp.connect(g); g.connect(A.fxBus);
-      n.start(t); n.stop(t + 0.44);
-    },
-    /* AND THE ROCK GIVING WAY, a beat after the strike. */
-    chip: function(A, t){
-      var n = A._noise(0.45), hp = A.ctx.createBiquadFilter();
-      hp.type = 'highpass'; hp.frequency.value = 900;
-      n.connect(hp);
-      var g = A.ctx.createGain();
-      g.gain.setValueAtTime(0.0001, t);
-      g.gain.linearRampToValueAtTime(0.20, t + 0.02);
-      g.gain.exponentialRampToValueAtTime(0.0001, t + 0.40);
-      hp.connect(g); g.connect(A.fxBus);
-      n.start(t); n.stop(t + 0.46);
-    },
-    /* A SEAM RUNS: low, round, and over quickly. */
-    thud: function(A, t){
-      var o = A.ctx.createOscillator();
-      o.type = 'sine';
-      o.frequency.setValueAtTime(150, t);
-      o.frequency.exponentialRampToValueAtTime(48, t + 0.22);
-      A._env(o, t, 0.9, 0.006, 0.30).connect(A.fxBus);
-      o.start(t); o.stop(t + 0.36);
-      var n = A._noise(0.05), bp = A.ctx.createBiquadFilter();
-      bp.type = 'lowpass'; bp.frequency.value = 900;
-      n.connect(bp);
-      A._env(bp, t, 0.35, 0.002, 0.05).connect(A.fxBus);
-      n.start(t); n.stop(t + 0.07);
-    },
-    /* THE PICK GLANCES: metal on stone. */
-    clang: function(A, t){
-      [1860, 2540, 3480].forEach(function(f, i){
-        var o = A.ctx.createOscillator();
-        o.type = i ? 'triangle' : 'square';
-        o.frequency.setValueAtTime(f, t);
-        o.frequency.exponentialRampToValueAtTime(f * 0.94, t + 0.4);
-        A._env(o, t, 0.16 / (i + 1), 0.003, 0.34 + i * 0.1).connect(A.fxBus);
-        o.start(t); o.stop(t + 0.6);
-      });
-      var n = A._noise(0.03), hp = A.ctx.createBiquadFilter();
-      hp.type = 'highpass'; hp.frequency.value = 2400;
-      n.connect(hp);
-      A._env(hp, t, 0.3, 0.001, 0.04).connect(A.fxBus);
-      n.start(t); n.stop(t + 0.05);
-    },
-    /* THE POUR: a swell, not a hit. It has to last as long as the metal is
-       falling, which is why it is the only cue with a body. */
-    pour: function(A, t){
-      var n = A._noise(2.2), bp = A.ctx.createBiquadFilter();
-      bp.type = 'bandpass'; bp.Q.value = 0.7;
-      bp.frequency.setValueAtTime(420, t);
-      bp.frequency.linearRampToValueAtTime(1150, t + 0.9);
-      bp.frequency.linearRampToValueAtTime(560, t + 2.0);
-      n.connect(bp);
-      var g = A.ctx.createGain();
-      g.gain.setValueAtTime(0.0001, t);
-      g.gain.linearRampToValueAtTime(0.22, t + 0.35);
-      g.gain.setValueAtTime(0.22, t + 1.5);
-      g.gain.exponentialRampToValueAtTime(0.0001, t + 2.2);
-      bp.connect(g); g.connect(A.fxBus);
-      n.start(t); n.stop(t + 2.3);
-    },
-    /* THE STAMP: heavier than the thud and with a machine's snap on the front */
-    stamp: function(A, t){
-      var o = A.ctx.createOscillator();
-      o.type = 'triangle';
-      o.frequency.setValueAtTime(110, t);
-      o.frequency.exponentialRampToValueAtTime(38, t + 0.3);
-      A._env(o, t, 1.0, 0.004, 0.42).connect(A.fxBus);
-      o.start(t); o.stop(t + 0.5);
-      var n = A._noise(0.09), bp = A.ctx.createBiquadFilter();
-      bp.type = 'bandpass'; bp.frequency.value = 1700; bp.Q.value = 1.1;
-      n.connect(bp);
-      A._env(bp, t, 0.4, 0.001, 0.09).connect(A.fxBus);
-      n.start(t); n.stop(t + 0.11);
-    },
-    /* PICKING A LUMP OUT: the smallest thing in here. A tick, not a note. */
-    tick: function(A, t){
-      var o = A.ctx.createOscillator();
-      o.type = 'triangle';
-      o.frequency.setValueAtTime(880, t);
-      o.frequency.exponentialRampToValueAtTime(640, t + 0.06);
-      A._env(o, t, 0.10, 0.002, 0.07).connect(A.fxBus);
-      o.start(t); o.stop(t + 0.12);
-    },
-    /* THE CAGE: an old lift, engaging and arriving. */
-    hoist: function(A, t){
-      var o = A.ctx.createOscillator();
-      o.type = 'sawtooth';
-      o.frequency.setValueAtTime(58, t);
-      o.frequency.linearRampToValueAtTime(72, t + 0.5);
-      o.frequency.linearRampToValueAtTime(66, t + 2.4);
-      o.frequency.linearRampToValueAtTime(44, t + 3.1);
-      var lp = A.ctx.createBiquadFilter();
-      lp.type = 'lowpass'; lp.Q.value = 3;
-      lp.frequency.setValueAtTime(160, t);
-      lp.frequency.linearRampToValueAtTime(760, t + 0.6);
-      lp.frequency.linearRampToValueAtTime(620, t + 2.4);
-      lp.frequency.linearRampToValueAtTime(140, t + 3.2);
-      o.connect(lp);
-      var g = A.ctx.createGain();
-      g.gain.setValueAtTime(0.0001, t);
-      g.gain.linearRampToValueAtTime(0.26, t + 0.35);
-      g.gain.setValueAtTime(0.26, t + 2.4);
-      g.gain.exponentialRampToValueAtTime(0.0001, t + 3.3);
-      lp.connect(g); g.connect(A.fxBus);
-      o.start(t); o.stop(t + 3.4);
-      /* the knock leaving, and the knock landing */
-      [0, 2.55].forEach(function(at){
-        var k = A._noise(0.08), bp = A.ctx.createBiquadFilter();
-        bp.type = 'lowpass'; bp.frequency.value = 420;
-        k.connect(bp);
-        A._env(bp, t + at, 0.34, 0.002, 0.10).connect(A.fxBus);
-        k.start(t + at); k.stop(t + at + 0.12);
-      });
-    }
-  },
-
-  /* A RECORDED CUE BEATS A SYNTHESISED ONE, WHEN THERE IS ONE */
-  sfx:{},
-  loadSfx: function(){
-    if(!MF.SFX_BASE || !this.ready) return 0;
-    var A = this, base = MF.SFX_BASE.replace(/\/$/,''), n = 0;
-    Object.keys(this.CUES).forEach(function(k){
-      if(A.sfx[k] !== undefined) return;
-      A.sfx[k] = null;                       /* in flight; do not ask twice */
-      n++;
-      fetch(base + '/' + k + '.' + (MF.SFX_EXT || 'm4a'))
-        .then(function(r){ if(!r.ok) throw 0; return r.arrayBuffer(); })
-        .then(function(b){ return A.ctx.decodeAudioData(b); })
-        .then(function(buf){ A.sfx[k] = buf; })
-        ['catch'](function(){ A.sfx[k] = 'missing'; });
-    });
-    return n;
-  },
-  /* either bed can be a file, and then it loops */
-  BED_SRC: {music:'MUSIC_SRC', amb:'AMBIENCE_SRC'},
-  loadBeds: function(){
-    var A = this, n = 0;
-    Object.keys(this.BED_SRC).forEach(function(kind){
-      var src = MF[A.BED_SRC[kind]];
-      if(!src || !A.ready || A.beds[kind].file !== null) return;
-      n++;
-      A.beds[kind].file = 'loading';
-      fetch(src)
-        .then(function(r){ if(!r.ok) throw 0; return r.arrayBuffer(); })
-        .then(function(b){ return A.ctx.decodeAudioData(b); })
-        .then(function(buf){
-          A.beds[kind].file = buf;
-          /* AND THEN ASK AGAIN WHETHER IT SHOULD BE RUNNING */
-          if(A.beds[kind].node){ A.bedOff(kind); A.bedOn(kind); }
-          else A.apply();
-        })
-        ['catch'](function(){ A.beds[kind].file = 'missing'; });
-    });
-    return n;
-  },
-
-  /* PLAY ONE. Silent and harmless in every failure mode there is: no Web Audio,
-     no gesture yet, muted, volume at zero, or a cue name that does not exist. */
-  play: function(name){ return this.playAt(name, 0); },
-
-  /* THE SAME, SCHEDULED. */
-  playAt: function(name, delay){
-    var a = MF.state.access;
-    if(a.mute || !a.fx) return false;
-    /* IT DOES NOT BUILD THE CONTEXT ITSELF. */
-    if(!this.ready) return false;
-    var cue = this.CUES[name];
-    if(!cue) return false;
-    this.resume();
-    var d = delay > 0 ? delay : 0;
-    var at = this.ctx.currentTime + d + 0.001;
-    this.duck(name, d);
-    /* the recording if there is one, the oscillators if there is not */
-    var buf = this.sfx[name];
-    if(buf && buf !== 'missing' && buf !== 'loading'){
-      try {
-        var s = this.ctx.createBufferSource();
-        s.buffer = buf; s.connect(this.fxBus); s.start(at);
-        return true;
-      } catch(e){ /* fall through and synthesise */ }
-    }
-    try { cue(this, at); } catch(e){ return false; }
-    return true;
-  },
-
-  /* THE HAMMER IS THREE SOUNDS, AND THEY LAND ON THE ANIMATION */
-  HAMMER: { up:1.38, hit:1.74, glance:1.71, chip:0.10 },
-  hammer: function(kind){
-    if(!this.ready) return false;
-    var H = this.HAMMER, hit = (kind === 'hit');
-    /* WITH MOTION REDUCED THERE IS NO ARC TO MATCH. */
-    var arc = !MF.reducedMotion();
-    var strike = arc ? (hit ? H.hit : H.glance) : 0;
-    this.playAt('swish', arc ? H.up : 0);
-    this.playAt(hit ? 'thud' : 'clang', strike);
-    if(hit) this.playAt('chip', strike + H.chip);
-    return true;
-  },
-
-  /* THE BEDS GET OUT OF THE WAY OF A CUE */
-  DUCK: { pick:{d:0.30, t:0.34}, thud:{d:0.30, t:0.34}, clang:{d:0.30, t:0.30}, stamp:{d:0.30, t:0.32},
-          swish:{d:0.55, t:0.30}, chip:{d:0.40, t:0.24},
-          pour:{d:0.45, t:2.00}, hoist:{d:0.45, t:3.40} },
-  duck: function(name, delay){
-    var D = this.DUCK[name];
-    if(!D || !this.ready) return false;
-    var A = this, a = MF.state.access;
-    var t = this.ctx.currentTime + (delay > 0 ? delay : 0);
-    [['musicBus', a.music], ['ambBus', a.ambience]].forEach(function(p){
-      var node = A[p[0]], full = p[1];
-      if(!node || !full) return;
-      var g = node.gain;
-      /* cancel first: two cues in quick succession must not stack their ramps
-         and leave a bed stuck down. */
-      g.cancelScheduledValues(t);
-      g.setValueAtTime(g.value, t);
-      g.linearRampToValueAtTime(full * D.d, t + 0.05);
-      g.setValueAtTime(full * D.d, t + D.t);
-      g.linearRampToValueAtTime(full, t + D.t + 0.45);
-    });
-    return true;
-  },
-
-  /* THE TWO BEDS */
-  bedOn: function(kind){
-    var b = this.beds[kind];
-    if(!this.ready || !b || b.node) return false;
-    var c = this.ctx, t = c.currentTime;
-    var bus = kind === 'music' ? this.musicBus : this.ambBus;
-    /* A SUPPLIED TRACK, IF THERE IS ONE. */
-    if(b.file && b.file !== 'missing' && b.file !== 'loading'){
-      var mg = c.createGain();
-      mg.gain.value = 0.0001;
-      mg.gain.setTargetAtTime(1, t, 1.2);
-      var src = c.createBufferSource();
-      src.buffer = b.file; src.loop = true;
-      src.connect(mg); mg.connect(bus);
-      src.start(t);
-      b.node = {g:mg, os:[src], lfo:null};
-      return true;
-    }
-    /* AND NO SYNTHESISED SONG. */
-    if(kind === 'music') return false;
-    var g = c.createGain();
-    g.gain.value = 0.0001;
-    g.gain.setTargetAtTime(0.5, t, 1.2);
-    var lp = c.createBiquadFilter();
-    lp.type = 'lowpass'; lp.frequency.value = 320; lp.Q.value = 0.6;
-    var lfo = c.createOscillator(), lfoG = c.createGain();
-    lfo.frequency.value = 0.055; lfoG.gain.value = 120;
-    lfo.connect(lfoG); lfoG.connect(lp.frequency);
-    var os = [55, 82.5, 110.3].map(function(f, i){
-      var o = c.createOscillator();
-      o.type = i === 2 ? 'triangle' : 'sine';
-      o.frequency.value = f;
-      var og = c.createGain(); og.gain.value = i === 2 ? 0.18 : 0.34;
-      o.connect(og); og.connect(lp);
-      o.start(t);
-      return o;
-    });
-    lp.connect(g); g.connect(bus);
-    lfo.start(t);
-    b.node = {g:g, os:os, lfo:lfo};
-    return true;
-  },
-  /* WHAT THE PANEL IS ALLOWED TO SAY ABOUT A LAYER. */
-  layerState: function(kind){
-    if(!this.ready) return 'idle';                 /* before the gesture */
-    if(kind === 'fx'){
-      var names = Object.keys(this.CUES), got = 0, load = 0;
-      names.forEach(function(n){
-        var v = this.sfx[n];
-        if(v && v !== 'missing' && v !== 'loading') got++;
-        else if(v === 'loading') load++;
-      }, this);
-      if(got === names.length) return 'file';
-      if(load) return 'loading';
-      return got ? 'part' : 'synth';
-    }
-    var b = this.beds[kind];
-    if(!b) return 'idle';
-    if(b.file && b.file !== 'missing' && b.file !== 'loading') return 'file';
-    if(b.file === 'loading') return 'loading';
-    return kind === 'amb' ? 'synth' : 'none';
-  },
-  bedOff: function(kind){
-    var b = this.beds[kind], m = b && b.node;
-    if(!m) return false;
-    b.node = null;
-    var t = this.ctx.currentTime;
-    m.g.gain.setTargetAtTime(0.0001, t, 0.4);
-    setTimeout(function(){
-      try { m.os.forEach(function(o){ o.stop(); }); if(m.lfo) m.lfo.stop(); } catch(e){}
-    }, 1400);
-    return true;
-  },
-
-  /* RECORDED VOICE, WHEN THERE IS ANY */
-  voice:{}, _speaking:null,
-  say: function(id){
-    if(!MF.VOICE_BASE || !id) return false;
-    var a = MF.state.access;
-    if(a.mute || !a.fx) return false;
-    if(!this.ready) return false;              /* same rule as `play` */
-    var A = this, url = MF.VOICE_BASE.replace(/\/$/,'') + '/' + id + '.' + (MF.VOICE_EXT || 'm4a');
-    this.hush();
-    function go(buf){
-      try {
-        var s = A.ctx.createBufferSource();
-        s.buffer = buf; s.connect(A.fxBus); s.start();
-        A._speaking = s;
-      } catch(e){}
-    }
-    if(this.voice[id]){ if(this.voice[id] !== 'missing') go(this.voice[id]); return true; }
-    fetch(url).then(function(r){
-      if(!r.ok) throw new Error('no line');
-      return r.arrayBuffer();
-    }).then(function(b){
-      return A.ctx.decodeAudioData(b);
-    }).then(function(buf){
-      A.voice[id] = buf; go(buf);
-    })['catch'](function(){
-      /* NO LINE IS NOT AN ERROR. Remembered so it is not asked for twice. */
-      A.voice[id] = 'missing';
-    });
-    return true;
-  },
-  hush: function(){
-    if(this._speaking){ try { this._speaking.stop(); } catch(e){} this._speaking = null; }
-  },
-
-  /* A CUE FOR SOMETHING THAT REPAINTS WHILE A FINGER IS STILL MOVING */
-  _settle: {},
-  playSettled: function(name, ms){
-    var A = this, s = this._settle;
-    if(s[name]) clearTimeout(s[name]);
-    s[name] = setTimeout(function(){ s[name] = null; A.play(name); }, ms || 420);
-    return true;
-  }
+  ready:false, ctx:null,
+  /* Each of these is a landing pad for call sites, returning the shape the
+     engine returned, so a caller that reads the answer is not surprised. */
+  start:       function(){ return null; },
+  resume:      function(){ return false; },
+  apply:       function(){ return false; },
+  play:        function(){ return false; },
+  playAt:      function(){ return false; },
+  playSettled: function(){ return false; },
+  hammer:      function(){ return false; },
+  duck:        function(){ return false; },
+  bedOn:       function(){ return false; },
+  bedOff:      function(){ return false; },
+  say:         function(){ return false; },
+  hush:        function(){ return false; },
+  /* the panel used to ask what a layer could manage — a file, a synthesised
+     stand-in, or nothing. The honest answer everywhere is now nothing. */
+  layerState:  function(){ return 'none'; }
 };
-/* Point this at a folder to give Mr Factor a voice. */
-MF.VOICE_BASE = null;
-MF.VOICE_EXT = 'm4a';
-/* AND THE SAME FOR SUPPLIED SOUND */
-MF.SFX_BASE = 'sfx';
-MF.SFX_EXT = 'm4a';
-MF.MUSIC_SRC = 'sfx/music.m4a';
-MF.AMBIENCE_SRC = 'sfx/bed.m4a';
 
-/* ===== EVERY LINE MR FACTOR SAYS, WITH THE NAME OF ITS FILE. ===== */
+/* ===== EVERY LINE MR FACTOR SAYS, GATHERED IN ONE PLACE. =====
+   This was written as a recording script, and each line's id was the name of the
+   file a voice actor would deliver. There is no recording. What the index is
+   actually for is the sweeps: it is the only way to enumerate his dialogue, and
+   the no-grades sweep reads every line of it. The ids stay because they are how
+   a line is named in an error message. */
 /* STRIP THE TAGS AND DECODE THE ENTITIES. */
-function voiceText(s){
+function plainText(s){
   var d = document.createElement('div');
   d.innerHTML = String(s);
   return (d.textContent || '').replace(/\s+/g, ' ').trim();
 }
-MF.voiceText = voiceText;
-MF.voiceLines = function(){
+MF.plainText = plainText;
+MF.guideLines = function(){
   var out = [];
   Object.keys(MF.GUIDE).forEach(function(room){
     var g = MF.GUIDE[room];
     (g.beats || []).forEach(function(b, i){
       out.push({id:'room-' + room + '-' + (i+1), where:g.where, dyn:false,
-                text:voiceText(b)});
+                text:plainText(b)});
     });
   });
   /* the clank ladder. The shed rung is fixed words; the hint and the handover
-     carry the lump's own numbers and cannot be a recording. */
+     carry the lump's own numbers, so they are marked dynamic. */
   var floor = MF.t('guide.floor.where');
   MF.CLANK_SHED.forEach(function(b, i){
     out.push({id:'clank-shed-' + (i+1), where:floor, dyn:false,
-              text:voiceText(MF.t(b))});
+              text:plainText(MF.t(b))});
   });
-  out.push({id:'clank-hint', where:floor, dyn:true, text:MF.t('voice.hint.dyn')});
-  out.push({id:'clank-give', where:floor, dyn:true, text:MF.t('voice.give.dyn')});
+  out.push({id:'clank-hint', where:floor, dyn:true, text:MF.t('guide.hint.dyn')});
+  out.push({id:'clank-give', where:floor, dyn:true, text:MF.t('guide.give.dyn')});
   /* AND THE FOUR HE SAYS FROM INSIDE A ROOM. */
   var SAYS_WHERE = {'mold-after-pour':'shed-mold', 'mill-done':'workshop-ore',
                     'mill-going':'workshop-ore', 'forge-cold':'forge'};
   Object.keys(MF.SAYS).forEach(function(k){
     out.push({id:'says-' + k, where:SAYS_WHERE[k] ? MF.GUIDE[SAYS_WHERE[k]].where : MF.t('guide.room.where'), dyn:false,
-              text:voiceText(MF.SAYS[k])});
+              text:plainText(MF.SAYS[k])});
   });
   return out;
 };
@@ -29627,7 +28943,7 @@ MF.guideState = {seen:{}, open:false, at:0, room:null, clanks:0, helped:0};
 /* ===== HE WATCHES THE BREAKING FLOOR, AND HE SPEAKS WHEN IT IS EARNED. ===== */
 MF.CLANK_SPEAK = 3;      /* he says nothing at all before this */
 MF.CLANK_GIVE  = 12;     /* and hands over a factor at this */
-/* THE ONE RUNG THAT IS FIXED WORDS, held out here so `MF.voiceLines` reads the
+/* THE ONE RUNG THAT IS FIXED WORDS, held out here so `MF.guideLines` reads the
    same sentence a student hears rather than a copy of it. */
 /* AND IT NAMES A ROOM THAT IS FULL FOR THE STUDENT IT FIRES AT */
 MF.CLANK_SHED = ['guide.shed.1', 'guide.shed.2'];
@@ -30025,34 +29341,14 @@ MF.openAccess = function(opener){
         [{nm:MF.t('access.motion.auto'), v:'auto'},{nm:MF.t('access.motion.reduce'), v:'reduce'}],
         a.motion, function(v){ a.motion = v; });
 
-      /* ---- SOUND ---- */
-      b.appendChild(H('div','acsplit', MF.t('access.sound')));
-      /* SAY WHAT IS ACTUALLY PLAYING. See MF.audio.layerState — a layer that
-         degrades in silence is indistinguishable from one that is broken. */
-      var SAY = {
-        fx: {synth:'access.fx.synth', part:'access.fx.part', loading:'access.fx.loading'},
-        amb: {synth:'access.amb.synth', loading:'access.amb.loading'},
-        music: {none:'access.music.none', loading:'access.music.loading'}
-      };
-      function saySo(row, kind){
-        var st = MF.audio.layerState(kind), msg = SAY[kind] && SAY[kind][st];
-        if(msg) row.appendChild(H('div','acnote', MF.t(msg)));
-      }
-      var level = function(n){ return n === 0 ? MF.t('access.level.off') : Math.round(n*100) + '%'; };
-      toggle(b, MF.t('access.mute'), null, a.mute, function(v){ a.mute = v; });
-      saySo(slide(b, MF.t('access.fx'), MF.t('access.fx.hint'),
-        0, 1, 0.05, a.fx, level,
-        function(n){ a.fx = n; }), 'fx');
-      /* MOVING EITHER ONE TAKES IT OFF THE ROOMS FOR GOOD (see MF.roomSound). */
-      saySo(slide(b, MF.t('access.amb'), MF.t('access.amb.hint'),
-        0, 1, 0.05, a.ambience, level,
-        function(n){ a.ambience = n; a._set_ambience = true; }), 'amb');
-      saySo(slide(b, MF.t('access.music'), MF.t('access.music.hint'),
-        0, 1, 0.05, a.music, level,
-        function(n){ a.music = n; a._set_music = true; }), 'music');
-      /* AND WHY IT IS QUIET WHEN NOTHING IS WRONG. */
-      if(!a.music && !a.ambience)
-        b.appendChild(H('div','acnote', MF.t('access.quiet')));
+      /* THERE IS NO SOUND SECTION. A mute switch and three sliders stood here,
+         over an engine that no longer exists. Controls for something that cannot
+         happen are worse than no controls: a slider that does nothing reads as a
+         fault in the page, and a mute switch implies there is something to mute.
+
+         READ ALOUD IS NOT PART OF THAT and never was. It is the browser speaking
+         the page, not the page playing a file, so it needs no licence and it
+         stays. It is the only thing in this panel that makes a noise. */
 
       /* ---- READ ALOUD ---- */
       b.appendChild(H('div','acsplit', MF.t('access.read')));
@@ -42291,522 +41587,131 @@ MF.validate = function(){
     });
   })();
 
-  /* ===== SOUND — AND ALL OF IT HAS TO SURVIVE SILENCE. ===== */
-  var sndKeep = {fx:MF.state.access.fx, music:MF.state.access.music,
-                 ambience:MF.state.access.ambience, mute:MF.state.access.mute};
+  /* ===== SILENCE — AND IT HAS TO BE PROVABLE, NOT PROMISED. =====
 
-  /* EVERY CUE THE CODE FIRES IS A CUE THAT EXISTS. */
-  ['thud','clang','pour','stamp','tick','hoist'].forEach(function(k){
-    chk('sound');
-    if(typeof MF.audio.CUES[k] !== 'function')
-      errs.push('sound: "' + k + '" is fired somewhere and is not a cue');
-  });
-  chk('sound');
+     73 checks stood here holding an audio engine together. The engine is gone,
+     so what needs holding now is the opposite claim: that this site cannot make
+     a sound. "We deleted it" is not a check. These are. */
 
-  /* IT IS SILENT UNTIL THE GESTURE. */
+  /* 1. NO CALL BUILDS AN AUDIO CONTEXT. Every landing pad is fired, including
+     the ones only a user gesture used to reach, with the constructor spied on. */
   (function(){
-    var cold = Object.create(MF.audio);
-    cold.ctx = null; cold.ready = false;
-    cold.beds = {music:{node:null, file:null}, amb:{node:null, file:null}};
-    chk('sound');
-    if(cold.play('thud') !== false)
-      errs.push('sound: a cue played before the Enter button built the context');
-    chk('sound');
-    if(cold.ctx)
-      errs.push('sound: firing a cue built an AudioContext on its own — only the gesture may do that');
-    chk('sound');
-    if(cold.say('room-mine-1') !== false)
-      errs.push('sound: a recorded line was fetched before the context existed');
-  })();
-
-  /* MUTE AND ZERO BOTH STOP IT, and they are different controls. */
-  if(MF.audio.ready){
-    MF.state.access.mute = true; MF.audio.apply();
-    chk('sound');
-    if(MF.audio.play('thud') !== false) errs.push('sound: mute did not stop a cue');
-    MF.state.access.mute = false;
-    MF.state.access.fx = 0; MF.audio.apply();
-    chk('sound');
-    if(MF.audio.play('thud') !== false) errs.push('sound: effects at zero did not stop a cue');
-    MF.state.access.fx = MF.ACCESS_FX;
-    /* A BED RUNS ONLY WHEN IT IS WANTED AND ONLY WHEN IT HAS SOMETHING TO PLAY. */
-    [['music','music'],['ambience','amb']].forEach(function(p){
-      var key = p[0], kind = p[1], bed = MF.audio.beds[kind];
-      var playable = kind === 'amb' ||
-                     !!(bed.file && bed.file !== 'missing' && bed.file !== 'loading');
-      MF.state.access[key] = 0; MF.audio.apply();
-      chk('sound');
-      if(bed.node) errs.push('sound: the ' + kind + ' bed is running with its volume at zero');
-      MF.state.access[key] = 0.4; MF.audio.apply();
-      chk('sound');
-      if(!!bed.node !== playable)
-        errs.push('sound: with the ' + kind + ' volume up the bed is ' +
-                  (bed.node ? 'running' : 'silent') + ' and it has ' +
-                  (playable ? 'something' : 'nothing') + ' to play');
-      MF.state.access[key] = 0; MF.audio.apply();
-      chk('sound');
-      if(bed.node) errs.push('sound: turning the ' + kind + ' back down did not stop the bed');
-    });
-    /* A BED THAT ARRIVES LATE STILL STARTS */
-    ['music','amb'].forEach(function(kind){
-      var key = kind === 'music' ? 'music' : 'ambience';
-      var was = MF.audio.beds[kind].file;
-      MF.audio.bedOff(kind);
-      MF.audio.beds[kind].file = 'loading';
-      MF.state.access[key] = 0.4;
-      MF.audio.apply();                       /* the gesture, mid-fetch */
-      chk('sound');
-      if(kind === 'music' && MF.audio.beds[kind].node)
-        errs.push('sound: the music bed started while it still had nothing to play');
-      /* the file lands */
-      MF.audio.beds[kind].file = was;
-      if(MF.audio.beds[kind].node){ MF.audio.bedOff(kind); MF.audio.bedOn(kind); }
-      else MF.audio.apply();
-      var playable = kind === 'amb' || (was && was !== 'missing' && was !== 'loading');
-      chk('sound');
-      if(playable && !MF.audio.beds[kind].node)
-        errs.push('sound: the ' + kind + ' bed was wanted before its file arrived and never started once it had');
-      MF.state.access[key] = 0;
-      MF.audio.apply();
-    });
-
-    /* AND THEY ARE TWO CONTROLS, not one wearing two labels. */
-    MF.state.access.ambience = 0.4; MF.state.access.music = 0; MF.audio.apply();
-    chk('sound');
-    if(MF.audio.beds.music.node) errs.push('sound: the ambience slider started the music bed');
-    chk('sound');
-    if(!MF.audio.beds.amb.node) errs.push('sound: the ambience slider did not start the room tone');
-    chk('sound');
-    if(MF.audio.beds.amb.node && MF.audio.beds.amb.node === MF.audio.beds.music.node)
-      errs.push('sound: the two beds are the same node, so one slider moves both');
-    MF.state.access.ambience = 0; MF.audio.apply();
-  }
-
-  /* THERE IS NO SYNTHESISED SONG, AND THERE IS A SYNTHESISED ROOM TONE. */
-  if(MF.audio.ready){
-    [['music', false, 'a track'], ['amb', true, 'a room tone']].forEach(function(p){
-      var kind = p[0], want = p[1], bed = MF.audio.beds[kind];
-      var keep = bed.file;
-      bed.file = 'missing';
-      MF.audio.bedOff(kind);
-      chk('sound');
-      if(MF.audio.bedOn(kind) !== want || !!bed.node !== want)
-        errs.push('sound: with no file the ' + kind + ' bed ' +
-                  (want ? 'fell silent instead of synthesising ' + p[2]
-                        : 'synthesised something anyway, and you cannot synthesise ' + p[2]));
-      MF.audio.bedOff(kind);
-      bed.file = keep;
-    });
-  }
-
-  /* A LAYER THAT CANNOT PLAY MUST SAY SO */
-  if(MF.audio.ready){
-    var panelKeep = {sfx:MF.audio.sfx,
-                     music:MF.audio.beds.music.file, amb:MF.audio.beds.amb.file};
-    var panelSay = function(){
-      /* a probe that leaves a modal open writes the next group's failures */
-      [].slice.call(document.querySelectorAll('.scrim')).forEach(function(s){ s.remove(); });
-      MF.openAccess();
-      var sc = document.querySelector('.scrim');
-      var t = sc ? sc.textContent.replace(/\s+/g,' ') : '';
-      [].slice.call(document.querySelectorAll('.scrim')).forEach(function(s){ s.remove(); });
-      return t;
-    };
-    /* NOTHING LOADS — the file:// case, which is how this page is guaranteed to
-       be opened at least once. */
-    MF.audio.sfx = {};
-    MF.audio.beds.music.file = 'missing'; MF.audio.beds.amb.file = 'missing';
-    chk('sound');
-    if(MF.audio.layerState('music') !== 'none')
-      errs.push('sound: with no track the music layer reports "' + MF.audio.layerState('music') +
-                '" rather than having nothing to play');
-    chk('sound');
-    if(MF.audio.layerState('amb') !== 'synth')
-      errs.push('sound: with no recording the room tone should report that it is synthesised');
-    chk('sound');
-    if(MF.audio.layerState('fx') !== 'synth')
-      errs.push('sound: with no recordings the cues should report that they are synthesised');
-    var dark = panelSay();
-    chk('sound');
-    if(dark.indexOf(MF.plainT('access.music.none')) < 0)
-      errs.push('sound: the music slider is silent about there being no track, so a student ' +
-                'turning it up gets nothing and no reason');
-    chk('sound');
-    if(dark.indexOf(MF.plainT('access.amb.synth')) < 0)
-      errs.push('sound: the ambience slider does not say it is running the synthesised tone');
-    chk('sound');
-    if(dark.indexOf(MF.plainT('access.fx.synth')) < 0)
-      errs.push('sound: the effects slider does not say the recordings are missing');
-    /* AND WITH EVERYTHING PRESENT IT MUST NOT CRY WOLF. */
-    MF.audio.sfx = panelKeep.sfx;
-    MF.audio.beds.music.file = panelKeep.music; MF.audio.beds.amb.file = panelKeep.amb;
-    var realBuf = function(v){ return !!v && v !== 'missing' && v !== 'loading'; };
-    var allSfx = Object.keys(MF.audio.CUES).every(function(k){ return realBuf(MF.audio.sfx[k]); });
-    if(realBuf(MF.audio.beds.music.file) && allSfx){
-      var lit = panelSay();
-      chk('sound');
-      if(['access.fx.synth','access.fx.part','access.amb.synth','access.music.none'].some(function(k){
-           return lit.indexOf(MF.plainT(k)) >= 0; }))
-        errs.push('sound: the panel warns about missing audio while every file is loaded');
-    } else { chk('sound'); }
-    /* THE SILENCE ITSELF IS EXPLAINED. Both beds start at zero on purpose. */
-    var qKeep = {m:MF.state.access.music, a:MF.state.access.ambience};
-    MF.state.access.music = 0; MF.state.access.ambience = 0;
-    chk('sound');
-    if(panelSay().indexOf(MF.plainT('access.quiet')) < 0)
-      errs.push('sound: with both beds at zero the panel does not say the quiet is deliberate');
-    MF.state.access.music = qKeep.m; MF.state.access.ambience = qKeep.a;
-  }
-
-  /* THE CUES ARE LEVELLED AGAINST EACH OTHER */
-  if(MF.audio.ready){
-    var lvl = {}, IMPACT = ['thud','clang','stamp'];
-    Object.keys(MF.audio.CUES).forEach(function(k){
-      var buf = MF.audio.sfx[k];
-      if(!buf || typeof buf === 'string') return;
-      var d = buf.getChannelData(0), pk = 0, sum = 0;
-      for(var i = 0; i < d.length; i++){ var v = Math.abs(d[i]); if(v > pk) pk = v; sum += d[i]*d[i]; }
-      lvl[k] = {pk: 20*Math.log(pk||1e-9)/Math.LN10, rms: 10*Math.log((sum/d.length)||1e-18)/Math.LN10};
-    });
-    Object.keys(lvl).forEach(function(k){
-      /* NOTHING CLIPS. AAC reconstructs above the PCM peak, which is how a cue
-         aimed at −3 came back over full scale once already. */
-      chk('sound');
-      if(lvl[k].pk > -1.0)
-        errs.push('sound: the "' + k + '" recording peaks at ' + lvl[k].pk.toFixed(1) +
-                  ' dBFS — an encode that overshot, and it will clip on playback');
-    });
-    /* THE THREE IMPACTS ARE WITHIN A FEW dB OF EACH OTHER, because they are the
-       same gesture at different moments and one slider sets all three. */
-    var have = IMPACT.filter(function(k){ return lvl[k]; });
-    if(have.length === IMPACT.length){
-      var rs = have.map(function(k){ return lvl[k].rms; });
-      var spread = Math.max.apply(null, rs) - Math.min.apply(null, rs);
-      chk('sound');
-      if(spread > 5)
-        errs.push('sound: the impact cues span ' + spread.toFixed(1) + ' dB — ' +
-                  'one slider sets all three, so at any setting some are audible and some are not');
-    } else { chk('sound'); }
-    /* AND THE TICK IS THE QUIETEST THING IN THE SET. */
-    if(lvl.tick && lvl.thud){
-      chk('sound');
-      if(lvl.tick.rms > lvl.thud.rms - 2)
-        errs.push('sound: the tick is not quieter than the thud, and it fires far more often');
-    } else { chk('sound'); }
-    /* THE DEFAULT IS NOT A WHISPER. A cue 9 dB under the music is a cue the
-       student reasonably reports as broken. */
-    chk('sound');
-    if(MF.ACCESS_FX < 0.6)
-      errs.push('sound: effects default to ' + MF.ACCESS_FX +
-                ', which puts a hammer landing below the bed it lands over');
-  }
-
-  /* EVERY PHYSICAL GESTURE IN THE MINE MAKES A NOISE */
-  (function(){
-    var GESTURES = [
-      ['cutting a lump out of the wall', 'breakRock',  'pick'],
-      ['the mill press dropping',        'millStamp',  'stamp'],
-      ['the forge pouring',              'forgePour',  'pour'],
-      ['picking a lump out of the seam', 'selectRock', 'tick']
-    ];
-    /* THE SWING IS ITS OWN GESTURE because it is three sounds, not one — see MF.audio.hammer. */
-    chk('sound');
-    if(MF.swing.toString().indexOf("hammer('hit')") < 0)
-      errs.push('sound: a seam running does not bring the hammer down');
-    chk('sound');
-    if(MF.swing.toString().indexOf("hammer('glance')") < 0)
-      errs.push('sound: the hammer glancing off makes no noise');
-    GESTURES.forEach(function(g){
-      var fn = MF[g[1]];
-      chk('sound');
-      if(typeof fn !== 'function'){
-        errs.push('sound: "' + g[0] + '" is listed as a gesture and MF.' + g[1] + ' is not a function');
-        return;
-      }
-      var src = fn.toString();
-      chk('sound');
-      if(src.indexOf("play('" + g[2] + "')") < 0 && src.indexOf('play("' + g[2] + '")') < 0 &&
-         src.indexOf("playSettled('" + g[2] + "'") < 0)
-        errs.push('sound: ' + g[0] + ' makes no noise — MF.' + g[1] +
-                  ' never fires the "' + g[2] + '" cue');
-    });
-    /* AND NO CUE IS WIRED TO NOTHING. */
-    var wired = {};
-    GESTURES.forEach(function(g){ wired[g[2]] = 1; });
-    wired.hoist = 1;                 /* the layer buttons, built in a loop */
-    ['swish','thud','clang','chip'].forEach(function(k){ wired[k] = 1; });   /* the hammer */
-
-    /* AND THE HAMMER LANDS WHEN THE HAMMER LANDS */
-    (function(){
-      var css = '', el = document.querySelector('style');
-      [].slice.call(document.querySelectorAll('style')).forEach(function(s){ css += s.textContent; });
-      var durM = css.match(/animation:hammerarc\s+(\d+)ms/);
-      var hitM = css.match(/@keyframes hammerarc\{[\s\S]*?(\d+)%\{transform:rotate\(6deg\)\}/);
-      var bnceM = css.match(/@keyframes hammerbounce\{[\s\S]*?(\d+)%\{transform:rotate\(5deg\)\}/);
-      chk('sound');
-      if(!durM || !hitM || !bnceM){
-        errs.push('sound: the hammer arc could not be read out of the stylesheet, ' +
-                  'so nothing is holding the sound to the picture');
-        return;
-      }
-      var dur = parseInt(durM[1], 10) / 1000;
-      [['hit', parseInt(hitM[1],10), MF.audio.HAMMER.hit],
-       ['glance', parseInt(bnceM[1],10), MF.audio.HAMMER.glance]].forEach(function(p){
-        var want = dur * p[1] / 100;
-        chk('sound');
-        if(Math.abs(p[2] - want) > 0.06)
-          errs.push('sound: the ' + p[0] + ' is scheduled at ' + p[2].toFixed(2) +
-                    's and the hammer reaches the ore at ' + want.toFixed(2) + 's');
-      });
-      /* the swish leads the strike, and the chip follows it */
-      chk('sound');
-      if(!(MF.audio.HAMMER.up < MF.audio.HAMMER.hit))
-        errs.push('sound: the swing through the air does not come before the strike');
-      chk('sound');
-      if(!(MF.audio.HAMMER.chip > 0))
-        errs.push('sound: the rock gives way before the hammer has landed on it');
-    })();
-
-    /* WHAT IT ACTUALLY SCHEDULES, on a stub — three sounds for a hit, two for a
-       glance, and the chip only after the seam has run. */
-    if(MF.audio.ready){
-      var hKeep = MF.audio.playAt, hLog = [];
-      MF.audio.playAt = function(n, d){ hLog.push(n + '@' + (d > 0 ? d.toFixed(2) : '0')); return true; };
-      MF.audio.hammer('hit');
-      var hHit = hLog.slice(); hLog.length = 0;
-      MF.audio.hammer('glance');
-      var hMiss = hLog.slice();
-      MF.audio.playAt = hKeep;
-      chk('sound');
-      if(hHit.length !== 3 || hHit[0].indexOf('swish') !== 0 ||
-         hHit[1].indexOf('thud') !== 0 || hHit[2].indexOf('chip') !== 0)
-        errs.push('sound: a seam running is "' + hHit.join(' ') +
-                  '" and it should be a swing, the strike, then the rock giving way');
-      chk('sound');
-      if(hMiss.length !== 2 || hMiss[1].indexOf('clang') !== 0)
-        errs.push('sound: a glance is "' + hMiss.join(' ') + '" and it should be a swing and a clang');
-      chk('sound');
-      if(hMiss.join(' ').indexOf('chip') >= 0)
-        errs.push('sound: the hammer glanced off and rock came away anyway — ' +
-                  'the sound says the opposite of what the rock did');
-    }
-    Object.keys(MF.audio.CUES).forEach(function(k){
-      chk('sound');
-      if(!wired[k])
-        errs.push('sound: the "' + k + '" cue exists and nothing in the mine plays it');
-    });
-  })();
-
-  /* A ROOM SETS THE BEDS ONCE, AND NEVER ARGUES WITH THE PANEL */
-  (function(){
-    chk('sound');
-    if(MF.ACCESS_MUSIC !== 0.30)
-      errs.push('sound: the site opens with music at ' + MF.ACCESS_MUSIC + ', not 30%');
-    chk('sound');
-    if(MF.ROOM_SOUND.mine.ambience !== 0.40)
-      errs.push('sound: the mine opens with ambience at ' + MF.ROOM_SOUND.mine.ambience + ', not 40%');
-    /* AND NO ROOM SETS A LEVEL DOWNWARDS. */
-    Object.keys(MF.ROOM_SOUND).forEach(function(room){
-      Object.keys(MF.ROOM_SOUND[room]).forEach(function(k){
-        chk('sound');
-        if(!(MF.ROOM_SOUND[room][k] > 0))
-          errs.push('sound: arriving in "' + room + '" turns ' + k + ' DOWN to ' +
-                    MF.ROOM_SOUND[room][k] + ', which undoes a level set somewhere else');
-      });
-    });
-
-    var rsKeep = {m:MF.state.access.music, a:MF.state.access.ambience,
-                  sm:MF.state.access._set_music, sa:MF.state.access._set_ambience,
-                  done:MF.state._roomdone};
-    /* a fresh visit: the mine raises its own room tone and touches nothing else */
-    MF.state._roomdone = null;
-    MF.state.access._set_music = false; MF.state.access._set_ambience = false;
-    MF.state.access.music = MF.ACCESS_MUSIC; MF.state.access.ambience = 0;
-    MF.roomSound('home');
-    chk('sound');
-    if(MF.state.access.music !== 0.30)
-      errs.push('sound: walking onto the surface moved the music off its opening level');
-    MF.roomSound('mine');
-    chk('sound');
-    if(MF.state.access.ambience !== 0.40)
-      errs.push('sound: arriving in the mine did not bring the room tone up');
-    chk('sound');
-    if(MF.state.access.music !== 0.30)
-      errs.push('sound: walking into the mine moved the music, which is not the mine’s to set');
-
-    /* AND ONCE THE STUDENT HAS MOVED A SLIDER, NO ROOM TOUCHES IT AGAIN. */
-    MF.state._roomdone = null;
-    MF.state.access._set_music = true; MF.state.access._set_ambience = true;
-    MF.state.access.music = 0.80; MF.state.access.ambience = 0;
-    MF.roomSound('home'); MF.roomSound('mine'); MF.roomSound('home');
-    chk('sound');
-    if(MF.state.access.music !== 0.80)
-      errs.push('sound: a room overrode the music the student had set to 80%');
-    chk('sound');
-    if(MF.state.access.ambience !== 0)
-      errs.push('sound: the mine turned the room tone on after the student had turned it off');
-    /* AND IT DOES NOT RE-FIRE ON EVERY ARRIVAL even when untouched: walking out
-       of the mine and back must not reset a level you nudged in between. */
-    MF.state._roomdone = null;
-    MF.state.access._set_music = false; MF.state.access._set_ambience = false;
-    MF.state.access.music = 0; MF.state.access.ambience = 0;
-    MF.roomSound('mine');
-    MF.state.access.ambience = 0.10;          /* the student nudges it down */
-    MF.roomSound('home'); MF.roomSound('mine');
-    chk('sound');
-    if(MF.state.access.ambience !== 0.10)
-      errs.push('sound: coming back into the mine reset the room tone to its opening level');
-
-    MF.state.access.music = rsKeep.m; MF.state.access.ambience = rsKeep.a;
-    MF.state.access._set_music = rsKeep.sm; MF.state.access._set_ambience = rsKeep.sa;
-    MF.state._roomdone = rsKeep.done;
-    if(MF.audio.ready) MF.audio.apply();
-  })();
-
-  /* ---- THE BEDS GET OUT OF THE WAY, AND THE TICK DOES NOT MAKE THEM ---- */
-  Object.keys(MF.audio.DUCK).forEach(function(k){
-    chk('sound');
-    if(!MF.audio.CUES[k])
-      errs.push('sound: the duck table names "' + k + '", which is not a cue');
-  });
-  chk('sound');
-  if(MF.audio.DUCK.tick)
-    errs.push('sound: the tick ducks the beds — it fires on every lump picked out, ' +
-              'so the bed would pump all the way along the seam');
-  if(MF.audio.ready){
-    var dKeep = {m:MF.state.access.music, a:MF.state.access.ambience};
-    MF.state.access.music = 0.5; MF.state.access.ambience = 0.5; MF.audio.apply();
-    chk('sound');
-    if(MF.audio.duck('thud') !== true)
-      errs.push('sound: a hammer landing does not move the beds out of its way, ' +
-                'and a 0.4s transient under a running bed is a cue nobody hears');
-    chk('sound');
-    if(MF.audio.duck('tick') !== false)
-      errs.push('sound: picking a lump ducked the beds');
-    chk('sound');
-    if(MF.audio.duck('not-a-cue') !== false)
-      errs.push('sound: ducking an unknown cue did something');
-    /* A BED AT ZERO HAS NOTHING TO DUCK, and must not be left holding a
-       scheduled ramp back up to a level nobody asked for. */
-    var probeBus = MF.audio.ctx.createGain();
-    probeBus.gain.value = 0;                      /* a bed that is switched off */
-    var realBus = MF.audio.musicBus;
-    MF.audio.musicBus = probeBus;
-    MF.state.access.music = 0; MF.state.access.ambience = 0;
-    var dThrew = null;
-    try { MF.audio.duck('pour'); } catch(e){ dThrew = e.message; }
-    MF.audio.musicBus = realBus;
-    chk('sound');
-    if(dThrew) errs.push('sound: ducking a silent bed threw "' + dThrew + '"');
-    chk('sound');
-    if(probeBus.gain.value > 0.001)
-      errs.push('sound: ducking pushed a bed that was off back up to audible');
-    /* §80: the duck above scheduled ramps on the real buses. */
-    MF.state.access.music = dKeep.m; MF.state.access.ambience = dKeep.a;
-    var dEnd = MF.audio.ctx.currentTime;
-    [MF.audio.musicBus, MF.audio.ambBus].forEach(function(bus){
-      bus.gain.cancelScheduledValues(dEnd);
-      bus.gain.setValueAtTime(MF.state.access.mute ? 0 : bus.gain.value, dEnd);
-    });
-    MF.audio.apply();
-  }
-
-  /* A REPAINTING ROOM POURS ONCE, NOT FORTY TIMES */
-  if(MF.audio.ready){
-    var pKeep = MF.audio.play, pFired = 0;
-    MF.audio.play = function(){ pFired++; return true; };
-    for(var pi = 0; pi < 40; pi++) MF.audio.playSettled('pour', 5000);
-    chk('sound');
-    if(pFired !== 0)
-      errs.push('sound: dragging a slider fired ' + pFired + ' pours before the hand stopped');
-    chk('sound');
-    if(!MF.audio._settle.pour)
-      errs.push('sound: the settled pour left no cue pending, so it will never sound at all');
-    clearTimeout(MF.audio._settle.pour);          /* §80: leave no timer behind */
-    MF.audio._settle.pour = null;
-    MF.audio.play = pKeep;
-  }
-
-  /* EVERY BED HAS A SOURCE NAME AND EVERY SOURCE NAME HAS A BED. */
-  Object.keys(MF.audio.beds).forEach(function(k){
-    chk('sound');
-    if(!MF.audio.BED_SRC[k])
-      errs.push('sound: the "' + k + '" bed has no source name, so it can never load a file');
-  });
-  Object.keys(MF.audio.BED_SRC).forEach(function(k){
-    chk('sound');
-    if(!MF.audio.beds[k])
-      errs.push('sound: BED_SRC names "' + k + '", which is not a bed');
-  });
-
-  /* A SUPPLIED FILE NEVER COSTS THE SYNTHESISED ONE. */
-  if(MF.audio.ready){
-    var sfxKeep = MF.audio.sfx;
-    MF.audio.sfx = {thud:'missing', clang:null, pour:undefined};
-    chk('sound');
-    if(MF.audio.play('thud') !== true)
-      errs.push('sound: a cue with no recording fell silent instead of synthesising');
-    chk('sound');
-    if(MF.audio.play('clang') !== true)
-      errs.push('sound: a cue whose recording is still loading fell silent');
-    MF.audio.sfx = sfxKeep;
-  }
-
-  /* NO WEB AUDIO AT ALL, and the mine still swings. */
-  (function(){
-    var cold = Object.create(MF.audio);
-    cold.ctx = null; cold.ready = false;
-    cold.beds = {music:{node:null, file:null}, amb:{node:null, file:null}};
+    var realAC = window.AudioContext, realWK = window.webkitAudioContext;
+    var made = 0, spy = function(){ made++; };
+    window.AudioContext = spy; window.webkitAudioContext = spy;
     var threw = null;
-    try { cold.play('thud'); cold.say('room-mine-1'); cold.apply(); cold.hush();
-          cold.bedOff('music'); cold.bedOff('amb'); }
-    catch(e){ threw = e.message; }
-    chk('sound');
-    if(threw) errs.push('sound: with no audio context the sound layer threw "' + threw +
-                        '" — a mine must not be breakable by an ornament');
+    try {
+      MF.audio.start(); MF.audio.resume(); MF.audio.apply();
+      MF.audio.play('thud'); MF.audio.playAt('clang', 0.2); MF.audio.playSettled('tick');
+      MF.audio.hammer(true); MF.audio.duck('thud');
+      MF.audio.bedOn('music'); MF.audio.bedOn('amb');
+      MF.audio.bedOff('music'); MF.audio.bedOff('amb');
+      MF.audio.say('room-mine-1'); MF.audio.hush(); MF.audio.layerState('fx');
+    } catch(e){ threw = e.message; }
+    chk('silence');
+    if(threw) errs.push('silence: the silent layer threw "' + threw + '" — the call sites are ' +
+                        'still live and every one of them must land somewhere harmless');
+    chk('silence');
+    if(made) errs.push('silence: ' + made + ' audio context(s) were built by calls that are ' +
+                       'supposed to do nothing at all');
+    /* CONTROL: the spy sees the thing it claims to watch. */
+    var ctl = 0;
+    try { window.AudioContext = function(){ ctl++; }; new window.AudioContext(); } catch(e){}
+    window.AudioContext = realAC; window.webkitAudioContext = realWK;
+    chk('silence');
+    if(!ctl) errs.push('CONTROL: the audio-context spy does not see a context being built');
   })();
 
-  /* THE VOICE SCRIPT IS GENERATED, AND COVERS WHAT HE SAYS */
-  var vl = MF.voiceLines();
-  chk('sound');
-  if(!vl.length) errs.push('sound: the voice script is empty');
-  var vSeen = {}, vDup = null;
-  vl.forEach(function(l){ if(vSeen[l.id]) vDup = l.id; else vSeen[l.id] = l; });
-  chk('sound');
-  if(vDup) errs.push('sound: two lines share the id "' + vDup + '" — one would overwrite the other');
-  /* every fixed beat Mr Factor can say has a line in the script */
-  Object.keys(MF.GUIDE).forEach(function(room){
-    (MF.GUIDE[room].beats || []).forEach(function(b, i){
-      chk('sound');
-      var id = 'room-' + room + '-' + (i+1);
-      /* COVERAGE ONLY. */
-      if(!vSeen[id])
-        errs.push('sound: Mr Factor says something in "' + room + '" that is not in the recording script');
-    });
+  /* 2. NOTHING REPORTS THAT IT DID ANYTHING, because anything that did would
+     mean a survivor of the engine is still wired in under an old name. */
+  ['resume','apply','play','playAt','playSettled','hammer','duck','bedOn','bedOff',
+   'say','hush'].forEach(function(m){
+    chk('silence');
+    if(typeof MF.audio[m] !== 'function')
+      errs.push('silence: MF.audio.' + m + ' is gone, and a call site still asks for it');
+    else if(MF.audio[m]('music'))
+      errs.push('silence: MF.audio.' + m + ' reports that it did something');
   });
-  /* THE SCRIPT IS SOMETHING A PERSON CAN READ ALOUD. */
-  vl.forEach(function(l){
-    chk('sound');
-    if(/[<>]/.test(l.text))
-      errs.push('sound: the script line "' + l.id + '" still has markup in it');
-    chk('sound');
-    if(!l.text || l.text.trim().length < 8)
-      errs.push('sound: the script line "' + l.id + '" is too short to be a line');
-  });
-  /* AND THE DYNAMIC ONES ARE MARKED AS SUCH. */
-  chk('sound');
-  var vDyn = vl.filter(function(l){ return l.dyn; });
-  if(vDyn.length < 2)
-    errs.push('sound: the script marks ' + vDyn.length + ' lines as varying with the lump, ' +
-              'and the two hint rungs both do');
-  chk('sound');
-  if(vl.some(function(l){ return !l.dyn && /…|\.\.\./.test(l.text); }))
-    errs.push('sound: a line marked fixed has an ellipsis in it, so it is not fixed');
+  chk('silence');
+  if(MF.audio.start() !== null) errs.push('silence: MF.audio.start handed back a context');
+  chk('silence');
+  if(MF.audio.layerState('fx') !== 'none')
+    errs.push('silence: a sound layer claims it could play "' + MF.audio.layerState('fx') + '"');
+  chk('silence');
+  if(MF.audio.ready) errs.push('silence: the sound layer reports itself ready');
 
-  MF.state.access.fx = sndKeep.fx; MF.state.access.music = sndKeep.music;
-  MF.state.access.ambience = sndKeep.ambience;
-  MF.state.access.mute = sndKeep.mute;
-  if(MF.audio.ready) MF.audio.apply();
+  /* 3. THE ENGINE'S FURNITURE IS GONE, not merely unreferenced. A bus or a
+     buffer table left behind is the seed of someone repointing a path at it. */
+  ['CUES','sfx','beds','BED_SRC','HAMMER','DUCK','master','musicBus','ambBus','fxBus',
+   'voice','_settle','_noise','_env','_speaking'].forEach(function(k){
+    chk('silence');
+    if(k in MF.audio) errs.push('silence: MF.audio still carries "' + k + '" from the engine');
+  });
+  chk('silence');
+  MF.audio.__ctl = 1;
+  if(!('__ctl' in MF.audio)) errs.push('CONTROL: the engine-furniture sweep cannot see a key');
+  delete MF.audio.__ctl;
+  chk('silence');
+  if(['SFX_BASE','SFX_EXT','MUSIC_SRC','AMBIENCE_SRC','VOICE_BASE','VOICE_EXT',
+      'ACCESS_MUSIC','ACCESS_FX','ROOM_SOUND','roomSound'].some(function(k){ return k in MF; }))
+    errs.push('silence: MF still carries a path, a level or a rule left from the sound engine');
+
+  /* 4. NO PATH TO AN AUDIO FILE SURVIVES ANYWHERE. The document is the whole
+     program — markup, styles and source in one file — so one sweep covers it. */
+  (function(){
+    var aud = /\.(?:m4a|mp3|ogg|wav|aac|flac|opus)\b/i;
+    var hit = (document.documentElement.innerHTML || '').match(aud);
+    chk('silence');
+    if(hit) errs.push('silence: the page still names an audio file ("' + hit[0] + '")');
+    /* CONTROL, AND IT MUST NOT BE WRITTEN OUT IN ONE PIECE. This sweep reads the
+       whole document, and the document contains this line. A control naming a
+       file the ordinary way would be found by the very sweep it is testing, and
+       the check would fail on itself — which it did, twice: once on the control,
+       and once on the comment that explained the control. Joined at runtime, a
+       dot and an extension never sit together anywhere in the source. */
+    chk('silence');
+    if(!aud.test('sfx/music.' + 'm4a'))
+      errs.push('CONTROL: the audio-path sweep does not recognise an audio file');
+    chk('silence');
+    if(document.querySelector('audio, video, source'))
+      errs.push('silence: there is a media element on the page');
+  })();
+
+  /* 5. READING & ACCESS OFFERS NO SOUND. Swept by KEY, not by word: the panel
+     speaks sixteen languages and a word list would only ever prove the English
+     one. A key that is gone cannot be printed in any of them. */
+  (function(){
+    var gone = ['access.sound','access.mute','access.quiet','access.level.off',
+                'access.fx','access.fx.hint','access.fx.loading','access.fx.part','access.fx.synth',
+                'access.amb','access.amb.hint','access.amb.loading','access.amb.synth',
+                'access.music','access.music.hint','access.music.loading','access.music.none'];
+    Object.keys(MF.STR).forEach(function(lg){
+      gone.forEach(function(k){
+        chk('silence');
+        if(k in MF.STR[lg])
+          errs.push('silence: ' + lg + ' still carries "' + k + '" — the panel could print it');
+      });
+    });
+    /* CONTROL: the sweep can see a key that IS there. */
+    chk('silence');
+    if(!('access.title' in MF.STR.en))
+      errs.push('CONTROL: the panel key sweep cannot see a key that is present');
+    /* AND THE CODE THAT BUILDS THE PANEL NO LONGER REACHES FOR THE SOUND LAYER. */
+    chk('silence');
+    if(/MF\.audio/.test(String(MF.openAccess)))
+      errs.push('silence: the Reading & Access panel still reaches for the sound layer');
+  })();
+
+  /* 6. READ-ALOUD SURVIVES, and is checked for being present rather than absent.
+     It is the browser speaking the page, not the page playing a file: no licence
+     applies to it, and losing it would be an accessibility cost paid for nothing. */
+  chk('silence');
+  if(typeof MF.readAloud !== 'function' || typeof MF.readStop !== 'function')
+    errs.push('silence: read-aloud went out with the audio, and it had no reason to go');
+  ['access.read','access.read.hint','access.read.play','access.read.stop'].forEach(function(k){
+    chk('silence');
+    if(!(k in MF.STR.en)) errs.push('silence: read-aloud lost its "' + k + '" wording');
+  });
 
   /* 6. NOTHING ON SCREEN MAY HAVE A CEILING, A PERCENTAGE, OR A COMPARISON. */
   var banned = MF.langChecks().banned;
@@ -42949,7 +41854,7 @@ MF.validate = function(){
   })();
 
   /* AND MR FACTOR IS SWEPT NOW, WHICH HE NEVER HAS BEEN */
-  var vlines = MF.voiceLines ? MF.voiceLines() : [];
+  var vlines = MF.guideLines ? MF.guideLines() : [];
   chk('nogrades');
   if(vlines.length < 20)
     errs.push('nogrades: only ' + vlines.length + ' guide lines to sweep — the dialogue sweep is ' +
@@ -43000,17 +41905,17 @@ MF.validate = function(){
     errs.push('nogrades: the duplicate-line sweep only found ' + Object.keys(saidWhere).length +
               ' sentences to compare, which is too few to be reading the whole script');
 
-  /* AND NO LINE MAY CARRY MARKUP TO THE STUDIO. `docs/VOICE.md` is read aloud
-     by a person; `&mdash;` in a beat is a person saying "ampersand m dash". */
+  /* AND NO LINE MAY CARRY MARKUP. The read-aloud voice speaks these beats, and
+     `&mdash;` in one is the synthesiser saying "ampersand m dash" out loud. */
   vlines.forEach(function(l){
     chk('nogrades');
     if(/&[a-z]+;|&#\d+;|<[a-z\/]/i.test(String(l.text)))
-      errs.push('nogrades: the recording line ' + l.id + ' still has markup in it: "' +
+      errs.push('nogrades: the dialogue line ' + l.id + ' still has markup in it: "' +
                 String(l.text).slice(0,70) + '"');
   });
   chk('nogrades');
-  if(MF.voiceText('a &mdash; b') !== 'a — b')
-    errs.push('CONTROL: voiceText does not decode entities, so the recording script carries markup');
+  if(MF.plainText('a &mdash; b') !== 'a — b')
+    errs.push('CONTROL: plainText does not decode entities, so the dialogue index carries markup');
 
   /* WHAT HE SAYS OVER A LUMP MUST BE TRUE OF THAT LUMP */
   var kinds = [
@@ -43041,7 +41946,7 @@ MF.validate = function(){
       chk('guide');
       if(!res || !res.left)
         errs.push('guide: on ' + K.nm + ' he names a factor the rock refuses — "' +
-                  MF.voiceText(give.beats[0]) + '"');
+                  MF.plainText(give.beats[0]) + '"');
       /* AND THE TWO HALVES MUST MULTIPLY BACK TO THE LUMP */
       chk('guide');
       if(res && res.left && res.right){
@@ -43055,7 +41960,7 @@ MF.validate = function(){
       /* and the printed sentence must name the piece that actually came off */
       chk('guide');
       if(res && res.left && give.beats[0].indexOf(MF.oreLabel(res.left)) < 0)
-        errs.push('guide: on ' + K.nm + ' he says "' + MF.voiceText(give.beats[0]) +
+        errs.push('guide: on ' + K.nm + ' he says "' + MF.plainText(give.beats[0]) +
                   '" but what comes off is ' + MF.oreText(res.left));
     }
     /* THE HINT RUNG: no question mark may stand where a number belongs. */
@@ -43066,7 +41971,7 @@ MF.validate = function(){
     if(!hint || hint.rung !== 'hint'){
       errs.push('guide: the hint rung does not fire on ' + K.nm);
     } else {
-      var text = hint.beats.map(MF.voiceText).join(' ');
+      var text = hint.beats.map(MF.plainText).join(' ');
       chk('guide');
       if(/(^|\s)\?(?=[\s.,;:]|$)|\bNaN\b|undefined|\{\w+\}/.test(text))
         errs.push('guide: the hint on ' + K.nm + ' prints a hole where a number belongs — "' + text + '"');
