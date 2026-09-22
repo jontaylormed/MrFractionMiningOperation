@@ -253,6 +253,21 @@ input::placeholder, textarea::placeholder{color:#6B5B48; opacity:1}
 .tagline-pill{display:inline-block; font-size:12px; letter-spacing:.06em; text-transform:uppercase;
   border:2px solid var(--tan); color:var(--ore-t); border-radius:999px; padding:3px 11px}
 
+/* ---------- the closing line ---------- */
+/* ON EVERY SCREEN, AND QUIET. It is the house signature, not a second masthead,
+   so it is smaller than the tagline it echoes and carries a rule above it rather
+   than a panel around it.
+   THE RIGHT-HAND PADDING CLEARS MR FACTOR'S DOCK, which is fixed at bottom:14px
+   / inline-end:22px with a bubble of its own. Centred text under a dock that
+   floats over it would be half-covered at the foot of a short screen. */
+.sitefoot{border-top:1px solid var(--rule); margin:34px auto 0; padding:18px 22px 104px;
+  max-width:1100px; text-align:center}
+.footbrand{font-size:calc(12px * var(--access-scale,1)); letter-spacing:.07em;
+  text-transform:uppercase; color:var(--ore-t); font-weight:700}
+.foottag{font-size:calc(12px * var(--access-scale,1)); color:var(--ink-soft); margin-top:4px}
+/* THE DOCK IS NARROWER ON A PHONE and the footer has the width to itself. */
+@media(max-width:620px){ .sitefoot{padding:16px 16px 92px; margin-top:26px} }
+
 /* ---------- mine layout ---------- */
 /* THE MINE IN TWO BANDS. The top band is the three PLACES - shaft, face, yard -
    held tight against each other so the operation reads as one glance. */
@@ -2364,6 +2379,15 @@ p,li{font-size:calc(17px * var(--access-scale,1))}
 
 <div class="wrap"><main id="screen" tabindex="-1"></main></div>
 
+<!-- THE CLOSING LINE, ON EVERY SCREEN. It names the BRAND, not the character:
+     Mr Fraction is the house, Mr Factor is the miner who works this one. It sits
+     outside #screen so it survives every repaint, and outside the dock so Mr
+     Factor never speaks over it. -->
+<footer class="sitefoot" id="sitefoot">
+  <div class="footbrand">A Mr Fraction site</div>
+  <div class="foottag">smelt it apart &middot; pour it back &middot; find out</div>
+</footer>
+
 <!-- MR FACTOR'S DOCK. -->
 <div id="guide" class="guide" hidden></div>
 
@@ -3987,6 +4011,7 @@ MF.STR.en = {
   'load.sub': 'Ore looks like rock. <b>x&sup2; &minus; 5x + 6</b> looks like a lump.<br> Down here they are the same problem.',
   'load.enter': 'Enter the Operation',
   'top.tagline': 'smelt it apart &middot; pour it back &middot; find out',
+  'foot.brand': 'A Mr Fraction site',
   'top.access': '<span aria-hidden="true">&#9881;</span> Reading &amp; Access',
   'top.access.aria': 'Reading and access settings, including read-aloud and its volume. Also opens with Alt and A.',
   'top.accesscap': 'Text size, colour and read-aloud',
@@ -5420,6 +5445,7 @@ MF.STR.es = {
   'load.sub': 'El mineral parece roca. <b>x&sup2; &minus; 5x + 6</b> parece un trozo de piedra.<br> Aquí abajo son el mismo problema.',
   'load.enter': 'Entrar en la Explotación',
   'top.tagline': 'sepáralo &middot; vuélvelo a verter &middot; compruébalo',
+  'foot.brand': 'Un sitio de Mr Fraction',
   'top.access': '<span aria-hidden="true">&#9881;</span> Lectura y Accesibilidad',
   'top.access.aria': 'Ajustes de lectura y accesibilidad, incluida la lectura en voz alta y su volumen. También se abre con Alt y A.',
   'top.accesscap': 'Tamaño, color y lectura en voz alta',
@@ -6848,6 +6874,7 @@ MF.STR['pt-BR'] = {
   'load.sub': 'Minério parece rocha. <b>x&sup2; &minus; 5x + 6</b> parece um pedaço de pedra.<br> Aqui embaixo eles são o mesmo problema.',
   'load.enter': 'Entrar na Mineração',
   'top.tagline': 'separe &middot; despeje de volta &middot; descubra',
+  'foot.brand': 'Um site Mr Fraction',
   'top.access': '<span aria-hidden="true">&#9881;</span> Leitura e Acessibilidade',
   'top.access.aria': 'Ajustes de leitura e acessibilidade, incluindo a leitura em voz alta e o seu volume. Também abre com Alt e A.',
   'top.accesscap': 'Tamanho, cor e leitura em voz alta',
@@ -8276,6 +8303,7 @@ MF.STR.fr = {
   'load.sub': 'Le minerai ressemble à de la roche. <b>x&sup2; &minus; 5x + 6</b> ressemble à un bloc de pierre.<br> Ici, en bas, c’est le même problème.',
   'load.enter': 'Entrer dans l’Exploitation',
   'top.tagline': 'sépare-le &middot; recoule-le &middot; vérifie',
+  'foot.brand': 'Un site Mr Fraction',
   'top.access': '<span aria-hidden="true">&#9881;</span> Lecture et Accessibilité',
   'top.access.aria': 'Réglages de lecture et d’accessibilité, y compris la lecture à voix haute et son volume. S’ouvre aussi avec Alt et A.',
   'top.accesscap': 'Taille, couleur et lecture à voix haute',
@@ -9705,6 +9733,7 @@ MF.STR.de = {
   'load.sub': 'Erz sieht aus wie Gestein. <b>x&sup2; &minus; 5x + 6</b> sieht aus wie ein Brocken.<br> Hier unten sind beide dasselbe Problem.',
   'load.enter': 'Das Bergwerk betreten',
   'top.tagline': 'zerlege es &middot; gieß es zurück &middot; finde es heraus',
+  'foot.brand': 'Eine Seite von Mr Fraction',
   'top.access': '<span aria-hidden="true">&#9881;</span> Lesen &amp; Barrierefreiheit',
   'top.access.aria': 'Einstellungen für Lesen und Barrierefreiheit, auch für das Vorlesen und seine Lautstärke. Öffnet sich auch mit Alt und A.',
   'top.accesscap': 'Schrift, Farbe und Vorlesen',
@@ -11135,6 +11164,7 @@ MF.STR.it = {
   'load.sub': 'Il minerale sembra roccia. <b>x&sup2; &minus; 5x + 6</b> sembra un blocco di pietra.<br> Quaggiù sono lo stesso problema.',
   'load.enter': 'Entra nella Miniera',
   'top.tagline': 'scomponilo &middot; ricolalo &middot; scoprilo',
+  'foot.brand': 'Un sito Mr Fraction',
   'top.access': '<span aria-hidden="true">&#9881;</span> Lettura e Accessibilità',
   'top.access.aria': 'Impostazioni di lettura e accessibilità, compresa la lettura ad alta voce e il suo volume. Si apre anche con Alt e A.',
   'top.accesscap': 'Dimensioni, colore e lettura ad alta voce',
@@ -12565,6 +12595,7 @@ MF.STR.id = {
   'load.sub': 'Bijih tampak seperti batu. <b>x&sup2; &minus; 5x + 6</b> tampak seperti bongkahan.<br> Di bawah sini keduanya soal yang sama.',
   'load.enter': 'Masuk ke Tambang',
   'top.tagline': 'lebur jadi bagian &middot; tuang kembali &middot; buktikan',
+  'foot.brand': 'Sebuah situs Mr Fraction',
   'top.access': '<span aria-hidden="true">&#9881;</span> Bacaan &amp; Akses',
   'top.access.aria': 'Pengaturan bacaan dan akses, termasuk baca nyaring dan volumenya. Juga terbuka dengan Alt dan A.',
   'top.accesscap': 'Ukuran, warna, dan baca nyaring',
@@ -13997,6 +14028,7 @@ MF.STR.tr = {
   'load.sub': 'Cevher kayaya benzer. <b>x&sup2; &minus; 5x + 6</b> bir kaya topağına benzer.<br> Burada, aşağıda, ikisi aynı sorudur.',
   'load.enter': 'İşletmeye Gir',
   'top.tagline': 'erit ve ayır &middot; geri dök &middot; öğren',
+  'foot.brand': 'Bir Mr Fraction sitesi',
   'top.access': '<span aria-hidden="true">&#9881;</span> Okuma ve Erişim',
   'top.access.aria': 'Sesli okuma ve ses düzeyi dahil okuma ve erişim ayarları. Alt ve A ile de açılır.',
   'top.accesscap': 'Yazı, renk ve sesli okuma',
@@ -15428,6 +15460,7 @@ MF.STR.vi = {
   'load.sub': 'Quặng trông như đá. <b>x&sup2; &minus; 5x + 6</b> trông như một cục đá.<br> Dưới này, chúng là cùng một bài toán.',
   'load.enter': 'Vào Công Trường',
   'top.tagline': 'nấu tách ra &middot; rót lại &middot; tìm hiểu',
+  'foot.brand': 'Một trang Mr Fraction',
   'top.access': '<span aria-hidden="true">&#9881;</span> Đọc &amp; Trợ năng',
   'top.access.aria': 'Cài đặt đọc và trợ năng, gồm cả đọc to và âm lượng của giọng đọc. Cũng mở được bằng Alt và A.',
   'top.accesscap': 'Cỡ chữ, màu và đọc to',
@@ -16860,6 +16893,7 @@ MF.STR.ru = {
   'load.sub': 'Руда похожа на камень. <b>x&sup2; &minus; 5x + 6</b> похоже на глыбу.<br> Здесь, внизу, это одна и та же задача.',
   'load.enter': 'Спуститься в рудник',
   'top.tagline': 'расплавь и раздели &middot; залей обратно &middot; проверь',
+  'foot.brand': 'Сайт Mr Fraction',
   'top.access': '<span aria-hidden="true">&#9881;</span> Чтение и доступность',
   'top.access.aria': 'Настройки чтения и доступности, включая чтение вслух и его громкость. Открываются также клавишами Alt и A.',
   'top.accesscap': 'Шрифт, цвет и чтение вслух',
@@ -18293,6 +18327,7 @@ MF.STR.zh = {
   'load.sub': '矿石看起来像岩石。<b>x&sup2; &minus; 5x + 6</b> 看起来像一块矿石。<br>在矿井底下，它们是同一个问题。',
   'load.enter': '进入矿场',
   'top.tagline': '熔开它 &middot; 浇回去 &middot; 看结果',
+  'foot.brand': 'Mr Fraction 旗下网站',
   'top.access': '<span aria-hidden="true">&#9881;</span> 阅读与无障碍',
   'top.access.aria': '阅读与无障碍设置，包括朗读及其音量。也可以按 Alt 和 A 打开。',
   'top.accesscap': '字号、配色与朗读',
@@ -19724,6 +19759,7 @@ MF.STR.ja = {
   'load.sub': '鉱石は岩のように見えます。<b>x&sup2; &minus; 5x + 6</b> は岩の塊のように見えます。<br>この地下では、どちらも同じ問題です。',
   'load.enter': '鉱山に入る',
   'top.tagline': '溶かして分ける &middot; 流し戻す &middot; 確かめる',
+  'foot.brand': 'Mr Fraction のサイト',
   'top.access': '<span aria-hidden="true">&#9881;</span> 読みやすさとアクセシビリティ',
   'top.access.aria': '読み上げとその音量を含む、読みやすさとアクセシビリティの設定です。Alt と A でも開きます。',
   'top.accesscap': '文字サイズ・配色・読み上げ',
@@ -21155,6 +21191,7 @@ MF.STR.ko = {
   'load.sub': '광석은 바위처럼 보여요. <b>x&sup2; &minus; 5x + 6</b>은 돌덩어리처럼 보이죠.<br> 이 아래에서는 둘이 같은 문제예요.',
   'load.enter': '광산으로 들어가기',
   'top.tagline': '녹여서 나누기 &middot; 다시 붓기 &middot; 확인하기',
+  'foot.brand': 'Mr Fraction 사이트',
   'top.access': '<span aria-hidden="true">&#9881;</span> 읽기와 접근성',
   'top.access.aria': '읽어주기와 그 음량을 포함한 읽기와 접근성 설정이에요. Alt와 A로도 열 수 있어요.',
   'top.accesscap': '글자 크기·색·읽어주기',
@@ -22587,6 +22624,7 @@ MF.STR.hi = {
   'load.sub': 'अयस्क चट्टान जैसा दिखता है। <b>x&sup2; &minus; 5x + 6</b> एक ढेले जैसा दिखता है।<br> यहाँ नीचे, दोनों एक ही सवाल हैं।',
   'load.enter': 'खान में चलें',
   'top.tagline': 'पिघलाकर अलग करें &middot; वापस ढालें &middot; जाँचें',
+  'foot.brand': 'एक Mr Fraction साइट',
   'top.access': '<span aria-hidden="true">&#9881;</span> पढ़ना और सुगमता',
   'top.access.aria': 'पढ़ने और सुगमता की सेटिंग, जिनमें पढ़कर सुनाना और उसकी आवाज़ भी है। Alt और A दबाकर भी खुलती हैं।',
   'top.accesscap': 'अक्षर का आकार, रंग और पढ़कर सुनाना',
@@ -24011,6 +24049,7 @@ MF.STR.ar = {
   'load.sub': 'الخام يبدو صخرًا. <b>x&sup2; &minus; 5x + 6</b> يبدو كتلة.<br> هنا في الأسفل هما المسألة نفسها.',
   'load.enter': 'ادخل المنجم',
   'top.tagline': 'افصله &middot; أعِده صبًّا &middot; واعرف',
+  'foot.brand': 'موقع من مواقع Mr Fraction',
   'top.access': '<span aria-hidden="true">&#9881;</span> القراءة والوصول',
   'top.access.aria': 'إعدادات القراءة والوصول، ومنها القراءة بصوت عالٍ ومستوى صوتها. تُفتح أيضًا بـ Alt و A.',
   'top.accesscap': 'حجم الخط واللون والقراءة بصوت عالٍ',
@@ -25437,6 +25476,7 @@ MF.STR.ur = {
   'load.sub': 'کچ دھات پتھر جیسی لگتی ہے۔ <b>x&sup2; &minus; 5x + 6</b> ایک ڈھیلے جیسا لگتا ہے۔<br> یہاں نیچے دونوں ایک ہی مسئلہ ہیں۔',
   'load.enter': 'کان میں داخل ہوں',
   'top.tagline': 'الگ کیجیے &middot; واپس ڈھالیے &middot; اور جانیے',
+  'foot.brand': 'Mr Fraction کی ایک سائٹ',
   'top.access': '<span aria-hidden="true">&#9881;</span> پڑھائی اور رسائی',
   'top.access.aria': 'پڑھائی اور رسائی کی ترتیبات، بشمول بلند خوانی اور اس کی آواز۔ Alt اور A سے بھی کھلتی ہیں۔',
   'top.accesscap': 'متن کا سائز، رنگ اور بلند خوانی',
@@ -26929,7 +26969,10 @@ MF.tList = function(prefix, n){
 MF.STATIC = [
   ['#loadscreen h2', 'site.name'], ['#loadscreen .sub', 'load.sub'], ['#enter-btn', 'load.enter'],
   ['.top h1', 'site.name'], ['.top .tagline', 'top.tagline'],
-  ['#accessbtn', 'top.access'], ['.accesscap', 'top.accesscap'], ['#teachbtn', 'teach.link']
+  ['#accessbtn', 'top.access'], ['.accesscap', 'top.accesscap'], ['#teachbtn', 'teach.link'],
+  /* the closing line. `foot.tag` is the masthead's own tagline said again at the
+     bottom, so it reads from the same key and cannot drift out of step with it. */
+  ['#sitefoot .footbrand', 'foot.brand'], ['#sitefoot .foottag', 'top.tagline']
 ];
 MF.STATIC_ARIA = [['#accessbtn', 'top.access.aria'], ['#nav', 'nav.aria']];
 MF.paintStatic = function(){
@@ -41826,6 +41869,71 @@ MF.validate = function(){
     }
   })();
 
+
+  /* ===== THE CLOSING LINE ===== */
+  /* IT NAMES THE HOUSE, AND THE HOUSE IS NOT THE MINER. Mr Fraction is the
+     brand; Mr Factor is the character who works this particular site. They are
+     two correct names one letter apart, which is exactly the kind of pair that
+     gets "corrected" into one — so the footer is held to saying the brand and
+     never the character. */
+  (function(){
+    var ft = document.getElementById('sitefoot');
+    chk('foot');
+    if(!ft){ errs.push('foot: there is no closing line on the page'); return; }
+
+    /* IT IS OUTSIDE THE SCREEN, so a repaint cannot take it away. Every screen
+       is entered and the footer must survive all of them. */
+    var wasScreen = MF.state.screen;
+    Object.keys(MF.SCREENS).forEach(function(name){
+      chk('foot');
+      try { MF.go(name); } catch(e){ errs.push('foot: ' + name + ' threw: ' + e.message); return; }
+      var f = document.getElementById('sitefoot');
+      if(!f || !(f.textContent || '').trim())
+        errs.push('foot: the closing line is missing on "' + name + '"');
+    });
+    try { MF.go(wasScreen); } catch(e){}
+    chk('foot');
+    if(document.querySelector('#screen #sitefoot'))
+      errs.push('foot: the closing line is inside #screen, so a repaint will delete it');
+
+    /* THE BRAND, IN EVERY LANGUAGE, AND NEVER THE CHARACTER. */
+    Object.keys(MF.STR).forEach(function(lg){
+      chk('foot');
+      var b = MF.STR[lg]['foot.brand'];
+      if(!b){ errs.push('foot: ' + lg + ' has no closing line'); return; }
+      chk('foot');
+      if(b.indexOf('Mr Fraction') < 0)
+        errs.push('foot: ' + lg + ' does not name Mr Fraction in the closing line: "' + b + '"');
+      chk('foot');
+      if(/Mr Factor/.test(b))
+        errs.push('foot: ' + lg + ' says "Mr Factor" in the closing line — that is the ' +
+                  'character, and the closing line names the brand');
+    });
+    /* CONTROLS: both halves of the name rule can see their own fault. */
+    chk('foot');
+    if(!(/Mr Factor/.test('A Mr Factor site')))
+      errs.push('CONTROL: the closing-line sweep cannot see the character\'s name');
+    chk('foot');
+    if('A Mr Fraction site'.indexOf('Mr Fraction') < 0)
+      errs.push('CONTROL: the closing-line sweep cannot see the brand name');
+
+    /* AND IT SAYS BOTH THINGS ON SCREEN, not just in the table. */
+    chk('foot');
+    var shown = (ft.textContent || '').replace(/\s+/g, ' ').trim();
+    if(shown.indexOf('Mr Fraction') < 0)
+      errs.push('foot: the rendered closing line does not name the brand: "' + shown + '"');
+    chk('foot');
+    if(!ft.querySelector('.footbrand') || !ft.querySelector('.foottag'))
+      errs.push('foot: the closing line lost one of its two lines');
+
+    /* THE TAGLINE IS THE MASTHEAD'S OWN, read from one key, so the two cannot
+       drift apart. Compared as rendered text — one is written into the markup
+       and the other through MF.t, and an entity would differ from a character. */
+    chk('foot');
+    var topTag = document.querySelector('.top .tagline');
+    if(topTag && MF.plainText(topTag.textContent) !== MF.plainText(ft.querySelector('.foottag').textContent))
+      errs.push('foot: the closing line and the masthead tagline no longer say the same thing');
+  })();
   /* 6. NOTHING ON SCREEN MAY HAVE A CEILING, A PERCENTAGE, OR A COMPARISON. */
   var banned = MF.langChecks().banned;
   /* ENUMERATED FROM THE REGISTRY, NOT WRITTEN OUT. */
